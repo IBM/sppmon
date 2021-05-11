@@ -192,6 +192,7 @@ main(){
 
     # Part 7: Crontab setup for config files
     if [[ $continue_point == "CRONTAB" ]]; then
+        local config_dir=$(realpath ${path}/../config_files)
         local python_exe=$(which python3)
         local sppmon_exe=$(realpath ${path}/../python/sppmon.py)
         "$python_exe" "${path}/addCrontabConfig.py" "${config_dir}" "${python_exe}" "${sppmon_exe}"
