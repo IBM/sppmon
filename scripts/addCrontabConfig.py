@@ -147,7 +147,7 @@ class CrontabConfig:
         Utils.printRow()
 
         print("> Saving crontab configuration as SUDO")
-        print("> No old configurations have been edited, please remove by `sudo crontab -e`")
+        print("> No old configurations have been edited, if wanted please remove them manually by using `sudo crontab -e`")
         old_crontab: str = popen("sudo crontab -l").read()
 
         print("> Writing crontab config into temporary file")
@@ -161,7 +161,8 @@ class CrontabConfig:
                 lines.append(hourly_cron_pre + python_path + " " + sppmon_path + " --cfg=" + entry.path + hourly_cron_post)
                 lines.append(daily_cron_pre + python_path + " " + sppmon_path + " --cfg=" + entry.path + daily_cron_post)
                 lines.append(all_cron_pre + python_path + " " + sppmon_path + " --cfg=" + entry.path + all_cron_post)
-            temp_file.writelines(lines)
+            # also add newline when writing lines
+            temp_file.writelines(line + "\n" for line in lines)
 
         print("> Loading crontab configuration")
         print(popen("sudo crontab " + temp_file_path).read())
@@ -172,7 +173,7 @@ class CrontabConfig:
         else:
             print("> Successfully enabled new crontab configuration")
             print("> Deleting temporary config file")
-            print(popen(f"sudo rm {temp_file_path}"))
+            print(popen(f"sudo rm {temp_file_path}").read())
 
         print("> Finished setting up crontab configuration")
 
