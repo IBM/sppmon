@@ -148,13 +148,17 @@ class CrontabConfig:
 
         print("> Saving crontab configuration as SUDO")
         print("> No old configurations have been edited/removed. Please remove/edit them manually by using `sudo crontab -e`")
+        # save old crontab config to append and compare if changes were made
         old_crontab: str = popen("sudo crontab -l").read()
-        print(old_crontab)
 
         print("> Writing crontab config into temporary file")
+        # writing into a file has the advantage of a crontab internal syntax check on loading
         temp_file_path = "temp_crontab_sppmon.txt"
         with open(temp_file_path, "w") as temp_file:
             lines: List[str] = []
+            # if an crontab config exists, prepend it
+            if("no crontab for" not in old_crontab):
+                lines.append(old_crontab + "\n")
 
             for entry in selected_configs:
                 lines.append(f"\n# {entry.name}:")
@@ -177,7 +181,9 @@ class CrontabConfig:
             print("> Deleting temporary config file")
             print(popen(f"sudo rm {temp_file_path}").read())
 
+
         print("> Finished setting up crontab configuration")
+        print("> HINT: You may add additional servers by calling the script `/scripts/addCrontabConfig.py`")
 
 
 
