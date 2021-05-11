@@ -186,7 +186,7 @@ main(){
     if [[ $continue_point == "CONFIG_FILE" ]]; then
         local python_exe=$(which python3)
         local config_dir=$(realpath ${path}/../config_files)
-        "$python_exe" "${path}/addConfigFile.py" "${config_dir}" "${passwordFile}"
+        checkReturn "$python_exe" "${path}/addConfigFile.py" "${config_dir}" "${passwordFile}"
         saveState 'CRONTAB' 'Crontab configuration for automatic execution'
     fi
 
@@ -195,7 +195,7 @@ main(){
         local config_dir=$(realpath ${path}/../config_files)
         local python_exe=$(which python3)
         local sppmon_exe=$(realpath ${path}/../python/sppmon.py)
-        "$python_exe" "${path}/addCrontabConfig.py" "${config_dir}" "${python_exe}" "${sppmon_exe}"
+        checkReturn "$python_exe" "${path}/addCrontabConfig.py" "${config_dir}" "${python_exe}" "${sppmon_exe}"
         saveState 'GRAFANA_DASHBOARDS' 'Creation and configuration of the grafana dashboards'
     fi
 

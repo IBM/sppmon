@@ -63,7 +63,7 @@ class CrontabConfig:
 
         if(len(config_files) == 0):
             print("No config files found.")
-            return
+            exit(0)
             ############## EXIT ###################
         else:
             print(f"> Found {len(config_files)} config files")
@@ -170,12 +170,14 @@ class CrontabConfig:
         if(new_crontab == old_crontab):
             print("> WARNING: Crontab unmodified, failed to write")
             print(f"> Generated crontab-file:{temp_file_path}")
+            exit(1)
         else:
             print("> Successfully enabled new crontab configuration")
             print("> Deleting temporary config file")
             print(popen(f"sudo rm {temp_file_path}").read())
 
         print("> Finished setting up crontab configuration")
+
 
 
 
