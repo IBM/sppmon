@@ -61,8 +61,13 @@ class CrontabConfig:
 
         print("> NOTE: Example config \"sppconnections_default.conf\" is ignored")
 
-        # print all elements
-        print(f"> Found {len(config_files)} config files")
+        if(len(config_files) == 0):
+            print("No config files found.")
+            return
+            ############## EXIT ###################
+        else:
+            print(f"> Found {len(config_files)} config files")
+
         print("> You may add a crontab configuration for all or only indiviual SPP-Servers")
         print("> If you choose individual ones you may get promped for each server.")
 

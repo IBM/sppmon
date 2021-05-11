@@ -194,7 +194,7 @@ main(){
     if [[ $continue_point == "CRONTAB" ]]; then
         local python_exe=$(which python3)
         local sppmon_exe=$(realpath ${path}/../python/sppmon.py)
-        "$python_exe" "${path}/addCrontabConfig.py" "${config_dir}" "${passwordFile}" "${sppmon_exe}"
+        "$python_exe" "${path}/addCrontabConfig.py" "${config_dir}" "${python_exe}" "${sppmon_exe}"
         saveState 'GRAFANA_DASHBOARDS' 'Creation and configuration of the grafana dashboards'
     fi
 

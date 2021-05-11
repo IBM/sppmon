@@ -23,6 +23,7 @@ class Utils:
                 with open(filepath, "r"):
                     # confirm it works, now save
                     cls.password_file_path = filepath
+                    print(f"> Passwords will be read from {filepath}")
             except IOError as err:
                 print("ERROR: Unable to read password file. Continuing with manual input.")
                 print(f"Error message: {err}")
