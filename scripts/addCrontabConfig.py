@@ -36,7 +36,6 @@ class CrontabConfig:
             python_path = Utils.prompt_string("Please specify the path to python", "python3")
         else:
             python_path = sys.argv[2]
-        python_path = realpath(python_path)
         print(f"> Following python instance will be used: {python_path}")
 
         # ### sppmon setup
@@ -49,6 +48,7 @@ class CrontabConfig:
         sppmon_path = realpath(sppmon_path)
         print(f"> Following sppmon instance will be used: {sppmon_path}")
 
+        Utils.printRow()
 
 
         #  get a list of all config files
@@ -147,8 +147,9 @@ class CrontabConfig:
         Utils.printRow()
 
         print("> Saving crontab configuration as SUDO")
-        print("> No old configurations have been edited, if wanted please remove them manually by using `sudo crontab -e`")
+        print("> No old configurations have been edited/removed. Please remove/edit them manually by using `sudo crontab -e`")
         old_crontab: str = popen("sudo crontab -l").read()
+        print(old_crontab)
 
         print("> Writing crontab config into temporary file")
         temp_file_path = "temp_crontab_sppmon.txt"
