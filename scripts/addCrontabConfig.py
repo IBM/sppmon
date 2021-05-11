@@ -147,7 +147,6 @@ class CrontabConfig:
         Utils.printRow()
 
         print("> Saving crontab configuration as SUDO")
-        print("> No old configurations have been edited/removed. Please remove/edit them manually by using `sudo crontab -e`")
         # save old crontab config to append and compare if changes were made
         old_crontab: str = popen("sudo crontab -l").read()
 
@@ -158,6 +157,8 @@ class CrontabConfig:
             lines: List[str] = []
             # if an crontab config exists, prepend it
             if("no crontab for" not in old_crontab):
+                print("> WARNING: No old configurations have been edited/removed. Please remove/edit them manually by using `sudo crontab -e`")
+                print("> Old configuration are prepended to new configurations")
                 lines.append(old_crontab + "\n")
 
             for entry in selected_configs:
