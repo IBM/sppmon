@@ -142,7 +142,7 @@ class CrontabConfig:
         daily_cron_pre: str = f"{daily_minute_offset} */{daily_interval} * * * "
 
         all_cron_post: str = " --all >/dev/null 2>&1"
-        all_cron_pre: str = f"{all_minute_offset} {all_minute_offset} */{all_interval} * * "
+        all_cron_pre: str = f"{all_minute_offset} {all_hour_offset} */{all_interval} * * "
 
         Utils.printRow()
 
