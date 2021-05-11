@@ -80,6 +80,11 @@ class ConfigFileSetup:
 
     def main(self):
 
+        ############# ARGS ##################
+        # Arg 1: Config file DIR
+        # Arg 2: password file
+        #####################################
+
         Utils.printRow()
 
         print("> Generating new Config files")

@@ -9,6 +9,11 @@ from utils import Utils
 class CrontabConfig:
 
     def main(self):
+        ############# ARGS ##################
+        # Arg 1: Config file DIR
+        # Arg 2: Python executable (Python3)
+        # Arg 3: SPPMON executable
+        #####################################
 
         Utils.printRow()
 
