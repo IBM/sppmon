@@ -14,19 +14,31 @@ welcome() {
 
     rowLimiter
 
-    echo "You may stop at savepoint and continue the installer later."
-    echo "IMPORTANT: Do not abort inbetween savepoints! This might have unexpected consequences."
+    echo "IMPORTANT: This install script will create a configuration-file."
+    echo "!! This file does contain sensible informations like passwords and usernames in clear text !!"
+    echo "This file contains most login informations set or created while running the script"
+    echo "You may use it manually write down login informations."
+    echo "!! Please make sure to delete this file after the script is finished !!"
+    if ! confirm "Do you understand and continue?"; then
+        echo "Aborting install script. Nothing has been changed yet."
+        exit -1
+    fi
+
+    rowLimiter
+
+    echo "There are multiple breakpoints when running the installer"
+    echo "You may stop at each breakpoint and continue the installer later."
+    echo "IMPORTANT: Do not abort inbetween breakpoint! This might have unexpected consequences."
     echo "Note: You may use the [default] case by just hitting enter in any following prompts"
-    if ! (confirm "Start install script?");
-        then
-            echo "Aborting install script. Nothing has been changed yet."
-            exit -1
-        else
-            echo ""
-            echo "Starting install script for sppmon."
-            echo ""
-            continue_point='SYS_SETUP'
-            echo "$continue_point" > $saveFile
+    if ! (confirm "Start install script?"); then
+        echo "Aborting install script. Nothing has been changed yet."
+        exit -1
+    else
+        echo ""
+        echo "Starting install script for sppmon."
+        echo ""
+        continue_point='SYS_SETUP'
+        echo "$continue_point" > $saveFile
     fi
 }
 

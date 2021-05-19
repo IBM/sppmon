@@ -5,8 +5,8 @@ currentInstallCheck() {
     local python_old_path=$(which python)
 
     local current_ver=$(python -V 2>&1 | grep -oP "^Python \K.*")
-    # required version is lower then newly installed -> code does work with 3.8, but latest version is better.
-    local required_ver="3.8.2"
+    #  code does work with 3.8, but latest version is better.
+    local required_ver="3.9.5"
 
     if [ "$(printf '%s\n' "$required_ver" "$current_ver" | sort -V | head -n1)" = "$required_ver" ]; then
         echo "> Compatible Python version installed ($current_ver > $required_ver)."
@@ -52,16 +52,16 @@ pythonSetup() {
     # check for current python install
     if ! currentInstallCheck ; then
 
-        echo "> Installing Python3.9"
+        echo "> Installing Python3.9.5"
 
-        checkReturn mkdir -p /tmp/python392
-        checkReturn cd /tmp/python392/
-        checkReturn wget https://www.python.org/ftp/python/3.9.2/Python-3.9.2.tgz
+        checkReturn mkdir -p /tmp/python395
+        checkReturn cd /tmp/python395/
+        checkReturn wget https://www.python.org/ftp/python/3.9.5/Python-3.9.5.tgz
         # TODO get without internet
 
-        checkReturn cd /tmp/python392/
-        checkReturn tar -xf Python-3.9.2.tgz
-        checkReturn cd /tmp/python392/Python-3.9.2
+        checkReturn cd /tmp/python395/
+        checkReturn tar -xf Python-3.9.5.tgz
+        checkReturn cd /tmp/python392/Python-3.9.5
         checkReturn ./configure --enable-optimizations --prefix=/usr
 
         # Only set alternatives if python 2.7 is installed

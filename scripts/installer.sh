@@ -187,7 +187,9 @@ main(){
         local python_exe=$(which python3)
         local config_dir=$(realpath ${path}/../config_files)
         checkReturn "$python_exe" "${path}/addConfigFile.py" "${config_dir}" "${passwordFile}"
-        saveState 'CRONTAB' 'Crontab configuration for automatic execution'
+        echo "> IMPORTANT: if you have exiting config file, please abort now!"
+        echo "> Copy all config files into the dir ${config_dir}"
+        saveState 'CRONTAB' 'Crontab configuration for automatic execution.'
     fi
 
     # Part 7: Crontab setup for config files
@@ -202,7 +204,7 @@ main(){
     # Part 8: Grafana dashboards
     if [[ $continue_point == "GRAFANA_DASHBOARDS" ]]
         then
-            source "${subScripts}/configFileSetup.sh" "$mainPath"
+            source "${subScripts}/grafanaImport.sh" "$mainPath"
             saveState 'FINISHED' 'Creation and configuration of the grafana dashboards' #TODO
     fi
 
