@@ -12,7 +12,8 @@ abortInstallScript() {
     echo "You may continue the script from the last saved point by restarting it."
     echo "Last saved point is: $continue_point."
 
-    echo "Please remember you may have sensitive data saved within ${authFile}. Make sure to delete if once you're done!"
+    echo "Please remember you may have sensitive data saved within ${authFile}."
+    echo "Make sure to delete if once you're done!"
 
     rowLimiter
 
