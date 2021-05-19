@@ -66,7 +66,7 @@ saveAuth() { # topic is the describer
     eval "$topic=\"${value}\""
     set +a # Not anymore
 
-    echo "$topic=\"${value}\"" >> "$passwordFile"
+    echo "$topic=\"${value}\"" >> "$authFile"
 }
 
 readAuth() {
@@ -74,9 +74,9 @@ readAuth() {
         >&2 echo "Illegal number of parameters readAuth"
         abortInstallScript
     fi
-    if [[ -r "$passwordFile" ]]; then
+    if [[ -r "$authFile" ]]; then
         set -a # now all variables are exported
-        source "${passwordFile}"
+        source "${authFile}"
         set +a # Not anymore
     fi
 }
@@ -120,9 +120,9 @@ removeGeneratedFiles() {
             rm "$saveFile"
     fi
 
-    if [[ -f "$passwordFile" ]]
+    if [[ -f "$authFile" ]]
         then
-            rm "$passwordFile"
+            rm "$authFile"
     fi
 }
 
@@ -186,7 +186,7 @@ main(){
     # Part 6: User management for SPP server and components
     if [[ $continue_point == "CONFIG_FILE" ]]; then
         local python_exe=$(which python3)
-        checkReturn "$python_exe" "${path}/addConfigFile.py" "${configDir}" "${passwordFile}"
+        checkReturn "$python_exe" "${path}/addConfigFile.py" "${configDir}" "${authFile}"
         echo "> IMPORTANT: if you have existing config files at a different location than: ${configDir}"
         echo "> please abort now!"
         echo "> Copy all existing config files into the dir ${configDir}"
@@ -226,7 +226,7 @@ if [ "${1}" != "--source-only" ]; then
     mainPath="${path}/installer.sh"
     saveFile="${subScripts}/.savefile.txt"
     configDir=$(realpath ${path}/../config_files)
-    passwordFile="${path}/.passwords.txt"
+    authFile="${path}/delete_me_auth.txt"
 
     # Sources
     source "$subScripts/helper.sh" "--source-only"

@@ -16,10 +16,10 @@ class Utils:
     @classmethod
     def setupAuthFile(cls, filepath: Optional[str]):
         if(not filepath):
-            if(cls.confirm("Do you want to use a password-file? (Optional)", False)):
-                filepath = Utils.prompt_string("Please specify file to read passwords from", "./passwords.txt")
+            if(cls.confirm("Do you want to use an authentification-file? (Optional)", False)):
+                filepath = Utils.prompt_string("Please specify file to read authentification from", "./delete_me_auth.txt")
                 filepath = realpath(filepath)
-                print(f"Passwords read from {filepath}")
+                print(f"Authentification read from {filepath}")
 
         # Test now if it exists
         if(filepath):
@@ -30,7 +30,7 @@ class Utils:
                     cls.password_file_path = filepath
                     print(f"> Passwords will be read from {filepath}")
             except IOError as err:
-                print("ERROR: Unable to read password file. Continuing with manual input.")
+                print("ERROR: Unable to read authentification file. Continuing with manual input.")
                 print(f"Error message: {err}")
 
 

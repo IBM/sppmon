@@ -101,9 +101,9 @@ class ConfigFileSetup:
         config_dir = realpath(config_dir)
         print(f"> All new configurations files will be written into dir {config_dir}")
 
-        # ### Passwordfile setup
+        # ### authFile setup
         if(not len(sys.argv) == 3):
-            print("> No password-file specifed by second arg.")
+            print("> No authentification file specifed by second arg.")
             Utils.setupAuthFile(None)
         else: # take none if not exists, otherwise take password path
             Utils.setupAuthFile(sys.argv[2])
