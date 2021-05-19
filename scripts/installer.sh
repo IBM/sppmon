@@ -185,27 +185,32 @@ main(){
     # Part 6: User management for SPP server and components
     if [[ $continue_point == "CONFIG_FILE" ]]; then
         local python_exe=$(which python3)
-        local config_dir=$(realpath ${path}/../config_files)
-        checkReturn "$python_exe" "${path}/addConfigFile.py" "${config_dir}" "${passwordFile}"
-        echo "> IMPORTANT: if you have exiting config file, please abort now!"
-        echo "> Copy all config files into the dir ${config_dir}"
+        checkReturn "$python_exe" "${path}/addConfigFile.py" "${configDir}" "${passwordFile}"
+        echo "> IMPORTANT: if you have existing config files at a different location than: ${configDir}"
+        echo "> please abort now!"
+        echo "> Copy all existing config files into the dir ${configDir}"
         saveState 'CRONTAB' 'Crontab configuration for automatic execution.'
     fi
 
     # Part 7: Crontab setup for config files
     if [[ $continue_point == "CRONTAB" ]]; then
-        local config_dir=$(realpath ${path}/../config_files)
         local python_exe=$(which python3)
         local sppmon_exe=$(realpath ${path}/../python/sppmon.py)
-        checkReturn "$python_exe" "${path}/addCrontabConfig.py" "${config_dir}" "${python_exe}" "${sppmon_exe}"
+        checkReturn "$python_exe" "${path}/addCrontabConfig.py" "${configDir}" "${python_exe}" "${sppmon_exe}"
         saveState 'GRAFANA_DASHBOARDS' 'Creation and configuration of the grafana dashboards'
     fi
 
-    # Part 8: Grafana dashboards
-    if [[ $continue_point == "GRAFANA_DASHBOARDS" ]]
+    # Part 9: Grafana dashboards
+    if [[ $continue_point == "GRAFANA_DASHBOARDS" ]]; then
+        echo "Please follow grafana import instructions"
+        echo "https://github.com/IBM/spectrum-protect-sppmon/wiki/Configure-Grafana"
+        saveState 'FINISHED' 'displaying finishing notes about the install of SPPMon'
+    fi
+
+    # Part 10: Finishing notes
+    if [[ $continue_point == "FINISHED" ]]
         then
-            source "${subScripts}/grafanaImport.sh" "$mainPath"
-            saveState 'FINISHED' 'Creation and configuration of the grafana dashboards' #TODO
+            source "${subScripts}/finishingScript.sh" "$mainPath"
     fi
 
 }
@@ -218,6 +223,7 @@ if [ "${1}" != "--source-only" ]; then
     subScripts="${path}/installScript"
     mainPath="${path}/installer.sh"
     saveFile="${subScripts}/.savefile.txt"
+    configDir=$(realpath ${path}/../config_files)
     passwordFile="${path}/.passwords.txt"
 
     # Sources

@@ -74,7 +74,9 @@ class CrontabConfig:
         Utils.printRow()
 
         selected_configs: List[DirEntry[str]] = []
-        if(Utils.confirm("Do you want add a crontab config for all servers at once?")):
+        # If there is only one, always select it.
+        if(len(config_files) == 1 or Utils.confirm("Do you want add a crontab config for all servers at once?")):
+            print("> Selected all available config files for crontab setup")
             selected_configs = config_files
         else:
             # Repeat until one config is selected
@@ -90,6 +92,7 @@ class CrontabConfig:
                     selected_configs = list(map(
                         lambda str_index: config_files[int(str_index.strip())],
                         selected_indices.split(",")))
+                    print(f"> Selected {len(selected_configs)} config files for crontab setup")
                 except IndexError:
                     print("One of the indices was out of bound. Please try again")
                     continue
