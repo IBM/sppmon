@@ -176,6 +176,7 @@ main(){
     # Part 5: User management for SPP server and components
     if [[ $continue_point == "USER_MANGEMENT" ]]
         then
+            rowLimiter
             echo "Please follow user creation instructions"
             echo "https://github.com/IBM/spectrum-protect-sppmon/wiki/Create-user-accounts-in-SPP-server-and-vsnaps"
             #source "${subScripts}/userManagement.sh" "$mainPath"
@@ -202,7 +203,8 @@ main(){
 
     # Part 9: Grafana dashboards
     if [[ $continue_point == "GRAFANA_DASHBOARDS" ]]; then
-        echo "Please follow grafana import instructions"
+        rowLimiter
+        echo "> Please follow grafana import instructions"
         echo "https://github.com/IBM/spectrum-protect-sppmon/wiki/Configure-Grafana"
         saveState 'FINISHED' 'displaying finishing notes about the install of SPPMon'
     fi

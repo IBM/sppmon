@@ -5,7 +5,7 @@ finishingScript() {
     rowLimiter
 
     echo "You've completed the install of SPPMon!"
-    echo "You may find saved config files under ${config_dir}"
+    echo "You may find saved config files under ${configDir}"
     if [[ -e ${passwordFile} ]]; then
         echo "It seems like there are some configuration saved. These contain sensible data."
         if confirm "Do you want to show all saved configurations now?"; then
