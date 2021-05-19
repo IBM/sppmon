@@ -42,10 +42,6 @@ verifyConnection() {
     local userName=$1 # param1: user to be logged in
     local password=$2 # param2: password to be used
 
-    echo "ssl : ${sslEnabled}"
-    echo "unsafessl: ${unsafeSsl}"
-
-
     echo "> verifying connection to InfluxDB"
     local connectionTestString="influx -host $influxAddress -port $influxPort -username $userName -password $password"
     if [[ -n $sslEnabled ]] ; then # globalVar

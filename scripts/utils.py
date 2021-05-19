@@ -6,6 +6,11 @@ from typing import ClassVar, Optional, Callable
 
 class Utils:
 
+    @staticmethod
+    def signalHandler(signum, frame):
+        raise ValueError("Aborted by user")
+
+
     password_file_path: ClassVar[str] = ""
 
     @classmethod
