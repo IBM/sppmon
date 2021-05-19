@@ -5,15 +5,15 @@ finishingScript() {
     rowLimiter
 
     echo "You've completed the install of SPPMon!"
-    echo "You may find saved config files under ${configDir}"
+    echo "> You may find saved config files under ${configDir}"
     if [[ -e ${passwordFile} ]]; then
-        echo "It seems like there are some configuration saved. These contain sensible data."
-        if confirm "Do you want to show all saved configurations now?"; then
+        echo "> It seems like there are some configuration saved. These contain sensible data."
+        if confirm "> Do you want to show all saved configurations now?"; then
             rowLimiter
             checkReturn cat "${passwordFile}"
             rowLimiter
         fi
-        if confirm "Do you want to delete this file now?"; then
+        if confirm "> Do you want to delete this file now?"; then
             checkReturn sudo rm -f "${passwordFile}"
             echo "> Deleted all sensitive data"
         fi
