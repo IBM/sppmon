@@ -48,9 +48,9 @@ verifyConnection() {
 
     echo "> verifying connection to InfluxDB"
     local connectionTestString="influx -host $influxAddress -port $influxPort -username $userName -password $password"
-    if $sslEnabled ; then # globalVar
+    if [[ -n $sslEnabled ]] ; then # globalVar
         connectionTestString="$connectionTestString -ssl"
-        if $unsafeSsl ; then # globalVar
+        if [[ -n $unsafeSsl ]] ; then # globalVar
             connectionTestString="$connectionTestString -unsafeSsl"
         fi
     fi
