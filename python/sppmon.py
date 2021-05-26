@@ -124,18 +124,20 @@ parser.add_option("--sites", dest="sites", action="store_true", help="store site
 parser.add_option("--cpu", dest="cpu", action="store_true", help="capture SPP server CPU and RAM utilization")
 parser.add_option("--sppcatalog", dest="sppcatalog", action="store_true", help="capture Spp-Catalog Storage usage")
 
-#TODO Minimum Logs and processStats are depricated, to be removed in Version 1.1.
+parser.add_option("--copy_database", dest="copy_database",
+                  help="Copy all data from .cfg database into a new database, specified by `copy_database=newName`. Delete old database with caution.")
+
+
+# DEPRICATED AREA
+#TODO removed in Version 1.1.
 parser.add_option("--minimumLogs", dest="minimumLogs", action="store_true",
                   help="DEPRICATED, use '--loadedSystem' instead. To be removed in v1.1")
 parser.add_option("--processStats", dest="processStats", action="store_true",
                   help="DEPRICATED, use '--ssh' instead")
-
-parser.add_option("--copy_database", dest="copy_database",
-                  help="Copy all data from .cfg database into a new database, specified by `copy_database=newName`. Delete old database with caution.")
 parser.add_option("--create_dashboard", dest="create_dashboard", action="store_true",
-                  help="Create a server unique dashboard with alerts. Option `--cfg` and `--dashboard_folder_path` required.")
+                  help="DEPRICATED: Just import the regular dashboard instead, choose datasource within Grafana. To be removed in v1.1")
 parser.add_option("--dashboard_folder_path", dest="dashboard_folder_path",
-                  help="Used only with`--create_dashboard` option. Specifies changed folder-path of the template \"SPPMON for IBM Spectrum Protect Plus\" dashboard.")
+                  help="DEPRICATED: Just import the regular dashboard instead, choose datasource within Grafana. To be removed in v1.1")
 
 
 (OPTIONS, ARGS) = parser.parse_args()
@@ -850,15 +852,13 @@ class SppMon:
                     error=error,
                     extra_message="Top-level-error when testing connection.")
 
+        # DEPRICATED TODO REMOVE NEXT VERSION
         if(OPTIONS.create_dashboard):
             try:
-                if(not OPTIONS.dashboard_folder_path):
-                    ExceptionUtils.error_message(
-                        "Only use --create_dashboard in combination with --dashboard_folder_path=\"PATH/TO/GRAFANA/FOLDER/\"")
-                else:
-                    OtherMethods.create_dashboard(
-                        dashboard_folder_path=OPTIONS.dashboard_folder_path,
-                        database_name=self.influx_client.database.name)
+                ExceptionUtils.error_message(
+                    "This method is depricated. You do not need to manually create a dashboard anymore.\n" +
+                    "Please just select the datasource when importing the regular 14-day dashboard in grafana.\n" +
+                    "Devs may adjust their dashboard to be generic with the scripts/generifyDashboard.py script.")
             except ValueError as error:
                 ExceptionUtils.exception_info(
                     error=error,
