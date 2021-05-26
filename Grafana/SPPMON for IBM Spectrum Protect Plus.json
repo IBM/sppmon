@@ -1,4 +1,61 @@
 {
+  "__inputs": [],
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "alertlist",
+      "name": "Alert list",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "7.5.4"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "logs",
+      "name": "Logs",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table-old",
+      "name": "Table (old)",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -17,7 +74,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 31,
+  "id": null,
   "links": [],
   "panels": [
     {
@@ -86,7 +143,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "groupBy": [
@@ -177,7 +234,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "alias": "",
@@ -270,7 +327,7 @@
         "showUnfilled": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "alias": "$tag_name",
@@ -434,7 +491,7 @@
         "text": {},
         "textMode": "value_and_name"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "alias": "$tag_jobName",
@@ -530,7 +587,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -704,7 +761,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "groupBy": [],
@@ -784,7 +841,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "groupBy": [],
@@ -864,7 +921,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "groupBy": [],
@@ -956,7 +1013,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "groupBy": [],
@@ -1047,7 +1104,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "alias": "$tag_ssh_type",
@@ -1184,7 +1241,7 @@
         "showThresholdMarkers": false,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "alias": "--constant",
@@ -1423,7 +1480,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "alias": "Catalog Backup",
@@ -1509,7 +1566,7 @@
         "showUnfilled": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "alias": "$tag_COMMAND",
@@ -1617,7 +1674,7 @@
         "showUnfilled": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "alias": "$tag_COMMAND",
@@ -1719,7 +1776,7 @@
         "text": {},
         "textMode": "value_and_name"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "alias": "VM Replicated",
@@ -1866,7 +1923,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "groupBy": [],
@@ -1984,7 +2041,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "alias": "",
@@ -2044,7 +2101,7 @@
           {
             "evaluator": {
               "params": [
-                65
+                80
               ],
               "type": "gt"
             },
@@ -2092,6 +2149,7 @@
         "for": "5m",
         "frequency": "1m",
         "handler": 1,
+        "message": "CPU and or Memory consumption is exceeding the defined alerting threshold on the IBM Spectrum Protect Plus server.  If the usage continues above the threshold, confirm that the SPP server configuration meets the blueprint CPU and Memory requirements.  Review the charts showing resource consumption by process for further insight into which server components are using the most resources.",
         "name": "CPU / RAM SPP-Server (REST) alert",
         "noDataState": "no_data",
         "notifications": []
@@ -2136,7 +2194,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2234,7 +2292,7 @@
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 65,
+          "value": 80,
           "visible": true
         }
       ],
@@ -2312,6 +2370,7 @@
         "for": "5m",
         "frequency": "1m",
         "handler": 1,
+        "message": "The per process threshold for CPU consumption on the IBM Spectrum Protect Plus server is being exceeded for one or more processes.  Continue to monitor to see if this is temporary or ongoing.  If the overall CPU consumption of the SPP server is also being conceded then it may be necessary to expand the CPU allocation of the SPP server.",
         "name": "SPP-Server Processes CPU Usage (sshcmd: top) alert",
         "noDataState": "no_data",
         "notifications": []
@@ -2362,7 +2421,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2484,7 +2543,7 @@
           {
             "evaluator": {
               "params": [
-                65
+                80
               ],
               "type": "gt"
             },
@@ -2509,6 +2568,7 @@
         "for": "5m",
         "frequency": "1m",
         "handler": 1,
+        "message": "CPU consumption has exceeded the defined alert threshold on one or more systems (SPP server, vSnap server, or VADP proxy).  If the threshold continues to be exceeded, additional CPU resource may need to be allocated to the system.",
         "name": "Component CPU (sshcmd: MP-ssh) alert",
         "noDataState": "no_data",
         "notifications": []
@@ -2551,7 +2611,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2630,7 +2690,7 @@
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 65,
+          "value": 80,
           "visible": true
         }
       ],
@@ -2709,6 +2769,7 @@
         "for": "5m",
         "frequency": "1m",
         "handler": 1,
+        "message": "Memory consumption has exceeded the defined alert threshold on one or more systems (SPP server, vSnap server, or VADP proxy).  If the threshold continues to be exceeded, additional memory may need to be allocated to the system.",
         "name": "RAM by Component Used (sshcmd: free) alert",
         "noDataState": "no_data",
         "notifications": []
@@ -2748,7 +2809,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 0.5,
       "points": false,
       "renderer": "flot",
@@ -2916,6 +2977,7 @@
         "for": "5m",
         "frequency": "1m",
         "handler": 1,
+        "message": "The per process threshold for memory consumption on the IBM Spectrum Protect Plus server is being exceeded for one or more processes.  Continue to monitor to see if this is temporary or ongoing.  If the overall memory consumption of the SPP server is also being conceded then it may be necessary to expand the memory allocation of the SPP server.",
         "name": "SPP-Server Processes RAM Usage (sshcmd: top) alert",
         "noDataState": "no_data",
         "notifications": []
@@ -2962,7 +3024,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -3122,7 +3184,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -3254,6 +3316,7 @@
         "for": "5m",
         "frequency": "1m",
         "handler": 1,
+        "message": "Used storage space for one or more of the catalogs on the IBM Spectrum Protect Plus server has exceeded the alerting threshold.  The storage capacity for the file system holding the catalog can be increased following a procedure available in the SPP documentation.\n\nConfiguration catalog = /data\nRecovery catalog = /data2\nFile catalog = /data3",
         "name": "SPP-Server File System alert",
         "noDataState": "no_data",
         "notifications": []
@@ -3295,7 +3358,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3432,6 +3495,7 @@
         "for": "5m",
         "frequency": "1m",
         "handler": 1,
+        "message": "The space used in the root file system in the specified server(s) is exceeding the defined alert threshold.  If the file system fills to 100%, a system outage may occur.  Unnecessary files in the root file system need to be cleaned up and/or the capacity of the root file system needs to be increased.",
         "name": "Storage Usage (Server & vSnap) alert",
         "noDataState": "no_data",
         "notifications": []
@@ -3475,7 +3539,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3641,7 +3705,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3837,7 +3901,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4010,7 +4074,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4162,6 +4226,7 @@
         "for": "5m",
         "frequency": "1m",
         "handler": 1,
+        "message": "The elapsed time for the maintenance job on the IBM Spectrum Protect Plus server has exceeded the defined alert threshold.  The maintenance job is responsible for removing snapshots that have exceeded the retention specified in SLA policies, and needs to complete on a regular interval in order to maintain sufficient vSnap available storage.",
         "name": "Maintenance Job Duration alert",
         "noDataState": "alerting",
         "notifications": []
@@ -4203,7 +4268,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4384,7 +4449,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4565,7 +4630,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4705,6 +4770,7 @@
         "for": "5m",
         "frequency": "1m",
         "handler": 1,
+        "message": "The elapsed time for one or more VMware backup or replication jobs has exceeded the defined alerting threshold.",
         "name": "VMware Protection Job Durations alert",
         "noDataState": "no_data",
         "notifications": []
@@ -4746,7 +4812,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4945,7 +5011,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -5138,7 +5204,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -5316,7 +5382,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -5548,7 +5614,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "groupBy": [
@@ -5750,7 +5816,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -5912,7 +5978,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "groupBy": [
@@ -6035,7 +6101,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -6171,7 +6237,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -6318,7 +6384,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -6502,7 +6568,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 1,
       "points": true,
       "renderer": "flot",
@@ -6673,7 +6739,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 1,
       "points": true,
       "renderer": "flot",
@@ -6801,7 +6867,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 1,
       "points": true,
       "renderer": "flot",
@@ -7084,6 +7150,7 @@
         "for": "5m",
         "frequency": "1m",
         "handler": 1,
+        "message": "The backup success rate for VMware virtual disks has dropped below the defined alerting threshold.  Check details of job logs on the IBM Spectrum Protect Plus server for details on the errors causing the failures.",
         "name": "VM's Backup Sucess rate alert",
         "noDataState": "no_data",
         "notifications": []
@@ -7132,7 +7199,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -7523,7 +7590,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -7705,7 +7772,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -7855,7 +7922,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8019,7 +8086,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8169,7 +8236,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8313,7 +8380,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8457,7 +8524,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8617,7 +8684,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -8752,7 +8819,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -8872,7 +8939,7 @@
           {
             "evaluator": {
               "params": [
-                65
+                70
               ],
               "type": "gt"
             },
@@ -8897,6 +8964,7 @@
         "for": "5m",
         "frequency": "1m",
         "handler": 1,
+        "message": "The percentage of used storage on one or more vSnap servers has exceeded the alerting threshold.  Once the vSnap reaches the used capacity defined as its error threshold, backup failures may result.  Consult SPP documentation for information on how to expand the storage capacity of a vSnap server.",
         "name": "vSnap storage space utilization alert",
         "noDataState": "no_data",
         "notifications": []
@@ -8937,7 +9005,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -8996,7 +9064,7 @@
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 65,
+          "value": 70,
           "visible": true
         }
       ],
@@ -9080,7 +9148,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -9219,7 +9287,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -9322,7 +9390,7 @@
           {
             "evaluator": {
               "params": [
-                65
+                80
               ],
               "type": "gt"
             },
@@ -9370,6 +9438,7 @@
         "for": "5m",
         "frequency": "1m",
         "handler": 1,
+        "message": "The used percentage of CPU and/or memory has exceeded the alerting threshold for one of more vSnap servers.",
         "name": "VSnap CPU & RAM Health alert",
         "noDataState": "no_data",
         "notifications": []
@@ -9409,7 +9478,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -9543,7 +9612,7 @@
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 65,
+          "value": 80,
           "visible": true
         }
       ],
@@ -9657,7 +9726,7 @@
           }
         ]
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "groupBy": [
@@ -9765,7 +9834,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -9886,7 +9955,7 @@
           {
             "evaluator": {
               "params": [
-                65
+                80
               ],
               "type": "gt"
             },
@@ -9934,6 +10003,7 @@
         "for": "5m",
         "frequency": "1m",
         "handler": 1,
+        "message": "The percentage of used CPU and/or Memory has exceeded the defined alerting threshold for one or more VADP proxy servers.",
         "name": "VADP CPU & RAM Health alert",
         "noDataState": "no_data",
         "notifications": []
@@ -9973,7 +10043,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10107,7 +10177,7 @@
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 65,
+          "value": 80,
           "visible": true
         }
       ],
@@ -10174,7 +10244,7 @@
           {
             "evaluator": {
               "params": [
-                65
+                80
               ],
               "type": "gt"
             },
@@ -10222,6 +10292,7 @@
         "for": "5m",
         "frequency": "1m",
         "handler": 1,
+        "message": "The percentage of used CPU and/or Memory has exceeded the defined alerting threshold for one or more M365 cloud proxy servers.",
         "name": "Cloudproxy CPU & RAM Health alert",
         "noDataState": "ok",
         "notifications": []
@@ -10261,7 +10332,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10401,7 +10472,7 @@
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 65,
+          "value": 80,
           "visible": true
         }
       ],
@@ -10484,7 +10555,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10574,10 +10645,10 @@
         {
           "$$hashKey": "object:524",
           "decimals": 0,
-          "format": "none",
+          "format": "percentunit",
           "label": null,
           "logBase": 1,
-          "max": null,
+          "max": "1",
           "min": "0",
           "show": true
         },
@@ -10633,7 +10704,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10753,7 +10824,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10881,7 +10952,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -11025,7 +11096,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "panelId": 108,
@@ -11087,7 +11158,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 0.5,
       "points": true,
       "renderer": "flot",
@@ -11497,6 +11568,7 @@
         "for": "5m",
         "frequency": "1m",
         "handler": 1,
+        "message": "SPPMON has encountered errors performing one or more data collections.",
         "name": "SPPmon Collection Errors delta alert",
         "noDataState": "keep_state",
         "notifications": []
@@ -11550,7 +11622,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 0.5,
       "points": true,
       "renderer": "flot",
@@ -11749,7 +11821,8 @@
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 0
+          "value": 0,
+          "visible": true
         }
       ],
       "timeFrom": null,
@@ -12010,7 +12083,7 @@
       "options": {
         "showHeader": true
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "targets": [
         {
           "groupBy": [
@@ -12215,6 +12288,7 @@
         "for": "5m",
         "frequency": "1m",
         "handler": 1,
+        "message": "The duration of one or more SPPMON queries has exceeded the defined alerting threshold.",
         "name": "SPPMON Runtime Duration alert",
         "noDataState": "alerting",
         "notifications": []
@@ -12260,7 +12334,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -12471,7 +12545,8 @@
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 72000000
+          "value": 72000000,
+          "visible": true
         }
       ],
       "timeFrom": null,
@@ -12552,7 +12627,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -12684,7 +12759,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -12817,7 +12892,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -12940,5 +13015,5 @@
   "timezone": "",
   "title": "SPPMON for IBM Spectrum Protect Plus",
   "uid": "PcYuUMSMk",
-  "version": 47
+  "version": 8
 }
