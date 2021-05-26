@@ -1,4 +1,76 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_datasource",
+      "label": "Datasource",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "influxdb",
+      "pluginName": "InfluxDB"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "alertlist",
+      "name": "Alert list",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "7.5.1"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "influxdb",
+      "name": "InfluxDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "logs",
+      "name": "Logs",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table-old",
+      "name": "Table (old)",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -17,12 +89,12 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 37,
+  "id": null,
   "links": [],
   "panels": [
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -35,7 +107,7 @@
       "type": "row"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "description": "95% Percentille over last 24h ",
       "fieldConfig": {
         "defaults": {
@@ -127,7 +199,7 @@
       "type": "gauge"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "description": "95% Percentille over last 24h ",
       "fieldConfig": {
         "defaults": {
@@ -220,7 +292,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "description": "95% Percentille / last 24h of each component memory usage\nMax root storage usage  / last 24h of Server and vSnap",
       "fieldConfig": {
         "defaults": {
@@ -374,7 +446,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "description": "Duration of the last execution of selected jobs",
       "fieldConfig": {
         "defaults": {
@@ -493,7 +565,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "decimals": 1,
       "description": "",
       "fieldConfig": {
@@ -664,7 +736,7 @@
       }
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -744,7 +816,7 @@
       "type": "stat"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -824,7 +896,7 @@
       "type": "stat"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -916,7 +988,7 @@
       "type": "stat"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -996,7 +1068,7 @@
       "type": "stat"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {
           "decimals": 0,
@@ -1109,7 +1181,7 @@
     {
       "dashboardFilter": "",
       "dashboardTags": [],
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -1139,7 +1211,7 @@
       "type": "alertlist"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "description": "This panel shows how much the dela did increase, leaving out going down again.\nGood for noticing errors, even if they disappeared",
       "fieldConfig": {
         "defaults": {
@@ -1370,7 +1442,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1458,7 +1530,7 @@
       "type": "stat"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "description": "90% percentille of last 24h per Commandgroup",
       "fieldConfig": {
         "defaults": {
@@ -1566,7 +1638,7 @@
       "type": "bargauge"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "description": "90% percentille of last 24h",
       "fieldConfig": {
         "defaults": {
@@ -1675,7 +1747,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "description": "Sum of replicated bytes (VM) within the last 24h\nSum of transferred bytes (VM) within the last 24h\nSum of transferred bytes (Office365) within the last 24h\n",
       "fieldConfig": {
         "defaults": {
@@ -1827,7 +1899,7 @@
       "type": "stat"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -1939,7 +2011,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -2025,7 +2097,7 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2102,7 +2174,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "decimals": 1,
       "fieldConfig": {
         "defaults": {},
@@ -2325,7 +2397,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "decimals": 1,
       "description": "Selected Processes monitored by top command\n\"java\", \"mongo\", \"beam.smp\".\nQuerie calcualted due an inner querie to filter out the PID. Simple \"mean\" would result in a falsly low result",
       "fieldConfig": {
@@ -2520,7 +2592,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "decimals": 1,
       "fieldConfig": {
         "defaults": {},
@@ -2721,7 +2793,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -2930,7 +3002,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "decimals": 1,
       "description": "Mean-Sum of process-group displayed",
       "fieldConfig": {
@@ -3088,7 +3160,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "decimals": 1,
       "description": "Selected Processes monitored by top command\n\"java\", \"mongo\", \"beam.smp\"",
       "fieldConfig": {
@@ -3269,7 +3341,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -3447,7 +3519,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "decimals": 0,
       "description": "",
       "fieldConfig": {
@@ -3617,7 +3689,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -3793,7 +3865,7 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -3810,7 +3882,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -3986,7 +4058,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -4180,7 +4252,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -4361,7 +4433,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -4542,7 +4614,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -4724,7 +4796,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -4923,7 +4995,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -5116,7 +5188,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -5275,7 +5347,7 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -5292,7 +5364,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -5427,7 +5499,7 @@
       }
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -5726,7 +5798,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -5871,7 +5943,7 @@
       }
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -6013,7 +6085,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -6146,7 +6218,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "decimals": 0,
       "fieldConfig": {
         "defaults": {},
@@ -6294,7 +6366,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -6463,7 +6535,7 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -6480,7 +6552,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -6651,7 +6723,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -6779,7 +6851,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -7108,7 +7180,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "description": "",
       "fieldConfig": {
         "defaults": {},
@@ -7414,7 +7486,7 @@
     {
       "cacheTimeout": null,
       "columns": [],
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -7501,7 +7573,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "description": "",
       "fieldConfig": {
         "defaults": {},
@@ -7684,7 +7756,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -7834,7 +7906,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -7998,7 +8070,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -8148,7 +8220,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -8292,7 +8364,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -8436,7 +8508,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -8577,7 +8649,7 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -8594,7 +8666,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "description": "",
       "fieldConfig": {
         "defaults": {},
@@ -8729,7 +8801,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "description": "Selects mean of each unique storage, sums up to total per site",
       "fieldConfig": {
         "defaults": {},
@@ -8916,7 +8988,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -9059,7 +9131,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -9195,7 +9267,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "decimals": 1,
       "fieldConfig": {
         "defaults": {},
@@ -9390,7 +9462,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -9603,7 +9675,7 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -9616,7 +9688,7 @@
       "type": "row"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -9746,7 +9818,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -9869,12 +9941,11 @@
       "yaxes": [
         {
           "$$hashKey": "object:586",
-          "decimals": 0,
           "format": "short",
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": "0",
+          "min": null,
           "show": true
         },
         {
@@ -9884,7 +9955,7 @@
           "logBase": 1,
           "max": null,
           "min": null,
-          "show": false
+          "show": true
         }
       ],
       "yaxis": {
@@ -9956,7 +10027,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -10169,7 +10240,7 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -10245,7 +10316,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -10467,7 +10538,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "decimals": 0,
       "fieldConfig": {
         "defaults": {},
@@ -10589,10 +10660,10 @@
         {
           "$$hashKey": "object:524",
           "decimals": 0,
-          "format": "none",
-          "label": "",
+          "format": "percentunit",
+          "label": null,
           "logBase": 1,
-          "max": null,
+          "max": "1",
           "min": "0",
           "show": true
         },
@@ -10616,7 +10687,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "decimals": 0,
       "fieldConfig": {
         "defaults": {},
@@ -10736,7 +10807,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "decimals": 0,
       "fieldConfig": {
         "defaults": {},
@@ -10835,10 +10906,10 @@
         {
           "$$hashKey": "object:524",
           "decimals": 0,
-          "format": "none",
+          "format": "percentunit",
           "label": null,
           "logBase": 1,
-          "max": null,
+          "max": "1",
           "min": "0",
           "show": true
         },
@@ -10862,7 +10933,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "decimals": 0,
       "fieldConfig": {
         "defaults": {},
@@ -10981,7 +11052,7 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -11069,7 +11140,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "description": "",
       "fieldConfig": {
         "defaults": {},
@@ -11322,7 +11393,7 @@
     {
       "dashboardFilter": "",
       "dashboardTags": [],
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -11357,7 +11428,7 @@
     {
       "dashboardFilter": "",
       "dashboardTags": [],
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -11534,7 +11605,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -11813,7 +11884,7 @@
       }
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -11874,7 +11945,7 @@
       "type": "logs"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -11935,7 +12006,7 @@
       "type": "logs"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -11996,7 +12067,7 @@
       "type": "logs"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -12119,7 +12190,7 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -12247,7 +12318,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -12540,7 +12611,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -12672,7 +12743,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -12805,7 +12876,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_datasource}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -12957,7 +13028,7 @@
     ]
   },
   "timezone": "",
-  "title": "SPPMON for IBM Spectrum Protect Plus",
-  "uid": "PcYuUMSMk",
+  "title": "SPPMON for IBM Spectrum Protect Plus ${DS_datasource}",
+  "uid": "sppmon_single_view_DS_${DS_datasource}",
   "version": 1
 }
