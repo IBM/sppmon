@@ -105,7 +105,7 @@ promptText() {
 
 }
 
-promptPasswords()
+promptPasswords() {
     if (( $# != 2 && $# != 3 )); then
         >&2 echo "Illegal number of parameters promptText"
         abortInstallScript
@@ -149,7 +149,7 @@ promptPasswords()
         promptPasswordInputConfirm="${promptPasswordInputConfirm:-$defaultValue}"
 
         # Everything is correct -> return value
-        if [[ "${promptPasswordInput} == ${promptPasswordInputConfirm} "]]; then
+        if [[ "${promptPasswordInput}" == "${promptPasswordInputConfirm}" ]]; then
                 break # exit
         else
             echo "Input did not match, please try again"
@@ -158,7 +158,7 @@ promptPasswords()
     done
 
     eval $__resultVal="'$promptPasswordInput'"
-
+}
 
 promptLimitedText() {
     if (( $# != 2 && $# != 3 )); then
