@@ -61,7 +61,7 @@ pythonSetup() {
 
         checkReturn cd /tmp/python395/
         checkReturn tar -xf Python-3.9.5.tgz
-        checkReturn cd /tmp/python392/Python-3.9.5
+        checkReturn cd /tmp/python395/Python-3.9.5
         checkReturn ./configure --enable-optimizations --prefix=/usr
 
         # Only set alternatives if python 2.7 is installed

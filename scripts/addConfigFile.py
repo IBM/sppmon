@@ -15,7 +15,7 @@ class ConfigFileSetup:
     def createServerDict() -> Dict[str, Any]:
         spp_server: Dict[str, Any] = {}
         spp_server["username"] = Utils.prompt_string("Please enter the SPP REST-API Username (equal to login via website)")
-        spp_server["password"] = Utils.prompt_string("Please enter the REST-API Users Password (equal to login via website)")
+        spp_server["password"] = Utils.prompt_string("Please enter the REST-API Users Password (equal to login via website)", is_password=True)
         spp_server["srv_address"] = Utils.prompt_string("Please enter the SPP server address")
 
         spp_server["srv_port"] = int(
@@ -42,7 +42,8 @@ class ConfigFileSetup:
 
         influxDB["password"] = Utils.readAuthOrInput(
             "influxAdminPassword",
-            "Please enter the influxAdmin user password"
+            "Please enter the influxAdmin user password",
+            is_password=True
         )
 
         influxDB["ssl"] = bool(Utils.readAuthOrInput(
@@ -197,7 +198,7 @@ class ConfigFileSetup:
                     ssh_server["srv_address"] = spp_server_dict["srv_address"]
                     ssh_server["srv_port"] = spp_server_dict["srv_port"]
                     ssh_server["username"] = Utils.prompt_string("Please enter the SPP-Server SSH username (equal to login via ssh)")
-                    ssh_server["password"] = Utils.prompt_string("Please enter the SPP-Server SSH user password (equal to login via ssh)")
+                    ssh_server["password"] = Utils.prompt_string("Please enter the SPP-Server SSH user password (equal to login via ssh)", is_password=True)
                     ssh_server["type"] = "server"
 
                     # Saving config
@@ -229,7 +230,7 @@ class ConfigFileSetup:
                                         "22",
                                         filter=(lambda x: x.isdigit())))
                                     ssh_client["username"] = Utils.prompt_string(f"Please enter the {ssh_type}-client username (equal to login via ssh)")
-                                    ssh_client["password"] = Utils.prompt_string(f"Please enter the {ssh_type}-client user password (equal to login via ssh)")
+                                    ssh_client["password"] = Utils.prompt_string(f"Please enter the {ssh_type}-client user password (equal to login via ssh)", is_password=True)
                                     ssh_client["type"] = ssh_type
 
                                     # Saving config

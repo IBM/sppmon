@@ -15,11 +15,11 @@ welcome() {
     rowLimiter
 
     echo "IMPORTANT: This install script will create a configuration-file."
-    echo "!! This file does contain sensible informations like passwords and usernames in clear text !!"
-    echo "This file contains most login informations set or created while running the script"
-    echo "You may use it manually write down login informations."
-    echo "!! Please make sure to delete this file after the script is finished !!"
-    if ! confirm "Do you understand and continue?"; then
+    echo "!! This file contains sensitive information such as passwords and usernames in plain text. !!"
+    echo "This file is where most of the log-in data is written, which will be generated when the script is run"
+    echo "You may use this file to obtain your authentication credentials after running the script."
+    echo "!! Please make sure to delete this file after you have executed the script !!"
+    if ! confirm "Did you understand the instructions and want to continue?"; then
         echo "Aborting install script. Nothing has been changed yet."
         exit -1
     fi

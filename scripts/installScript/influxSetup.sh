@@ -97,7 +97,6 @@ EOF
     local config_path=/etc/influxdb
     local config_file="${config_path}/influxdb.conf"
     local config_file_backup="${config_file}.orig"
-    local influx_db_path="$(realpath /influxDB)"
     if [[ -f "${config_file_backup}" ]]; then
         echo "> Probably restarting the install script."
         echo "> Restoring original config file from backup."
@@ -106,6 +105,9 @@ EOF
         echo "> Backuping default configuration into ${config_file_backup}"
         checkReturn sudo cp -n "${config_file}" "${config_file_backup}"
     fi
+
+    local influx_db_path
+    promptText "Where do you want to store the influx-database like data, meta and wal?" influx_db_path "$(realpath /influxDB)"
 
     # Access rights
     checkReturn sudo chown -R influxdb:influxdb "${config_path}"
@@ -172,7 +174,7 @@ EOF
         if [[ -z $influxAdminPassword ]]; then
             local influxAdminPassword
         fi
-        promptLimitedText "Please enter the desired InfluxDB admin password" influxAdminPassword "$influxAdminPassword"
+        promptPasswords "Please enter the desired InfluxDB admin password" influxAdminPassword "$influxAdminPassword"
 
         influx -host $influxAddress -port $influxPort -execute "CREATE USER \"$influxAdminName\" WITH PASSWORD '$influxAdminPassword' WITH ALL PRIVILEGES"
         local userCreateReturnCode=$?
@@ -214,7 +216,7 @@ EOF
         if [[ -z $influxGrafanaReaderPassword ]]; then
             local influxGrafanaReaderPassword
         fi
-        promptLimitedText "Please enter the desired GrafanaReader password" influxGrafanaReaderPassword "$influxGrafanaReaderPassword"
+        promptPasswords "Please enter the desired GrafanaReader password" influxGrafanaReaderPassword "$influxGrafanaReaderPassword"
 
         influx -host $influxAddress -port $influxPort -execute "CREATE USER \"$influxGrafanaReaderName\" WITH PASSWORD '$influxGrafanaReaderPassword'"
         local userCreateReturnCode=$?

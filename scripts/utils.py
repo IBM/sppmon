@@ -2,6 +2,7 @@
 from os.path import realpath
 import re
 from os import get_terminal_size
+from getpass import getpass
 from typing import ClassVar, Optional, Callable
 
 class Utils:
@@ -58,15 +59,19 @@ class Utils:
             pass
         return result
 
+
     @staticmethod
-    def prompt_string(message: str, default: str = "", allow_empty: bool = False, filter: Callable[[str], bool] = None) -> str:
+    def prompt_string(message: str, default: str = "", allow_empty: bool = False, filter: Callable[[str], bool] = None, is_password=False) -> str:
         validate: bool = False
         result: str = ""
 
         # Only add default brackets if there is a default case
         message = message + f" [{default}]: " if default else message + ": "
         while(not validate):
-            result = input(message).strip() or default
+            if(is_password):
+                result = getpass(message).strip() or default
+            else:
+                result = input(message).strip() or default
             if(not allow_empty and not result):
                 print("> No empty input allowed, please try again")
                 continue
@@ -74,7 +79,11 @@ class Utils:
             if(filter and not filter(result)):
                 print("> Failed filter rule, please try again.")
                 continue
-            validate = Utils.confirm(f"Was \"{result}\" the correct input?")
+            if(is_password):
+                result_confirm = getpass("Please repeat input for confirmation").strip() or default
+                validate = result_confirm == result
+            else:
+                validate = Utils.confirm(f"Was \"{result}\" the correct input?")
         return result
 
     @staticmethod
@@ -89,8 +98,10 @@ class Utils:
             return False
 
     @classmethod
-    def readAuthOrInput(cls, auth_key: str, message: str, default: str = "", filter: Callable[[str], bool] = None):
+    def readAuthOrInput(cls, auth_key: str, message: str, default: str = "", filter: Callable[[str], bool] = None, is_password = False):
+        """Used to reduce duplicate code when reading authentification from a authfile, while asking user if not present.
+        """
         result: Optional[str] = Utils.read_auth(auth_key)
         if(not result):
-            result = Utils.prompt_string(message, default=default, filter=filter)
+            result = Utils.prompt_string(message, default=default, filter=filter, is_password=is_password)
         return result

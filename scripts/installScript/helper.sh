@@ -59,7 +59,7 @@ confirm() { # param1:message
     local message="$1"
     local confirmInput
 
-    read -r -s -p"$1 (Yes/no) [Yes]" confirmInput
+    read -r -p"$1 (Yes/no) [Yes]" confirmInput
     echo ""
     case "$confirmInput" in
         [yY][eE][sS] | [yY] | "" )
@@ -104,6 +104,61 @@ promptText() {
     eval $__resultVal="'$promptTextInput'"
 
 }
+
+promptPasswords()
+    if (( $# != 2 && $# != 3 )); then
+        >&2 echo "Illegal number of parameters promptText"
+        abortInstallScript
+    fi
+
+    local message="$1" # param1:message
+    local __resultVal=$2 # param2: result
+    local defaultValue # OPTIONAL param3: default val
+
+    local prohibitedSymbols="\" '\\/"
+    local promptPasswordInput
+    local promptPasswordInputConfirm
+
+    if [[ -n ${3+x} ]] # evaluates to nothing if not set, form: if [ -z {$var+x} ]; then unset; else set; fi
+        then    # default set
+            defaultValue="$3"
+            message="$message [$defaultValue]"
+        else # default not given
+            defaultValue=""
+    fi
+    while true ; do
+        read -r -s -p"$message: " promptPasswordInput
+        promptPasswordInput="${promptPasswordInput:-$defaultValue}" # substitues if unset or null
+        # form: ${parameter:-word}
+
+        if [[ -z $promptPasswordInput ]]; then
+            echo "No empy value is allowed, please try again."
+            continue # start loop again
+        else
+            local symbCheck=$(echo "$promptPasswordInput" | grep "[$prohibitedSymbols]" >/dev/null; echo $?)
+            # 0 means match, which is bad. 1 = all good
+            if [[ $symbCheck -ne 1 ]]; then
+                echo "The $description must not contain any of the following symbols: $prohibitedSymbols"
+                promptPasswordInput=""
+                continue # start loop again
+            fi
+        fi
+
+        # Confirmation by repeating
+        read -r -s -p"Please repeat to confirm: " promptPasswordInputConfirm
+        promptPasswordInputConfirm="${promptPasswordInputConfirm:-$defaultValue}"
+
+        # Everything is correct -> return value
+        if [[ "${promptPasswordInput} == ${promptPasswordInputConfirm} "]]; then
+                break # exit
+        else
+            echo "Input did not match, please try again"
+            # continue / start loop again
+        fi
+    done
+
+    eval $__resultVal="'$promptPasswordInput'"
+
 
 promptLimitedText() {
     if (( $# != 2 && $# != 3 )); then
