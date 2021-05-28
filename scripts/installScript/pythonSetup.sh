@@ -62,7 +62,7 @@ pythonSetup() {
         checkReturn cd /tmp/python395/
         checkReturn tar -xf Python-3.9.5.tgz
         checkReturn cd /tmp/python395/Python-3.9.5
-        checkReturn ./configure --enable-optimizations --prefix=/usr
+        checkReturn ./configure --enable-optimizations --prefix=/usr --quiet
 
         # Only set alternatives if python 2.7 is installed
         if command -v python2.7 &> /dev/null ; then
@@ -98,7 +98,7 @@ pythonSetup() {
     echo "> Installing required packages"
     #echo $(realpath $(dirname "${mainPath}")/../python/requirements.txt)
 
-    checkReturn pip3 install -r $(realpath $(dirname "${mainPath}")/../python/requirements.txt)
+    checkReturn python3 -m pip install -r $(realpath $(dirname "${mainPath}")/../python/requirements.txt)
 
     echo "Finished Python installation Setup"
 
