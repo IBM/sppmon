@@ -148,6 +148,8 @@ promptPasswords() {
         read -r -s -p"Please repeat to confirm: " promptPasswordInputConfirm
         promptPasswordInputConfirm="${promptPasswordInputConfirm:-$defaultValue}"
 
+        echo "" # newline
+
         # Everything is correct -> return value
         if [[ "${promptPasswordInput}" == "${promptPasswordInputConfirm}" ]]; then
                 break # exit

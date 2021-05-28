@@ -151,7 +151,7 @@ main(){
     if [[ $continue_point == "SYS_SETUP" ]]
         then
             source "${subScripts}/setupRequirements.sh" "$mainPath"
-            saveState 'PYTHON_SETUP' 'Python3 installation and packages'
+            saveState 'PYTHON_SETUP' 'Python3 installation and package requirements'
     fi
 
     # Part 4: Python installation and packages
