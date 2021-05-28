@@ -8,7 +8,7 @@ finishingScript() {
     echo "> You may find saved config files under ${configDir}"
     if [[ -e ${authFile} ]]; then
         echo "> It seems like there are some configuration saved. These contain sensible data."
-        if confirm "> Do you want to show all saved configurations now?"; then
+        if confirm "> Do you want to show all saved configurations now? WARNING: authentification in plain text"; then
             rowLimiter
             checkReturn cat "${authFile}"
             rowLimiter
