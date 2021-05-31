@@ -46,6 +46,10 @@ class InfluxClient:
     """
 
     @property
+    def grafanaReader_name(self):
+        return "GrafanaReader"
+
+    @property
     def version(self):
         """Version of the influxdb client"""
         return self.__version
@@ -114,7 +118,7 @@ class InfluxClient:
             ValueError: Login failed
         """
         try:
-            self.__client: InfluxDBClient = InfluxDBClient( # type: ignore
+            self.__client: InfluxDBClient = InfluxDBClient(
                 host=self.__address,
                 port=self.__port,
                 username=self.__user,
@@ -128,8 +132,7 @@ class InfluxClient:
             self.__version: str = self.__client.ping()
             LOGGER.debug(f"Connected to influxdb, version: {self.__version}")
 
-            # create db, nothing happens if it already exists
-            self.__client.create_database(self.database.name)
+            self.setup_db(self.database.name)
 
             # check for exisiting retention policies and continuous queries in the influxdb
             self.check_create_rp(self.database.name)
@@ -152,6 +155,33 @@ class InfluxClient:
                 error=error,
                 extra_message="Failed to flush buffer on logout, possible data loss")
         self.__client.close()
+        self.__client = None # unset client
+
+    def setup_db(self, database_name: str) -> None:
+        if(not self.__client):
+            raise ValueError("Tried to setup DB while client wasn't connected.")
+        try:
+            # Check if database already exits -> nothing to do
+            db_list: List[Dict[str, str]] = self.__client.get_list_database()
+            if(database_name in map(lambda entry: entry["name"], db_list)):
+                # nothing to do since db exits
+                return
+
+            # create db, nothing happens if it already exists
+            self.__client.create_database(database_name)
+
+            # Check if GrafanaReader exists and give him permissions
+            user_list: List[Dict[str, str]] = self.__client.get_list_users()
+            if(self.grafanaReader_name not in map(lambda entry: entry["user"], user_list)):
+                ExceptionUtils.error_message("WARNING: User 'GrafanaReader' does not exist")
+                # nothing to do since GrafanaReader does not exit
+                return
+            self.__client.grant_privilege("read", database_name, self.grafanaReader_name)
+
+
+        except (ValueError, InfluxDBClientError, InfluxDBServerError, requests.exceptions.ConnectionError) as error: # type: ignore
+            ExceptionUtils.exception_info(error=error) # type: ignore
+            raise ValueError(f"Setup of the new database failed. Maybe the connection failed or the user '{self.__user}' has no admin privileges.")
 
 
     def check_create_rp(self, database_name: str) -> None:
