@@ -164,19 +164,23 @@ class InfluxClient:
             # Check if database already exits -> nothing to do
             db_list: List[Dict[str, str]] = self.__client.get_list_database()
             if(database_name in map(lambda entry: entry["name"], db_list)):
+                LOGGER.debug(f"SetupDB: DB {database_name} already exits")
                 # nothing to do since db exits
                 return
 
             # create db, nothing happens if it already exists
             self.__client.create_database(database_name)
+            LOGGER.info(f"> Created database {database_name}")
 
             # Check if GrafanaReader exists and give him permissions
             user_list: List[Dict[str, str]] = self.__client.get_list_users()
             if(self.grafanaReader_name not in map(lambda entry: entry["user"], user_list)):
-                ExceptionUtils.error_message("WARNING: User 'GrafanaReader' does not exist")
+                LOGGER.debug("SetupDB: Grafana User does not exits")
+                ExceptionUtils.error_message(f"WARNING: User '{self.grafanaReader_name}' does not exist")
                 # nothing to do since GrafanaReader does not exit
                 return
             self.__client.grant_privilege("read", database_name, self.grafanaReader_name)
+            LOGGER.info(f"> Granted read privileges for user {self.grafanaReader_name} on db {database_name}")
 
 
         except (ValueError, InfluxDBClientError, InfluxDBServerError, requests.exceptions.ConnectionError) as error: # type: ignore
@@ -306,7 +310,7 @@ class InfluxClient:
 
         # create db, nothing happens if it already exists
         LOGGER.info("> Creating the new database if it didn't already exist")
-        self.__client.create_database(new_database_name)
+        self.setup_db(new_database_name)
 
         # check for exisiting retention policies and continuous queries in the influxdb
         LOGGER.info(">> Checking and creating retention policies for the new database. Ignoring continuous queries.")
