@@ -1,11 +1,10 @@
-/.vs
-/python/.vs/python/v16
-/python/python.pyproj
-/python/python.sln
 
-.config_files
-config_files/*.conf
+# ### Config Files ###
+config_files
 !config_files/sppconnections_default.conf
+
+# ### Grafana individual Dashboards
 Grafana/customer_dashboards/*
-scripts/installScript/.savefile.txt
-scripts/installScript/.passwords.txt
+!Grafana/customer_dashboards/.gitkeep
+
+# Everything else is declared within sub-gitignores
