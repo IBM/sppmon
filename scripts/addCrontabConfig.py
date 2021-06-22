@@ -100,20 +100,24 @@ class CrontabConfig:
         Utils.printRow()
 
         # now selected_configs contains all required config files
-        print("> Please select now the wanted monitoring intervall/offset for *all* selected spp-servers")
+        print("SPPmon collections are broken into different groupings that are executed")
+        print("at different frequencies. Keeping the default frequencies is")
+        print("recommended.")
+        print("> These frequencing will be applied the same for all SPP servers")
+        print("> being configured.\n")
 
         minute_interval: int = int(Utils.prompt_string(
-            "In which *intervall* do you want to monitor constant data like CPU/RAM on all clients? (in minutes: 1-15)",
+            "Specify the interval for constant data like CPU/RAM (in minutes: 1-15)",
             "3",
             filter=lambda x: x.isdigit() and int(x) <= 15 and int(x) >= 1))
 
         hourly_interval: int = int(Utils.prompt_string(
-            "In which *intervall* do you want to \"hourly\" monitoring actions? (in minutes: 15-120)",
-            "30",
+            "Specify the interval for \"hourly\" monitoring actions (in minutes: 15-120)",
+            "60",
             filter=lambda x: x.isdigit() and int(x) <= 120 and int(x) >= 15))
 
         daily_interval: int = int(Utils.prompt_string(
-            "In which *intervall* do you want to request new joblogs? (in hours: 1-48)",
+            "Specify the interval to request new joblogs (in hours: 1-48)",
             "12",
             filter=lambda x: x.isdigit() and int(x) < 48 and int(x) >= 1))
         print("> Offset-Hint: Concurrent calls are no problem for SPPMon, it is used to distribute the load on the spp-server")
@@ -123,7 +127,7 @@ class CrontabConfig:
             filter=lambda x: x.isdigit() and int(x) < 60))
 
         all_interval: int = int(Utils.prompt_string(
-            "In which *intervall* do you want perform a full scan? (in days: 1-90)",
+            "Specify the interval to perform a full scan? (in days: 1-90)",
             "15",
             filter=lambda x: x.isdigit() and int(x) <= 90 and int(x) >= 1))
         all_hour_offset: int = int(Utils.prompt_string(

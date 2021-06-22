@@ -100,7 +100,7 @@ class ConfigFileSetup:
         else:
             config_dir = sys.argv[1]
         config_dir = realpath(config_dir)
-        print(f"> All new configurations files will be written into dir {config_dir}")
+        print(f"> All new configurations files will be written into the directory:\n {config_dir}")
 
         # ### authFile setup
         if(not len(sys.argv) == 3):
@@ -116,7 +116,7 @@ class ConfigFileSetup:
         print("> Each server requires it's own config file")
 
         try:
-            while(Utils.confirm("Do you want to to add a new SPP-Server now?")):
+            while(Utils.confirm("\nDo you want to to add a new SPP-Server now?")):
 
                 config_file_path: str = ""
                 server_name: str = ""
@@ -252,7 +252,8 @@ class ConfigFileSetup:
                     # #################### SAVE & EXIT ###############################
                     print("> Writing into config file")
                     json.dump(configs, config_file, indent=4)
-                    print(f"> saved all informations into file {config_file_path}")
+                    print(f"> Configuraton saved into the file:\n{config_file_path}")
+                    Utils.printRow()
                     continue # Contiuing to the next server config file loop
         except ValueError as err:
             print(err)

@@ -44,9 +44,9 @@ verifyConnection() {
 
     echo "> verifying connection to InfluxDB"
     local connectionTestString="influx -host $influxAddress -port $influxPort -username $userName -password $password"
-    if [[ -n $sslEnabled ]] ; then # globalVar
+    if [[ $sslEnabled != "false" ]] ; then # globalVar
         connectionTestString="$connectionTestString -ssl"
-        if [[ -n $unsafeSsl ]] ; then # globalVar
+        if [[ $unsafeSsl != "false" ]] ; then # globalVar
             connectionTestString="$connectionTestString -unsafeSsl"
         fi
     fi
@@ -70,9 +70,10 @@ verifyConnection() {
 
 influxSetup() {
 
+    clear
     rowLimiter
     echo "Setup and installation of InfluxDB"
-
+    echo ""
 
     echo "> configuring yum repository"
     sudo tee  /etc/yum.repos.d/influxdb.repo 1> /dev/null <<EOF
@@ -98,7 +99,7 @@ EOF
     local config_file="${config_path}/influxdb.conf"
     local config_file_backup="${config_file}.orig"
     if [[ -f "${config_file_backup}" ]]; then
-        echo "> Probably restarting the install script."
+        echo "> Found previous influx config file backup."
         echo "> Restoring original config file from backup."
         checkReturn sudo cp "${config_file_backup}" "${config_file}"
     else
@@ -107,7 +108,12 @@ EOF
     fi
 
     local influx_db_path
-    promptText "Where do you want to store the influx-database like data, meta and wal?" influx_db_path "$(realpath /influxDB)"
+    echo ""
+    echo "Specify the directory location where you want to store InfluxDb data files"
+    echo "including data, meta, and wal.  The directory will be created automatically,"
+    echo "and should be located under a file system with space dedicated to SPPmon."
+    echo ""
+    promptText "Specify a directory for InfluxDB storage:" influx_db_path "$(realpath /influxDB)"
 
     # Access rights
     checkReturn sudo chown -R influxdb:influxdb "${config_path}"
@@ -115,11 +121,11 @@ EOF
     checkReturn sudo chown -R influxdb:influxdb "${influx_db_path}"
 
     echo "> Editing config file - part 1 -"
-    if confirm "Do you want to report usage data to usage.influxdata.com?"
+    if confirm "Disable reporting usage data to usage.influxdata.com?"
         then
-            checkReturn sudo sed -i '"s/\#*\s*reporting-disabled\s*=.*/ reporting-disabled = false/"' "${config_file}"
-        else
             checkReturn sudo sed -i '"s/\#*\s*reporting-disabled\s*=.*/ reporting-disabled = true/"' "${config_file}"
+        else
+            checkReturn sudo sed -i '"s/\#*\s*reporting-disabled\s*=.*/ reporting-disabled = false/"' "${config_file}"
     fi
 
     # sed -i 's/search_string/replace_string/' filename
@@ -163,11 +169,15 @@ EOF
     while true; do # repeat until break, when it works
 
         readAuth # read all existing auths
+        # At this point SSL has not been configured, so avoid verifyConnnection() failures
+        sslEnabled="false"
+        unsafeSsl="false"
 
         # Sets default to either pre-saved value or influxadmin
         if [[ -z $influxAdminName ]]; then
             local influxAdminName="influxAdmin"
         fi
+        echo ""
         promptLimitedText "Please enter the desired InfluxDB admin name" influxAdminName "$influxAdminName"
 
         # sets default to presaved value if empty
@@ -205,12 +215,16 @@ EOF
     # this should always be grafana reader
     local influxGrafanaReaderName="GrafanaReader"
 
+    echo ""
     echo "Creating InfluxDB '$influxGrafanaReaderName' user"
 
     # Create user
     while true; do # repeat until break, when it works
 
         readAuth # read all existing auths
+        # At this point SSL has not been configured, so avoid verifyConnnection() failures
+        sslEnabled="false"
+        unsafeSsl="false"
 
         # sets default to presaved value if empty
         if [[ -z $influxGrafanaReaderPassword ]]; then
@@ -252,22 +266,30 @@ EOF
 
     # ################# START OF HTTPS ##########################
 
-    # saved later into file
-    local sslEnabled=false
-    local unsafeSsl=false
 
-    if confirm "Do you want to enable HTTPS-communication with the influxdb? This is highly recommended!"; then
+    echo ""
+    echo "The following steps are optional and will setup InfluxDB to use SSL for"
+    echo "secure communications.  This is highly recommended!"
+    echo ""
+    if confirm "Do you want to enable HTTPS-communication for the influxdb? "; then
         # [http] https-enabled = true
         checkReturn sudo sed -ri '"/\[http\]/,/https-enabled\s*=.+/ s|\#*\s*https-enabled\s*=.+| https-enabled = true|"' "${config_file}"
 
-        sslEnabled=true
+        sslEnabled="true"
 
         local httpsKeyPath
         local httpsCertPath
 
-        if confirm "Do you want to create a self-signed certificate? Answer no to use existing one"; then
+        echo ""
+        echo "The following step will assist with the creation of a self-signed"
+        echo "certificate for InfluxDB.  If you intend to use a self-signed"
+        echo "certificate that you have created already, or a certificate"
+        echo "signed by a certificate authority that you have already obtained,"
+        echo "answer no to skip this step."
+        echo ""
+        if confirm "Automatically create a self-signed certificate? "; then
 
-            unsafeSsl=true
+            unsafeSsl="true"
 
             httpsKeyPath="/etc/ssl/influxdb-selfsigned.key"
             httpsCertPath="/etc/ssl/influxdb-selfsigned.crt"
@@ -276,7 +298,7 @@ EOF
             local certDuration
 
             while true; do # repeat until valid symbol
-                promptText "How long should if be valid in days? Leave empty for no limit" certDuration ""
+                promptText "How long should it be valid in days? Leave empty for no limit" certDuration ""
                 if ! [[ "'$certDuration'" =~ ^\'[0-9]*\'$ ]] ; then
                     echo "You may only enter numbers or leave blank."
                 elif [[ -n "$certDuration" ]]; then
@@ -305,13 +327,18 @@ EOF
 
             local selfsignedString=""
 
-            if confirm "Is your cert self-signed and InfluxDB should use the unsafe ssl flag?"; then
+            echo ""
+            echo "If the certificate you are providing is self-signed, influx will"
+            echo "need to use the -unsafeSsl option."
+            echo ""
+            if confirm "Is your cert self-signed requirig the unsafe ssl flag?"; then
                 selfsignedString="-selfsigned"
                 unsafeSsl=true
             fi
 
             # Key
             while [[ -z $httpsKeyPath ]]; do
+                echo ""
                 promptText "Please enter the path to the https cert key" httpsKeyPath "/etc/ssl/influxdb${selfsignedString}.key"
                 if [[ -z $httpsKeyPath ]]; then
                     echo "The path of the key must not be empty"
@@ -319,7 +346,8 @@ EOF
             done
             # Cert
             while [[ -z $httpsCertPath ]]; do
-                promptText "Please enter the path to the https cert key" httpsCertPath "/etc/ssl/influxdb${selfsignedString}.cert"
+                echo ""
+                promptText "Please enter the path to the https pulic cert" httpsCertPath "/etc/ssl/influxdb${selfsignedString}.cert"
                 if [[ -z $httpsCertPath ]]; then
                     echo "The path of the cert must not be empty"
                 fi
@@ -345,8 +373,8 @@ EOF
     # Checking connection
     verifyConnection $influxAdminName $influxAdminPassword
 
-
     echo "Finished InfluxDB Setup"
+    sleep 2
 
 }
 

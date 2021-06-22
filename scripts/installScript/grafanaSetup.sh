@@ -2,9 +2,10 @@
 
 grafanaSetup() {
 
+    clear
     rowLimiter
     echo "Setup and installation of Grafana"
-
+    echo ""
     echo "> configuring yum repository"
     sudo tee /etc/yum.repos.d/grafana.repo<<EOF
 [grafana]

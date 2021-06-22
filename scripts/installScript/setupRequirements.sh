@@ -3,10 +3,12 @@
 setupRequirements() {
     # Part One: Setup and Requirements
 
+    clear
     rowLimiter
-    echo "Checking now system setup and requirements"
+    echo "Checking system setup and requirements"
     echo ""
-    echo "To make sure this script can run sucessfully, please make sure the system requirements are fullfied"
+    echo "To make sure this script can run sucessfully, please make sure the system"
+    echo "requirements are fullfied."
     echo "https://github.com/IBM/spectrum-protect-sppmon/wiki/System-requirements"
 
     echo ""
@@ -41,7 +43,10 @@ setupRequirements() {
     echo ""
     echo "> finished logging."
 
-    if confirm "Do you want to check and install general system updates now? ('yum upgrade', Recommended)" ; then
+    echo "This install script can now optionally check and install general operating"
+    echo "system updates ('yum upgrade').  This is recommended."
+    echo ""
+    if confirm "Do you want to upgrade operating system components?" ; then
         sudo yum upgrade
     fi
 

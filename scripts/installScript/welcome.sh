@@ -2,40 +2,47 @@
 
 welcome() {
     # Welcome Message
+    clear
     rowLimiter
 
     echo "Welcome to the Spectrum-Protect-Plus Monitoring install wizard!"
-    echo "This script will guide you through the install process of SPPMon."
     echo ""
-    echo "If you have any feature requests or want to report bugs, please refer to our github page."
+    echo "This script will guide you through the install process of SPPMon. Feature"
+    echo " requests or bug reports can be submitted on the SPPmon github page:"
     echo "https://github.com/IBM/spectrum-protect-sppmon"
-    echo "If you require any assistance with installing, please refer to our wiki page or open an issue to allow us to improve this process."
+    echo "For additional assistance with installing SPPmon, please refer to the SPPmon"
+    echo "wiki page:"
     echo "https://github.com/IBM/spectrum-protect-sppmon/wiki"
 
     rowLimiter
 
-    echo "IMPORTANT: This install script will create a configuration-file."
-    echo "!! This file contains sensitive information such as passwords and usernames in plain text. !!"
-    echo "This file is where most of the log-in data is written, which will be generated when the script is run"
-    echo "You may use this file to obtain your authentication credentials after running the script."
-    echo "!! Please make sure to delete this file after you have executed the script !!"
-    if ! confirm "Did you understand the instructions and want to continue?"; then
+    echo "IMPORTANT: This install script will create a configuration-file for maintaining"
+    echo "configuration information while the installation is in progress."
+    echo "!! This file contains sensitive information such as passwords and usernames in"
+    echo "plain text. !! You may use this file to obtain your authentication credentials"
+    echo "after running the script."
+    echo "!! Please make sure to delete after completing the SPPmon installation !!"
+    echo ""
+    if ! confirm "Do you understand the instructions and want to continue?"; then
         echo "Aborting install script. Nothing has been changed yet."
         exit -1
     fi
 
+    clear
     rowLimiter
 
-    echo "There are multiple breakpoints when running the installer"
-    echo "You may stop at each breakpoint and continue the installer later."
-    echo "IMPORTANT: Do not abort inbetween breakpoint! This might have unexpected consequences."
-    echo "Note: You may use the [default] case by just hitting enter in any following prompts"
-    if ! (confirm "Start install script?"); then
+    echo "There are multiple points during the installation at which you may stop"
+    echo "and continue the installation later."
+    echo "IMPORTANT: Do not abort in between breakpoints! This might have unexpected"
+    echo "consequences. Note: You may use the [default] case by just hitting enter"
+    echo "in any following prompts."
+    echo ""
+    if ! (confirm "Start the install script?"); then
         echo "Aborting install script. Nothing has been changed yet."
         exit -1
     else
         echo ""
-        echo "Starting install script for sppmon."
+        echo "Starting the install script for sppmon."
         echo ""
         continue_point='SYS_SETUP'
         echo "$continue_point" > $saveFile

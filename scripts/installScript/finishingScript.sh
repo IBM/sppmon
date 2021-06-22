@@ -2,26 +2,46 @@
 
 finishingScript() {
 
+    clear
     rowLimiter
 
     echo "You've completed the install of SPPMon!"
-    echo "> You may find saved config files under ${configDir}"
+    echo ""
+    echo "> You may find saved config files under:"
+    echo ${configDir}
     if [[ -e ${authFile} ]]; then
-        echo "> It seems like there are some configuration saved. These contain sensible data."
-        if confirm "> Do you want to show all saved configurations now? WARNING: authentification in plain text"; then
+        echo "> The configuration state file still exists.  This file may include"
+        echo "sensitive information such as passwords. You can optionally view"
+        echo "the contents of this file now. WARNING: authentification in plain text"
+        echo ""
+        if confirm "> Do you want view the configuration file contents?"; then
             rowLimiter
             checkReturn cat "${authFile}"
             rowLimiter
         fi
+        echo ""
         if confirm "> Do you want to delete this file now?"; then
             checkReturn sudo rm -f "${authFile}"
             echo "> Deleted all sensitive data"
         fi
     fi
-    echo "> If you have any questions, feedback or feature requests, feel free to open an issue: https://github.com/IBM/spectrum-protect-sppmon/issues"
-    echo "> You may call all scripts within the dir ${path} for adding new config files, adding servers to crontab and more"
-    echo "> All these informations are also documented within the wiki: https://github.com/IBM/spectrum-protect-sppmon/wiki"
-    echo "> Please make sure to regulary pull from git for the latest SPPMon release via `git pull`"
+    echo ""
+    echo "> If you have questions, feedback or feature requests, you can submit them"
+    echo "via an issue opened at:"
+    echo "https://github.com/IBM/spectrum-protect-sppmon/issues"
+    echo ""
+    echo "> In the future if you want to configure SPPmon for additional"
+    echo "SPP servers, you can run individual installations scripts".
+    echo "The scripts are located within the directory:"
+    echo "${path}."
+    echo ""
+    echo "> Documentation for SPPmon is available within the wiki:"
+    echo "https://github.com/IBM/spectrum-protect-sppmon/wiki"
+    echo ""
+    echo "> Please make sure to regulary pull SPPmon updates from git"
+    echo "using the command:"
+    echo "  git pull"
+    echo ""
     echo "Goodbye"
 
 

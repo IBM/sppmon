@@ -12,8 +12,9 @@ abortInstallScript() {
     echo "You may continue the script from the last saved point by restarting it."
     echo "Last saved point is: $continue_point."
 
-    echo "Please remember you may have sensitive data saved within ${authFile}."
-    echo "Make sure to delete if once you're done!"
+    echo "Please remember you may have sensitive data saved within"
+    echo "${authFile}."
+    echo "Make sure to delete the file once you are finished!"
 
     rowLimiter
 
@@ -33,7 +34,8 @@ saveState() { # param1: new continue_point #param2: name of next step
     local next_step="$2"
 
     rowLimiter
-    echo "## Safepoint: You may abort the script now ##"
+    echo "## Safepoint: If needed, the installation can be exited for later restart ##"
+    echo ""
     if ! (confirm "Continue with $next_step?");
         then
             abortInstallScript
@@ -92,17 +94,22 @@ restoreState() {
 
     if [[ -f "$saveFile" ]]; then # already executed
 
+        clear
         rowLimiter
 
         continue_point=$(<"$saveFile")
-        echo "Welcome to the SPPMon install guide. You last saved point was $continue_point."
-        echo "WARNING: Restarting has unpredictable effects. No warranty for any functionality."
+        echo "Welcome to the SPPMon guided installation."
         echo ""
-        if confirm "Do you want to continue without restarting? Abort by CTRL + C."
+        echo "Detected save point: $continue_point."
+        echo "WARNING: Restarting the installation will not work in all cases."
+        echo "You can restart the installation from the beginning by answering no to the"
+        echo "prompt, or exit by pressing CTRL+C"
+        echo ""
+        if confirm "Do you want to continue from the save point?"
             then # no restart
                 echo "Continuing from last saved point"
             else # restart
-                echo "restarting install process"
+                echo "Restarting the install process"
                 continue_point='WELCOME'
             echo "$continue_point" > "$saveFile"
         fi
@@ -179,15 +186,23 @@ main(){
     # Part 5: User management for SPP server and components
     if [[ $continue_point == "USER_MANGEMENT" ]]
         then
+            clear
             rowLimiter
-            echo "Please follow user creation instructions"
+            echo "User creation on SPP server, vSnap servers, and VADP proxies"
+            echo ""
+            echo "User accounts are needed on the systems the will be monitored"
+            echo "by SPPmon. This step is currently manual."
+            echo "Please follow the user creation instructions:"
             echo "https://github.com/IBM/spectrum-protect-sppmon/wiki/Create-user-accounts-in-SPP-server-and-vsnaps"
             #source "${subScripts}/userManagement.sh" "$mainPath"
-            saveState 'CONFIG_FILE' 'creation of the monitoring file for each SPP-Server'
+            saveState 'CONFIG_FILE' 'creation of a monitoring file for each SPP server'
     fi
 
-    # Part 6: User management for SPP server and components
+    # Part 6: Create SPPmon .conf files required for SPPmon execution
     if [[ $continue_point == "CONFIG_FILE" ]]; then
+        clear
+        rowLimiter
+        echo "Create one or more .conf files for SPPmon"
         local python_exe=$(which python3)
         checkReturn "$python_exe" "${path}/addConfigFile.py" "${configDir}" "${authFile}"
         echo "> IMPORTANT: if you have existing config files at a different location than: ${configDir}"
@@ -198,6 +213,10 @@ main(){
 
     # Part 7: Crontab setup for config files
     if [[ $continue_point == "CRONTAB" ]]; then
+        clear
+        rowLimiter
+        echo "Create cron jobs for automated SPPmon execution"
+        echo ""
         local python_exe=$(which python3)
         local sppmon_exe=$(realpath ${path}/../python/sppmon.py)
         checkReturn "$python_exe" "${path}/addCrontabConfig.py" "${configDir}" "${python_exe}" "${sppmon_exe}"
@@ -206,7 +225,10 @@ main(){
 
     # Part 9: Grafana dashboards
     if [[ $continue_point == "GRAFANA_DASHBOARDS" ]]; then
+        clear
         rowLimiter
+        echo "Import SPPmon dashboards into Grafana"
+        echo ""
         echo "> Please follow grafana import instructions"
         echo "https://github.com/IBM/spectrum-protect-sppmon/wiki/Configure-Grafana"
         saveState 'FINISHED' 'displaying finishing notes about the install of SPPMon'

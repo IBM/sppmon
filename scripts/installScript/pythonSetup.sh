@@ -31,8 +31,10 @@ currentInstallCheck() {
 
 pythonSetup() {
 
+    clear
     rowLimiter
     echo "Installation of Python and packages"
+    echo ""
 
     echo "> Checking gcc install"
     gcc --version &>/dev/null

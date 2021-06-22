@@ -59,7 +59,7 @@ confirm() { # param1:message
     local message="$1"
     local confirmInput
 
-    read -r -p"$1 (Yes/no) [Yes]" confirmInput
+    read -r -p"$1 (Yes/no) [Yes] " confirmInput
     echo ""
     case "$confirmInput" in
         [yY][eE][sS] | [yY] | "" )
@@ -145,6 +145,7 @@ promptPasswords() {
         fi
 
         # Confirmation by repeating
+        echo ""
         read -r -s -p"Please repeat to confirm: " promptPasswordInputConfirm
         promptPasswordInputConfirm="${promptPasswordInputConfirm:-$defaultValue}"
 

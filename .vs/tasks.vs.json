@@ -1,0 +1,15 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskLabel": "task-spectrum-protect-sppmon",
+      "appliesTo": "/",
+      "type": "launch"
+    },
+    {
+      "taskLabel": "task-python",
+      "appliesTo": "python/",
+      "type": "launch"
+    }
+  ]
+}
