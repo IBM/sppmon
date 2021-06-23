@@ -161,6 +161,10 @@ promptPasswords() {
             fi
         fi
 
+        if [ "$autoConfirm" = true ] ; then
+            break
+        fi
+
         # Confirmation by repeating
         echo ""
         read -r -s -p"Please repeat to confirm: " promptPasswordInputConfirm
