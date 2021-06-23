@@ -67,7 +67,7 @@ class Utils:
 
     @classmethod
     def prompt_string(cls, message: str, default: Any = "", allow_empty: bool = False, filter: Callable[[str], bool] = None, is_password=False) -> str:
-        validate: bool = False
+        validated: bool = False
         result: str = ""
 
         # Casts default to str
@@ -76,27 +76,38 @@ class Utils:
 
         # Only add default brackets if there is a default case
         message = message + f" [{default}]: " if default else message + ": "
-        while(not validate):
+        while(not validated):
+
+            # Request input as either password or string
             if(is_password):
                 result = getpass(message).strip() or default
             else:
                 result = input(message).strip() or default
+
+            # check for empty
             if(not allow_empty and not result):
                 print("> No empty input allowed, please try again")
                 continue
+
+
             # You may specify via filter (lambda) to have the string match a pattern, type or other
             if(filter and not filter(result)):
                 print("> Failed filter rule, please try again.")
                 continue
+
+
             if(is_password and not cls.auto_confirm):
+                # password special confirm
+                # if empty it takes default value
                 result_confirm = getpass("Please repeat input for confirmation").strip() or default
                 if(result_confirm != result):
                     print("These passwords did not match. Please try again.")
-                    validate = False
+                    validated = False
                 else:
-                    validate = True
+                    validated = True
             else:
-                validate = Utils.confirm(f"Was \"{result}\" the correct input?")
+                # regular input confirm
+                validated = Utils.confirm(f"Was \"{result}\" the correct input?")
         return result
 
     @classmethod

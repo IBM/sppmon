@@ -167,6 +167,7 @@ promptPasswords() {
 
         # Confirmation by repeating
         echo ""
+        promptPasswordInputConfirm=""
         read -r -s -p"Please repeat to confirm: " promptPasswordInputConfirm
         promptPasswordInputConfirm="${promptPasswordInputConfirm:-$defaultValue}"
 
