@@ -95,12 +95,12 @@ pythonSetup() {
     fi
 
     echo "> Checking pip version"
-    checkReturn sudo python3 -m pip install --upgrade pip
+    checkReturn python3 -m pip install --upgrade pip
 
     echo "> Installing required packages"
     #echo $(realpath $(dirname "${mainPath}")/../python/requirements.txt)
 
-    checkReturn sudo python3 -m pip install -r $(realpath $(dirname "${mainPath}")/../python/requirements.txt)
+    checkReturn python3 -m pip install -r $(realpath $(dirname "${mainPath}")/../python/requirements.txt)
 
     echo "Finished Python installation Setup"
 
