@@ -219,9 +219,9 @@ main(){
         echo "Create one or more .conf files for SPPmon"
         local python_exe=$(which python3)
         if [ "$autoConfirm" = true ]  ; then
-            checkReturn "$python_exe" "${path}/addConfigFile.py" "--configPath=${configDir}" "--authFile=${authFile}" "--autoConfirm"
+            checkReturn sudo "$python_exe" "${path}/addConfigFile.py" "--configPath=${configDir}" "--authFile=${authFile}" "--autoConfirm"
         else
-            checkReturn "$python_exe" "${path}/addConfigFile.py" "--configPath=${configDir}" "--authFile=${authFile}"
+            checkReturn sudo "$python_exe" "${path}/addConfigFile.py" "--configPath=${configDir}" "--authFile=${authFile}"
         fi
         echo "> IMPORTANT: if you have existing config files at a different location than: ${configDir}"
         echo "> please abort now!"
@@ -238,9 +238,9 @@ main(){
         local python_exe=$(which python3)
         local sppmon_exe=$(realpath ${path}/../python/sppmon.py)
         if [ "$autoConfirm" = true ]  ; then
-            checkReturn "$python_exe" "${path}/addCrontabConfig.py" "--configPath=${configDir}" "--pythonPath=${python_exe}" "--sppmonPath=${sppmon_exe}" "--autoConfirm"
+            checkReturn sudo "$python_exe" "${path}/addCrontabConfig.py" "--configPath=${configDir}" "--pythonPath=${python_exe}" "--sppmonPath=${sppmon_exe}" "--autoConfirm"
         else
-            checkReturn "$python_exe" "${path}/addCrontabConfig.py" "--configPath=${configDir}" "--pythonPath=${python_exe}" "--sppmonPath=${sppmon_exe}"
+            checkReturn sudo "$python_exe" "${path}/addCrontabConfig.py" "--configPath=${configDir}" "--pythonPath=${python_exe}" "--sppmonPath=${sppmon_exe}"
         fi
         saveState 'GRAFANA_DASHBOARDS' 'Creation and configuration of the grafana dashboards'
     fi

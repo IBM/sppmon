@@ -65,8 +65,8 @@ class Utils:
         return result
 
 
-    @staticmethod
-    def prompt_string(message: str, default: Any = "", allow_empty: bool = False, filter: Callable[[str], bool] = None, is_password=False) -> str:
+    @classmethod
+    def prompt_string(cls, message: str, default: Any = "", allow_empty: bool = False, filter: Callable[[str], bool] = None, is_password=False) -> str:
         validate: bool = False
         result: str = ""
 
@@ -88,7 +88,7 @@ class Utils:
             if(filter and not filter(result)):
                 print("> Failed filter rule, please try again.")
                 continue
-            if(is_password):
+            if(is_password and not cls.auto_confirm):
                 result_confirm = getpass("Please repeat input for confirmation").strip() or default
                 if(result_confirm != result):
                     print("These passwords did not match. Please try again.")
