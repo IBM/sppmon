@@ -139,7 +139,7 @@ class ConfigFileSetup:
                             print("> Overwriting old config file")
 
                 os.system("touch " + config_file_path)
-                os.chmod(config_file_path, 600)
+                os.system("sudo chmod 600 "+ config_file_path)
                 print(f"> Created config file under {config_file_path}")
 
                 # Overwrite existing file
