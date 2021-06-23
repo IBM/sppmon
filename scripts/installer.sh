@@ -219,9 +219,9 @@ main(){
         echo "Create one or more .conf files for SPPmon"
         local python_exe=$(which python3)
         if [ "$autoConfirm" = true ]  ; then
-            checkReturn sudo "$python_exe" "${path}/addConfigFile.py" "--configPath=${configDir}" "--authFile=${authFile}" "--autoConfirm"
+            checkReturn "$python_exe" "${path}/addConfigFile.py" "--configPath=${configDir}" "--authFile=${authFile}" "--autoConfirm"
         else
-            checkReturn sudo "$python_exe" "${path}/addConfigFile.py" "--configPath=${configDir}" "--authFile=${authFile}"
+            checkReturn "$python_exe" "${path}/addConfigFile.py" "--configPath=${configDir}" "--authFile=${authFile}"
         fi
         echo "> IMPORTANT: if you have existing config files at a different location than: ${configDir}"
         echo "> please abort now!"
