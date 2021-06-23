@@ -190,8 +190,8 @@ main(){
             rowLimiter
             echo "User creation on SPP server, vSnap servers, and VADP proxies"
             echo ""
-            echo "User accounts are needed on the systems the will be monitored"
-            echo "by SPPmon. This step is currently manual."
+            echo "User accounts are needed on the systems that will be monitored by SPPmon."
+            echo "This step is currently manual."
             echo "Please follow the user creation instructions:"
             echo "https://github.com/IBM/spectrum-protect-sppmon/wiki/Create-user-accounts-in-SPP-server-and-vsnaps"
             #source "${subScripts}/userManagement.sh" "$mainPath"
