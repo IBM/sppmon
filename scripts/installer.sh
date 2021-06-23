@@ -138,7 +138,7 @@ removeGeneratedFiles() {
 
 main(){
     local argument
-    for argument in "$@"
+    for argument in "$@"; do
         if [[ "$argument" == "--debug" ]]; then
             removeGeneratedFiles
         fi
