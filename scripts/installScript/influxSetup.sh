@@ -251,21 +251,6 @@ EOF
 
     done
 
-     if (( $userCreateReturnCode != 0 )) ;then
-            echo "Creation failed due an error. Please read the output above."
-            if ! confirm "Do you want to try again (y) or continue (n)? Abort by ctrl + c" "--alwaysConfirm"; then
-                # user wants to exit
-                adminCreated=true
-            fi
-            # else
-            # Start again
-        else
-            echo "> admin creation sucessfully"
-            adminCreated=true
-        fi
-
-    done
-
     saveAuth "influxGrafanaReaderName" "${influxGrafanaReaderName}"
     saveAuth "influxGrafanaReaderPassword" "${influxGrafanaReaderPassword}"
 
