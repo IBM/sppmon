@@ -39,7 +39,7 @@ welcome() {
     echo "consequences. Note: You may use the [default] case by just hitting enter"
     echo "in any following prompts."
     echo ""
-    if ! (confirm "Start the install script?"); then
+    if ! (confirm "Start the install script?" "--alwaysConfirm"); then
         echo "Aborting install script. Nothing has been changed yet."
         exit -1
     else

@@ -1,12 +1,13 @@
 
-import sys
 import re
 import json
 import signal
 from os import get_terminal_size
 from os.path import isfile, realpath, join
+from sys import path
 from typing import Any, Dict, List
 from utils import Utils
+import argparse
 
 class ConfigFileSetup:
 
@@ -84,7 +85,7 @@ class ConfigFileSetup:
 
 
 
-    def main(self):
+    def main(self, config_path: str, auth_file: str, auto_confirm: bool):
 
         ############# ARGS ##################
         # Arg 1: Config file DIR
@@ -92,26 +93,21 @@ class ConfigFileSetup:
         #####################################
 
         Utils.printRow()
+        Utils.auto_confirm=auto_confirm
         signal.signal(signal.SIGINT, Utils.signalHandler)
 
         print("> Generating new Config files")
 
         # ### Config dir setup
-        config_dir: str
-        if(not len(sys.argv) >= 2):
-            print("> No config-dir specifed by first arg.")
-            config_dir = Utils.prompt_string("Please specify the dir to place any new config files", "./")
-        else:
-            config_dir = sys.argv[1]
-        config_dir = realpath(config_dir)
-        print(f"> All new configurations files will be written into the directory:\n {config_dir}")
+        config_path = realpath(config_path)
+        print(f"> All new configurations files will be written into the directory:\n {config_path}")
 
         # ### authFile setup
-        if(not len(sys.argv) == 3):
-            print("> No authentification file specifed by second arg.")
+        if(not auth_file):
+            print("> No authentification file specifed")
             Utils.setupAuthFile(None)
-        else: # take none if not exists, otherwise take password path
-            Utils.setupAuthFile(sys.argv[2])
+        else: # take none if not exists, otherwise take auth path
+            Utils.setupAuthFile(auth_file)
 
 
         # ########## EXECUTION ################
@@ -130,7 +126,7 @@ class ConfigFileSetup:
                         "What is the name of the SPP-Server? (Human Readable, no Spaces)",
                         filter=(lambda x: not " " in x))
                     # Replace spaces
-                    config_file_path = join(realpath(config_dir), server_name + ".conf")
+                    config_file_path = join(realpath(config_path), server_name + ".conf")
 
                     if(isfile(config_file_path)):
                         print(f"> There is already a file at {config_file_path}.")
@@ -272,4 +268,18 @@ class ConfigFileSetup:
 
 
 if __name__ == "__main__":
-    ConfigFileSetup().main()
+
+    parser = argparse.ArgumentParser(
+        "Find offensive terms to replace within the SPP-BA-Client-Agent.")
+    parser.add_argument("--configPath", dest="config_path",
+                        default=join(".", "..", "config_files"),
+                        help="Path to folder containing the config files (default: `./../config_files`)")
+    parser.add_argument("--authFile", dest="auth_file",
+                        required=False,
+                        default=join(".", "installScript",".savefile.txt"),
+                        help="Path to authentification file (default: `./installScript/.savefile.txt`)")
+    parser.add_argument("--autoConfirm", dest="auto_confirm",
+                        action="store_true",
+                        help="Autoconfirm most confirm prompts")
+    args = parser.parse_args()
+    ConfigFileSetup().main(args.config_path, args.auth_file, args.auto_confirm)

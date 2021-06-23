@@ -1,14 +1,15 @@
 
+from enum import auto
 import re
 from os.path import realpath, join
-import sys
 from os import DirEntry, scandir, popen
 from typing import List
 from utils import Utils
+import argparse
 
 class CrontabConfig:
 
-    def main(self):
+    def main(self, config_path: str, python_path: str, sppmon_path: str, auto_confirm: bool):
         ############# ARGS ##################
         # Arg 1: Config file DIR
         # Arg 2: Python executable (Python3)
@@ -16,35 +17,29 @@ class CrontabConfig:
         #####################################
 
         Utils.printRow()
+        Utils.auto_confirm = auto_confirm
 
         print("> Generating new Config files")
 
         # ### Config dir setup
         config_dir: str
-        if(not len(sys.argv) >= 2):
-            print("> No config-dir specifed by first arg.")
-            config_dir = Utils.prompt_string("Please specify the dir where config files are placed", join(".", "..", "config_files"))
-        else:
-            config_dir = sys.argv[1]
-        config_dir = realpath(config_dir)
-        print(f"> All configurations files will be read from {config_dir}")
+        if(not config_path):
+            print("> No config-dir specifed")
+            config_path = Utils.prompt_string("Please specify the dir where config files are placed", join(".", "..", "config_files"))
+        config_path = realpath(config_path)
+        print(f"> All configurations files will be read from {config_path}")
 
         # ### python setup
-        python_path: str
-        if(not len(sys.argv) >= 3):
-            print("> No python instance specifed by second arg.")
+        if(not python_path):
+            print("> No python instance specifed")
             python_path = Utils.prompt_string("Please specify the path to python", "python3")
-        else:
-            python_path = sys.argv[2]
+        python_path = realpath(python_path)
         print(f"> Following python instance will be used: {python_path}")
 
         # ### sppmon setup
-        sppmon_path: str
-        if(not len(sys.argv) >= 4):
-            print("> No sppmon instance specifed by third arg.")
+        if(not sppmon_path):
+            print("> No sppmon instance specifed")
             sppmon_path = Utils.prompt_string("Please specify the path to sppmon.py executable", join(".", "..", "python", "sppmon.py"))
-        else:
-            sppmon_path = sys.argv[3]
         sppmon_path = realpath(sppmon_path)
         print(f"> Following sppmon instance will be used: {sppmon_path}")
 
@@ -57,7 +52,7 @@ class CrontabConfig:
                 entry.is_file(follow_symlinks=True) and
                 entry.name.endswith(".conf") and
                 entry.name != "sppconnections_default.conf",
-            scandir(config_dir)))
+            scandir(config_path)))
 
         print("> NOTE: Example config \"sppconnections_default.conf\" is ignored")
 
@@ -99,45 +94,58 @@ class CrontabConfig:
 
         Utils.printRow()
 
-        # now selected_configs contains all required config files
-        print("SPPmon collections are broken into different groupings that are executed")
-        print("at different frequencies. Keeping the default frequencies is")
-        print("recommended.")
-        print("> These frequencing will be applied the same for all SPP servers")
-        print("> being configured.\n")
+        minute_interval: int = 3
+        hourly_interval: int = 60
+        daily_interval: int = 12
+        daily_minute_offset: int = 22
+        all_interval: int = 15
+        all_hour_offset: int = 2
+        all_minute_offset: int = 35
 
-        minute_interval: int = int(Utils.prompt_string(
-            "Specify the interval for constant data like CPU/RAM (in minutes: 1-15)",
-            "3",
-            filter=lambda x: x.isdigit() and int(x) <= 15 and int(x) >= 1))
+        if(not Utils.confirm("Do you want to use default settings or specify your own timings?", True)):
 
-        hourly_interval: int = int(Utils.prompt_string(
-            "Specify the interval for \"hourly\" monitoring actions (in minutes: 15-120)",
-            "60",
-            filter=lambda x: x.isdigit() and int(x) <= 120 and int(x) >= 15))
+            # now selected_configs contains all required config files
+            print("SPPmon collections are broken into different groupings that are executed")
+            print("at different frequencies. Keeping the default frequencies is")
+            print("recommended.")
+            print("> These frequencing will be applied the same for all SPP servers")
+            print("> being configured.\n")
 
-        daily_interval: int = int(Utils.prompt_string(
-            "Specify the interval to request new joblogs (in hours: 1-48)",
-            "12",
-            filter=lambda x: x.isdigit() and int(x) < 48 and int(x) >= 1))
-        print("> Offset-Hint: Concurrent calls are no problem for SPPMon, it is used to distribute the load on the spp-server")
-        daily_minute_offset: int = int(Utils.prompt_string(
-            f"At which minute every {daily_interval} hours should SPPMON run joblogs requesting actions? (in minutes: 0-59)",
-            "22",
-            filter=lambda x: x.isdigit() and int(x) < 60))
+            minute_interval: int = int(Utils.prompt_string(
+                "Specify the interval for constant data like CPU/RAM (in minutes: 1-15)",
+                minute_interval,
+                filter=lambda x: x.isdigit() and int(x) <= 15 and int(x) >= 1))
 
-        all_interval: int = int(Utils.prompt_string(
-            "Specify the interval to perform a full scan? (in days: 1-90)",
-            "15",
-            filter=lambda x: x.isdigit() and int(x) <= 90 and int(x) >= 1))
-        all_hour_offset: int = int(Utils.prompt_string(
-            f"At which hour every {daily_interval} days should SPPMON perform a full scan? (in hours: 0-23)",
-            "2",
-            filter=lambda x: x.isdigit() and int(x) < 23))
-        all_minute_offset: int = int(Utils.prompt_string(
-            f"At which minute every {daily_interval} days at {all_hour_offset}:xx should SPPMON perform a full scan? (in minutes: 0-59)",
-            "35",
-            filter=lambda x: x.isdigit() and int(x) < 60))
+            hourly_interval: int = int(Utils.prompt_string(
+                "Specify the interval for \"hourly\" monitoring actions (in minutes: 15-120)",
+                hourly_interval,
+                filter=lambda x: x.isdigit() and int(x) <= 120 and int(x) >= 15))
+
+            daily_interval: int = int(Utils.prompt_string(
+                "Specify the interval to request new joblogs (in hours: 1-48)",
+                daily_interval,
+                filter=lambda x: x.isdigit() and int(x) < 48 and int(x) >= 1))
+            print("> Offset-Hint: Concurrent calls are no problem for SPPMon, it is used to distribute the load on the spp-server")
+            daily_minute_offset: int = int(Utils.prompt_string(
+                f"At which minute every {daily_interval} hours should SPPMON run joblogs requesting actions? (in minutes: 0-59)",
+                daily_minute_offset,
+                filter=lambda x: x.isdigit() and int(x) < 60))
+
+            all_interval: int = int(Utils.prompt_string(
+                "Specify the interval to perform a full scan? (in days: 1-90)",
+                all_interval,
+                filter=lambda x: x.isdigit() and int(x) <= 90 and int(x) >= 1))
+            all_hour_offset: int = int(Utils.prompt_string(
+                f"At which hour every {daily_interval} days should SPPMON perform a full scan? (in hours: 0-23)",
+                all_hour_offset,
+                filter=lambda x: x.isdigit() and int(x) < 23))
+            all_minute_offset: int = int(Utils.prompt_string(
+                f"At which minute every {daily_interval} days at {all_hour_offset}:xx should SPPMON perform a full scan? (in minutes: 0-59)",
+                all_minute_offset,
+                filter=lambda x: x.isdigit() and int(x) < 60))
+
+        else:
+            print("Using default timings")
 
         constant_cron_post: str = " --constant >/dev/null 2>&1"
         constant_cron_pre: str = f"*/{minute_interval} * * * * "
@@ -197,4 +205,20 @@ class CrontabConfig:
 
 
 if __name__ == "__main__":
-    CrontabConfig().main()
+
+    parser = argparse.ArgumentParser(
+        "Find offensive terms to replace within the SPP-BA-Client-Agent.")
+    parser.add_argument("--configPath", dest="config_path",
+                        default=join(".", "..", "config_files"),
+                        help="Path to folder containing the config files (default: `./../config_files`)")
+    parser.add_argument("--pythonPath", dest="python_path",
+                        default="python3",
+                        help="Path to python 3.7.2+ (default: `python3`)")
+    parser.add_argument("--sppmonPath", dest="sppmon_path",
+                        default=join(".", "..", "python", "sppmon.py"),
+                        help="Path to sppmon.py executable (default: `./../python/sppmon.py`)")
+    parser.add_argument("--autoConfirm", dest="auto_confirm",
+                        action="store_true",
+                        help="Autoconfirm most confirm prompts")
+    args = parser.parse_args()
+    CrontabConfig().main(args.config_path, args.python_path, args.sppmon_path, args.auto_confirm)

@@ -3,9 +3,11 @@ from os.path import realpath
 import re
 from os import get_terminal_size
 from getpass import getpass
-from typing import ClassVar, Optional, Callable
+from typing import ClassVar, Optional, Callable, Any
 
 class Utils:
+
+    auto_confirm: bool = False
 
     @staticmethod
     def signalHandler(signum, frame):
@@ -61,9 +63,13 @@ class Utils:
 
 
     @staticmethod
-    def prompt_string(message: str, default: str = "", allow_empty: bool = False, filter: Callable[[str], bool] = None, is_password=False) -> str:
+    def prompt_string(message: str, default: Any = "", allow_empty: bool = False, filter: Callable[[str], bool] = None, is_password=False) -> str:
         validate: bool = False
         result: str = ""
+
+        # Casts default to str
+        if(not isinstance(default, str)):
+            default = str(default)
 
         # Only add default brackets if there is a default case
         message = message + f" [{default}]: " if default else message + ": "
@@ -86,8 +92,12 @@ class Utils:
                 validate = Utils.confirm(f"Was \"{result}\" the correct input?")
         return result
 
-    @staticmethod
-    def confirm(message: str, default: bool = True) -> bool:
+    @classmethod
+    def confirm(cls, message: str, default: bool = True) -> bool:
+        if (cls.auto_confirm):
+            print(message + ": autoconfirm ->" + str(default))
+            return default
+
         default_msg = "[Y/n]" if default else "[y/N]"
         result: str = input(message + f" {default_msg}: ").strip()
         if not result:

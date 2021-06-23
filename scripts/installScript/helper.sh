@@ -51,13 +51,30 @@ rowLimiter() {
 
 # prompt for a confirm with message, returning true or false
 confirm() { # param1:message
-    if (( $# != 1 )); then
+    if (( $# != 1 && $# != 2)) ; then
         >&2 echo "Illegal number of parameters confirm"
         abortInstallScript
     fi
 
+    local alwaysConfirm=false
     local message="$1"
     local confirmInput
+
+    # if two arguments exists, the second has to be alwaysConfirm
+    if (( $# == 2 )) ; then
+        if [[ "$2" == "--alwaysConfirm" ]] ; then
+            alwaysConfirm=true
+        else
+            >&2 echo "Illegal second parameter; is not alwaysConfirm for confirm"
+            abortInstallScript
+        fi
+    fi
+
+    if [[ $autoconfirm && ! $alwaysConfirm ]] ; then
+        print "$1 : autoConfirm"
+        echo "Yes"
+        return 0
+    fi
 
     read -r -p"$1 (Yes/no) [Yes] " confirmInput
     echo ""

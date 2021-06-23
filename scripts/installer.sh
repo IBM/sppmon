@@ -36,7 +36,7 @@ saveState() { # param1: new continue_point #param2: name of next step
     rowLimiter
     echo "## Safepoint: If needed, the installation can be exited for later restart ##"
     echo ""
-    if ! (confirm "Continue with $next_step?");
+    if ! (confirm "Continue with $next_step?" "--alwaysConfirm");
         then
             abortInstallScript
         else
@@ -144,9 +144,11 @@ main(){
         fi
 
         if [[ "$argument" == "--autoConfirm" ]]; then
-            autoConfirm=True
-            export autoConfirm
+            autoConfirm=true
+        else
+            autoConfirm=false
         fi
+        export autoConfirm
     done
 
     restoreState
@@ -210,7 +212,11 @@ main(){
         rowLimiter
         echo "Create one or more .conf files for SPPmon"
         local python_exe=$(which python3)
-        checkReturn "$python_exe" "${path}/addConfigFile.py" "${configDir}" "${authFile}"
+        if [[ $autoConfirm ]] ; then
+            checkReturn "$python_exe" "${path}/addConfigFile.py" "--configPath=${configDir}" "--authFile=${authFile}" "--autoConfirm"
+        else
+            checkReturn "$python_exe" "${path}/addConfigFile.py" "--configPath=${configDir}" "--authFile=${authFile}"
+        fi
         echo "> IMPORTANT: if you have existing config files at a different location than: ${configDir}"
         echo "> please abort now!"
         echo "> Copy all existing config files into the dir ${configDir}"
@@ -225,7 +231,11 @@ main(){
         echo ""
         local python_exe=$(which python3)
         local sppmon_exe=$(realpath ${path}/../python/sppmon.py)
-        checkReturn "$python_exe" "${path}/addCrontabConfig.py" "${configDir}" "${python_exe}" "${sppmon_exe}"
+        if [[ $autoConfirm ]] ; then
+            checkReturn "$python_exe" "${path}/addCrontabConfig.py" "--configPath=${configDir}" "--pythonPath=${python_exe}" "--sppmonPath=${sppmon_exe}" "--autoConfirm"
+        else
+            checkReturn "$python_exe" "${path}/addCrontabConfig.py" "--configPath=${configDir}" "--pythonPath=${python_exe}" "--sppmonPath=${sppmon_exe}"
+        fi
         saveState 'GRAFANA_DASHBOARDS' 'Creation and configuration of the grafana dashboards'
     fi
 
