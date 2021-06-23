@@ -276,8 +276,8 @@ if __name__ == "__main__":
                         help="Path to folder containing the config files (default: `./../config_files`)")
     parser.add_argument("--authFile", dest="auth_file",
                         required=False,
-                        default=join(".", "installScript",".savefile.txt"),
-                        help="Path to authentification file (default: `./installScript/.savefile.txt`)")
+                        default=join(".", "delete_me_auth.txt"),
+                        help="Path to authentification file (default: `./delete_me_auth.txt`)")
     parser.add_argument("--autoConfirm", dest="auto_confirm",
                         action="store_true",
                         help="Autoconfirm most confirm prompts")
