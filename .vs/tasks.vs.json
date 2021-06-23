@@ -10,6 +10,11 @@
       "taskLabel": "task-python",
       "appliesTo": "python/",
       "type": "launch"
+    },
+    {
+      "taskLabel": "task-",
+      "appliesTo": "python/.vs/",
+      "type": "launch"
     }
   ]
 }

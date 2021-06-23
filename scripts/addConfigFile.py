@@ -54,7 +54,8 @@ class ConfigFileSetup:
         ))
 
         # Only check this if ssl is enabled
-        influxDB["verify_ssl"] = False if (not influxDB["ssl"]) else bool(Utils.readAuthOrInput(
+        # Note: verify_ssl is the logical opposite of unsafeSsl
+        influxDB["verify_ssl"] = False if (not influxDB["ssl"]) else not bool(Utils.readAuthOrInput(
             "unsafeSsl",
             "Please enter whether the ssl certificate is selfsigned (True/False)",
             filter=(lambda x: bool(re.match(r"^(True)|(False)$", x)))
