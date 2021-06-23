@@ -73,8 +73,11 @@ class ConfigFileSetup:
             filter=(lambda x: x.isdigit())
         ))
 
-        print(f"> Your influxDB database name for this server is \"{server_name}\"")
-        influxDB["dbName"] = server_name
+        # Need to remove any illegal characters from the db name.  For now, we will limit the characters
+        # to letters and numbers
+        dbName = ''.join(filter(str.isalnum, server_name))
+        print(f"> Your influxDB database name for this server is \"{dbName}\"")
+        influxDB["dbName"] = dbName
 
         return influxDB
 
