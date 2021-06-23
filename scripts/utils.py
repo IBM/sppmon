@@ -95,7 +95,7 @@ class Utils:
     @classmethod
     def confirm(cls, message: str, default: bool = True) -> bool:
         if (cls.auto_confirm):
-            print(message + ": autoconfirm ->" + str(default))
+            print(message + ": autoConfirm ->" + str(default))
             return default
 
         default_msg = "[Y/n]" if default else "[y/N]"
