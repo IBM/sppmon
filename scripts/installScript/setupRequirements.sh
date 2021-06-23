@@ -47,7 +47,7 @@ setupRequirements() {
     echo "system updates ('yum upgrade').  This is recommended."
     echo ""
     if confirm "Do you want to upgrade operating system components?" ; then
-        if [[ $autoConfirm == true ]]; then
+        if $autoConfirm ; then
             yes y | sudo yum upgrade
         else
             sudo yum upgrade

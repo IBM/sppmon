@@ -71,6 +71,12 @@ saveAuth() { # topic is the describer
     eval "$topic=\"${value}\""
     set +a # Not anymore
 
+    # create file if it does not exists and add permissions
+    if [[ ! -e "${authFile}" ]] ; then
+        touch "${authFile}"
+        chmod 600 "${authFile}"
+    fi
+
     echo "$topic=\"${value}\"" >> "$authFile"
 }
 
@@ -212,7 +218,7 @@ main(){
         rowLimiter
         echo "Create one or more .conf files for SPPmon"
         local python_exe=$(which python3)
-        if [[ $autoConfirm == true ]] ; then
+        if $autoConfirm ; then
             checkReturn "$python_exe" "${path}/addConfigFile.py" "--configPath=${configDir}" "--authFile=${authFile}" "--autoConfirm"
         else
             checkReturn "$python_exe" "${path}/addConfigFile.py" "--configPath=${configDir}" "--authFile=${authFile}"
@@ -231,7 +237,7 @@ main(){
         echo ""
         local python_exe=$(which python3)
         local sppmon_exe=$(realpath ${path}/../python/sppmon.py)
-        if [[ $autoConfirm == true ]] ; then
+        if $autoConfirm ; then
             checkReturn "$python_exe" "${path}/addCrontabConfig.py" "--configPath=${configDir}" "--pythonPath=${python_exe}" "--sppmonPath=${sppmon_exe}" "--autoConfirm"
         else
             checkReturn "$python_exe" "${path}/addCrontabConfig.py" "--configPath=${configDir}" "--pythonPath=${python_exe}" "--sppmonPath=${sppmon_exe}"

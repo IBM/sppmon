@@ -164,9 +164,9 @@ EOF
     restartInflux
 
     #################### INFLUXADMIN USER ################
-
+    local adminCreated=false
     # Create user
-    while true; do # repeat until break, when it works
+    while $adminCreated; do # repeat until break, when it works
 
         readAuth # read all existing auths
         # At this point SSL has not been configured, so avoid verifyConnnection() failures
@@ -192,21 +192,22 @@ EOF
         if (( $userCreateReturnCode != 0 ));then
             echo "Creation failed due an error. Please read the output above."
             if ! confirm "Do you want to try again (y) or continue (n)? Abort by ctrl + c" "--alwaysConfirm"; then
-                break
+                # user wants to exit
+                adminCreated=true
             fi
+            # else
             # Start again
         else
             echo "> admin creation sucessfully"
-
-            saveAuth "influxAdminName" "${influxAdminName}"
-            saveAuth "influxAdminPassword" "${influxAdminPassword}"
-            saveAuth "influxPort" "${influxPort}"
-            saveAuth "influxAddress" "${influxAddress}"
-            # BREAK; user finished
-            break
+            adminCreated=true
         fi
 
     done
+
+    saveAuth "influxAdminName" "${influxAdminName}"
+    saveAuth "influxAdminPassword" "${influxAdminPassword}"
+    saveAuth "influxPort" "${influxPort}"
+    saveAuth "influxAddress" "${influxAddress}"
 
     verifyConnection "$influxAdminName" "$influxAdminPassword"
 
@@ -235,22 +236,38 @@ EOF
         influx -host $influxAddress -port $influxPort -execute "CREATE USER \"$influxGrafanaReaderName\" WITH PASSWORD '$influxGrafanaReaderPassword'"
         local userCreateReturnCode=$?
 
-        if (( $userCreateReturnCode != 0 ));then
+        if (( $userCreateReturnCode != 0 )) ;then
             echo "Creation failed due an error. Please read the output above."
             if ! confirm "Do you want to try again (y) or continue (n)? Abort by ctrl + c" "--alwaysConfirm"; then
-                break
+                # user wants to exit
+                grafanaReaderCreated=true
             fi
+            # else
             # Start again
         else
             echo "> GrafanaReader creation sucessfully"
-
-            saveAuth "influxGrafanaReaderName" "${influxGrafanaReaderName}"
-            saveAuth "influxGrafanaReaderPassword" "${influxGrafanaReaderPassword}"
-            # BREAK; user finished
-            break
+            grafanaReaderCreated=true
         fi
 
     done
+
+     if (( $userCreateReturnCode != 0 )) ;then
+            echo "Creation failed due an error. Please read the output above."
+            if ! confirm "Do you want to try again (y) or continue (n)? Abort by ctrl + c" "--alwaysConfirm"; then
+                # user wants to exit
+                adminCreated=true
+            fi
+            # else
+            # Start again
+        else
+            echo "> admin creation sucessfully"
+            adminCreated=true
+        fi
+
+    done
+
+    saveAuth "influxGrafanaReaderName" "${influxGrafanaReaderName}"
+    saveAuth "influxGrafanaReaderPassword" "${influxGrafanaReaderPassword}"
 
     verifyConnection "$influxGrafanaReaderName" "$influxGrafanaReaderPassword"
 

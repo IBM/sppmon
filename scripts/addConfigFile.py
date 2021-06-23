@@ -2,7 +2,7 @@
 import re
 import json
 import signal
-from os import get_terminal_size
+import os
 from os.path import isfile, realpath, join
 from sys import path
 from typing import Any, Dict, List
@@ -25,7 +25,7 @@ class ConfigFileSetup:
                 "443",
                 filter=(lambda x: x.isdigit())))
 
-        spp_server["jobLog_rentation"] = Utils.prompt_string(
+        spp_server["jobLog_retention"] = Utils.prompt_string(
             "How long are the JobLogs saved within the Server? (Format: 48h, 60d, 2w)",
             "60d",
             filter=(lambda x: bool(re.match(r"^[0-9]+[hdw]$", x))))
@@ -138,9 +138,14 @@ class ConfigFileSetup:
                         else:
                             print("> Overwriting old config file")
 
+                os.system("touch " + config_file_path)
+                os.chmod(config_file_path, 600)
+                print(f"> Created config file under {config_file_path}")
+
                 # Overwrite existing file
                 with open(config_file_path, "w") as config_file:
-                    print(f"> Created config file under {config_file_path}")
+                    print(f"> Accessed config file under {config_file_path}")
+
 
 
                     # Structure of the config file
