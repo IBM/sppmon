@@ -191,7 +191,7 @@ EOF
 
         if (( $userCreateReturnCode != 0 ));then
             echo "Creation failed due an error. Please read the output above."
-            if ! confirm "Do you want to try again (y) or continue (n)? Abort by ctrl + c"; then
+            if ! confirm "Do you want to try again (y) or continue (n)? Abort by ctrl + c" "alwaysConfirm"; then
                 break
             fi
             # Start again
