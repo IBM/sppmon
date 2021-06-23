@@ -166,7 +166,7 @@ EOF
     #################### INFLUXADMIN USER ################
     local adminCreated=false
     # Create user
-    while $adminCreated; do # repeat until break, when it works
+    while [ "$adminCreated" = true ] ; do # repeat until break, when it works
 
         readAuth # read all existing auths
         # At this point SSL has not been configured, so avoid verifyConnnection() failures
@@ -220,7 +220,8 @@ EOF
     echo "Creating InfluxDB '$influxGrafanaReaderName' user"
 
     # Create user
-    while true; do # repeat until break, when it works
+    local grafanaReaderCreated=false
+    while [ "$grafanaReaderCreated" = true ]  ; do # repeat until break, when it works
 
         readAuth # read all existing auths
         # At this point SSL has not been configured, so avoid verifyConnnection() failures

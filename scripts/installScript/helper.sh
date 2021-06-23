@@ -70,7 +70,7 @@ confirm() { # param1:message
         fi
     fi
 
-    if $autoConfirm && ! $alwaysConfirm ; then
+    if [ "$autoConfirm" = true ] && ! [ "$alwaysConfirm" = true ] ; then
         printf "$1 : autoConfirm -> "
         echo "Yes"
         return 0

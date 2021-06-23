@@ -218,7 +218,7 @@ main(){
         rowLimiter
         echo "Create one or more .conf files for SPPmon"
         local python_exe=$(which python3)
-        if $autoConfirm ; then
+        if [ "$autoConfirm" = true ]  ; then
             checkReturn "$python_exe" "${path}/addConfigFile.py" "--configPath=${configDir}" "--authFile=${authFile}" "--autoConfirm"
         else
             checkReturn "$python_exe" "${path}/addConfigFile.py" "--configPath=${configDir}" "--authFile=${authFile}"
@@ -237,7 +237,7 @@ main(){
         echo ""
         local python_exe=$(which python3)
         local sppmon_exe=$(realpath ${path}/../python/sppmon.py)
-        if $autoConfirm ; then
+        if [ "$autoConfirm" = true ]  ; then
             checkReturn "$python_exe" "${path}/addCrontabConfig.py" "--configPath=${configDir}" "--pythonPath=${python_exe}" "--sppmonPath=${sppmon_exe}" "--autoConfirm"
         else
             checkReturn "$python_exe" "${path}/addCrontabConfig.py" "--configPath=${configDir}" "--pythonPath=${python_exe}" "--sppmonPath=${sppmon_exe}"
