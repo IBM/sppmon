@@ -154,18 +154,18 @@ class ConfigFileSetup:
                     # Saving config
                     configs["sppServer"] = ConfigFileSetup.createServerDict()
 
-                    print("> finished collecting server informations")
+                    print("> finished collecting server information")
                     # #################### influxDB ###############################
                     Utils.printRow()
-                    print("> collecting influxDB informations")
+                    print("> collecting influxDB information")
 
                     # Saving config
                     configs["influxDB"] = ConfigFileSetup.createInfluxDict(server_name)
 
-                    print("> finished collecting influxdb informations")
+                    print("> finished collecting influxdb information")
                     # #################### ssh clients ###############################
                     Utils.printRow()
-                    print("> collecting ssh client informations")
+                    print("> collecting ssh client information")
 
                     ssh_clients: List[Dict[str, Any]] = []
 
@@ -182,14 +182,14 @@ class ConfigFileSetup:
 
                     if(not Utils.confirm("Do you want to continue now?")):
                         json.dump(configs, config_file, indent=4)
-                        print(f"> saved all informations into file {config_file_path}")
+                        print(f"> saved all information into file {config_file_path}")
                         print("> finished setup for this server.")
                         continue # Contiuing to the next server config file loop
 
 
                     # #################### ssh clients: SERVER ###############################
                     Utils.printRow()
-                    print("> Collecting SPP-Server ssh informations")
+                    print("> Collecting SPP-Server ssh information")
 
                     ssh_server: Dict[str, Any] = {}
 
@@ -197,7 +197,11 @@ class ConfigFileSetup:
                     ssh_server["name"] = server_name
                     spp_server_dict: Dict[str, Any] = configs["sppServer"]
                     ssh_server["srv_address"] = spp_server_dict["srv_address"]
-                    ssh_server["srv_port"] = spp_server_dict["srv_port"]
+                    ssh_server["srv_port"] = int(
+                                        Utils.prompt_string(
+                                        f"Please enter the SSH port of the SPP server",
+                                        "22",
+                                        filter=(lambda x: x.isdigit())))
                     ssh_server["username"] = Utils.prompt_string("Please enter the SPP-Server SSH username (equal to login via ssh)")
                     ssh_server["password"] = Utils.prompt_string("Please enter the SPP-Server SSH user password (equal to login via ssh)", is_password=True)
                     ssh_server["type"] = "server"
@@ -209,7 +213,7 @@ class ConfigFileSetup:
                     for ssh_type in ssh_types:
                         try:
                             Utils.printRow()
-                            print(f"> Collecting {ssh_type} ssh informations")
+                            print(f"> Collecting {ssh_type} ssh information")
 
                             # counter for naming like: vsnap-1 / vsnap-2
                             counter: int = 1
