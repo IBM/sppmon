@@ -5,8 +5,6 @@ welcome() {
     clear
     rowLimiter
 
-    echo "exported autoconfirm: $autoConfirm"
-
     echo "Welcome to the Spectrum-Protect-Plus Monitoring install wizard!"
     echo ""
     echo "This script will guide you through the install process of SPPMon. Feature"

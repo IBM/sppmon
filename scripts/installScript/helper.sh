@@ -69,8 +69,8 @@ confirm() { # param1:message
             abortInstallScript
         fi
     fi
-
-    if [[ $autoconfirm && ! $alwaysConfirm ]] ; then
+    print "autoconfirm: ${autoConfirm} / alwaysconfirm: ${alwaysConfirm}"
+    if [[ $autoconfirm == true && $alwaysConfirm == false ]] ; then
         print "$1 : autoConfirm"
         echo "Yes"
         return 0
