@@ -174,3 +174,10 @@ Thumbs.db
 # MANUAL EDITS TO AUTOGEN CODE:
 
 .vscode/launch.json
+
+# file added from windows python instance
+python.sln
+.python.pyproj
+
+# windows seems to use .vs instead of .vscode
+.vs/*

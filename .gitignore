@@ -7,4 +7,8 @@ config_files
 Grafana/customer_dashboards/*
 !Grafana/customer_dashboards/.gitkeep
 
+# `python` and `scripts are used as workspace dirs
+# ignore if vs code is opened up on top level
+.vs/*
+
 # Everything else is declared within sub-gitignores
