@@ -14,7 +14,7 @@ class Utils:
         raise ValueError("Aborted by user")
 
 
-    password_file_path: ClassVar[str] = ""
+    auth_file_path: ClassVar[str] = ""
 
     @classmethod
     def setupAuthFile(cls, filepath: Optional[str]):
@@ -30,8 +30,8 @@ class Utils:
                 # dummy open to confirm the path is correct/readable
                 with open(filepath, "r"):
                     # confirm it works, now save
-                    cls.password_file_path = filepath
-                    print(f"> Passwords will be read from the file:\n{filepath}")
+                    cls.auth_file_path = filepath
+                    print(f"> Authentifications will be read from the file:\n{filepath}")
             except IOError as err:
                 print("ERROR: Unable to read authentification file. Continuing with manual input.")
                 print(f"Error message: {err}")
@@ -47,18 +47,21 @@ class Utils:
 
     @classmethod
     def read_auth(cls, key: str) -> Optional[str]:
-        if(not cls.password_file_path):
+        if(not cls.auth_file_path):
             return None
         result: Optional[str] = None
         try:
-            with open(cls.password_file_path, "r") as pwd_file:
+            with open(cls.auth_file_path, "r") as pwd_file:
                 pattern = re.compile(fr"{key}=\"(.*)\"")
                 for line in reversed(pwd_file.readlines()):
                     match = re.match(pattern, line)
                     if(match):
                         result = match.group(1)
-        except IOError:
-            pass
+        except IOError as error:
+            print("Unable to work with authentification file: " + error.args[0])
+
+        if(not result):
+            print(f"No Authentification was found for {key} in the auth file.")
         return result
 
 
@@ -87,7 +90,11 @@ class Utils:
                 continue
             if(is_password):
                 result_confirm = getpass("Please repeat input for confirmation").strip() or default
-                validate = result_confirm == result
+                if(result_confirm != result):
+                    print("These passwords did not match. Please try again.")
+                    validate = False
+                else:
+                    validate = True
             else:
                 validate = Utils.confirm(f"Was \"{result}\" the correct input?")
         return result
@@ -111,7 +118,9 @@ class Utils:
     def readAuthOrInput(cls, auth_key: str, message: str, default: str = "", filter: Callable[[str], bool] = None, is_password = False):
         """Used to reduce duplicate code when reading authentification from a authfile, while asking user if not present.
         """
-        result: Optional[str] = Utils.read_auth(auth_key)
+        result: Optional[str] = None
+        if(cls.auth_file_path):
+            result = Utils.read_auth(auth_key)
         if(not result):
             result = Utils.prompt_string(message, default=default, filter=filter, is_password=is_password)
         return result

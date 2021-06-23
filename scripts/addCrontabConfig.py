@@ -22,24 +22,14 @@ class CrontabConfig:
         print("> Generating new Config files")
 
         # ### Config dir setup
-        config_dir: str
-        if(not config_path):
-            print("> No config-dir specifed")
-            config_path = Utils.prompt_string("Please specify the dir where config files are placed", join(".", "..", "config_files"))
         config_path = realpath(config_path)
         print(f"> All configurations files will be read from {config_path}")
 
         # ### python setup
-        if(not python_path):
-            print("> No python instance specifed")
-            python_path = Utils.prompt_string("Please specify the path to python", "python3")
         python_path = realpath(python_path)
         print(f"> Following python instance will be used: {python_path}")
 
         # ### sppmon setup
-        if(not sppmon_path):
-            print("> No sppmon instance specifed")
-            sppmon_path = Utils.prompt_string("Please specify the path to sppmon.py executable", join(".", "..", "python", "sppmon.py"))
         sppmon_path = realpath(sppmon_path)
         print(f"> Following sppmon instance will be used: {sppmon_path}")
 
