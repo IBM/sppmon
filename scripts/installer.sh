@@ -137,11 +137,17 @@ removeGeneratedFiles() {
 }
 
 main(){
-
-    if [[ "${1}" == "--debug" ]]
-        then
+    local argument
+    for argument in "$@"
+        if [[ "$argument" == "--debug" ]]; then
             removeGeneratedFiles
-    fi
+        fi
+
+        if [[ "$argument" == "--autoConfirm" ]]; then
+            autoConfirm=True
+            export autoConfirm
+        fi
+    done
 
     restoreState
     # Sudo Check
