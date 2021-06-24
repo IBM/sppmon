@@ -53,6 +53,7 @@ Author:
  02/09/2021 version 0.12.1 Hotfix job statistic and --test now also checks for all commands individually
  02/07/2021 version 0.13   Implemented additional Office365 Joblog parsing
  02/10/2021 version 0.13.1 Fixes to partial send(influx), including influxdb version into stats
+ 06/24/2021 version 1.0    Added install script and fixed typo in config file, breaking old config files.
 
 """
 from __future__ import annotations
@@ -81,7 +82,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "0.13.1  (2021/02/10)"
+VERSION = "1.0  (2021/06/24)"
 
 # ----------------------------------------------------------------------------
 # command line parameter parsing
@@ -510,7 +511,10 @@ class SppMon:
 
         try:
             auth_rest: Dict[str, Any] = SppUtils.get_cfg_params(param_dict=config_file, param_name="sppServer") # type: ignore
-            self.job_log_retention_time = auth_rest.get("jobLog_rentation", self.job_log_retention_time)
+            # TODO DEPRICATED TO BE REMOVED IN 1.1
+            self.job_log_retention_time = auth_rest.get("jobLog_rentation", auth_rest.get("jobLog_retention", self.job_log_retention_time))
+            # TODO New once 1.1 is live
+            #self.job_log_retention_time = auth_rest.get("jobLog_retention", self.job_log_retention_time)
 
             self.job_methods = JobMethods(
                 self.influx_client, self.api_queries, self.job_log_retention_time,
