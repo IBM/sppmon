@@ -5,10 +5,10 @@ finishingScript() {
     clear
     rowLimiter
 
-    echo "You've completed the install of SPPMon!"
+    loggerEcho "You've completed the install of SPPMon!"
     echo ""
-    echo "> You may find saved config files under:"
-    echo ${configDir}
+    loggerEcho "> You may find saved config files under:"
+    loggerEcho ${configDir}
     if [[ -e ${authFile} ]]; then
         echo "> The configuration state file still exists.  This file may include"
         echo "sensitive information such as passwords. You can optionally view"
@@ -22,7 +22,7 @@ finishingScript() {
         echo ""
         if confirm "> Do you want to delete this file now?"; then
             checkReturn sudo rm -f "${authFile}"
-            echo "> Deleted all sensitive data"
+            loggerEcho "> Deleted all sensitive data"
         fi
     fi
     echo ""
@@ -50,7 +50,7 @@ finishingScript() {
 # Start if not used as source
 if [ "${1}" != "--source-only" ]; then
     if (( $# != 1 )); then
-        >&2 echo "Illegal number of parameters for the finishingScript file"
+        >&2 loggerEcho "Illegal number of parameters for the finishingScript file"
         abortInstallScript
     fi
     # prelude

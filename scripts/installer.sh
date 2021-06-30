@@ -6,6 +6,11 @@ abortInstallScript() {
         >&2 echo "Illegal number of parameters abortInstallScript"
     fi
 
+    if [[ -w $logFile ]] ; then
+        logger "Aborting the SPPMon install script."
+        logger "Last saved point is: $continue_point."
+    fi
+
     rowLimiter
 
     echo "Aborting the SPPMon install script."
@@ -24,7 +29,7 @@ abortInstallScript() {
 
 saveState() { # param1: new continue_point #param2: name of next step
     if (( $# != 2 )); then
-        >&2 echo "Illegal number of parameters saveState"
+        >&2 loggerEcho "Illegal number of parameters saveState"
         abortInstallScript
     fi
     # global on purpose
@@ -40,14 +45,14 @@ saveState() { # param1: new continue_point #param2: name of next step
         then
             abortInstallScript
         else
-            echo "continuing with $next_step"
+            loggerEcho "continuing with $next_step"
     fi
 }
 
 # get path of current script
 getPath() {
     if (( $# != 0 )); then
-        >&2 echo "Illegal number of parameters getPath"
+        >&2 loggerEcho "Illegal number of parameters getPath"
         abortInstallScript
     fi
     #DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -55,12 +60,12 @@ getPath() {
     #local DIR=$(dirname "$(readlink -f "$0")")
     #echo $DIR
 
-    echo $(dirname "$(readlink -f "$0")")
+    loggerEcho $(dirname "$(readlink -f "$0")")
 }
 
 saveAuth() { # topic is the describer
     if (( $# != 2 )); then
-        >&2 echo "Illegal number of parameters saveAuth"
+        >&2 loggerEcho "Illegal number of parameters saveAuth"
         abortInstallScript
     fi
     local topic=$1 # param1: topic
@@ -82,7 +87,7 @@ saveAuth() { # topic is the describer
 
 readAuth() {
     if (( $# != 0 )); then
-        >&2 echo "Illegal number of parameters readAuth"
+        >&2 loggerEcho "Illegal number of parameters readAuth"
         abortInstallScript
     fi
     if [[ -r "$authFile" ]]; then
@@ -94,7 +99,7 @@ readAuth() {
 
 restoreState() {
     if (( $# != 0 )); then
-        >&2 echo "Illegal number of parameters restoreState"
+        >&2 loggerEcho "Illegal number of parameters restoreState"
         abortInstallScript
     fi
 
@@ -104,18 +109,18 @@ restoreState() {
         rowLimiter
 
         continue_point=$(<"$saveFile")
-        echo "Welcome to the SPPMon guided installation."
+        loggerEcho "Welcome to the SPPMon guided installation."
         echo ""
-        echo "Detected save point: $continue_point."
+        loggerEcho "Detected save point: $continue_point."
         echo "WARNING: Restarting the installation will not work in all cases."
         echo "You can restart the installation from the beginning by answering no to the"
         echo "prompt, or exit by pressing CTRL+C"
         echo ""
         if confirm "Do you want to continue from the save point?"
             then # no restart
-                echo "Continuing from last saved point"
+                loggerEcho "Continuing from last saved point"
             else # restart
-                echo "Restarting the install process"
+                loggerEcho "Restarting the install process"
                 continue_point='WELCOME'
             echo "$continue_point" > "$saveFile"
         fi
@@ -127,7 +132,7 @@ restoreState() {
 
 removeGeneratedFiles() {
     if (( $# != 0 )); then
-        >&2 echo "Illegal number of parameters removeGeneratedFiles"
+        >&2 loggerEcho "Illegal number of parameters removeGeneratedFiles"
         abortInstallScript
     fi
 
@@ -202,7 +207,7 @@ main(){
         then
             clear
             rowLimiter
-            echo "User creation on SPP server, vSnap servers, and VADP proxies"
+            loggerEcho "User creation on SPP server, vSnap servers, and VADP proxies"
             echo ""
             echo "User accounts are needed on the systems that will be monitored by SPPmon."
             echo "This step is currently manual."
@@ -216,7 +221,7 @@ main(){
     if [[ $continue_point == "CONFIG_FILE" ]]; then
         clear
         rowLimiter
-        echo "Create one or more .conf files for SPPmon"
+        loggerEcho "Create one or more .conf files for SPPmon"
         local python_exe=$(which python3)
         if [ "$autoConfirm" = true ]  ; then
             checkReturn "$python_exe" "${path}/addConfigFile.py" "--configPath=${configDir}" "--authFile=${authFile}" "--autoConfirm"
@@ -225,7 +230,7 @@ main(){
         fi
         echo "> IMPORTANT: if you have existing config files at a different location than: ${configDir}"
         echo "> please abort now!"
-        echo "> Copy all existing config files into the dir ${configDir}"
+        loggerEcho "> Copy all existing config files into the dir ${configDir}"
         saveState 'CRONTAB' 'Crontab configuration for automatic execution.'
     fi
 
@@ -233,7 +238,7 @@ main(){
     if [[ $continue_point == "CRONTAB" ]]; then
         clear
         rowLimiter
-        echo "Create cron jobs for automated SPPmon execution"
+        loggerEcho "Create cron jobs for automated SPPmon execution"
         echo ""
         local python_exe=$(which python3)
         local sppmon_exe=$(realpath ${path}/../python/sppmon.py)
@@ -249,7 +254,7 @@ main(){
     if [[ $continue_point == "GRAFANA_DASHBOARDS" ]]; then
         clear
         rowLimiter
-        echo "Import SPPmon dashboards into Grafana"
+        loggerEcho "Import SPPmon dashboards into Grafana"
         echo ""
         echo "> Please follow grafana import instructions"
         echo "https://github.com/IBM/spectrum-protect-sppmon/wiki/Configure-Grafana"
@@ -278,8 +283,13 @@ if [ "${1}" != "--source-only" ]; then
     # Sources
     source "$subScripts/helper.sh" "--source-only"
 
+    # Logger
+    initLogger "${path}/logs/installLog.txt"
+    logger "${@}"
+
     # handling of signals
     trap " abortInstallScript " INT QUIT HUP
 
-    main "${@}" # all arguments passed
+
+    main "${@}"  # all arguments passed
 fi

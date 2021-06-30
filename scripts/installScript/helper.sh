@@ -8,26 +8,26 @@ checkReturn() { # TODO maybe this is Bugged. Other quotations needed?
     eval "${@}"
     if [[ "$?" -ne 0 ]]
         then
-            echo "ERROR when executing command: \"$@\""
+            loggerEcho "ERROR when executing command: \"$@\""
             abortInstallScript
     fi
 }
 
 sudoCheck() {
     if (( $# != 0 )); then
-        >&2 echo "Illegal number of parameters sudoCheck"
+        >&2 loggerEcho "Illegal number of parameters sudoCheck"
         abortInstallScript
     fi
 
-    echo "Checking if sudo privileges are available."
+    loggerEcho "Checking if sudo privileges are available."
     if [[ "$EUID" = 0 ]]; then
-        echo "(1) already root"
+        loggerEcho "(1) already root"
     else
         sudo -k # make sure to ask for password on next sudo
         if sudo true; then
-            echo "(2) correct password"
+            loggerEcho "(2) correct password"
         else
-            echo "(3) wrong password"
+            loggerEcho "(3) wrong password"
             abortInstallScript
         fi
     fi
@@ -38,7 +38,7 @@ sudoCheck() {
 # print row of # signs to the console
 rowLimiter() {
     if (( $# != 0 )); then
-        >&2 echo "Illegal number of parameters rowLimiter"
+        >&2 loggerEcho "Illegal number of parameters rowLimiter"
         abortInstallScript
     fi
 
@@ -47,12 +47,65 @@ rowLimiter() {
     printf '\n'
 }
 
+
+initLogger(){
+    if (( $# !=1 )); then
+        >&2 echo "Illegal number of parameters loggerEcho"
+        abortInstallScript
+    fi
+
+    set -a # now all variables are exported
+    logFile=$1
+    set +a # not anymore
+
+    checkReturn touch $logFile
+    echo "" >> $logFile
+    echo "$(rowLimiter)" >> $logFile
+    echo "$(date) |> initialize logger " >> $logFile
+    echo "$(rowLimiter)" >> $logFile
+    echo "" >> $logFile
+
+}
+
+logger(){
+    if (( $# !=1 )); then
+        >&2 echo "Illegal number of parameters loggerEcho"
+        abortInstallScript
+    fi
+    if [[ ! -w $logFile ]] ; then
+        >&2 echo "ERROR: Log-File not writeable - path: ${logFile}"
+            abortInstallScript
+    fi
+
+    local message=$1
+
+    echo "$(date) |> ${message}" >> $logFile
+
+}
+
+loggerEcho() {
+    if (( $# !=1 )); then
+        >&2 echo "Illegal number of parameters loggerEcho"
+        abortInstallScript
+    fi
+    if [[ ! -w $logFile ]] ; then
+        >&2 echo "ERROR: Log-File not writeable - path: ${logFile}"
+            abortInstallScript
+    fi
+
+    local message=$1
+
+    echo "$(date) |> ${message}" >> $logFile
+    echo "${message}"
+
+}
+
 # ############ USER PROMPTS ###################
 
 # prompt for a confirm with message, returning true or false
-confirm() { # param1:message
+confirm() { # param1:message # param2: alwaysconfirm
     if (( $# != 1 && $# != 2)) ; then
-        >&2 echo "Illegal number of parameters confirm"
+        >&2 loggerEcho "Illegal number of parameters confirm"
         abortInstallScript
     fi
 
@@ -60,31 +113,34 @@ confirm() { # param1:message
     local message="$1"
     local confirmInput
 
+    logger "$message"
+
     # if two arguments exists, the second has to be alwaysConfirm
     if (( $# == 2 )) ; then
         if [[ "$2" == "--alwaysConfirm" ]] ; then
             alwaysConfirm=true
+            logger "alwaysConfirm"
         else
-            >&2 echo "Illegal second parameter; is not alwaysConfirm for confirm"
+            >&2 loggerEcho "Illegal second parameter; is not alwaysConfirm for confirm"
             abortInstallScript
         fi
     fi
 
     if [ "$autoConfirm" = true ] && ! [ "$alwaysConfirm" = true ] ; then
-        printf "$1 : autoConfirm -> "
-        echo "Yes"
+        printf "$message : autoConfirm -> "
+        loggerEcho "Yes"
         return 0
     fi
 
-    read -r -p"$1 (Yes/no) [Yes] " confirmInput
+    read -r -p"$message (Yes/no) [Yes] " confirmInput
     echo ""
     case "$confirmInput" in
         [yY][eE][sS] | [yY] | "" )
-            echo 'Yes'
+            loggerEcho 'Yes'
             return 0
             ;;
         * )
-            echo 'No'
+            loggerEcho 'No'
             return 1
             ;;
     esac
@@ -92,7 +148,7 @@ confirm() { # param1:message
 
 promptText() {
     if (( $# != 2 && $# != 3 )); then
-        >&2 echo "Illegal number of parameters promptText"
+        >&2 loggerEcho "Illegal number of parameters promptText"
         abortInstallScript
     fi
 
@@ -114,6 +170,8 @@ promptText() {
         promptTextInput="${promptTextInput:-$defaultValue}" # substitues if unset or null
         # form: ${parameter:-word}
 
+        logger "$message"
+
         if confirm "Is \"$promptTextInput\" the correct input?"; then
                 break
         fi
@@ -124,7 +182,7 @@ promptText() {
 
 promptPasswords() {
     if (( $# != 2 && $# != 3 )); then
-        >&2 echo "Illegal number of parameters promptText"
+        >&2 loggerEcho "Illegal number of parameters promptText"
         abortInstallScript
     fi
 
@@ -148,14 +206,16 @@ promptPasswords() {
         promptPasswordInput="${promptPasswordInput:-$defaultValue}" # substitues if unset or null
         # form: ${parameter:-word}
 
+        logger "$message"
+
         if [[ -z $promptPasswordInput ]]; then
-            echo "No empy value is allowed, please try again."
+            loggerEcho "No empy value is allowed, please try again."
             continue # start loop again
         else
             local symbCheck=$(echo "$promptPasswordInput" | grep "[$prohibitedSymbols]" >/dev/null; echo $?)
             # 0 means match, which is bad. 1 = all good
             if [[ $symbCheck -ne 1 ]]; then
-                echo "The $description must not contain any of the following symbols: $prohibitedSymbols"
+                loggerEcho "The $description must not contain any of the following symbols: $prohibitedSymbols"
                 promptPasswordInput=""
                 continue # start loop again
             fi
@@ -169,6 +229,7 @@ promptPasswords() {
         echo ""
         promptPasswordInputConfirm=""
         read -r -s -p"Please repeat to confirm: " promptPasswordInputConfirm
+        logger "Password repeat confirm"
         promptPasswordInputConfirm="${promptPasswordInputConfirm:-$defaultValue}"
 
         echo "" # newline
@@ -177,7 +238,7 @@ promptPasswords() {
         if [[ "${promptPasswordInput}" == "${promptPasswordInputConfirm}" ]]; then
                 break # exit
         else
-            echo "Input did not match, please try again"
+            loggerEcho "Input did not match, please try again"
             # continue / start loop again
         fi
     done
@@ -187,7 +248,7 @@ promptPasswords() {
 
 promptLimitedText() {
     if (( $# != 2 && $# != 3 )); then
-        >&2 echo "Illegal number of parameters promptLimitedText"
+        >&2 loggerEcho "Illegal number of parameters promptLimitedText"
         abortInstallScript
     fi
 
@@ -206,12 +267,12 @@ promptLimitedText() {
         fi
 
         if [[ -z $promptLimitedTextInput ]]; then
-            echo "No empy value is allowed, please try again."
+            loggerEcho "No empy value is allowed, please try again."
         else
             local symbCheck=$(echo "$promptLimitedTextInput" | grep "[$prohibitedSymbols]" >/dev/null; echo $?)
             # 0 means match, which is bad. 1 = all good
             if [[ $symbCheck -ne 1 ]]; then
-                echo "The $description must not contain any of the following symbols: $prohibitedSymbols"
+                loggerEcho "The $description must not contain any of the following symbols: $prohibitedSymbols"
                 promptLimitedTextInput=""
             fi
         fi
@@ -224,7 +285,7 @@ promptLimitedText() {
 
 if [ "${1}" != "--source-only" ]; then
     if (( $# != 1 )); then
-        >&2 echo "Illegal number of parameters for the helper file"
+        >&2 loggerEcho "Illegal number of parameters for the helper file"
         abortInstallScript
     fi
 

@@ -4,7 +4,7 @@ grafanaSetup() {
 
     clear
     rowLimiter
-    echo "Setup and installation of Grafana"
+    loggerEcho "Setup and installation of Grafana"
     echo ""
     echo "> configuring yum repository"
     sudo tee /etc/yum.repos.d/grafana.repo<<EOF
@@ -19,30 +19,30 @@ sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
 EOF
 
-    echo "> Installing Grafana"
+    loggerEcho "> Installing Grafana"
     checkReturn sudo yum install grafana
 
-    echo "> Starting Grafana service"
+    loggerEcho "> Starting Grafana service"
     checkReturn sudo systemctl enable --now grafana-server
 
     echo "> Waiting 10 seconds for startup"
     sleep 10
 
-    echo "> Verify Grafana service is active"
+    loggerEcho "> Verify Grafana service is active"
     checkReturn sudo systemctl is-active grafana-server
 
-    echo "> Firewall configuration"
+    loggerEcho "> Firewall configuration"
     checkReturn sudo firewall-cmd --add-port=3000/tcp --permanent
     checkReturn sudo firewall-cmd --reload
 
-    echo "Finished Grafana Setup"
+    loggerEcho "Finished Grafana Setup"
 
 }
 
 # Start if not used as source
 if [ "${1}" != "--source-only" ]; then
     if (( $# != 1 )); then
-        >&2 echo "Illegal number of parameters for the grafanaSetup file"
+        >&2 loggerEcho "Illegal number of parameters for the grafanaSetup file"
         abortInstallScript
     fi
 
