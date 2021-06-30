@@ -69,7 +69,7 @@ initLogger(){
 
 logger(){
     if (( $# !=1 )); then
-        >&2 echo "Illegal number of parameters loggerEcho"
+        >&2 echo "Illegal number of parameters logger"
         abortInstallScript
     fi
     if [[ ! -w $logFile ]] ; then
