@@ -38,7 +38,7 @@ setupRequirements() {
     loggerEcho -e "System Main IP:\t\t"`hostname -I`
     loggerEcho -e "----------------------------------Disk--------------------------------------"
     df -PhT
-    logger $(df -Pht)
+    logger $(df -PhT)
     loggerEcho -e "-------------------------------Package Updates-------------------------------"
     yum updateinfo summary | grep 'Security|Bugfix|Enhancement'
     logger $(yum updateinfo summary | grep 'Security|Bugfix|Enhancement')
