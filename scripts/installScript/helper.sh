@@ -80,7 +80,6 @@ logger(){
 }
 
 loggerEcho() {
-    fi
     if [[ ! -w $logFile ]] ; then
         >&2 echo "ERROR: Log-File not writeable - path: ${logFile}"
             abortInstallScript
