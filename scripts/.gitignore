@@ -1,5 +1,6 @@
 # Individual Changes (changes to the autogen code have to be added at the very bottom):
 
+logs/*
 installScript/.savefile.txt
 delete_me_auth.txt
 
