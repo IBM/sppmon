@@ -7,6 +7,10 @@ from utils import Utils
 import argparse
 import logging
 
+logPath = join(".", "logs", "installLog.txt")
+LOGGER_NAME = 'cronTabConfigLogger'
+LOGGER = Utils.setupLogger(LOGGER_NAME, logPath)
+
 class CrontabConfig:
 
     def main(self, config_path: str, python_path: str, sppmon_path: str, auto_confirm: bool):
@@ -17,21 +21,22 @@ class CrontabConfig:
         #####################################
 
         Utils.printRow()
+        Utils.LOGGER=LOGGER
         Utils.auto_confirm = auto_confirm
 
-        logging.info("> Generating new Config files")
+        LOGGER.info("> Generating new Config files")
 
         # ### Config dir setup
         config_path = realpath(config_path)
-        logging.info(f"> All configurations files will be read from {config_path}")
+        LOGGER.info(f"> All configurations files will be read from {config_path}")
 
         # ### python setup
         python_path = realpath(python_path)
-        logging.info(f"> Following python instance will be used: {python_path}")
+        LOGGER.info(f"> Following python instance will be used: {python_path}")
 
         # ### sppmon setup
         sppmon_path = realpath(sppmon_path)
-        logging.info(f"> Following sppmon instance will be used: {sppmon_path}")
+        LOGGER.info(f"> Following sppmon instance will be used: {sppmon_path}")
 
         Utils.printRow()
 
@@ -47,11 +52,11 @@ class CrontabConfig:
         print("> NOTE: Example config \"sppconnections_default.conf\" is ignored")
 
         if(len(config_files) == 0):
-            logging.info("No config files found.")
+            LOGGER.info("No config files found.")
             exit(0)
             ############## EXIT ###################
         else:
-            logging.info(f"> Found {len(config_files)} config files")
+            LOGGER.info(f"> Found {len(config_files)} config files")
 
         print("> You may add a crontab configuration for all or only indiviual SPP-Servers")
         print("> If you choose individual ones you may get promped for each server.")
@@ -61,14 +66,14 @@ class CrontabConfig:
         selected_configs: List[DirEntry[str]] = []
         # If there is only one, always select it.
         if(len(config_files) == 1 or Utils.confirm("Do you want add a crontab config for all servers at once?")):
-            logging.info("> Selected all available config files for crontab setup")
+            LOGGER.info("> Selected all available config files for crontab setup")
             selected_configs = config_files
         else:
             # Repeat until one config is selected
             while(not selected_configs):
 
                 for n, entry in enumerate(config_files):
-                    logging.info(f"[{n:2d}]:\t\t{entry.name}")
+                    LOGGER.info(f"[{n:2d}]:\t\t{entry.name}")
                 selected_indices: str = Utils.prompt_string(
                     "Please select indices of servers to be added: (comma-seperated list)",
                     filter=(lambda x: bool(re.match(r"^(?:\s*(\d+)\s*,?)+$", x))))
@@ -77,9 +82,9 @@ class CrontabConfig:
                     selected_configs = list(map(
                         lambda str_index: config_files[int(str_index.strip())],
                         selected_indices.split(",")))
-                    logging.info(f"> Selected {len(selected_configs)} config files for crontab setup")
+                    LOGGER.info(f"> Selected {len(selected_configs)} config files for crontab setup")
                 except IndexError:
-                    logging.info("One of the indices was out of bound. Please try again")
+                    LOGGER.info("One of the indices was out of bound. Please try again")
                     continue
 
         Utils.printRow()
@@ -115,7 +120,7 @@ class CrontabConfig:
                 "Specify the interval to request new joblogs (in hours: 1-48)",
                 daily_interval,
                 filter=lambda x: x.isdigit() and int(x) < 48 and int(x) >= 1))
-            logging.info("> Offset-Hint: Concurrent calls are no problem for SPPMon, it is used to distribute the load on the spp-server")
+            LOGGER.info("> Offset-Hint: Concurrent calls are no problem for SPPMon, it is used to distribute the load on the spp-server")
             daily_minute_offset: int = int(Utils.prompt_string(
                 f"At which minute every {daily_interval} hours should SPPMON run joblogs requesting actions? (in minutes: 0-59)",
                 daily_minute_offset,
@@ -135,7 +140,7 @@ class CrontabConfig:
                 filter=lambda x: x.isdigit() and int(x) < 60))
 
         else:
-            logging.info("Using default timings")
+            LOGGER.info("Using default timings")
 
         constant_cron_post: str = " --constant >/dev/null 2>&1"
         constant_cron_pre: str = f"*/{minute_interval} * * * * "
@@ -151,19 +156,19 @@ class CrontabConfig:
 
         Utils.printRow()
 
-        logging.info("> Saving crontab configuration as SUDO")
+        LOGGER.info("> Saving crontab configuration as SUDO")
         # save old crontab config to append and compare if changes were made
         old_crontab: str = popen("sudo crontab -l").read()
 
-        logging.info("> Writing crontab config into temporary file")
+        LOGGER.info("> Writing crontab config into temporary file")
         # writing into a file has the advantage of a crontab internal syntax check on loading
         temp_file_path = "temp_crontab_sppmon.txt"
         with open(temp_file_path, "w") as temp_file:
             lines: List[str] = []
             # if an crontab config exists, prepend it
             if("no crontab for" not in old_crontab):
-                logging.info("> WARNING: No old configurations have been edited/removed. Please remove/edit them manually by using `sudo crontab -e`")
-                logging.info("> Old configuration are prepended to new configurations")
+                LOGGER.info("> WARNING: No old configurations have been edited/removed. Please remove/edit them manually by using `sudo crontab -e`")
+                LOGGER.info("> Old configuration are prepended to new configurations")
                 lines.append(old_crontab + "\n")
 
             for entry in selected_configs:
@@ -175,34 +180,26 @@ class CrontabConfig:
             # also add newline when writing lines
             temp_file.writelines(line + "\n" for line in lines)
 
-        logging.info("> Loading crontab configuration")
-        logging.info(popen("sudo crontab " + temp_file_path).read())
+        LOGGER.info("> Loading crontab configuration")
+        LOGGER.info(popen("sudo crontab " + temp_file_path).read())
         new_crontab: str = popen("sudo crontab -l").read()
         if(new_crontab == old_crontab):
-            logging.info("> WARNING: Crontab unmodified, failed to write")
-            logging.info(f"> Generated crontab-file:{temp_file_path}")
+            LOGGER.info("> WARNING: Crontab unmodified, failed to write")
+            LOGGER.info(f"> Generated crontab-file:{temp_file_path}")
             exit(1)
         else:
-            logging.info("> Successfully enabled new crontab configuration")
-            logging.info("> Deleting temporary config file")
-            logging.info(popen(f"sudo rm {temp_file_path}").read())
+            LOGGER.info("> Successfully enabled new crontab configuration")
+            LOGGER.info("> Deleting temporary config file")
+            LOGGER.info(popen(f"sudo rm {temp_file_path}").read())
 
 
-        logging.info("> Finished setting up crontab configuration")
-        logging.info("> HINT: You may add additional servers by calling the script `/scripts/addCrontabConfig.py`")
+        LOGGER.info("> Finished setting up crontab configuration")
+        LOGGER.info("> HINT: You may add additional servers by calling the script `/scripts/addCrontabConfig.py`")
 
 
 
 
 if __name__ == "__main__":
-
-
-    logging.basicConfig(
-    filename=join(".", "logs", "installLog.txt"),
-    filemode="a",
-    level=logging.DEBUG,
-    format='%(asctime)s:[PID %(process)d]:%(levelname)s:%(module)s.%(funcName)s> %(message)s')
-
 
     parser = argparse.ArgumentParser(
         "Find offensive terms to replace within the SPP-BA-Client-Agent.")

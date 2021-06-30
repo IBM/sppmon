@@ -8,11 +8,37 @@ from typing import ClassVar, Optional, Callable, Any
 
 class Utils:
 
+    LOGGER: logging.Logger
+
     auto_confirm: bool = False
 
-    @staticmethod
-    def signalHandler(signum, frame):
-        logging.error("Aborted by user")
+    @classmethod
+    def setupLogger(cls, loggerName: str, filePath) -> logging.Logger:
+        try:
+            fileHandler = logging.FileHandler(filePath)
+        except Exception as error:
+            print("unable to open logger")
+            raise ValueError("Unable to open Logger") from error
+
+        fileHandlerFmt = logging.Formatter(
+            '%(asctime)s:[PID %(process)d]:%(levelname)s:%(module)s.%(funcName)s> %(message)s')
+        fileHandler.setFormatter(fileHandlerFmt)
+        fileHandler.setLevel(logging.DEBUG)
+
+        streamHandler = logging.StreamHandler()
+        streamHandler.setLevel(logging.INFO)
+
+        logger = logging.getLogger(loggerName)
+        logger.setLevel(logging.DEBUG)
+
+        logger.addHandler(fileHandler)
+        logger.addHandler(streamHandler)
+
+        return logger
+
+    @classmethod
+    def signalHandler(cls, signum, frame):
+        cls.LOGGER.error("Aborted by user")
         raise ValueError("Aborted by user")
 
 
@@ -24,7 +50,7 @@ class Utils:
             if(cls.confirm("Do you want to use an authentification-file? (Optional)", False)):
                 filepath = Utils.prompt_string("Please specify file to read authentification from", join(".","delete_me_auth.txt"))
                 filepath = realpath(filepath)
-                logging.info(f"Authentification read from {filepath}")
+                cls.LOGGER.info(f"Authentification read from {filepath}")
 
         # Test now if it exists
         if(filepath):
@@ -33,14 +59,14 @@ class Utils:
                 with open(filepath, "r"):
                     # confirm it works, now save
                     cls.auth_file_path = filepath
-                    logging.info(f"> Authentifications will be read from the file:\n{filepath}")
+                    cls.LOGGER.info(f"> Authentifications will be read from the file:\n{filepath}")
             except IOError as err:
-                logging.error("ERROR: Unable to read authentification file. Continuing with manual input.")
-                logging.error(f"Error message: {err}")
+                cls.LOGGER.error("ERROR: Unable to read authentification file. Continuing with manual input.")
+                cls.LOGGER.error(f"Error message: {err}")
 
 
-    @staticmethod
-    def printRow():
+    @classmethod
+    def printRow(cls):
         size: int = get_terminal_size().columns
         print()
         print("#"*size)
@@ -60,10 +86,10 @@ class Utils:
                     if(match):
                         result = match.group(1)
         except IOError as error:
-            logging.error("Unable to work with authentification file: " + error.args[0])
+            cls.LOGGER.error("Unable to work with authentification file: " + error.args[0])
 
         if(not result):
-            logging.error(f"No Authentification was found for {key} in the auth file.")
+            cls.LOGGER.error(f"No Authentification was found for {key} in the auth file.")
         return result
 
 
@@ -79,7 +105,7 @@ class Utils:
         # Only add default brackets if there is a default case
         message = message + f" [{default}]: " if default else message + ": "
         while(not validated):
-            logging.debug(message)
+            cls.LOGGER.debug(message)
             # Request input as either password or string
             if(is_password):
                 result = getpass(message).strip() or default
@@ -88,13 +114,13 @@ class Utils:
 
             # check for empty
             if(not allow_empty and not result):
-                logging.info("> No empty input allowed, please try again")
+                cls.LOGGER.info("> No empty input allowed, please try again")
                 continue
 
 
             # You may specify via filter (lambda) to have the string match a pattern, type or other
             if(filter and not filter(result)):
-                logging.info("> Failed filter rule, please try again.")
+                cls.LOGGER.info("> Failed filter rule, please try again.")
                 continue
 
 
@@ -103,7 +129,7 @@ class Utils:
                 # if empty it takes default value
                 result_confirm = getpass("Please repeat input for confirmation").strip() or default
                 if(result_confirm != result):
-                    logging.info("These passwords did not match. Please try again.")
+                    cls.LOGGER.info("These passwords did not match. Please try again.")
                     validated = False
                 else:
                     validated = True
@@ -115,19 +141,19 @@ class Utils:
     @classmethod
     def confirm(cls, message: str, default: bool = True) -> bool:
         if (cls.auto_confirm):
-            logging.info(message + ": autoConfirm ->" + str(default))
+            cls.LOGGER.info(message + ": autoConfirm ->" + str(default))
             return default
         default_msg = "[Y/n]" if default else "[y/N]"
-        logging.debug(message + f" {default_msg}: ")
+        cls.LOGGER.debug(message + f" {default_msg}: ")
         result: str = input(message + f" {default_msg}: ").strip()
         if not result:
-            logging.debug(default)
+            cls.LOGGER.debug(default)
             return default
         if result in {"y", "Y", "yes", "Yes"}:
-            logging.debug(True)
+            cls.LOGGER.debug(True)
             return True
         else:
-            logging.debug(False)
+            cls.LOGGER.debug(False)
             return False
 
     @classmethod

@@ -9,9 +9,9 @@ from typing import Any, Dict, List
 from utils import Utils
 import argparse
 
-
+logPath = join(".", "logs", "installLog.txt")
 LOGGER_NAME = 'configFileLogger'
-LOGGER = logging.getLogger(LOGGER_NAME)
+LOGGER = Utils.setupLogger(LOGGER_NAME, logPath)
 
 class ConfigFileSetup:
 
@@ -98,6 +98,7 @@ class ConfigFileSetup:
 
         Utils.printRow()
         Utils.auto_confirm=auto_confirm
+        Utils.LOGGER=LOGGER
         signal.signal(signal.SIGINT, Utils.signalHandler)
 
         LOGGER.info("> Generating new Config files")
@@ -277,28 +278,6 @@ class ConfigFileSetup:
 
 
 if __name__ == "__main__":
-
-    logPath = join(".", "logs", "installLog.txt")
-
-    try:
-        fileHandler = logging.FileHandler(logPath)
-    except Exception as error:
-        print("unable to open logger")
-        raise ValueError("Unable to open Logger") from error
-
-    fileHandlerFmt = logging.Formatter(
-        '%(asctime)s:[PID %(process)d]:%(levelname)s:%(module)s.%(funcName)s> %(message)s')
-    fileHandler.setFormatter(fileHandlerFmt)
-    fileHandler.setLevel(logging.DEBUG)
-
-    streamHandler = logging.StreamHandler()
-    streamHandler.setLevel(logging.INFO)
-
-    logger = logging.getLogger("configFileLogger")
-    logger.setLevel(logging.DEBUG)
-
-    logger.addHandler(fileHandler)
-    logger.addHandler(streamHandler)
 
     parser = argparse.ArgumentParser(
         "Find offensive terms to replace within the SPP-BA-Client-Agent.")
