@@ -2,20 +2,20 @@
 
 restartInflux() {
     if (( $# != 0 )); then
-        >&2 echo "Illegal number of parameters restartInflux"
+        >&2 loggerEcho "Illegal number of parameters restartInflux"
         abortInstallScript
     fi
     local check_influx='systemctl is-active influxdb &>/dev/null; echo $?'
 
     if (( $(eval "${check_influx}") == 0 )); then
-        echo "> Restarting influxDB service"
+        loggerEcho "> Restarting influxDB service"
         checkReturn sudo systemctl restart influxdb
     else
-        echo "> Starting influxDB service"
+        loggerEcho "> Starting influxDB service"
         checkReturn sudo systemctl start influxdb
     fi
 
-    echo "> Waiting 10 seconds for startup of influxDB"
+    loggerEcho "> Waiting 10 seconds for startup of influxDB"
     sleep 10
     #for (( i = 0; i < 10; i++)); do
     #    sleep 1
@@ -25,46 +25,70 @@ restartInflux() {
     #    fi
     #done
     if (( $(eval "${check_influx}") == 0 )); then
-        echo "> Restart sucessfull"
+        loggerEcho "> Restart sucessfull"
         return 0
     else
-        echo "> Restart failed"
+        loggerEcho "> Restart failed"
         abortInstallScript
     fi
 
 }
 
-verifyConnection() {
-    if (( $# != 2 )); then
-        >&2 echo "Illegal number of parameters verifyConnection"
+executeInfluxCommand() {
+    if (( $# > 3 || $# < 1 )); then
+        >&2 loggerEcho "Illegal number of parameters executeInfluxCommand"
         abortInstallScript
     fi
-    local userName=$1 # param1: user to be logged in
-    local password=$2 # param2: password to be used
 
-    echo "> verifying connection to InfluxDB"
-    local connectionTestString="influx -host $influxAddress -port $influxPort -username $userName -password $password"
+    local command=$1 # param1: command to be executed
+    local userName=$2 # param2: user to be logged in
+    local password=$3 # param3: password to be used
+
+    local connectionTestString="influx -host $influxAddress -port $influxPort"
+    if [[ -n $userName ]] ; then
+        connectionTestString="$connectionTestString -username $userName"
+    fi
+    if [[ -n $password ]] ; then
+        connectionTestString="$connectionTestString -password $password"
+    fi
     if [[ $sslEnabled != "false" ]] ; then # globalVar
         connectionTestString="$connectionTestString -ssl"
         if [[ $unsafeSsl != "false" ]] ; then # globalVar
             connectionTestString="$connectionTestString -unsafeSsl"
         fi
     fi
-
-    echo "> Waiting 10 seconds to avoid connection error"
-    echo $connectionTestString -execute "SHOW DATABASES"
+    logger $connectionTestString -execute "${command}"
+    loggerEcho "> Waiting 10 seconds to avoid connection error"
     sleep 10
-    $connectionTestString -execute "SHOW DATABASES"
+    local connectionOutput=$($connectionTestString -execute "${command}")
+    local connectionCode=$?
+    logger "$connectionOutput"
+    logger "$connectionCode"
+    return $connectionCode
 
+}
+
+verifyConnection() {
+    if (( $# != 2 )); then
+        >&2 loggerEcho "Illegal number of parameters verifyConnection"
+        abortInstallScript
+    fi
+    local userName=$1 # param1: user to be logged in
+    local password=$2 # param2: password to be used
+
+    loggerEcho "> verifying connection to InfluxDB"
+
+    executeInfluxCommand "SHOW DATABASES" "$userName" "$password"
     local influxVerifyCode=$?
+
     if [[ $influxVerifyCode -ne 0 ]]; then
 
-        echo "> ERROR: The connection could not be established."
+        loggerEcho "> ERROR: The connection could not be established."
         if ! confirm "Do you want to continue anyway?" ; then
             abortInstallScript
         fi
     else
-        echo "> connection sucessfull established."
+        loggerEcho "> connection sucessfull established."
     fi
 }
 
@@ -72,10 +96,10 @@ influxSetup() {
 
     clear
     rowLimiter
-    echo "Setup and installation of InfluxDB"
+    loggerEcho "Setup and installation of InfluxDB"
     echo ""
 
-    echo "> configuring yum repository"
+    loggerEcho "> configuring yum repository"
     sudo tee  /etc/yum.repos.d/influxdb.repo 1> /dev/null <<EOF
 [influxdb]
 name = InfluxDB Repository
@@ -85,13 +109,13 @@ gpgcheck = 1
 gpgkey = https://repos.influxdata.com/influxdb.key
 EOF
 
-    echo "> Installing database"
+    loggerEcho "> Installing database"
     checkReturn sudo yum install influxdb
 
     local influxAddress=$(ip route get 1 | sed -n 's/^.*src \([0-9.]*\) .*$/\1/p')
     local influxPort=8086
 
-    echo "> Firewall configuration"
+    loggerEcho "> Firewall configuration"
     checkReturn sudo firewall-cmd --add-port=${influxPort}/tcp --permanent
     checkReturn sudo firewall-cmd --reload
 
@@ -99,11 +123,11 @@ EOF
     local config_file="${config_path}/influxdb.conf"
     local config_file_backup="${config_file}.orig"
     if [[ -f "${config_file_backup}" ]]; then
-        echo "> Found previous influx config file backup."
-        echo "> Restoring original config file from backup."
+        loggerEcho "> Found previous influx config file backup."
+        loggerEcho "> Restoring original config file from backup."
         checkReturn sudo cp "${config_file_backup}" "${config_file}"
     else
-        echo "> Backuping default configuration into ${config_file_backup}"
+        loggerEcho "> Backuping default configuration into ${config_file_backup}"
         checkReturn sudo cp -n "${config_file}" "${config_file_backup}"
     fi
 
@@ -120,7 +144,7 @@ EOF
     checkReturn sudo mkdir -p "${influx_db_path}"
     checkReturn sudo chown -R influxdb:influxdb "${influx_db_path}"
 
-    echo "> Editing config file - part 1 -"
+    loggerEcho "> Editing config file - part 1 -"
     if confirm "Disable reporting usage data to usage.influxdata.com?"
         then
             checkReturn sudo sed -i '"s/\#*\s*reporting-disabled\s*=.*/ reporting-disabled = true/"' "${config_file}"
@@ -163,6 +187,8 @@ EOF
     checkReturn sudo systemctl enable influxdb
     restartInflux
 
+    loggerEcho "Creating InfluxDB super user"
+
     #################### INFLUXADMIN USER ################
     local adminCreated=false
     # Create user
@@ -186,19 +212,20 @@ EOF
         fi
         promptPasswords "Please enter the desired InfluxDB admin password" influxAdminPassword "$influxAdminPassword"
 
-        influx -host $influxAddress -port $influxPort -execute "CREATE USER \"$influxAdminName\" WITH PASSWORD '$influxAdminPassword' WITH ALL PRIVILEGES"
+        executeInfluxCommand "CREATE USER \"$influxAdminName\" WITH PASSWORD '$influxAdminPassword' WITH ALL PRIVILEGES"
         local userCreateReturnCode=$?
 
         if (( $userCreateReturnCode != 0 ));then
-            echo "Creation failed due an error. Please read the output above."
+            loggerEcho "Creation failed due an error. Please read the output above."
             if ! confirm "Do you want to try again (y) or continue (n)? Abort by ctrl + c" "--alwaysConfirm"; then
                 # user wants to exit
                 adminCreated=true
             fi
             # else
             # Start again
+            loggerEcho "Trying again"
         else
-            echo "> admin creation sucessfully"
+            loggerEcho "> admin creation sucessfully"
             adminCreated=true
         fi
 
@@ -217,7 +244,7 @@ EOF
     local influxGrafanaReaderName="GrafanaReader"
 
     echo ""
-    echo "Creating InfluxDB '$influxGrafanaReaderName' user"
+    loggerEcho "Creating InfluxDB '$influxGrafanaReaderName' user"
 
     # Create user
     local grafanaReaderCreated=false
@@ -234,19 +261,20 @@ EOF
         fi
         promptPasswords "Please enter the desired GrafanaReader password" influxGrafanaReaderPassword "$influxGrafanaReaderPassword"
 
-        influx -host $influxAddress -port $influxPort -execute "CREATE USER \"$influxGrafanaReaderName\" WITH PASSWORD '$influxGrafanaReaderPassword'"
+        executeInfluxCommand "CREATE USER \"$influxGrafanaReaderName\" WITH PASSWORD '$influxGrafanaReaderPassword'"
         local userCreateReturnCode=$?
 
         if (( $userCreateReturnCode != 0 )) ;then
-            echo "Creation failed due an error. Please read the output above."
+            loggerEcho "Creation failed due an error. Please read the output above."
             if ! confirm "Do you want to try again (y) or continue (n)? Abort by ctrl + c" "--alwaysConfirm"; then
                 # user wants to exit
                 grafanaReaderCreated=true
             fi
+            loggerEcho "Trying again"
             # else
             # Start again
         else
-            echo "> GrafanaReader creation sucessfully"
+            loggerEcho "> GrafanaReader creation sucessfully"
             grafanaReaderCreated=true
         fi
 
@@ -259,7 +287,7 @@ EOF
 
     ############# ENABLE AUTH ##################
 
-    echo " > Editing influxdb config file - part 2 -"
+    loggerEcho " > Editing influxdb config file - part 2 -"
     # [http] auth-enabled = true
     checkReturn sudo sed -ri '"/\[http\]/,/auth-enabled\s*=.+/ s|\#*\s*auth-enabled\s*=.+| auth-enabled = true|"' "${config_file}"
     # [http] pprof-auth-enabled = true
@@ -303,7 +331,7 @@ EOF
             while true; do # repeat until valid symbol
                 promptText "How long should it be valid in days? Leave empty for no limit" certDuration ""
                 if ! [[ "'$certDuration'" =~ ^\'[0-9]*\'$ ]] ; then
-                    echo "You may only enter numbers or leave blank."
+                    loggerEcho "You may only enter numbers or leave blank."
                 elif [[ -n "$certDuration" ]]; then
                     # append duration of cert
                     keyCreateCommand="$keyCreateCommand -days $certDuration"
@@ -322,7 +350,7 @@ EOF
                         abortInstallScript
                     fi
                 else
-                    echo "> cert created sucessfully"
+                    loggerEcho "> cert created sucessfully"
                     break
                 fi
             done
@@ -344,7 +372,7 @@ EOF
                 echo ""
                 promptText "Please enter the path to the https cert key" httpsKeyPath "/etc/ssl/influxdb${selfsignedString}.key"
                 if [[ -z $httpsKeyPath ]]; then
-                    echo "The path of the key must not be empty"
+                    loggerEcho "The path of the key must not be empty"
                 fi
             done
             # Cert
@@ -352,7 +380,7 @@ EOF
                 echo ""
                 promptText "Please enter the path to the https pulic cert" httpsCertPath "/etc/ssl/influxdb${selfsignedString}.cert"
                 if [[ -z $httpsCertPath ]]; then
-                    echo "The path of the cert must not be empty"
+                    loggerEcho "The path of the cert must not be empty"
                 fi
             done
 
@@ -376,7 +404,7 @@ EOF
     # Checking connection
     verifyConnection $influxAdminName $influxAdminPassword
 
-    echo "Finished InfluxDB Setup"
+    loggerEcho "Finished InfluxDB Setup"
     sleep 2
 
 }
@@ -385,7 +413,7 @@ EOF
 # Start if not used as source
 if [ "${1}" != "--source-only" ]; then
     if (( $# != 1 )); then
-        >&2 echo "Illegal number of parameters for the influxSetup file"
+        >&2 loggerEcho "Illegal number of parameters for the influxSetup file"
         abortInstallScript
     fi
 

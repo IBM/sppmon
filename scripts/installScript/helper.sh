@@ -68,10 +68,6 @@ initLogger(){
 }
 
 logger(){
-    if (( $# !=1 )); then
-        >&2 echo "Illegal number of parameters logger"
-        abortInstallScript
-    fi
     if [[ ! -w $logFile ]] ; then
         >&2 echo "ERROR: Log-File not writeable - path: ${logFile}"
             abortInstallScript
@@ -79,7 +75,7 @@ logger(){
 
     local message=$1
 
-    echo "$(date) |> ${message}" >> $logFile
+    echo "$(date) |> ${@}" >> $logFile
 
 }
 
@@ -95,8 +91,8 @@ loggerEcho() {
 
     local message=$1
 
-    echo "$(date) |> ${message}" >> $logFile
-    echo "${message}"
+    echo "$(date) |> ${@}" >> $logFile
+    echo "${@}"
 
 }
 
