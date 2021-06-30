@@ -53,7 +53,7 @@ Author:
  02/09/2021 version 0.12.1 Hotfix job statistic and --test now also checks for all commands individually
  02/07/2021 version 0.13   Implemented additional Office365 Joblog parsing
  02/10/2021 version 0.13.1 Fixes to partial send(influx), including influxdb version into stats
- 06/24/2021 version 1.0    Added install script and fixed typo in config file, breaking old config files.
+ 06/30/2021 version 0.14    Added install script and fixed typo in config file, breaking old config files.
 
 """
 from __future__ import annotations
@@ -82,7 +82,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "1.0  (2021/06/24)"
+VERSION = "0.14.0  (2021/06/30)"
 
 # ----------------------------------------------------------------------------
 # command line parameter parsing
@@ -341,7 +341,7 @@ class SppMon:
 
         logger = logging.getLogger(LOGGER_NAME)
         logger.setLevel(logging.DEBUG)
-        
+
 
     def check_pid_file(self) -> bool:
         if(OPTIONS.verbose):
