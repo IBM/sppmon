@@ -287,7 +287,7 @@ if [ "${1}" != "--source-only" ]; then
     # Logger
     mkdir -p "${path}/logs"
     initLogger "${path}/logs/installLog.txt"
-    logger "${@}"
+    logger "$(echo ${@})"
 
     # handling of signals
     trap " abortInstallScript " INT QUIT HUP
