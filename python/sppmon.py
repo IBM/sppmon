@@ -53,6 +53,7 @@ Author:
  02/09/2021 version 0.12.1 Hotfix job statistic and --test now also checks for all commands individually
  02/07/2021 version 0.13   Implemented additional Office365 Joblog parsing
  02/10/2021 version 0.13.1 Fixes to partial send(influx), including influxdb version into stats
+ 03/29/2021 version 0.13.2 Fixes to typing, reducing error messages and tracking code for NaN bug
  06/30/2021 version 0.14    Added install script and fixed typo in config file, breaking old config files.
 
 """
@@ -83,6 +84,7 @@ from utils.spp_utils import SppUtils
 
 # Version:
 VERSION = "0.14.0  (2021/06/30)"
+
 
 # ----------------------------------------------------------------------------
 # command line parameter parsing
@@ -300,7 +302,7 @@ class SppMon:
         try:
             self.config_file = SppUtils.read_conf_file(config_file_path=OPTIONS.confFileJSON)
         except ValueError as error:
-            ExceptionUtils.exception_info(error=error, extra_message="Syntax Error in Config file, unable to read")
+            ExceptionUtils.exception_info(error=error, extra_message="Error when trying to read Config file, unable to read")
             self.exit(error_code=ERROR_CODE_CMD_LINE)
 
         LOGGER.info("Setting up configurations")
@@ -640,8 +642,9 @@ class SppMon:
             if(error_count > 0):
                 ExceptionUtils.error_message(f"total of {error_count} exception/s occured")
             insert_dict['errorCount'] = error_count
-            # save list as str
-            insert_dict['errorMessages'] = str(ExceptionUtils.stored_errors)
+            # save list as str if not empty
+            if(ExceptionUtils.stored_errors):
+                insert_dict['errorMessages'] = str(ExceptionUtils.stored_errors)
 
             # get end timestamp
             (time_key, time_val) = SppUtils.get_capture_timestamp_sec()
@@ -701,14 +704,14 @@ class SppMon:
             ExceptionUtils.exception_info(error=error, extra_message="Error occured while exiting sppmon")
             error_code = ERROR_CODE
 
-        if(not error_code):
-            LOGGER.info("\n\n!!! script completed !!!\n")
-
         self.remove_pid_file()
 
-        # Both clauses are actually the same, but for clarification, always last due always beeing true for any number
+        # Both error-clauses are actually the same, but for possiblility of an split between error cases
+        # always last due beeing true for any number != 0
         if(error_code == ERROR_CODE or error_code):
             ExceptionUtils.error_message("Error occured while executing sppmon")
+        else:
+            LOGGER.info("\n\n!!! script completed !!!\n")
 
         print(f"check log for details: grep \"PID {os.getpid()}\" {self.log_path} > sppmon.log.{os.getpid()}")
         sys.exit(error_code)
