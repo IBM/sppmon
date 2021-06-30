@@ -80,9 +80,6 @@ logger(){
 }
 
 loggerEcho() {
-    if (( $# !=1 )); then
-        >&2 echo "Illegal number of parameters loggerEcho"
-        abortInstallScript
     fi
     if [[ ! -w $logFile ]] ; then
         >&2 echo "ERROR: Log-File not writeable - path: ${logFile}"
