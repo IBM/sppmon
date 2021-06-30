@@ -306,11 +306,6 @@ EOF
         # [http] https-enabled = true
         checkReturn sudo sed -ri '"/\[http\]/,/https-enabled\s*=.+/ s|\#*\s*https-enabled\s*=.+| https-enabled = true|"' "${config_file}"
 
-        sslEnabled="true"
-
-        local httpsKeyPath
-        local httpsCertPath
-
         echo ""
         echo "The following step will assist with the creation of a self-signed"
         echo "certificate for InfluxDB.  If you intend to use a self-signed"
@@ -318,12 +313,13 @@ EOF
         echo "signed by a certificate authority that you have already obtained,"
         echo "answer no to skip this step."
         echo ""
+        sslEnabled="true"
+        local httpsKeyPath="/etc/ssl/influxdb-selfsigned.key"
+        local httpsCertPath="/etc/ssl/influxdb-selfsigned.crt"
+
         if confirm "Automatically create a self-signed certificate? "; then
 
             unsafeSsl="true"
-
-            httpsKeyPath="/etc/ssl/influxdb-selfsigned.key"
-            httpsCertPath="/etc/ssl/influxdb-selfsigned.crt"
 
             local keyCreateCommand="sudo openssl req -x509 -nodes -newkey rsa:4096 -keyout \"$httpsKeyPath\" -out \"$httpsCertPath\""
             local certDuration
@@ -356,21 +352,23 @@ EOF
             done
         else # Provide own cert
 
-            local selfsignedString=""
-
             echo ""
             echo "If the certificate you are providing is self-signed, influx will"
             echo "need to use the -unsafeSsl option."
             echo ""
             if confirm "Is your cert self-signed requirig the unsafe ssl flag?"; then
-                selfsignedString="-selfsigned"
                 unsafeSsl=true
             fi
+
+            local defaultHttpsKeyPath=$httpsKeyPath
+            httpsKeyPath=""
+            local defaultHttpsCertPath=$httpsCertPath
+            httpsCertPath=""
 
             # Key
             while [[ -z $httpsKeyPath ]]; do
                 echo ""
-                promptText "Please enter the path to the https cert key" httpsKeyPath "/etc/ssl/influxdb${selfsignedString}.key"
+                promptText "Please enter the path to the https cert key" httpsKeyPath "$defaultHttpsKeyPath"
                 if [[ -z $httpsKeyPath ]]; then
                     loggerEcho "The path of the key must not be empty"
                 fi
@@ -378,7 +376,7 @@ EOF
             # Cert
             while [[ -z $httpsCertPath ]]; do
                 echo ""
-                promptText "Please enter the path to the https pulic cert" httpsCertPath "/etc/ssl/influxdb${selfsignedString}.cert"
+                promptText "Please enter the path to the https pulic cert" httpsCertPath "$defaultHttpsCertPath"
                 if [[ -z $httpsCertPath ]]; then
                     loggerEcho "The path of the cert must not be empty"
                 fi
