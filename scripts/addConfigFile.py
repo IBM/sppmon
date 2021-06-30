@@ -1,13 +1,17 @@
 
+import logging
 import re
 import json
 import signal
 import os
 from os.path import isfile, realpath, join
-from sys import path
 from typing import Any, Dict, List
 from utils import Utils
 import argparse
+
+
+LOGGER_NAME = 'configFileLogger'
+LOGGER = logging.getLogger(LOGGER_NAME)
 
 class ConfigFileSetup:
 
@@ -77,7 +81,7 @@ class ConfigFileSetup:
         # Need to remove any illegal characters from the db name.  For now, we will limit the characters
         # to letters and numbers
         dbName = ''.join(filter(str.isalnum, server_name))
-        print(f"> Your influxDB database name for this server is \"{dbName}\"")
+        LOGGER.info(f"> Your influxDB database name for this server is \"{dbName}\"")
         influxDB["dbName"] = dbName
 
         return influxDB
@@ -96,15 +100,15 @@ class ConfigFileSetup:
         Utils.auto_confirm=auto_confirm
         signal.signal(signal.SIGINT, Utils.signalHandler)
 
-        print("> Generating new Config files")
+        LOGGER.info("> Generating new Config files")
 
         # ### Config dir setup
         config_path = realpath(config_path)
-        print(f"> All new configurations files will be written into the directory:\n {config_path}")
+        LOGGER.info(f"> All new configurations files will be written into the directory:\n {config_path}")
 
         # ### authFile setup
         if(not auth_file):
-            print("> No authentification file specifed")
+            LOGGER.info("> No authentification file specifed")
             Utils.setupAuthFile(None)
         else: # take none if not exists, otherwise take auth path
             Utils.setupAuthFile(auth_file)
@@ -112,7 +116,7 @@ class ConfigFileSetup:
 
         # ########## EXECUTION ################
         Utils.printRow()
-        print("> You may add multiple SPP-Server now.")
+        LOGGER.info("> You may add multiple SPP-Server now.")
         print("> Each server requires it's own config file")
 
         try:
@@ -129,22 +133,22 @@ class ConfigFileSetup:
                     config_file_path = join(realpath(config_path), server_name + ".conf")
 
                     if(isfile(config_file_path)):
-                        print(f"> There is already a file at {config_file_path}.")
+                        LOGGER.info(f"> There is already a file at {config_file_path}.")
                         if(not Utils.confirm("Do you want to replace it?")):
-                            print("> Please re-enter a different server name")
+                            LOGGER.info("> Please re-enter a different server name")
                             # remove content to allow loop to continue
                             config_file_path = ""
                             server_name = ""
                         else:
-                            print("> Overwriting old config file")
+                            LOGGER.info("> Overwriting old config file")
 
                 os.system("touch " + config_file_path)
                 os.system("sudo chmod 600 "+ config_file_path)
-                print(f"> Created config file under {config_file_path}")
+                LOGGER.info(f"> Created config file under {config_file_path}")
 
                 # Overwrite existing file
                 with open(config_file_path, "w") as config_file:
-                    print(f"> Accessed config file under {config_file_path}")
+                    LOGGER.info(f"> Accessed config file under {config_file_path}")
 
 
 
@@ -153,23 +157,23 @@ class ConfigFileSetup:
 
                     # #################### SERVER ###############################
                     Utils.printRow()
-                    print("> collecting server information")
+                    LOGGER.info("> collecting server information")
 
                     # Saving config
                     configs["sppServer"] = ConfigFileSetup.createServerDict()
 
-                    print("> finished collecting server information")
+                    LOGGER.info("> finished collecting server information")
                     # #################### influxDB ###############################
                     Utils.printRow()
-                    print("> collecting influxDB information")
+                    LOGGER.info("> collecting influxDB information")
 
                     # Saving config
                     configs["influxDB"] = ConfigFileSetup.createInfluxDict(server_name)
 
-                    print("> finished collecting influxdb information")
+                    LOGGER.info("> finished collecting influxdb information")
                     # #################### ssh clients ###############################
                     Utils.printRow()
-                    print("> collecting ssh client information")
+                    LOGGER.info("> collecting ssh client information")
 
                     ssh_clients: List[Dict[str, Any]] = []
 
@@ -178,7 +182,7 @@ class ConfigFileSetup:
                     print("> You may test all these logins yourself by logging in via ssh")
                     print("> Following categories will be asked:")
                     ssh_types: List[str] = ["vsnap", "vadp", "cloudproxy", "other"] # server excluded here
-                    print("> server, "+ ", ".join(ssh_types))
+                    LOGGER.info("> server, "+ ", ".join(ssh_types))
                     print("> Please add all clients accordingly.")
                     print()
                     print("> If you misstyped anything you may edit the config file manually afterwards")
@@ -186,14 +190,14 @@ class ConfigFileSetup:
 
                     if(not Utils.confirm("Do you want to continue now?")):
                         json.dump(configs, config_file, indent=4)
-                        print(f"> saved all information into file {config_file_path}")
-                        print("> finished setup for this server.")
+                        LOGGER.info(f"> saved all information into file {config_file_path}")
+                        LOGGER.info("> finished setup for this server.")
                         continue # Contiuing to the next server config file loop
 
 
                     # #################### ssh clients: SERVER ###############################
                     Utils.printRow()
-                    print("> Collecting SPP-Server ssh information")
+                    LOGGER.info("> Collecting SPP-Server ssh information")
 
                     ssh_server: Dict[str, Any] = {}
 
@@ -217,7 +221,7 @@ class ConfigFileSetup:
                     for ssh_type in ssh_types:
                         try:
                             Utils.printRow()
-                            print(f"> Collecting {ssh_type} ssh information")
+                            LOGGER.info(f"> Collecting {ssh_type} ssh information")
 
                             # counter for naming like: vsnap-1 / vsnap-2
                             counter: int = 1
@@ -247,11 +251,11 @@ class ConfigFileSetup:
 
                                     Utils.printRow()
                                 except ValueError as err:
-                                    print(err)
-                                    print("Aborted adding this ssh client. Continuing with next client")
+                                    LOGGER.error(err)
+                                    LOGGER.info("Aborted adding this ssh client. Continuing with next client")
                         except ValueError as err:
-                            print(err)
-                            print("Skipped this type of SSH-Client. Continuing with next type.")
+                            LOGGER.error(err)
+                            LOGGER.info("Skipped this type of SSH-Client. Continuing with next type.")
 
 
                     # save all ssh-clients
@@ -259,20 +263,42 @@ class ConfigFileSetup:
                     print("> Finished setting up SSH Clients")
 
                     # #################### SAVE & EXIT ###############################
-                    print("> Writing into config file")
+                    LOGGER.info("> Writing into config file")
                     json.dump(configs, config_file, indent=4)
-                    print(f"> Configuraton saved into the file:\n{config_file_path}")
+                    LOGGER.info(f"> Configuraton saved into the file:\n{config_file_path}")
                     Utils.printRow()
                     continue # Contiuing to the next server config file loop
         except ValueError as err:
-            print(err)
+            LOGGER.error(err)
 
-        print("> Finished config file creation")
+        LOGGER.info("> Finished config file creation")
 
 
 
 
 if __name__ == "__main__":
+
+    logPath = join(".", "logs", "installLog.txt")
+
+    try:
+        fileHandler = logging.FileHandler(logPath)
+    except Exception as error:
+        print("unable to open logger")
+        raise ValueError("Unable to open Logger") from error
+
+    fileHandlerFmt = logging.Formatter(
+        '%(asctime)s:[PID %(process)d]:%(levelname)s:%(module)s.%(funcName)s> %(message)s')
+    fileHandler.setFormatter(fileHandlerFmt)
+    fileHandler.setLevel(logging.DEBUG)
+
+    streamHandler = logging.StreamHandler()
+    streamHandler.setLevel(logging.INFO)
+
+    logger = logging.getLogger("configFileLogger")
+    logger.setLevel(logging.DEBUG)
+
+    logger.addHandler(fileHandler)
+    logger.addHandler(streamHandler)
 
     parser = argparse.ArgumentParser(
         "Find offensive terms to replace within the SPP-BA-Client-Agent.")

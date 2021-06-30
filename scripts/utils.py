@@ -1,5 +1,6 @@
 
-from os.path import realpath
+import logging
+from os.path import realpath, join
 import re
 from os import get_terminal_size
 from getpass import getpass
@@ -11,6 +12,7 @@ class Utils:
 
     @staticmethod
     def signalHandler(signum, frame):
+        logging.error("Aborted by user")
         raise ValueError("Aborted by user")
 
 
@@ -20,9 +22,9 @@ class Utils:
     def setupAuthFile(cls, filepath: Optional[str]):
         if(not filepath):
             if(cls.confirm("Do you want to use an authentification-file? (Optional)", False)):
-                filepath = Utils.prompt_string("Please specify file to read authentification from", "./delete_me_auth.txt")
+                filepath = Utils.prompt_string("Please specify file to read authentification from", join(".","delete_me_auth.txt"))
                 filepath = realpath(filepath)
-                print(f"Authentification read from {filepath}")
+                logging.info(f"Authentification read from {filepath}")
 
         # Test now if it exists
         if(filepath):
@@ -31,10 +33,10 @@ class Utils:
                 with open(filepath, "r"):
                     # confirm it works, now save
                     cls.auth_file_path = filepath
-                    print(f"> Authentifications will be read from the file:\n{filepath}")
+                    logging.info(f"> Authentifications will be read from the file:\n{filepath}")
             except IOError as err:
-                print("ERROR: Unable to read authentification file. Continuing with manual input.")
-                print(f"Error message: {err}")
+                logging.error("ERROR: Unable to read authentification file. Continuing with manual input.")
+                logging.error(f"Error message: {err}")
 
 
     @staticmethod
@@ -58,10 +60,10 @@ class Utils:
                     if(match):
                         result = match.group(1)
         except IOError as error:
-            print("Unable to work with authentification file: " + error.args[0])
+            logging.error("Unable to work with authentification file: " + error.args[0])
 
         if(not result):
-            print(f"No Authentification was found for {key} in the auth file.")
+            logging.error(f"No Authentification was found for {key} in the auth file.")
         return result
 
 
@@ -77,7 +79,7 @@ class Utils:
         # Only add default brackets if there is a default case
         message = message + f" [{default}]: " if default else message + ": "
         while(not validated):
-
+            logging.debug(message)
             # Request input as either password or string
             if(is_password):
                 result = getpass(message).strip() or default
@@ -86,13 +88,13 @@ class Utils:
 
             # check for empty
             if(not allow_empty and not result):
-                print("> No empty input allowed, please try again")
+                logging.info("> No empty input allowed, please try again")
                 continue
 
 
             # You may specify via filter (lambda) to have the string match a pattern, type or other
             if(filter and not filter(result)):
-                print("> Failed filter rule, please try again.")
+                logging.info("> Failed filter rule, please try again.")
                 continue
 
 
@@ -101,7 +103,7 @@ class Utils:
                 # if empty it takes default value
                 result_confirm = getpass("Please repeat input for confirmation").strip() or default
                 if(result_confirm != result):
-                    print("These passwords did not match. Please try again.")
+                    logging.info("These passwords did not match. Please try again.")
                     validated = False
                 else:
                     validated = True
@@ -113,16 +115,19 @@ class Utils:
     @classmethod
     def confirm(cls, message: str, default: bool = True) -> bool:
         if (cls.auto_confirm):
-            print(message + ": autoConfirm ->" + str(default))
+            logging.info(message + ": autoConfirm ->" + str(default))
             return default
-
         default_msg = "[Y/n]" if default else "[y/N]"
+        logging.debug(message + f" {default_msg}: ")
         result: str = input(message + f" {default_msg}: ").strip()
         if not result:
+            logging.debug(default)
             return default
         if result in {"y", "Y", "yes", "Yes"}:
+            logging.debug(True)
             return True
         else:
+            logging.debug(False)
             return False
 
     @classmethod
