@@ -5,7 +5,7 @@ welcome() {
     clear
     rowLimiter
 
-    echo "Welcome to the Spectrum-Protect-Plus Monitoring install wizard!"
+    loggerEcho "Welcome to the Spectrum-Protect-Plus Monitoring install wizard!"
     echo ""
     echo "This script will guide you through the install process of SPPMon. Feature"
     echo " requests or bug reports can be submitted on the SPPmon github page:"
@@ -24,7 +24,7 @@ welcome() {
     echo "!! Please make sure to delete after completing the SPPmon installation !!"
     echo ""
     if ! confirm "Do you understand the instructions and want to continue?"; then
-        echo "Aborting install script. Nothing has been changed yet."
+        loggerEcho "Aborting install script. Nothing has been changed yet."
         exit -1
     fi
 
@@ -38,11 +38,11 @@ welcome() {
     echo "in any following prompts."
     echo ""
     if ! (confirm "Start the install script?" "--alwaysConfirm"); then
-        echo "Aborting install script. Nothing has been changed yet."
+        loggerEcho "Aborting install script. Nothing has been changed yet."
         exit -1
     else
         echo ""
-        echo "Starting the install script for sppmon."
+        loggerEcho "Starting the install script for sppmon."
         echo ""
         continue_point='SYS_SETUP'
         echo "$continue_point" > $saveFile
@@ -52,7 +52,7 @@ welcome() {
 # Start if not used as source
 if [ "${1}" != "--source-only" ]; then
     if (( $# != 1 )); then
-        >&2 echo "Illegal number of parameters for the welcome file"
+        >&2 loggerEcho "Illegal number of parameters for the welcome file"
         abortInstallScript
     fi
     # prelude
