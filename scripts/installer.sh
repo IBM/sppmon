@@ -50,9 +50,10 @@ saveState() { # param1: new continue_point #param2: name of next step
 }
 
 # get path of current script
+# WARNING: No logger possible here due call before setup
 getPath() {
     if (( $# != 0 )); then
-        >&2 loggerEcho "Illegal number of parameters getPath"
+        >&2 echo "Illegal number of parameters getPath"
         abortInstallScript
     fi
     #DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -60,7 +61,7 @@ getPath() {
     #local DIR=$(dirname "$(readlink -f "$0")")
     #echo $DIR
 
-    loggerEcho $(dirname "$(readlink -f "$0")")
+    echo $(dirname "$(readlink -f "$0")")
 }
 
 saveAuth() { # topic is the describer
