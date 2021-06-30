@@ -285,6 +285,7 @@ if [ "${1}" != "--source-only" ]; then
     source "$subScripts/helper.sh" "--source-only"
 
     # Logger
+    mkdir -p "${path}/logs"
     initLogger "${path}/logs/installLog.txt"
     logger "${@}"
 
