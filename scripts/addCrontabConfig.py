@@ -206,17 +206,22 @@ class CrontabConfig:
 
 if __name__ == "__main__":
 
+    fileDirPath = dirname(sys.argv[0])
+    configPathDefault = realpath(join(fileDirPath, "..", "config_files"))
+    pythonPathDefault = "python3"
+    sppmonPathDefault = realpath(join(fileDirPath, "..", "python", "sppmon.py"))
+
     parser = argparse.ArgumentParser(
         "Find offensive terms to replace within the SPP-BA-Client-Agent.")
     parser.add_argument("--configPath", dest="config_path",
-                        default=join(".", "..", "config_files"),
-                        help="Path to folder containing the config files (default: `./../config_files`)")
+                        default=configPathDefault,
+                        help=f"Path to folder containing the config files (default: `{configPathDefault}`)")
     parser.add_argument("--pythonPath", dest="python_path",
-                        default="python3",
-                        help="Path to python 3.7.2+ (default: `python3`)")
+                        default=pythonPathDefault,
+                        help=f"Path to python 3.7.2+ (default: `{pythonPathDefault}`)")
     parser.add_argument("--sppmonPath", dest="sppmon_path",
-                        default=join(".", "..", "python", "sppmon.py"),
-                        help="Path to sppmon.py executable (default: `./../python/sppmon.py`)")
+                        default=sppmonPathDefault,
+                        help=f"Path to sppmon.py executable (default: `{sppmonPathDefault}`)")
     parser.add_argument("--autoConfirm", dest="auto_confirm",
                         action="store_true",
                         help="Autoconfirm most confirm prompts")

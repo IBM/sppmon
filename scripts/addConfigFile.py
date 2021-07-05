@@ -92,7 +92,7 @@ class ConfigFileSetup:
 
         fileDirPath = dirname(sys.argv[0])
         logPath = join(fileDirPath, "logs", "installLog.txt")
-        
+
         LOGGER_NAME = 'configFileLogger'
         LOGGER = Utils.setupLogger(LOGGER_NAME, logPath)
 
@@ -284,15 +284,19 @@ class ConfigFileSetup:
 
 if __name__ == "__main__":
 
+    fileDirPath = dirname(sys.argv[0])
+    configPathDefault = realpath(join(fileDirPath, "..", "config_files"))
+    authPathDefault = realpath(join(fileDirPath, "delete_me_auth.txt"))
+
     parser = argparse.ArgumentParser(
         "Find offensive terms to replace within the SPP-BA-Client-Agent.")
     parser.add_argument("--configPath", dest="config_path",
-                        default=join(".", "..", "config_files"),
-                        help="Path to folder containing the config files (default: `./../config_files`)")
+                        default=configPathDefault,
+                        help=f"Path to folder containing the config files (default: `{configPathDefault}`)")
     parser.add_argument("--authFile", dest="auth_file",
                         required=False,
-                        default=join(".", "delete_me_auth.txt"),
-                        help="Path to authentification file (default: `./delete_me_auth.txt`)")
+                        default=authPathDefault,
+                        help=f"Path to authentification file (default: `{authPathDefault}`)")
     parser.add_argument("--autoConfirm", dest="auto_confirm",
                         action="store_true",
                         help="Autoconfirm most confirm prompts")
