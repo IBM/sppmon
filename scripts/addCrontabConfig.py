@@ -1,15 +1,14 @@
 
 import re
-from os.path import realpath, join
+import sys
+from os.path import realpath, join, dirname
 from os import DirEntry, scandir, popen
 from typing import List
 from utils import Utils
 import argparse
 import logging
 
-logPath = join(".", "logs", "installLog.txt")
-LOGGER_NAME = 'cronTabConfigLogger'
-LOGGER = Utils.setupLogger(LOGGER_NAME, logPath)
+LOGGER: logging.Logger
 
 class CrontabConfig:
 
@@ -19,6 +18,12 @@ class CrontabConfig:
         # Arg 2: Python executable (Python3)
         # Arg 3: SPPMON executable
         #####################################
+
+        fileDirPath = dirname(sys.argv[0])
+        logPath = join(fileDirPath, "logs", "installLog.txt")
+
+        LOGGER_NAME = 'cronTabConfigLogger'
+        LOGGER = Utils.setupLogger(LOGGER_NAME, logPath)
 
         Utils.printRow()
         Utils.LOGGER=LOGGER

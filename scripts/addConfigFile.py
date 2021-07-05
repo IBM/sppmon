@@ -91,9 +91,8 @@ class ConfigFileSetup:
     def main(self, config_path: str, auth_file: str, auto_confirm: bool):
 
         fileDirPath = dirname(sys.argv[0])
-
-
-        logPath = join("fileDirPath", "logs", "installLog.txt")
+        logPath = join(fileDirPath, "logs", "installLog.txt")
+        
         LOGGER_NAME = 'configFileLogger'
         LOGGER = Utils.setupLogger(LOGGER_NAME, logPath)
 
