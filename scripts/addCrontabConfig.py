@@ -212,7 +212,7 @@ if __name__ == "__main__":
     sppmonPathDefault = realpath(join(fileDirPath, "..", "python", "sppmon.py"))
 
     parser = argparse.ArgumentParser(
-        "Find offensive terms to replace within the SPP-BA-Client-Agent.")
+        "Support agent to add server configuration files of SPPMon to CronTab for automatic executio ")
     parser.add_argument("--configPath", dest="config_path",
                         default=configPathDefault,
                         help=f"Path to folder containing the config files (default: `{configPathDefault}`)")

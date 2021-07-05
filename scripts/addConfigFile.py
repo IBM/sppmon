@@ -289,7 +289,7 @@ if __name__ == "__main__":
     authPathDefault = realpath(join(fileDirPath, "delete_me_auth.txt"))
 
     parser = argparse.ArgumentParser(
-        "Find offensive terms to replace within the SPP-BA-Client-Agent.")
+        "Support agent to create new server configuration files for SPPMon")
     parser.add_argument("--configPath", dest="config_path",
                         default=configPathDefault,
                         help=f"Path to folder containing the config files (default: `{configPathDefault}`)")
