@@ -4,14 +4,13 @@ import re
 import json
 import signal
 import os
-from os.path import isfile, realpath, join
+import sys
+from os.path import isfile, realpath, join, dirname
 from typing import Any, Dict, List
 from utils import Utils
 import argparse
 
-logPath = join(".", "logs", "installLog.txt")
-LOGGER_NAME = 'configFileLogger'
-LOGGER = Utils.setupLogger(LOGGER_NAME, logPath)
+LOGGER:logging.Logger
 
 class ConfigFileSetup:
 
@@ -90,6 +89,13 @@ class ConfigFileSetup:
 
 
     def main(self, config_path: str, auth_file: str, auto_confirm: bool):
+
+        fileDirPath = dirname(sys.argv[0])
+
+
+        logPath = join("fileDirPath", "logs", "installLog.txt")
+        LOGGER_NAME = 'configFileLogger'
+        LOGGER = Utils.setupLogger(LOGGER_NAME, logPath)
 
         ############# ARGS ##################
         # Arg 1: Config file DIR
