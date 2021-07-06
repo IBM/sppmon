@@ -21,11 +21,10 @@ services:
 
   grafana:
     image: grafana/grafana
-    user: "$(id -u)"
     ports:
       - 3000:3000
     volumes:
-      - ./docker-storage/grafana:/var/lib/grafana
+      - grafana-storage:/var/lib/grafana
     networks:
       - influx-network
 
