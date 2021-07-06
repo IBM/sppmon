@@ -28,8 +28,6 @@ services:
     networks:
       - influx-network
 
-volumes:
-  grafana-storage
 
 networks:
   influx-network:
