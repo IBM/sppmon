@@ -10,7 +10,7 @@ services:
       networks:
           - influx-network
   influx:
-    user: "${USER}"
+    user: "${UID}"
     image: influxdb:1.8.6
     ports:
       - 8086:8086
@@ -21,7 +21,7 @@ services:
       - influx-network
 
   grafana:
-    user: "${USER}"
+    user: "${UID}"
     image: grafana/grafana
     ports:
       - 3000:3000
