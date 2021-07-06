@@ -14,8 +14,8 @@ services:
     ports:
       - 8086:8086
     volumes:
-      - ./docker-storage/influxDB:/var/lib/influxdb
-      - ./docker-storage/influx.conf:/etc/influxdb/influx.conf
+      - influx-storage:/var/lib/influxdb
+      - .influx.conf:/etc/influxdb/influx.conf
     networks:
       - influx-network
 
@@ -30,6 +30,8 @@ services:
 
 volumes:
   grafana-storage:
+      external: false
+  influx-storage:
       external: false
 
 networks:
