@@ -4,3 +4,6 @@ sppmon.code-workspace
 .vscode/
 .VSCodeCounter/
 sppconnections.conf
+.vs/
+python.pyproj
+python.sln

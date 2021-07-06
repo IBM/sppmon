@@ -2,11 +2,14 @@
 (C) IBM Corporation 2020
 
 Description:
+ Monitoring and long-term reporting for IBM Spectrum Protect Plus.
+ Provides a data bridge from SPP to InfluxDB and provides visualization dashboards via Grafana.
+
  This program provides functions to query IBM Spectrum Protect Plus Servers,
- VSNAP and VADP servers #  via REST API and ssh
+ VSNAP, VADP and other servers via REST API and ssh. This data is stored into a InfluxDB database.
 
 Repository:
-  https://github.ibm.com/ESCC/sppmon
+  https://github.com/IBM/spectrum-protect-sppmon
 
 Author:
  Daniel Wendler
@@ -50,7 +53,8 @@ Author:
  02/09/2021 version 0.12.1 Hotfix job statistic and --test now also checks for all commands individually
  02/07/2021 version 0.13   Implemented additional Office365 Joblog parsing
  02/10/2021 version 0.13.1 Fixes to partial send(influx), including influxdb version into stats
-
+ 03/29/2021 version 0.13.2 Fixes to typing, reducing error messages and tracking code for NaN bug
+ 06/07/2021 version 0.13.3 Hotfixing version endpoint for SPP 10.1.8.1
 """
 from __future__ import annotations
 import functools
@@ -78,7 +82,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "0.13.1  (2021/02/10)"
+VERSION = "0.13.3  (2021/06/07)"
 
 # ----------------------------------------------------------------------------
 # command line parameter parsing
@@ -296,7 +300,7 @@ class SppMon:
         try:
             self.config_file = SppUtils.read_conf_file(config_file_path=OPTIONS.confFileJSON)
         except ValueError as error:
-            ExceptionUtils.exception_info(error=error, extra_message="Syntax Error in Config file, unable to read")
+            ExceptionUtils.exception_info(error=error, extra_message="Error when trying to read Config file, unable to read")
             self.exit(error_code=ERROR_CODE_CMD_LINE)
 
         LOGGER.info("Setting up configurations")
@@ -634,8 +638,9 @@ class SppMon:
             if(error_count > 0):
                 ExceptionUtils.error_message(f"total of {error_count} exception/s occured")
             insert_dict['errorCount'] = error_count
-            # save list as str
-            insert_dict['errorMessages'] = str(ExceptionUtils.stored_errors)
+            # save list as str if not empty
+            if(ExceptionUtils.stored_errors):
+                insert_dict['errorMessages'] = str(ExceptionUtils.stored_errors)
 
             # get end timestamp
             (time_key, time_val) = SppUtils.get_capture_timestamp_sec()
@@ -695,14 +700,14 @@ class SppMon:
             ExceptionUtils.exception_info(error=error, extra_message="Error occured while exiting sppmon")
             error_code = ERROR_CODE
 
-        if(not error_code):
-            LOGGER.info("\n\n!!! script completed !!!\n")
-
         self.remove_pid_file()
 
-        # Both clauses are actually the same, but for clarification, always last due always beeing true for any number
+        # Both error-clauses are actually the same, but for possiblility of an split between error cases
+        # always last due beeing true for any number != 0
         if(error_code == ERROR_CODE or error_code):
             ExceptionUtils.error_message("Error occured while executing sppmon")
+        else:
+            LOGGER.info("\n\n!!! script completed !!!\n")
 
         print(f"check log for details: grep \"PID {os.getpid()}\" {self.log_path} > sppmon.log.{os.getpid()}")
         sys.exit(error_code)
