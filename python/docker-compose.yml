@@ -21,7 +21,7 @@ services:
 
   grafana:
     image: grafana/grafana
-    user: "$UID:$GID"
+    user: "$(id -u)"
     ports:
       - 3000:3000
     volumes:
