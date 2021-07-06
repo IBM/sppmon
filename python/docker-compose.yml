@@ -1,5 +1,7 @@
 version: '3'
 
+user: root
+
 services:
 
   sppmon:
