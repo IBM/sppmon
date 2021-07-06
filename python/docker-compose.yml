@@ -24,7 +24,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      grafana-storage:/var/lib/grafana
+      - /var/lib/grafana
     networks:
       - influx-network
 
