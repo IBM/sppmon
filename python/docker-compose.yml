@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+
+  sppmon:
+      image: sppmon
+      container_name: sppmon
+      build:
+          context: ./
+          dockerfile: Dockerfile
+      networks:
+          - influx-network
+  influx:
+    image: influxdb:1.8.6
+    ports:
+      - 8086:8086
+    volumes:
+      - ./../influxDB:/var/lib/influxdb
+      - ./influx/influx.conf:/etc/influxdb/influx.conf
+    networks:
+      - influx-network
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana/lib:/var/lib/grafana
+    networks:
+      - influx-network
+
+networks:
+  influx-network:
+    driver: bridge
+  
