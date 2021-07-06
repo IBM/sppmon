@@ -54,7 +54,7 @@ Author:
  02/07/2021 version 0.13   Implemented additional Office365 Joblog parsing
  02/10/2021 version 0.13.1 Fixes to partial send(influx), including influxdb version into stats
  03/29/2021 version 0.13.2 Fixes to typing, reducing error messages and tracking code for NaN bug
-
+ 06/07/2021 version 0.13.3 Hotfixing version endpoint for SPP 10.1.8.1
 """
 from __future__ import annotations
 import functools
@@ -82,7 +82,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "0.13.2  (2021/03/29)"
+VERSION = "0.13.3  (2021/06/07)"
 
 # ----------------------------------------------------------------------------
 # command line parameter parsing
