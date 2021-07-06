@@ -15,8 +15,8 @@ services:
     ports:
       - 8086:8086
     volumes:
-      - ./../influxDB:/var/lib/influxdb
-      - ./influx/influx.conf:/etc/influxdb/influx.conf
+      - ./docker-storage/influxDB:/var/lib/influxdb
+      - ./docker-storage/influx.conf:/etc/influxdb/influx.conf
     networks:
       - influx-network
 
@@ -25,11 +25,10 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./grafana/lib:/var/lib/grafana
+      - ./docker-storage/grafana:/var/lib/grafana
     networks:
       - influx-network
 
 networks:
   influx-network:
     driver: bridge
-  
