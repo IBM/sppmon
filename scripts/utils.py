@@ -130,6 +130,7 @@ class Utils:
                 result_confirm = getpass("Please repeat input for confirmation").strip() or default
                 if(result_confirm != result):
                     cls.LOGGER.info("These passwords did not match. Please try again.")
+                    print()
                     validated = False
                 else:
                     validated = True

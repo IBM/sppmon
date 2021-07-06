@@ -22,7 +22,9 @@ class CrontabConfig:
         fileDirPath = dirname(sys.argv[0])
         logPath = join(fileDirPath, "logs", "installLog.txt")
 
+        global LOGGER_NAME
         LOGGER_NAME = 'cronTabConfigLogger'
+        global LOGGER
         LOGGER = Utils.setupLogger(LOGGER_NAME, logPath)
 
         Utils.printRow()
