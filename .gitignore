@@ -7,3 +7,6 @@
 config_files/*.conf
 !config_files/sppconnections_default.conf
 Grafana/customer_dashboards/*
+/python/.vs/ProjectSettings.json
+/python/.vs/slnx.sqlite
+/python/.vs/PythonSettings.json
