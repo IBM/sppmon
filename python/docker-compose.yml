@@ -28,6 +28,9 @@ services:
     networks:
       - influx-network
 
+volumes:
+  grafana-storage:
+      external: false
 
 networks:
   influx-network:
