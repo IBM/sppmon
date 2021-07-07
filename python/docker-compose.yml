@@ -8,7 +8,7 @@ services:
           context: ./
           dockerfile: Dockerfile
       volumes:
-        - ./../config_files/:/usr/src/app/sppmon.conf:ro,Z
+        - ./../config_files/:/usr/src/app/config_files:ro,Z
         - /home/sppmon/sppmonLogs:/root/sppmonLogs:Z
       networks:
           - influx-network
