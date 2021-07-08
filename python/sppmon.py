@@ -66,7 +66,7 @@ import subprocess
 from subprocess import CalledProcessError
 import sys
 import time
-from typing import Any, Dict, List, NoReturn, Union
+from typing import Any, Dict, List, NoReturn, Union, Optional
 
 from influx.influx_client import InfluxClient
 from sppConnection.api_queries import ApiQueries
@@ -145,7 +145,8 @@ print = functools.partial(print, flush=True) # type: ignore
 LOGGER_NAME = 'sppmon'
 LOGGER = logging.getLogger(LOGGER_NAME)
 
-ERROR_CODE_CMD_LINE = 2
+ERROR_CODE_START_ERROR = 3
+ERROR_CODE_CMD_ARGS = 2
 ERROR_CODE = 1
 
 
@@ -261,13 +262,13 @@ class SppMon:
     """Configured spp log rentation time, logs get deleted after this time."""
 
     # set later in each method, here to avoid missing attribute
-    influx_client: InfluxClient = None
-    rest_client: RestClient = None
-    api_queries: ApiQueries = None
-    system_methods: SystemMethods = None
-    job_methods: JobMethods = None
-    protection_methods: ProtectionMethods = None
-    ssh_methods: SshMethods = None
+    influx_client: Optional[InfluxClient] = None
+    rest_client: Optional[RestClient] = None
+    api_queries: Optional[ApiQueries] = None
+    system_methods: Optional[SystemMethods] = None
+    job_methods: Optional[JobMethods] = None
+    protection_methods: Optional[ProtectionMethods] = None
+    ssh_methods: Optional[SshMethods] = None
 
     def __init__(self):
         self.log_path: str = ""
@@ -280,7 +281,7 @@ class SppMon:
         LOGGER.info("Starting SPPMon")
         if(not self.check_pid_file()):
             ExceptionUtils.error_message("Another instance of sppmon with the same args is running")
-            self.exit(ERROR_CODE_CMD_LINE)
+            self.exit(ERROR_CODE_START_ERROR)
 
         # everything is option, otherwise its a typo.
         if(len(ARGS) > 0):
@@ -296,12 +297,12 @@ class SppMon:
 
         if(not OPTIONS.confFileJSON):
             ExceptionUtils.error_message("missing config file, aborting")
-            self.exit(error_code=ERROR_CODE_CMD_LINE)
+            self.exit(error_code=ERROR_CODE_CMD_ARGS)
         try:
             self.config_file = SppUtils.read_conf_file(config_file_path=OPTIONS.confFileJSON)
         except ValueError as error:
             ExceptionUtils.exception_info(error=error, extra_message="Error when trying to read Config file, unable to read")
-            self.exit(error_code=ERROR_CODE_CMD_LINE)
+            self.exit(error_code=ERROR_CODE_START_ERROR)
 
         LOGGER.info("Setting up configurations")
         self.setup_args()
@@ -422,7 +423,7 @@ class SppMon:
         """
         if(not config_file):
             ExceptionUtils.error_message("missing or empty config file, aborting")
-            self.exit(error_code=ERROR_CODE_CMD_LINE)
+            self.exit(error_code=ERROR_CODE_START_ERROR)
         try:
             # critical components only
             self.influx_client = InfluxClient(config_file)
@@ -446,7 +447,10 @@ class SppMon:
 
         if(not config_file):
             ExceptionUtils.error_message("missing or empty config file, aborting.")
-            self.exit(error_code=ERROR_CODE_CMD_LINE)
+            self.exit(error_code=ERROR_CODE_START_ERROR)
+        if(not self.influx_client):
+            ExceptionUtils.error_message("Influx client is somehow missing. aborting")
+            self.exit(error_code=ERROR_CODE)
 
         # ############################ REST-API #####################################
         try:
@@ -571,7 +575,7 @@ class SppMon:
         if((OPTIONS.create_dashboard or bool(OPTIONS.dashboard_folder_path)) and not
            (OPTIONS.create_dashboard and bool(OPTIONS.dashboard_folder_path))):
            ExceptionUtils.error_message("> Using --create_dashboard without associated folder path. Aborting.")
-           self.exit(ERROR_CODE_CMD_LINE)
+           self.exit(ERROR_CODE_CMD_ARGS)
 
         # incremental setup, higher executes all below
         all_args: bool = OPTIONS.all
@@ -677,12 +681,15 @@ class SppMon:
 
         # error with the command line arguments
         # dont store runtime here
-        if(error_code == ERROR_CODE_CMD_LINE):
+        if(error_code == ERROR_CODE_CMD_ARGS):
             prog_args = []
             prog_args.append(sys.argv[0])
             prog_args.append("--help")
             os.execv(sys.executable, ['python'] + prog_args)
-            sys.exit(ERROR_CODE_CMD_LINE) # unreachable?
+            sys.exit(ERROR_CODE_CMD_ARGS) # unreachable?
+        if(error_code == ERROR_CODE_START_ERROR):
+            ExceptionUtils.error_message("Error when starting SPPMon. Please review the errors above")
+            sys.exit(ERROR_CODE_START_ERROR)
 
         script_end_time = SppUtils.get_actual_time_sec()
         LOGGER.debug("Script end time: %d", script_end_time)
@@ -725,7 +732,7 @@ class SppMon:
             try:
                 self.system_methods.sites()
                 self.influx_client.flush_insert_buffer()
-            except ValueError as error:
+            except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
                     extra_message="Top-level-error when requesting sites, skipping them all")
@@ -734,7 +741,7 @@ class SppMon:
             try:
                 self.system_methods.cpuram()
                 self.influx_client.flush_insert_buffer()
-            except ValueError as error:
+            except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
                     extra_message="Top-level-error when collecting cpu stats, skipping them all")
@@ -743,7 +750,7 @@ class SppMon:
             try:
                 self.system_methods.sppcatalog()
                 self.influx_client.flush_insert_buffer()
-            except ValueError as error:
+            except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
                     extra_message="Top-level-error when collecting file system stats, skipping them all")
@@ -754,7 +761,7 @@ class SppMon:
             try:
                 self.job_methods.get_all_jobs()
                 self.influx_client.flush_insert_buffer()
-            except ValueError as error:
+            except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
                     extra_message="Top-level-error when requesting jobs, skipping them all")
@@ -764,7 +771,7 @@ class SppMon:
             try:
                 self.job_methods.job_logs()
                 self.influx_client.flush_insert_buffer()
-            except ValueError as error:
+            except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
                     extra_message="Top-level-error when requesting job logs, skipping them all")
@@ -776,7 +783,7 @@ class SppMon:
             try:
                 self.ssh_methods.ssh()
                 self.influx_client.flush_insert_buffer()
-            except ValueError as error:
+            except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
                     extra_message="Top-level-error when excecuting ssh commands, skipping them all")
@@ -786,7 +793,7 @@ class SppMon:
             try:
                 self.protection_methods.store_vms()
                 self.influx_client.flush_insert_buffer()
-            except ValueError as error:
+            except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
                     extra_message="Top-level-error when requesting all VMs, skipping them all")
@@ -797,7 +804,7 @@ class SppMon:
                 self.protection_methods.vms_per_sla()
                 self.protection_methods.sla_dumps()
                 self.influx_client.flush_insert_buffer()
-            except ValueError as error:
+            except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
                     extra_message="Top-level-error when requesting and computing VMs per sla, skipping them all")
@@ -807,7 +814,7 @@ class SppMon:
             try:
                 self.protection_methods.create_inventory_summary()
                 self.influx_client.flush_insert_buffer()
-            except ValueError as error:
+            except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
                     extra_message="Top-level-error when creating inventory summary, skipping them all")
@@ -816,7 +823,7 @@ class SppMon:
             try:
                 self.protection_methods.vadps()
                 self.influx_client.flush_insert_buffer()
-            except ValueError as error:
+            except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
                     extra_message="Top-level-error when requesting vadps, skipping them all")
@@ -825,7 +832,7 @@ class SppMon:
             try:
                 self.protection_methods.storages()
                 self.influx_client.flush_insert_buffer()
-            except ValueError as error:
+            except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
                     extra_message="Top-level-error when collecting storages, skipping them all")
@@ -835,7 +842,7 @@ class SppMon:
         if(OPTIONS.copy_database):
             try:
                 self.influx_client.copy_database(OPTIONS.copy_database)
-            except ValueError as error:
+            except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
                     extra_message="Top-level-error when coping database.")
@@ -845,7 +852,7 @@ class SppMon:
         if(OPTIONS.test):
             try:
                 OtherMethods.test_connection(self.influx_client, self.rest_client, self.config_file)
-            except ValueError as error:
+            except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
                     extra_message="Top-level-error when testing connection.")
@@ -859,7 +866,7 @@ class SppMon:
                     OtherMethods.create_dashboard(
                         dashboard_folder_path=OPTIONS.dashboard_folder_path,
                         database_name=self.influx_client.database.name)
-            except ValueError as error:
+            except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
                     extra_message="Top-level-error when creating dashboard")
