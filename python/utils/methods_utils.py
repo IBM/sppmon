@@ -132,10 +132,10 @@ class MethodUtils:
 
         LOGGER.info("> getting %s", name)
 
-        # request all Sites from SPP
+        # request information from SPP via the api_queries.py file
         elem_list = source_func()
         if(not elem_list):
-            ExceptionUtils.error_message(f">> No {name} are found")
+            LOGGER.info(f"WARNING: No {name} are returned when requesting from server")
 
         if(rename_tuples):
             for elem in elem_list:
