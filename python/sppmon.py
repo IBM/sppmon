@@ -55,6 +55,7 @@ Author:
  02/10/2021 version 0.13.1 Fixes to partial send(influx), including influxdb version into stats
  03/29/2021 version 0.13.2 Fixes to typing, reducing error messages and tracking code for NaN bug
  06/07/2021 version 0.13.3 Hotfixing version endpoint for SPP 10.1.8.1
+ 06/09/2021 version 0.13.4 Hotfixing storage execption, chaning top-level execption handling to reduce the need of further hotfixes
 """
 from __future__ import annotations
 import functools
