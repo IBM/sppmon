@@ -135,6 +135,7 @@ class InfluxClient:
             # check for exisiting retention policies and continuous queries in the influxdb
             self.check_create_rp(self.database.name)
             self.check_create_cq()
+            self.flush_insert_buffer()
 
         except (ValueError, InfluxDBClientError, InfluxDBServerError, requests.exceptions.ConnectionError) as error: # type: ignore
             ExceptionUtils.exception_info(error=error) # type: ignore
@@ -247,13 +248,8 @@ class InfluxClient:
                 if(result_cq is None):
                     add_cq_list.append(continuous_query)
                 elif(result_cq != continuous_query.to_query()):
-                    for i,s in enumerate(difflib.ndiff(result_cq, continuous_query.to_query())):
-                        if s[0]==' ': continue
-                        elif s[0]=='-':
-                            print(u'Delete "{}" from position {}'.format(s[-1],i))
-                        elif s[0]=='+':
-                            print(u'Add "{}" to position {}'.format(s[-1],i))
-                    print()
+                    LOGGER.debug(f"result_cq: {result_cq}")
+                    LOGGER.debug(f"desired_cq: {continuous_query.to_query()}")
                     # delete result cq and then add it new
                     # save name only
                     drop_cq_list.append(continuous_query.name)

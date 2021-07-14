@@ -994,7 +994,7 @@ class Definitions:
                     "mean(percentUsed) AS percentUsed"
                     ], cls._RP_INF(), "1w")
             ]
-            # time key unset
+            # capture time
         )
 
         cls.__add_predef_table(
