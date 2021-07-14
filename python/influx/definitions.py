@@ -1051,8 +1051,8 @@ class Definitions:
                     "mean(\"TIME+\") AS \"TIME+\"",
                     "mean(VIRT) AS VIRT",
                     "mean(MEM_ABS) AS MEM_ABS",
-                    "stddev(\"%CPU\") AS \"sttdev_%CPU\"",
-                    "stddev(\"%MEM\") AS \"sttdev_%MEM\""
+                    "stddev(\"%CPU\") AS \"stddev_%CPU\"",
+                    "stddev(\"%MEM\") AS \"stddev_%MEM\""
                     ], cls._RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
                     "mean(\"%CPU\") AS \"%CPU\"",
