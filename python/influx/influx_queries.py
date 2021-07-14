@@ -276,7 +276,7 @@ class SelectionQuery:
             if(self.__fields == ['*']):
                 fields_str = '*'
             else:
-                fields_str = ','.join(
+                fields_str = ', '.join(
                     map('{}'.format, self.__fields))
         else:
             fields_str = ''
@@ -293,11 +293,11 @@ class SelectionQuery:
         # DELETE does not allow RP to be included
         if(self.keyword == Keyword.DELETE):
             tables_str = 'FROM {tables}'.format(
-            tables=','.join(
+            tables=', '.join(
                 map(lambda table: f'{table.name}', self.tables)))
         else:
             tables_str = 'FROM {tables}'.format(
-                tables=','.join(
+                tables=', '.join(
                     map(lambda table: f'{table}', self.tables)))
 
         # ##### WHERE ######
@@ -309,7 +309,7 @@ class SelectionQuery:
         # ##### GROUP BY ###
         if(self.__group_list is not None):
             group_str = 'GROUP BY {list}'.format(
-                list=','.join(
+                list=', '.join(
                     map('{}'.format, self.__group_list)))
         else:
             group_str = ''
@@ -396,7 +396,7 @@ class ContinuousQuery:
         return self.__resample_opts
 
     def __init__(self, name: str, database: Structures.Database,
-                 select_query: SelectionQuery = None, str_query: str = None,
+                 select_query: SelectionQuery = None, select_str: str = None,
                  every_interval: str = None, for_interval: str = None) -> None:
 
         if(not name):
@@ -411,14 +411,14 @@ class ContinuousQuery:
 
         if(select_query and not select_query.into_table):
             raise ValueError("need the into clause within the select query")
-        if(select_query and str_query):
+        if(select_query and select_str):
             raise ValueError("Both select_query and regex_query specified, can only use one")
 
         self.__name = name
         self.__database = database
         self.__select_query = select_query
-        self.__select_str = str_query
-        if(not select_query and not str_query):
+        self.__select_str = select_str
+        if(not select_query and not select_str):
             raise ValueError("need a either select query or regex str")
 
         if(every_interval):

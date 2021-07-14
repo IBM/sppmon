@@ -6,7 +6,8 @@ Classes:
 import logging
 import re
 import time
-from typing import Any, Dict, List, Optional, Tuple, Union
+import difflib
+from typing import Any, Dict, List, Tuple, Union
 
 import requests
 from influxdb import InfluxDBClient
@@ -63,7 +64,7 @@ class InfluxClient:
     __insert_buffer: Dict[Table, List[InsertQuery]] = {}
     """used to send all insert-querys at once. Multiple Insert-Querys per table"""
 
-    __query_max_batch_size = 10000
+    __query_max_batch_size = 7500
     """Maximum amount of querys sent at once to the influxdb. Recommended is 5000-10000."""
 
     def __init__(self, config_file: Dict[str, Any]):
@@ -217,42 +218,57 @@ class InfluxClient:
             ValueError: Check failed due Database error
         """
         try:
-            results: List[Dict[str, List[Dict[str, Any]]]] = self.__client.get_list_continuous_queries()
+            # returns a list of dictonarys with db name as key
+            # inside the dicts there is a list of each cq
+            # the cqs are displayed as a 2 elem dict: 'name' and 'query'
+            results: List[Dict[str, List[Dict[str, str]]]] = self.__client.get_list_continuous_queries()
 
-            cq_result_list: Optional[List[Dict[str, Any]]] = None
-            for result in results:
-                # check if this is the associated database
-                cq_result_list = result.get(self.database.name, None)
-                if(cq_result_list is not None):
-                    break
-            if(cq_result_list is None):
-                cq_result_list = []
+            # get the cq's of the correct db
+            # list of 2-elem cqs: 'name' and 'query'
+            cq_result_list: List[Dict[str, str]] = next(
+                (cq.get(self.database.name, []) for cq in results
+                # only if matches the db name
+                if cq.get(self.database.name, False)), [])
 
-            cq_dict: Dict[str, ContinuousQuery] = {}
+            # save all results into a dict for quicker accessing afterwards
+            cq_result_dict: Dict[str, str] = {}
             for cq_result in cq_result_list:
-                cq_dict[cq_result['name']] = cq_result['query']
+                cq_result_dict[cq_result['name']] = cq_result['query']
 
+            # queries which need to be added
             add_cq_list: List[ContinuousQuery] = []
-            alter_cq_list: List[ContinuousQuery] = []
+            # queries to be deleted (no alter possible): save name only
+            drop_cq_list: List[str] = []
 
+            # check for each cq if it needs to be 1. dropped and 2. added
             for continuous_query in self.database.continuous_queries:
 
-                result_cq = cq_dict.get(continuous_query.name, None)
+                result_cq = cq_result_dict.get(continuous_query.name, None)
                 if(result_cq is None):
                     add_cq_list.append(continuous_query)
                 elif(result_cq != continuous_query.to_query()):
-                    alter_cq_list.append(continuous_query)
+                    for i,s in enumerate(difflib.ndiff(result_cq, continuous_query.to_query())):
+                        if s[0]==' ': continue
+                        elif s[0]=='-':
+                            print(u'Delete "{}" from position {}'.format(s[-1],i))
+                        elif s[0]=='+':
+                            print(u'Add "{}" to position {}'.format(s[-1],i))
+                    print()
+                    # delete result cq and then add it new
+                    # save name only
+                    drop_cq_list.append(continuous_query.name)
+                    add_cq_list.append(continuous_query)
                 # else: all good
 
-            LOGGER.debug(f"altering {len(add_cq_list)} CQ's. deleting {add_cq_list}")
+            LOGGER.debug(f"deleting {len(drop_cq_list)} CQ's: {drop_cq_list}")
             # alter not possible -> drop and readd
-            for continuous_query in alter_cq_list:
+            for query_name in drop_cq_list:
                 self.__client.drop_continuous_query(  # type: ignore
-                    name=continuous_query.name,
-                    database=continuous_query.database.name
+                    name=query_name,
+                    database=self.database.name
                 )
-            # extend to reinsert
-            add_cq_list.extend(alter_cq_list)
+
+            # adding new / altered CQ's
             LOGGER.debug(f"adding {len(add_cq_list)} CQ's. adding {add_cq_list}")
             for continuous_query in add_cq_list:
                 self.__client.create_continuous_query( # type: ignore

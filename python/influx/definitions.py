@@ -15,7 +15,7 @@ class Definitions:
     """Within this class all tables, retention policies and continuous queries are defined.
 
     Use each area to declare each type.
-    Retention Policices are *always* declared at top as classmethod.
+    Retention Policices are *always* declared at top AS classmethod.
     You may use individual CQ below with the table declaration or define a template below the RP's.
     See existent definitions to declare you own.
 
@@ -55,7 +55,7 @@ class Definitions:
         return RetentionPolicy(name="autogen", database=cls.__database, duration="INF")
 
     @classmethod
-    def _RP_INF(cls): # notice: just inf is a influx error -> counted as numberlit
+    def _RP_INF(cls): # notice: just inf is a influx error -> counted AS numberlit
         """Infinite duration for long time preservation of heavy downsampled data"""
         return RetentionPolicy(name="rp_inf", database=cls.__database, duration="INF")
 
@@ -119,7 +119,7 @@ class Definitions:
                 into_table=Table(cls.__database, table.name, retention_policy=new_retention_policy),
                 fields=fields,
                 group_list=[f"time({group_time})"] + group_args),
-            for_interval="7d"
+            for_interval="1w"
         )
 
     # @classmethod
@@ -142,7 +142,7 @@ class Definitions:
     #             fields=["*"],
     #             group_list=["*"]),
     #         every_interval="1m",
-    #         for_interval="7d"
+    #         for_interval="1w"
     #     )
 
     @classmethod
@@ -172,7 +172,7 @@ class Definitions:
                 fields=fields,
                 where_str=where_str,
                 group_list=[f"time({group_time})"] + group_args),
-            for_interval="7d"
+            for_interval="1w"
         )
 
     @classmethod
@@ -191,11 +191,11 @@ class Definitions:
 
         Arguments:
             name {str} -- Name of the table/measurement
-            fields {Dict[str, Datatype]} -- fields of the table. At least one entry, name as key, dataype as value.
+            fields {Dict[str, Datatype]} -- fields of the table. At least one entry, name AS key, dataype AS value.
             tags {List[str]} -- tags of the table. Always of datatype string
 
         Keyword Arguments:
-            time_key {Optional[str]} -- Name of key used as timestamp. Blank if capturetime (default: {None})
+            time_key {Optional[str]} -- Name of key used AS timestamp. Blank if capturetime (default: {None})
             retention_policy {RetentionPolicy} -- Retention policy to be associated (default: {None})
             continuous_queries {List[Union[ContinuousQuery, Callable[[Table, str], ContinuousQuery]]]}
                 -- List of either a CQ or a template which is transformed within this method (default: {None})
@@ -275,11 +275,11 @@ class Definitions:
         #       "tag_1",
         #        [...]
         #   ],
-        #   time_key="time", # OPTIONAL, remove for capture time. Declare it as field too if you want to save it beside as `time`.
+        #   time_key="time", # OPTIONAL, remove for capture time. Declare it AS field too if you want to save it beside AS `time`.
         #   retention_policy=cls._RP_DURATION_N(), # OPTIONAL, `autogen` used if empty. Recommended to set.
         #   continuous_queries=[                                    # OPTIONAL, recommended based on RP-Duration
         #       cls._CQ_TMPL(["mean(*)"], cls._RP_DAYS_90(), "6h"), # REMOVE this line if RP_DAYS_90 used
-        #       cls._CQ_TMPL(["mean(*)"], cls._RP_INF(), "1w")      # Edit both mean(*)-cases if a special aggregation is required. You may also use mean(field_name) as field_name to keep the old name.
+        #       cls._CQ_TMPL(["mean(*)"], cls._RP_INF(), "1w")      # Edit both mean(*)-cases if a special aggregation is required. You may also use mean(field_name) AS field_name to keep the old name.
         #       ]
         #   )
         # ################################################################################
@@ -297,7 +297,7 @@ class Definitions:
                 'start':            Datatype.TIMESTAMP,
                 'end':              Datatype.TIMESTAMP,
                 'jobLogsCount':     Datatype.INT,
-                # due high numbers id is saved as field
+                # due high numbers id is saved AS field
                 'id':               Datatype.INT,
                 'numTasks':         Datatype.INT,
                 'percent':          Datatype.FLOAT
@@ -316,9 +316,9 @@ class Definitions:
             retention_policy=cls._RP_DAYS_90(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
-                    "mean(\"duration\") as \"duration\"", "sum(jobLogsCount) as jobLogsCount",
-                    "mean(numTasks) as numTasks", "mean(\"percent\") as \"percent\"",
-                    "count(id) as \"count\""
+                    "mean(\"duration\") AS \"duration\"", "sum(jobLogsCount) AS jobLogsCount",
+                    "mean(numTasks) AS numTasks", "mean(percent) AS percent",
+                    "count(id) AS count"
                     ], cls._RP_INF(), "1w")
             ]
         )
@@ -346,9 +346,9 @@ class Definitions:
             retention_policy=cls._RP_DAYS_90(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
-                    "mean(\"total\") as \"total\"", "mean(\"success\") as \"success\"",
-                    "mean(\"failed\") as \"failed\"", "mean(\"skipped\") as \"skipped\"",
-                    "count(id) as \"count\""
+                    "mean(total) AS total", "mean(success) AS success",
+                    "mean(failed) AS failed", "mean(skipped) AS skipped",
+                    "count(id) AS count"
                     ], cls._RP_INF(), "1w")
             ]
         )
@@ -356,7 +356,7 @@ class Definitions:
         cls.__add_predef_table(
             name='jobLogs',
             fields={  # FIELDS
-                # Due high numbers these ID's are saved as fields. Maybe remove ID's?
+                # Due high numbers these ID's are saved AS fields. Maybe remove ID's?
                 'jobLogId':         Datatype.STRING,
                 'jobSessionId':     Datatype.INT,
 
@@ -395,14 +395,14 @@ class Definitions:
             retention_policy=cls._RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
-                    "mean(duration_ms) as duration_ms",
-                    "mean(item_count) as item_count",
-                    "STDDEV(*)"
+                    "mean(duration_ms) AS duration_ms",
+                    "mean(item_count) AS item_count",
+                    "stddev(*)"
                     ], cls._RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
-                    "mean(duration_ms) as duration_ms",
-                    "mean(item_count) as item_count",
-                    "STDDEV(*)"
+                    "mean(duration_ms) AS duration_ms",
+                    "mean(item_count) AS item_count",
+                    "stddev(*)"
                     ], cls._RP_INF(), "1w")
             ]
         )
@@ -466,12 +466,12 @@ class Definitions:
             retention_policy=cls._RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
-                    "mean(\"duration\") as \"duration\"",
-                    "sum(errorCount) as sum_errorCount"
+                    "mean(\"duration\") AS \"duration\"",
+                    "sum(errorCount) AS sum_errorCount"
                     ], cls._RP_DAYS_90(), "6h"), # errorMessages is dropped due beeing str
                 cls._CQ_DWSMPL([
-                    "mean(\"duration\") as \"duration\"",
-                    "sum(errorCount) as sum_errorCount"
+                    "mean(\"duration\") AS \"duration\"",
+                    "sum(errorCount) AS sum_errorCount"
                     ], cls._RP_INF(), "1w")
             ]
         )
@@ -490,7 +490,7 @@ class Definitions:
             retention_policy=cls._RP_DAYS_90(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
-                    "mean(vmCountBySLA) as vmCountBySLA"
+                    "mean(vmCountBySLA) AS vmCountBySLA"
                     ], cls._RP_INF(), "1w")
             ]
         )
@@ -523,13 +523,13 @@ class Definitions:
             retention_policy=cls._RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL(
-                    fields=[ # strings are not calculated, uptime as timestamp removed
-                        "mean(commited) as commited",
-                        "mean(uncommited) as uncommited",
-                        "mean(shared) as shared",
-                        "mean(cpu) as cpu",
-                        "mean(coresPerCpu) as coresPerCpu",
-                        "mean(memory) as memory"
+                    fields=[ # strings are not calculated, uptime AS timestamp removed
+                        "mean(commited) AS commited",
+                        "mean(uncommited) AS uncommited",
+                        "mean(shared) AS shared",
+                        "mean(cpu) AS cpu",
+                        "mean(coresPerCpu) AS coresPerCpu",
+                        "mean(memory) AS memory"
                     ],
                     new_retention_policy=cls._RP_DAYS_90(),
                     group_time="6h",
@@ -546,12 +546,12 @@ class Definitions:
                     ]),
                 cls._CQ_DWSMPL(
                     fields=[
-                        "mean(commited) as commited",
-                        "mean(uncommited) as uncommited",
-                        "mean(shared) as shared",
-                        "mean(cpu) as cpu",
-                        "mean(coresPerCpu) as coresPerCpu",
-                        "mean(memory) as memory"
+                        "mean(commited) AS commited",
+                        "mean(uncommited) AS uncommited",
+                        "mean(shared) AS shared",
+                        "mean(cpu) AS cpu",
+                        "mean(coresPerCpu) AS coresPerCpu",
+                        "mean(memory) AS memory"
                     ],
                     new_retention_policy=cls._RP_INF(),
                     group_time="1w",
@@ -572,9 +572,9 @@ class Definitions:
                 # ContinuousQuery(
                 #     name="cq_vms_to_stats",
                 #     database=cls.database,
-                #     regex_query=f"SELECT count(name) as vmCount, max(commited) as vmMaxSize, min(commited) as vmMinSize\
-                #         sum(commited) as vmSizeTotal, mean(commited) as vmAvgSize, count(distinct(datacenterName)) as nrDataCenters\
-                #         count(distinct(host)) as nrHosts\
+                #     regex_query=f"SELECT count(name) AS vmCount, max(commited) AS vmMaxSize, min(commited) AS vmMinSize\
+                #         sum(commited) AS vmSizeTotal, mean(commited) AS vmAvgSize, count(distinct(datacenterName)) AS nrDataCenters\
+                #         count(distinct(host)) AS nrHosts\
                 #         INTO {cls._RP_DAYS_90()}.vmStats FROM {cls._RP_DAYS_14()}.vms GROUP BY \
                 #         time(1d)"
                 #         # TODO: Issue with vmCount per x, no solution found yet.
@@ -619,25 +619,25 @@ class Definitions:
             continuous_queries=[
                 # cls._CQ_TRNSF(cls._RP_DAYS_14()), # removed due bug.
                 cls._CQ_DWSMPL([ # see issue #97 why this long list is required..
-                    "mean(vmCount) as vmCount",
-                    "mean(vmMaxSize) as vmMaxSize",
-                    "mean(vmMinSize) as vmMinSize",
-                    "mean(vmSizeTotal) as vmSizeTotal",
-                    "mean(vmAvgSize) as vmAvgSize",
-                    "mean(vmMaxUptime) as vmMaxUptime",
-                    "mean(vmMinUptime) as vmMinUptime",
-                    "mean(vmUptimeTotal) as vmUptimeTotal",
-                    "mean(vmAvgUptime) as vmAvgUptime",
-                    "mean(vmCountProtected) as vmCountProtected",
-                    "mean(vmCountUnprotected) as vmCountUnprotected",
-                    "mean(vmCountEncrypted) as vmCountEncrypted",
-                    "mean(vmCountPlain) as vmCountPlain",
-                    "mean(vmCountHLO) as vmCountHLO",
-                    "mean(vmCountNotHLO) as vmCountNotHLO",
-                    "mean(vmCountHyperV) as vmCountHyperV",
-                    "mean(vmCountVMware) as vmCountVMware",
-                    "mean(nrDataCenters) as nrDataCenters",
-                    "mean(nrHosts) as nrHosts",
+                    "mean(vmCount) AS vmCount",
+                    "mean(vmMaxSize) AS vmMaxSize",
+                    "mean(vmMinSize) AS vmMinSize",
+                    "mean(vmSizeTotal) AS vmSizeTotal",
+                    "mean(vmAvgSize) AS vmAvgSize",
+                    "mean(vmMaxUptime) AS vmMaxUptime",
+                    "mean(vmMinUptime) AS vmMinUptime",
+                    "mean(vmUptimeTotal) AS vmUptimeTotal",
+                    "mean(vmAvgUptime) AS vmAvgUptime",
+                    "mean(vmCountProtected) AS vmCountProtected",
+                    "mean(vmCountUnprotected) AS vmCountUnprotected",
+                    "mean(vmCountEncrypted) AS vmCountEncrypted",
+                    "mean(vmCountPlain) AS vmCountPlain",
+                    "mean(vmCountHLO) AS vmCountHLO",
+                    "mean(vmCountNotHLO) AS vmCountNotHLO",
+                    "mean(vmCountHyperV) AS vmCountHyperV",
+                    "mean(vmCountVMware) AS vmCountVMware",
+                    "mean(nrDataCenters) AS nrDataCenters",
+                    "mean(nrHosts) AS nrHosts",
                     ], cls._RP_INF(), "1w")
             ]
 
@@ -665,18 +665,18 @@ class Definitions:
             retention_policy=cls._RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
-                    "mean(\"throughputBytes/s\") as \"throughputBytes/s\"",
-                    "mean(queueTimeSec) as queueTimeSec",
-                    "sum(transferredBytes) as sum_transferredBytes",
-                    "sum(protectedVMDKs) as sum_protectedVMDKs",
-                    "sum(TotalVMDKs) as sum_TotalVMDKs"
+                    "mean(\"throughputBytes/s\") AS \"throughputBytes/s\"",
+                    "mean(queueTimeSec) AS queueTimeSec",
+                    "sum(transferredBytes) AS sum_transferredBytes",
+                    "sum(protectedVMDKs) AS sum_protectedVMDKs",
+                    "sum(TotalVMDKs) AS sum_TotalVMDKs"
                     ], cls._RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
-                    "mean(\"throughputBytes/s\") as \"throughputBytes/s\"",
-                    "mean(queueTimeSec) as queueTimeSec",
-                    "sum(transferredBytes) as sum_transferredBytes",
-                    "sum(protectedVMDKs) as sum_protectedVMDKs",
-                    "sum(TotalVMDKs) as sum_TotalVMDKs"
+                    "mean(\"throughputBytes/s\") AS \"throughputBytes/s\"",
+                    "mean(queueTimeSec) AS queueTimeSec",
+                    "sum(transferredBytes) AS sum_transferredBytes",
+                    "sum(protectedVMDKs) AS sum_protectedVMDKs",
+                    "sum(TotalVMDKs) AS sum_TotalVMDKs"
                     ], cls._RP_INF(), "1w")
             ]
         )
@@ -694,9 +694,9 @@ class Definitions:
             continuous_queries=[
                 # cls._CQ_TRNSF(cls._RP_DAYS_14()),
                 cls._CQ_DWSMPL([
-                    "mean(\"duration\") as \"duration\"",
-                    "sum(total) as sum_total",
-                    "sum(failed) as sum_failed"
+                    "mean(\"duration\") AS \"duration\"",
+                    "sum(total) AS sum_total",
+                    "sum(failed) AS sum_failed"
                     ], cls._RP_INF(), "1w")
             ]
         )
@@ -714,9 +714,9 @@ class Definitions:
             continuous_queries=[
                 # cls._CQ_TRNSF(cls._RP_DAYS_14()),
                 cls._CQ_DWSMPL([
-                    "mean(\"throughputBytes/sec\") as \"throughputBytes/sec\"",
-                    "sum(replicatedBytes) as replicatedBytes",
-                    "mean(\"duration\") as \"duration\""
+                    "mean(\"throughputBytes/sec\") AS \"throughputBytes/sec\"",
+                    "sum(replicatedBytes) AS replicatedBytes",
+                    "mean(\"duration\") AS \"duration\""
                     ], cls._RP_INF(), "1w")
             ]
         )
@@ -740,40 +740,40 @@ class Definitions:
             continuous_queries=[
                 # cls._CQ_TRNSF(cls._RP_DAYS_14())
                 cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) as enabled_count"],
+                    fields=["count(distinct(vadpId)) AS enabled_count"],
                     new_retention_policy=cls._RP_DAYS_14(),
                     group_time="1h",
-                    where_str="(\"state\" =~ /ENABLED/)"
+                    where_str="(state =~ /ENABLED/)"
                 ),
                 cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) as disabled_count"],
+                    fields=["count(distinct(vadpId)) AS disabled_count"],
                     new_retention_policy=cls._RP_DAYS_14(),
                     group_time="1h",
-                    where_str="(\"state\" !~ /ENABLED/)"
+                    where_str="(state !~ /ENABLED/)"
                 ),
                 cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) as enabled_count"],
+                    fields=["count(distinct(vadpId)) AS enabled_count"],
                     new_retention_policy=cls._RP_DAYS_90(),
                     group_time="6h",
-                    where_str="(\"state\" =~ /ENABLED/)"
+                    where_str="(state =~ /ENABLED/)"
                 ),
                 cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) as disabled_count"],
+                    fields=["count(distinct(vadpId)) AS disabled_count"],
                     new_retention_policy=cls._RP_DAYS_90(),
                     group_time="6h",
-                    where_str="(\"state\" !~ /ENABLED/)"
+                    where_str="(state !~ /ENABLED/)"
                 ),
                 cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) as enabled_count"],
+                    fields=["count(distinct(vadpId)) AS enabled_count"],
                     new_retention_policy=cls._RP_INF(),
                     group_time="1w",
-                    where_str="(\"state\" =~ /ENABLED/)"
+                    where_str="(state =~ /ENABLED/)"
                 ),
                 cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) as disabled_count"],
+                    fields=["count(distinct(vadpId)) AS disabled_count"],
                     new_retention_policy=cls._RP_INF(),
                     group_time="1w",
-                    where_str="(\"state\" !~ /ENABLED/)"
+                    where_str="(state !~ /ENABLED/)"
                 )
             ]
         )
@@ -801,18 +801,18 @@ class Definitions:
             retention_policy=cls._RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
-                    "mean(free) as free",
-                    "mean(pct_free) as pct_free",
-                    "mean(pct_used) as pct_used",
-                    "mean(total) as total",
-                    "mean(used) as used",
+                    "mean(free) AS free",
+                    "mean(pct_free) AS pct_free",
+                    "mean(pct_used) AS pct_used",
+                    "mean(total) AS total",
+                    "mean(used) AS used",
                     ], cls._RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
-                    "mean(free) as free",
-                    "mean(pct_free) as pct_free",
-                    "mean(pct_used) as pct_used",
-                    "mean(total) as total",
-                    "mean(used) as used",
+                    "mean(free) AS free",
+                    "mean(pct_free) AS pct_free",
+                    "mean(pct_used) AS pct_used",
+                    "mean(total) AS total",
+                    "mean(used) AS used",
                     ], cls._RP_INF(), "1w")
             ]
         )
@@ -844,26 +844,26 @@ class Definitions:
             retention_policy=cls._RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
-                    "mean(compression_ratio) as compression_ratio",
-                    "mean(deduplication_ratio) as deduplication_ratio",
-                    "mean(diskgroup_size) as diskgroup_size",
-                    "mean(health) as health",
-                    "mean(size_before_compression) as size_before_compression",
-                    "mean(size_before_deduplication) as size_before_deduplication",
-                    "mean(size_free) as size_free",
-                    "mean(size_total) as size_total",
-                    "mean(size_used) as size_used"
+                    "mean(compression_ratio) AS compression_ratio",
+                    "mean(deduplication_ratio) AS deduplication_ratio",
+                    "mean(diskgroup_size) AS diskgroup_size",
+                    "mean(health) AS health",
+                    "mean(size_before_compression) AS size_before_compression",
+                    "mean(size_before_deduplication) AS size_before_deduplication",
+                    "mean(size_free) AS size_free",
+                    "mean(size_total) AS size_total",
+                    "mean(size_used) AS size_used"
                     ], cls._RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
-                    "mean(compression_ratio) as compression_ratio",
-                    "mean(deduplication_ratio) as deduplication_ratio",
-                    "mean(diskgroup_size) as diskgroup_size",
-                    "mean(health) as health",
-                    "mean(size_before_compression) as size_before_compression",
-                    "mean(size_before_deduplication) as size_before_deduplication",
-                    "mean(size_free) as size_free",
-                    "mean(size_total) as size_total",
-                    "mean(size_used) as size_used"
+                    "mean(compression_ratio) AS compression_ratio",
+                    "mean(deduplication_ratio) AS deduplication_ratio",
+                    "mean(diskgroup_size) AS diskgroup_size",
+                    "mean(health) AS health",
+                    "mean(size_before_compression) AS size_before_compression",
+                    "mean(size_before_deduplication) AS size_before_deduplication",
+                    "mean(size_free) AS size_free",
+                    "mean(size_total) AS size_total",
+                    "mean(size_used) AS size_used"
                     ], cls._RP_INF(), "1w")
             ]
 
@@ -886,20 +886,20 @@ class Definitions:
             retention_policy=cls._RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
-                    "mean(size_arc_max) as size_arc_max",
-                    "mean(size_arc_used) as size_arc_used",
-                    "mean(size_ddt_core) as size_ddt_core",
-                    "mean(size_ddt_disk) as size_ddt_disk",
-                    "mean(size_zfs_arc_meta_max) as size_zfs_arc_meta_max",
-                    "mean(size_zfs_arc_meta_used) as size_zfs_arc_meta_used"
+                    "mean(size_arc_max) AS size_arc_max",
+                    "mean(size_arc_used) AS size_arc_used",
+                    "mean(size_ddt_core) AS size_ddt_core",
+                    "mean(size_ddt_disk) AS size_ddt_disk",
+                    "mean(size_zfs_arc_meta_max) AS size_zfs_arc_meta_max",
+                    "mean(size_zfs_arc_meta_used) AS size_zfs_arc_meta_used"
                     ], cls._RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
-                    "mean(size_arc_max) as size_arc_max",
-                    "mean(size_arc_used) as size_arc_used",
-                    "mean(size_ddt_core) as size_ddt_core",
-                    "mean(size_ddt_disk) as size_ddt_disk",
-                    "mean(size_zfs_arc_meta_max) as size_zfs_arc_meta_max",
-                    "mean(size_zfs_arc_meta_used) as size_zfs_arc_meta_used"
+                    "mean(size_arc_max) AS size_arc_max",
+                    "mean(size_arc_used) AS size_arc_used",
+                    "mean(size_ddt_core) AS size_ddt_core",
+                    "mean(size_ddt_disk) AS size_ddt_disk",
+                    "mean(size_zfs_arc_meta_max) AS size_zfs_arc_meta_max",
+                    "mean(size_zfs_arc_meta_used) AS size_zfs_arc_meta_used"
                     ], cls._RP_INF(), "1w")
             ]
         )
@@ -923,28 +923,28 @@ class Definitions:
             retention_policy=cls._RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
-                    "mean(cpuUtil) as cpuUtil",
-                    "mean(memorySize) as memorySize",
-                    "mean(memoryUtil) as memoryUtil",
-                    "mean(dataSize) as dataSize",
-                    "mean(dataUtil) as dataUtil",
-                    "mean(data2Size) as data2Size",
-                    "mean(data2Util) as data2Util",
-                    "mean(data3Size) as data3Size",
-                    "mean(data3Util) as data3Util",
-                    "STDDEV(*)"
+                    "mean(cpuUtil) AS cpuUtil",
+                    "mean(memorySize) AS memorySize",
+                    "mean(memoryUtil) AS memoryUtil",
+                    "mean(dataSize) AS dataSize",
+                    "mean(dataUtil) AS dataUtil",
+                    "mean(data2Size) AS data2Size",
+                    "mean(data2Util) AS data2Util",
+                    "mean(data3Size) AS data3Size",
+                    "mean(data3Util) AS data3Util",
+                    "stddev(*)"
                     ], cls._RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
-                    "mean(cpuUtil) as cpuUtil",
-                    "mean(memorySize) as memorySize",
-                    "mean(memoryUtil) as memoryUtil",
-                    "mean(dataSize) as dataSize",
-                    "mean(dataUtil) as dataUtil",
-                    "mean(data2Size) as data2Size",
-                    "mean(data2Util) as data2Util",
-                    "mean(data3Size) as data3Size",
-                    "mean(data3Util) as data3Util",
-                    "STDDEV(*)"
+                    "mean(cpuUtil) AS cpuUtil",
+                    "mean(memorySize) AS memorySize",
+                    "mean(memoryUtil) AS memoryUtil",
+                    "mean(dataSize) AS dataSize",
+                    "mean(dataUtil) AS dataUtil",
+                    "mean(data2Size) AS data2Size",
+                    "mean(data2Util) AS data2Util",
+                    "mean(data3Size) AS data3Size",
+                    "mean(data3Util) AS data3Util",
+                    "stddev(*)"
                     ], cls._RP_INF(), "1w")
             ]
         )
@@ -982,16 +982,16 @@ class Definitions:
             retention_policy=cls._RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
-                    "mean(totalSize) as totalSize",
-                    "mean(usedSize) as usedSize",
-                    "mean(availableSize) as availableSize",
-                    "mean(percentUsed) as percentUsed"
+                    "mean(totalSize) AS totalSize",
+                    "mean(usedSize) AS usedSize",
+                    "mean(availableSize) AS availableSize",
+                    "mean(percentUsed) AS percentUsed"
                     ], cls._RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
-                    "mean(totalSize) as totalSize",
-                    "mean(usedSize) as usedSize",
-                    "mean(availableSize) as availableSize",
-                    "mean(percentUsed) as percentUsed"
+                    "mean(totalSize) AS totalSize",
+                    "mean(usedSize) AS usedSize",
+                    "mean(availableSize) AS availableSize",
+                    "mean(percentUsed) AS percentUsed"
                     ], cls._RP_INF(), "1w")
             ]
             # time key unset
@@ -1020,16 +1020,16 @@ class Definitions:
                 # Otherwise you could create a new CQ by constructor / copy-paste lambda of CQ_TMPL and edit the source table.
 
                 # EDIT does not work: by the group by more than command the sum gets reduced, a multiple-from-query is still to be made in grafana
-                # this does not help, therefore removed. Also grouping by PID re-enabled, as it would corrupt the mean due some 0%-pid-processes.
+                # this does not help, therefore removed. Also grouping by PID re-enabled, AS it would corrupt the mean due some 0%-pid-processes.
                 # cls._CQ_TMPL(
                 #     [
-                #         "sum(\"%CPU\") as \"%CPU\"",
-                #         "sum(\"%MEM\") as \"%MEM\"",
-                #         "sum(\"RES\") as \"RES\"",
-                #         "sum(\"SHR\") as \"SHR\"",
-                #         "sum(\"TIME+\") as \"TIME+\"",
-                #         "sum(\"VIRT\") as \"VIRT\"",
-                #         "sum(\"MEM_ABS\") as \"MEM_ABS\"",
+                #         "sum(\"%CPU\") AS \"%CPU\"",
+                #         "sum(\"%MEM\") AS \"%MEM\"",
+                #         "sum(\"RES\") AS \"RES\"",
+                #         "sum(\"SHR\") AS \"SHR\"",
+                #         "sum(\"TIME+\") AS \"TIME+\"",
+                #         "sum(\"VIRT\") AS \"VIRT\"",
+                #         "sum(\"MEM_ABS\") AS \"MEM_ABS\"",
                 #         ],
                 #     cls._RP_DAYS_14(), "1s",
                 #     [
@@ -1044,26 +1044,26 @@ class Definitions:
                 #         'fill(previous)'
                 #         ]),
                 cls._CQ_DWSMPL([
-                    "mean(\"%CPU\") as \"%CPU\"",
-                    "mean(\"%MEM\") as \"%MEM\"",
-                    "mean(RES) as RES",
-                    "mean(SHR) as SHR",
-                    "mean(\"TIME+\") as \"TIME+\"",
-                    "mean(VIRT) as VIRT",
-                    "mean(MEM_ABS) as MEM_ABS",
-                    "STDDEV(\"%CPU\") as \"sttdev_%CPU\"",
-                    "STDDEV(\"%MEM\") as \"sttdev_%MEM\""
+                    "mean(\"%CPU\") AS \"%CPU\"",
+                    "mean(\"%MEM\") AS \"%MEM\"",
+                    "mean(RES) AS RES",
+                    "mean(SHR) AS SHR",
+                    "mean(\"TIME+\") AS \"TIME+\"",
+                    "mean(VIRT) AS VIRT",
+                    "mean(MEM_ABS) AS MEM_ABS",
+                    "stddev(\"%CPU\") AS \"sttdev_%CPU\"",
+                    "stddev(\"%MEM\") AS \"sttdev_%MEM\""
                     ], cls._RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
-                    "mean(\"%CPU\") as \"%CPU\"",
-                    "mean(\"%MEM\") as \"%MEM\"",
-                    "mean(RES) as RES",
-                    "mean(SHR) as SHR",
-                    "mean(\"TIME+\") as \"TIME+\"",
-                    "mean(VIRT) as VIRT",
-                    "mean(MEM_ABS) as MEM_ABS",
-                    "STDDEV(\"%CPU\") as \"sttdev_%CPU\"",
-                    "STDDEV(\"%MEM\") as \"sttdev_%MEM\""
+                    "mean(\"%CPU\") AS \"%CPU\"",
+                    "mean(\"%MEM\") AS \"%MEM\"",
+                    "mean(RES) AS RES",
+                    "mean(SHR) AS SHR",
+                    "mean(\"TIME+\") AS \"TIME+\"",
+                    "mean(VIRT) AS VIRT",
+                    "mean(MEM_ABS) AS MEM_ABS",
+                    "stddev(\"%CPU\") AS \"sttdev_%CPU\"",
+                    "stddev(\"%MEM\") AS \"sttdev_%MEM\""
                     ], cls._RP_INF(), "1w"),
             ]
         )
@@ -1094,30 +1094,30 @@ class Definitions:
             retention_policy=cls._RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
-                    "mean(\"%usr\") as \"%usr\"",
-                    "mean(\"%nice\") as \"%nice\"",
-                    "mean(\"%sys\") as \"%sys\"",
-                    "mean(\"%iowait\") as \"%iowait\"",
-                    "mean(\"%irq\") as \"%irq\"",
-                    "mean(\"%soft\") as \"%soft\"",
-                    "mean(\"%steal\") as \"%steal\"",
-                    "mean(\"%guest\") as \"%guest\"",
-                    "mean(\"%gnice\") as \"%gnice\"",
-                    "mean(\"%idle\") as \"%idle\"",
-                    "mean(cpu_count) as cpu_count"
+                    "mean(\"%usr\") AS \"%usr\"",
+                    "mean(\"%nice\") AS \"%nice\"",
+                    "mean(\"%sys\") AS \"%sys\"",
+                    "mean(\"%iowait\") AS \"%iowait\"",
+                    "mean(\"%irq\") AS \"%irq\"",
+                    "mean(\"%soft\") AS \"%soft\"",
+                    "mean(\"%steal\") AS \"%steal\"",
+                    "mean(\"%guest\") AS \"%guest\"",
+                    "mean(\"%gnice\") AS \"%gnice\"",
+                    "mean(\"%idle\") AS \"%idle\"",
+                    "mean(cpu_count) AS cpu_count"
                     ], cls._RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
-                    "mean(\"%usr\") as \"%usr\"",
-                    "mean(\"%nice\") as \"%nice\"",
-                    "mean(\"%sys\") as \"%sys\"",
-                    "mean(\"%iowait\") as \"%iowait\"",
-                    "mean(\"%irq\") as \"%irq\"",
-                    "mean(\"%soft\") as \"%soft\"",
-                    "mean(\"%steal\") as \"%steal\"",
-                    "mean(\"%guest\") as \"%guest\"",
-                    "mean(\"%gnice\") as \"%gnice\"",
-                    "mean(\"%idle\") as \"%idle\"",
-                    "mean(cpu_count) as cpu_count"
+                    "mean(\"%usr\") AS \"%usr\"",
+                    "mean(\"%nice\") AS \"%nice\"",
+                    "mean(\"%sys\") AS \"%sys\"",
+                    "mean(\"%iowait\") AS \"%iowait\"",
+                    "mean(\"%irq\") AS \"%irq\"",
+                    "mean(\"%soft\") AS \"%soft\"",
+                    "mean(\"%steal\") AS \"%steal\"",
+                    "mean(\"%guest\") AS \"%guest\"",
+                    "mean(\"%gnice\") AS \"%gnice\"",
+                    "mean(\"%idle\") AS \"%idle\"",
+                    "mean(cpu_count) AS cpu_count"
                     ], cls._RP_INF(), "1w")
             ]
             # capture time
@@ -1142,18 +1142,18 @@ class Definitions:
             retention_policy=cls._RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
-                    "mean(\"buff/cache\") as \"buff/cache\"",
-                    "mean(free) as free",
-                    "mean(shared) as shared",
-                    "mean(total) as total",
-                    "mean(used) as used"
+                    "mean(\"buff/cache\") AS \"buff/cache\"",
+                    "mean(free) AS free",
+                    "mean(shared) AS shared",
+                    "mean(total) AS total",
+                    "mean(used) AS used"
                     ], cls._RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
-                    "mean(\"buff/cache\") as \"buff/cache\"",
-                    "mean(free) as free",
-                    "mean(shared) as shared",
-                    "mean(total) as total",
-                    "mean(used) as used"
+                    "mean(\"buff/cache\") AS \"buff/cache\"",
+                    "mean(free) AS free",
+                    "mean(shared) AS shared",
+                    "mean(total) AS total",
+                    "mean(used) AS used"
                     ], cls._RP_INF(), "1w")
             ]
             # capture time
@@ -1176,16 +1176,16 @@ class Definitions:
             retention_policy=cls._RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
-                    "mean(\"Use%\") as \"Use%\"",
-                    "mean(Available) as Available",
-                    "mean(Used) as Used",
-                    "mean(Size) as Size"
+                    "mean(\"Use%\") AS \"Use%\"",
+                    "mean(Available) AS Available",
+                    "mean(Used) AS Used",
+                    "mean(Size) AS Size"
                     ], cls._RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
-                    "mean(\"Use%\") as \"Use%\"",
-                    "mean(Available) as Available",
-                    "mean(Used) as Used",
-                    "mean(Size) as Size"
+                    "mean(\"Use%\") AS \"Use%\"",
+                    "mean(Available) AS Available",
+                    "mean(Used) AS Used",
+                    "mean(Size) AS Size"
                     ], cls._RP_INF(), "1w")
             ]
             # capture time
@@ -1209,9 +1209,9 @@ class Definitions:
             retention_policy=cls._RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
-                    "sum(protectedItems) as sum_protectedItems",
-                    "sum(selectedItems) as sum_selectedItems",
-                    "sum(imported365Users) as sum_imported365Users"
+                    "sum(protectedItems) AS sum_protectedItems",
+                    "sum(selectedItems) AS sum_selectedItems",
+                    "sum(imported365Users) AS sum_imported365Users"
                     ], cls._RP_DAYS_90(), "6h",
                     group_args=[
                         "jobId",
@@ -1219,9 +1219,9 @@ class Definitions:
                         'ssh_type',
                     ]),
                 cls._CQ_DWSMPL([
-                    "sum(protectedItems) as sum_protectedItems",
-                    "sum(selectedItems) as sum_selectedItems",
-                    "sum(imported365Users) as sum_imported365Users"
+                    "sum(protectedItems) AS sum_protectedItems",
+                    "sum(selectedItems) AS sum_selectedItems",
+                    "sum(imported365Users) AS sum_imported365Users"
                     ], cls._RP_INF(), "1w",
                     group_args=[
                         "jobId",
@@ -1247,7 +1247,7 @@ class Definitions:
             retention_policy=cls._RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
-                    "sum(transferredBytes) as transferredBytes"
+                    "sum(transferredBytes) AS transferredBytes"
                     ], cls._RP_DAYS_90(), "6h",
                     group_args=[
                         "itemType",
@@ -1256,7 +1256,7 @@ class Definitions:
                         'serverName',
                     ]),
                 cls._CQ_DWSMPL([
-                    "sum(transferredBytes) as transferredBytes"
+                    "sum(transferredBytes) AS transferredBytes"
                     ], cls._RP_INF(), "1w",
                     group_args=[
                         "itemType",
