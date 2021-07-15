@@ -132,6 +132,8 @@ class InfluxClient:
             # create db, nothing happens if it already exists
             self.__client.create_database(self.database.name)
 
+            self.check_create_user("GrafanaReader", "READ")
+
             # check for exisiting retention policies and continuous queries in the influxdb
             self.check_create_rp(self.database.name)
             self.check_create_cq()
@@ -277,6 +279,38 @@ class InfluxClient:
         except (ValueError, InfluxDBClientError, InfluxDBServerError, requests.exceptions.ConnectionError) as error: # type: ignore
             ExceptionUtils.exception_info(error=error) # type: ignore
             raise ValueError("Continuous Query check failed")
+
+    def check_grant_user(self, username: str, permission: str):
+        try:
+            LOGGER.debug(f"Checking/Granting user {username} for {permission} permissions.")
+            if(not username):
+                raise ValueError("checking/granting a user permissions require an username")
+            if(not permission):
+                raise ValueError("checking/granting a user permissions require a defined set of permissions")
+
+            # Get all users to check for the required user
+            user_list: List[Dict[str, Union[str, bool]]] = self.__client.get_list_users()
+            LOGGER.debug(f"Returned list of users: {user_list}")
+
+            # get the wanted user if it exists. Default value to not throw an error.
+            user_dict = next(filter(lambda user_dict: user_dict['user'] == username , user_list), None)
+            LOGGER.debug(f"Found user: {user_dict}")
+
+            # SPPMon should not create a user since then a default password will be used
+            # It is very unlikely that this one is getting changed and therefore a risk of leaking data.
+            if(not user_dict):
+                ExceptionUtils.error_message("The user 'GrafanaReader' does not exist. Please create it according to the documentation.")
+                return # not abort SPPMon, only minor error
+
+            if(user_dict['admin']):
+                LOGGER.debug("User is already admin. Finished check")
+                return
+
+            # get privileges of user to check if
+            print(self.__client.get_list_privileges(username))
+        except (ValueError, InfluxDBClientError, InfluxDBServerError, requests.exceptions.ConnectionError) as error: # type: ignore
+            ExceptionUtils.exception_info(error=error) # type: ignore
+            raise ValueError("User check failed")
 
     def copy_database(self, new_database_name: str) -> None:
         if(not new_database_name):
