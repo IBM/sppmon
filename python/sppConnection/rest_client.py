@@ -143,11 +143,27 @@ class RestClient():
         Returns:
             Tuple[str, str] -- Tuple of (version_nr, build_nr)
         """
-        results = self.get_objects(
-            endpoint="/ngp/version",
-            white_list=["version", "build"],
-            add_time_stamp=False
-        )
+        try:
+            # VERSION SPP 10.1.8.1+
+            # New endpoint for version
+            results = self.get_objects(
+                endpoint="/api/lifecycle/ping",
+                white_list=["version", "build"],
+                add_time_stamp=False
+            )
+        except ValueError as error:
+            # FALLBACK OPTION: Pre SPP 10.1.8.1
+            # old endpoint for version
+            try:
+                results = self.get_objects(
+                    endpoint="/ngp/version",
+                    white_list=["version", "build"],
+                    add_time_stamp=False
+                )
+            except ValueError as outer_error:
+                # move both errors to outer scope
+                raise ValueError("Failed to obtain SPP version through REST", error, outer_error)
+
         return (results[0]["version"], results[0]["build"])
 
     def get_objects(self,
