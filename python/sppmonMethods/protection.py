@@ -123,8 +123,10 @@ class ProtectionMethods:
         # get calulated extra info
         for row in result:
             row['siteName'] = self.__system_methods.site_name_by_id(row['site'])
-            if('free' in row and 'total' in row
-               and row['free'] > 0 and row['total'] > 0):
+            if('free' in row and row['free'] != None and
+               'total' in row and row['total'] != None and
+               row['total'] > 0):
+
                 row['used'] = row['total'] - row['free']
                 row['pct_free'] = row['free'] / row['total'] * 100
                 row['pct_used'] = row['used'] / row['total'] * 100

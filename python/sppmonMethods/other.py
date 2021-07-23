@@ -9,7 +9,7 @@ from sppConnection.ssh_client import SshClient, SshTypes
 from sppmonMethods.ssh import SshMethods
 from utils.methods_utils import MethodUtils
 from influx.influx_client import InfluxClient
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 import logging
 import os
 import re
@@ -22,7 +22,7 @@ LOGGER = logging.getLogger("sppmon")
 class OtherMethods:
 
     @staticmethod
-    def test_connection(influx_client: InfluxClient, rest_client: RestClient, config_file: Dict[str, Any]):
+    def test_connection(influx_client: InfluxClient, rest_client: Optional[RestClient], config_file: Dict[str, Any]):
         if(not config_file):
             raise ValueError("SPPmon does not work without a config file")
 
@@ -49,6 +49,8 @@ class OtherMethods:
 
         LOGGER.info("> Testing REST-API of SPP.")
         try:
+            if(not rest_client):
+                raise ValueError("Rest-client is setup. Unavailable to test it.")
             rest_client.login()
             (version_nr, build_nr) = rest_client.get_spp_version_build()
             LOGGER.info(f">> Sucessfully connected to SPP V{version_nr}, build {build_nr}.")
