@@ -9941,11 +9941,12 @@
       "yaxes": [
         {
           "$$hashKey": "object:586",
+          "decimals": 0,
           "format": "short",
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -9955,7 +9956,7 @@
           "logBase": 1,
           "max": null,
           "min": null,
-          "show": true
+          "show": false
         }
       ],
       "yaxis": {
@@ -10660,10 +10661,10 @@
         {
           "$$hashKey": "object:524",
           "decimals": 0,
-          "format": "percentunit",
-          "label": null,
+          "format": "none",
+          "label": "",
           "logBase": 1,
-          "max": "1",
+          "max": null,
           "min": "0",
           "show": true
         },
@@ -10906,10 +10907,10 @@
         {
           "$$hashKey": "object:524",
           "decimals": 0,
-          "format": "percentunit",
+          "format": "none",
           "label": null,
           "logBase": 1,
-          "max": "1",
+          "max": null,
           "min": "0",
           "show": true
         },
@@ -13030,5 +13031,5 @@
   "timezone": "",
   "title": "SPPMON for IBM Spectrum Protect Plus ${DS_DATASOURCE}",
   "uid": "sppmon_single_view_DS_${DS_DATASOURCE}",
-  "version": 1
+  "version": 3
 }
