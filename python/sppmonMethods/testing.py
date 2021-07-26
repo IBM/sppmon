@@ -169,7 +169,7 @@ class TestingMethods():
 
                 errors.append(f"A SSH-Command failed for client {client.host_name} with type {client.client_type}.\n" +
                 "Please check manually if all following commands are available:\n" +
-                f"""{",\n".join(map(lambda command: command.cmd , command_list))}""" )
+                f"""{", ".join(map(lambda command: command.cmd , command_list))}""" )
 
             else:
                 LOGGER.info("Sucessfully executed commands.")

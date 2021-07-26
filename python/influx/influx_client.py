@@ -282,7 +282,7 @@ class InfluxClient:
 
     def check_grant_user(self, username: str, permission: str):
         try:
-            LOGGER.debug(f"Checking/Granting user {username} for {permission} permissions.")
+            LOGGER.info(f"Checking/Granting user {username} for {permission} permissions on db {self.database.name}.")
             if(not username):
                 raise ValueError("checking/granting a user permissions require an username")
             if(not permission):
@@ -299,18 +299,34 @@ class InfluxClient:
             # SPPMon should not create a user since then a default password will be used
             # It is very unlikely that this one is getting changed and therefore a risk of leaking data.
             if(not user_dict):
-                ExceptionUtils.error_message("The user 'GrafanaReader' does not exist. Please create it according to the documentation.")
+                ExceptionUtils.error_message(f"The user '{username}' does not exist. Please create it according to the documentation.")
                 return # not abort SPPMon, only minor error
 
             if(user_dict['admin']):
-                LOGGER.debug("User is already admin. Finished check")
+                LOGGER.debug(f"{username} is already admin. Finished check")
                 return
 
-            # get privileges of user to check if
-            print(self.__client.get_list_privileges(username))
+            # get privileges of user to check if he already has matching permissions
+            db_privileges: List[Dict[str, str]] = self.__client.get_list_privileges(username)
+            LOGGER.debug(db_privileges)
+
+            # check for existing privileges
+            db_entry = next(filter(lambda entry_dict: entry_dict['database'] == self.database.name , db_privileges), None)
+            # there must be permissions of either wanted permission or higher (all)
+            if(db_entry and (db_entry['privilege'] == permission or db_entry['privilege'] == "ALL")):
+                LOGGER.debug(f"{username} has already correct permissions. Finished check")
+                return
+
+            # else give permissions
+            LOGGER.info(f"Permissions missing, granting them.")
+            self.__client.grant_privilege(permission, self.database.name, username)
+
+            LOGGER.debug(f"Granted permissions to {username}")
+
+
         except (ValueError, InfluxDBClientError, InfluxDBServerError, requests.exceptions.ConnectionError) as error: # type: ignore
             ExceptionUtils.exception_info(error=error) # type: ignore
-            raise ValueError("User check failed")
+            raise ValueError(f"User check failed for user {username} with permissions {permission} on db {self.database.name}")
 
     def copy_database(self, new_database_name: str) -> None:
         if(not new_database_name):
