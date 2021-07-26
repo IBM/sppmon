@@ -132,7 +132,7 @@ class InfluxClient:
             # create db, nothing happens if it already exists
             self.__client.create_database(self.database.name)
 
-            self.check_create_user("GrafanaReader", "READ")
+            self.check_grant_user("GrafanaReader", "READ")
 
             # check for exisiting retention policies and continuous queries in the influxdb
             self.check_create_rp(self.database.name)

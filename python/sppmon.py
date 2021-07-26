@@ -57,6 +57,7 @@ Author:
  07/07/2021 version 0.13.3 Hotfixing version endpoint for SPP 10.1.8.1
  07/09/2021 version 0.13.4 Hotfixing storage execption, chaning top-level execption handling to reduce the need of further hotfixes
  07/14/2021 version 0.13.5 Optimizing CQ's, reducing batch size and typo fix within cpuram table
+ 07/27/2021 version 0.13.6 Streamlining --test arg and checking for GrafanaReader on InfluxSetup
 """
 from __future__ import annotations
 import functools
@@ -64,6 +65,7 @@ import logging
 from optparse import OptionParser
 import os
 import re
+from sppmonMethods.testing import TestingMethods
 import subprocess
 from subprocess import CalledProcessError
 import sys
@@ -84,7 +86,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "0.13.5  (2021/07/09)"
+VERSION = "0.13.6  (2021/07/27)"
 
 # ----------------------------------------------------------------------------
 # command line parameter parsing
@@ -429,7 +431,9 @@ class SppMon:
         try:
             # critical components only
             self.influx_client = InfluxClient(config_file)
+
             if(not self.ignore_setup):
+                # delay the connect into the testing phase
                 self.influx_client.connect()
 
         except ValueError as err:
@@ -494,6 +498,7 @@ class SppMon:
 
             self.api_queries = ApiQueries(self.rest_client)
             if(not self.ignore_setup):
+                # delay the connect into the testing phase
                 self.rest_client.login()
 
         except ValueError as error:
@@ -853,7 +858,7 @@ class SppMon:
 
         if(OPTIONS.test):
             try:
-                OtherMethods.test_connection(self.influx_client, self.rest_client, self.config_file)
+                TestingMethods.test_connection(self.config_file, self.influx_client, self.rest_client)
             except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
