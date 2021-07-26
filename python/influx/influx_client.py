@@ -281,6 +281,19 @@ class InfluxClient:
             raise ValueError("Continuous Query check failed")
 
     def check_grant_user(self, username: str, permission: str):
+        """Checks and Grants the permissions for a user to match at least the required permission or a higher one.
+
+        Warns if user does not exists. Grants permission if current permissions to not fullfil the requirement.
+        This method does not abort if the check or grant was unsuccessfull!
+
+        Args:
+            username (str): name of the user to be checked
+            permission (str): permissions to be granted: READ, WRITE, ALL
+
+        Raises:
+            ValueError: No username provided
+            ValueError: no permissions provided
+        """
         try:
             LOGGER.info(f"Checking/Granting user {username} for {permission} permissions on db {self.database.name}.")
             if(not username):
@@ -325,8 +338,7 @@ class InfluxClient:
 
 
         except (ValueError, InfluxDBClientError, InfluxDBServerError, requests.exceptions.ConnectionError) as error: # type: ignore
-            ExceptionUtils.exception_info(error=error) # type: ignore
-            raise ValueError(f"User check failed for user {username} with permissions {permission} on db {self.database.name}")
+            ExceptionUtils.exception_info(error=error, extra_message="User check failed for user {username} with permissions {permission} on db {self.database.name}") # type: ignore
 
     def copy_database(self, new_database_name: str) -> None:
         if(not new_database_name):

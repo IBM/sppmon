@@ -19,9 +19,22 @@ from sppmonMethods.ssh import SshMethods
 LOGGER = logging.getLogger("sppmon")
 
 class TestingMethods():
+    """This Class groups all methods used for testing the aspects of SPPMon, both connectivity and functionality
+    """
 
     @classmethod
     def __test_influx(cls, influx_client: Optional[InfluxClient]) -> Tuple[List[str], List[str]]:
+        """Extracted code for testing the connectivity of the influxDB.
+
+        A Influxclient is used due to the requirement of setting up a influxClient anyway.
+        No connection should be established until done so by this method
+
+        Args:
+            influx_client (Optional[InfluxClient]): influxdb to be tested
+
+        Returns:
+            Tuple[List[str], List[str]]: Two lists: Errors and Warnings
+        """
 
         # Note: Use influx_client due the necessarity to set it up anyway beforehand
         # First connect is inside of this testing
@@ -53,6 +66,17 @@ class TestingMethods():
 
     @classmethod
     def __test_REST_API(cls, rest_client: Optional[RestClient]) -> Tuple[List[str], List[str]]:
+        """Extracted code for testing the connectivity of the REST-API.
+
+        A rest_client is used due mass of variables used to setup the client.
+        No connection should be established until done so by this method
+
+        Args:
+            rest_client (Optional[RestClient]): rest_client to be tested
+
+        Returns:
+            Tuple[List[str], List[str]]: Two lists: Errors and Warnings
+        """
 
         LOGGER.info("> Testing REST-API of SPP.")
 
@@ -77,6 +101,20 @@ class TestingMethods():
 
     @classmethod
     def __test_ssh(cls, config_file: Dict[str, Any], influx_client: Optional[InfluxClient]) -> Tuple[List[str], List[str]]:
+        """Extracted code for testing the connection and execution of ssh-clients.
+
+        Any errors might not stop SPPMon, but will cause a serious data loss due missing collection.
+        Adding a SPP-Server as client is required, not doing so is counted as error.
+        Having no vSnap-Sever added will cause a warning.
+
+        Args:
+            config_file (Dict[str, Any]): config file with ssh-client definitions
+            influx_client (Optional[InfluxClient]): influxDB client, none if setup failed
+
+        Returns:
+            Tuple[List[str], List[str]]: Two lists: Errors and Warnings
+        """
+
         LOGGER.info("> Testing all types of SSH-Clients: Server, VAPDs, vSnaps, Cloudproxy and others")
 
         warnings: List[str] = []
@@ -178,6 +216,17 @@ class TestingMethods():
 
     @classmethod
     def test_connection(cls, config_file: Dict[str, Any], influx_client: Optional[InfluxClient], rest_client: Optional[RestClient]):
+        """Tests the connectivity and functionality of all aspects of SPPMon.
+
+        Errors within the influxDB and REST-Client count as critical error, ssh only as non-critical error.
+        Creates a error summary at the very end. Warnings will be recorded too and listed.
+        Both REST-Client and InfluxDB should not be connected beforehand, only created.
+
+        Args:
+            config_file (Dict[str, Any]): sppmon config file
+            influx_client (Optional[InfluxClient]): created, but not connected influxClient
+            rest_client (Optional[RestClient]): created, but not connected RestClient
+        """
 
         # Note: Use influx_client and rest_client due the variable-heavy setup (rest) and necessarity to set it up anyway beforehand (influx)
         # First connect is inside of this testing
