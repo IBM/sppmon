@@ -125,8 +125,8 @@ class TestingMethods():
         try:
             ssh_clients = SshMethods.setup_ssh_clients(config_file)
         except ValueError as error:
-            ExceptionUtils.exception_info(error, "Error when reading config file. The auth file might be inconsistent")
-            errors.append("Error when reading config file. The auth file might be inconsistent")
+            ExceptionUtils.exception_info(error, "Error when reading config file for ssh-clients. The auth file might be inconsistent")
+            errors.append("Error when reading config file for ssh-clients. The auth file might be inconsistent")
             return (errors, warnings)
 
         # Check any available
