@@ -14,7 +14,7 @@ class GenerifyDashboard:
         """
 
         dashboardName: str = "SPPMON for IBM Spectrum Protect Plus.json"
-        dasboardDir: str = realpath("../Grafana")
+        dasboardDir: str = realpath(join("..", "Grafana"))
         dashboardPath: str = join(dasboardDir, dashboardName)
 
         genericVarName:str = r"DS_DATASOURCE"
