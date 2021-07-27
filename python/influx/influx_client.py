@@ -295,7 +295,7 @@ class InfluxClient:
             ValueError: no permissions provided
         """
         try:
-            LOGGER.info(f"Checking/Granting user {username} for {permission} permissions on db {self.database.name}.")
+            LOGGER.debug(f"Checking/Granting user {username} for {permission} permissions on db {self.database.name}.")
             if(not username):
                 raise ValueError("checking/granting a user permissions require an username")
             if(not permission):
@@ -331,7 +331,7 @@ class InfluxClient:
                 return
 
             # else give permissions
-            LOGGER.info(f"Permissions missing, granting them.")
+            LOGGER.info(f"Permissions missing for user {username}, granting {permission} permissions.")
             self.__client.grant_privilege(permission, self.database.name, username)
 
             LOGGER.debug(f"Granted permissions to {username}")

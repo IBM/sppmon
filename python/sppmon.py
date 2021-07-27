@@ -720,7 +720,7 @@ class SppMon:
         # always last due beeing true for any number != 0
         if(error_code == ERROR_CODE or error_code):
             ExceptionUtils.error_message("Error occured while executing sppmon")
-        else:
+        elif(not self.ignore_setup):
             LOGGER.info("\n\n!!! script completed !!!\n")
 
         print(f"check log for details: grep \"PID {os.getpid()}\" {self.log_path} > sppmon.log.{os.getpid()}")

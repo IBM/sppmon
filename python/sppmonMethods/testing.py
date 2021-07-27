@@ -206,8 +206,8 @@ class TestingMethods():
                     "Please check manually if the commands are available.")
 
                 errors.append(f"A SSH-Command failed for client {client.host_name} with type {client.client_type}.\n" +
-                "Please check manually if all following commands are available:\n" +
-                f"""{", ".join(map(lambda command: command.cmd , command_list))}""" )
+                "\tPlease check manually if all following commands are available:\n" +
+                "\n".join(map(lambda command: "\t" + command.cmd, command_list)) )
 
             else:
                 LOGGER.info("Sucessfully executed commands.")
@@ -246,6 +246,7 @@ class TestingMethods():
         if(influx_errors):
             influx_client = None
 
+        print("\n", flush=True)
         # ## REST-API ##
 
         try:
@@ -255,6 +256,7 @@ class TestingMethods():
             rest_errors: List[str] = ["Testing of the REST-API failed due an unknown error."]
             rest_warnings: List[str] = []
 
+        print("\n", flush=True)
         # ## SSH-CLIENTS ##
 
         try:
@@ -264,44 +266,47 @@ class TestingMethods():
             ssh_errors: List[str] = ["Testing of the SSH-Clients failed due an unknown error."]
             ssh_warnings: List[str] = []
 
+        print("\n", flush=True)
         # #### Conclusion ####
-        print("\n\n\n")
-        LOGGER.info("Testing Summary:")
+
+        LOGGER.info("#### Testing Summary ###")
+        print("\n", flush=True)
         summary_message: str = ""
 
         if(influx_errors or rest_errors):
             # only amplify message: change if empty
             if(not summary_message):
-                summary_message = "> Testing failed. SPPMon is NOT ready to be used."
+                summary_message = "Testing failed. SPPMon is NOT ready to be used."
 
             # print messages
-            LOGGER.info("Critical errors, required to fix:")
-            for i, error in enumerate(influx_errors + rest_errors):
-                print(f"{i}: {error}")
-            print("\n\n")
+            LOGGER.info("### Critical errors, required to fix ###")
+            for i, error in enumerate(influx_errors + rest_errors, 1):
+                LOGGER.info(f"Nr {i}: {error}")
+            print("\n", flush=True)
 
         if(ssh_errors):
             # only amplify message: change if empty
             if(not summary_message):
-                summary_message = "> Testing completed with non-critical errors. SPPMon will run, but data will be missing."
+                summary_message = "Testing completed with non-critical errors. SPPMon will run, but data will be missing. Please review the errors listed above."
 
             # print messages
-            LOGGER.info("Non-Critial errors found which cause a data loss")
-            for i, error in enumerate(ssh_errors):
-                print(f"{i}: {error}")
-            print("\n\n")
+            LOGGER.info("### Non-Critial errors which cause a data loss ###")
+            for i, error in enumerate(ssh_errors, 1):
+                LOGGER.info(f"Nr {i}: {error}")
+            print("\n", flush=True)
 
         if(ssh_warnings or influx_warnings or rest_warnings):
             # only amplify message: change if empty
             if(not summary_message):
-                summary_message = "> Testing successful. Please review the warnings listed."
+                summary_message = "Testing successful. Please review the warnings listed above."
 
             # print messages
-            LOGGER.info("Warnings to check before executing:")
-            for i, warning in enumerate(ssh_warnings + influx_warnings + rest_warnings):
-                print(f"{i}: {warning}")
-            print("\n\n")
+            LOGGER.info("### Warnings to check before executing ###")
+            for i, warning in enumerate(ssh_warnings + influx_warnings + rest_warnings, 1):
+                LOGGER.info(f"Nr {i}: {warning}")
+            print("\n", flush=True)
 
         # no case above hit
         if(not summary_message):
-            summary_message = "> Testing successful. SPPMon is ready to go."
+            summary_message = "Testing successful. SPPMon is ready to go."
+        LOGGER.info("RESULT: " + summary_message)
