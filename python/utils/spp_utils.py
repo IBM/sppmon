@@ -45,8 +45,8 @@ class SppUtils:
     """name of the single timestamp capture to allow same naming within the db"""
 
     @staticmethod
-    def filename_of_config(conf_file_path: str, fileending: str) -> str:
-        """returns a filepath to the home / sppmonLogs out of the config file + a new fileending
+    def mk_logger_file(conf_file_path: str, fileending: str) -> str:
+        """returns a filepath to the home/sppmonLogs/FILE out of the config file + a new fileending
 
         Args:
             conf_file (str): name of the configfile incl. path
@@ -56,11 +56,19 @@ class SppUtils:
             str: full path to the file
         """
         if(conf_file_path):
+            # get full Path without links
             real_path = os.path.realpath(conf_file_path)
+
             # get everything behind the last slash
             config_name = os.path.basename(real_path)
-            # get name without fileending
-            config_name = config_name.split('.')[-2]
+
+            # get name without fileending by taking the second last item
+            try:
+                config_name = config_name.split('.')[-2]
+            except IndexError as error:
+                ExceptionUtils.exception_info(error, "The config-file seems to not have a correct fileending")
+                raise ValueError("Unable to read the config file due a error within the specified path.")
+
 
             pid_file_name = config_name + fileending
         else:

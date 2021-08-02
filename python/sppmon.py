@@ -57,7 +57,7 @@ Author:
  07/07/2021 version 0.13.3 Hotfixing version endpoint for SPP 10.1.8.1
  07/09/2021 version 0.13.4 Hotfixing storage execption, chaning top-level execption handling to reduce the need of further hotfixes
  07/14/2021 version 0.13.5 Optimizing CQ's, reducing batch size and typo fix within cpuram table
- 07/27/2021 version 0.13.6 Streamlining --test arg and checking for GrafanaReader on InfluxSetup
+ 07/27/2021 version 0.13.6 Streamlining --test arg and checking for GrafanaReader on InfluxSetup, clearer config-file error messages
 """
 from __future__ import annotations
 import functools
@@ -322,7 +322,7 @@ class SppMon:
             ValueError: Unable to open logger
 
         """
-        self.log_path = SppUtils.filename_of_config(OPTIONS.confFileJSON, ".log")
+        self.log_path = SppUtils.mk_logger_file(OPTIONS.confFileJSON, ".log")
 
         try:
             file_handler = logging.FileHandler(self.log_path)
@@ -352,7 +352,7 @@ class SppMon:
     def check_pid_file(self) -> bool:
         if(OPTIONS.verbose):
             LOGGER.info("Checking for other SPPMon instances")
-        self.pid_file_path = SppUtils.filename_of_config(OPTIONS.confFileJSON, ".pid_file")
+        self.pid_file_path = SppUtils.mk_logger_file(OPTIONS.confFileJSON, ".pid_file")
         try:
             try:
                 file = open(self.pid_file_path, "rt")
