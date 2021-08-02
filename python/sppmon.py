@@ -662,7 +662,9 @@ class SppMon:
 
             # add arguments of sppmon
             for (key, value) in vars(ARGS).items():
-                insert_dict[key] = value
+                # Value is either string, true or false/None
+                if(value):
+                    insert_dict[key] = value
 
             # save occured errors
             error_count = len(ExceptionUtils.stored_errors)
