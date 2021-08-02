@@ -57,20 +57,21 @@ Author:
  07/07/2021 version 0.13.3 Hotfixing version endpoint for SPP 10.1.8.1
  07/09/2021 version 0.13.4 Hotfixing storage execption, chaning top-level execption handling to reduce the need of further hotfixes
  07/14/2021 version 0.13.5 Optimizing CQ's, reducing batch size and typo fix within cpuram table
- 07/27/2021 version 0.13.6 Streamlining --test arg and checking for GrafanaReader on InfluxSetup, clearer config-file error messages
+ 07/27/2021 version 0.13.6 Streamlining --test arg and checking for GrafanaReader on InfluxSetup
+ 08/02/2021 version 0.13.7 Enhancement and replacement of the ArgumentParser and clearer config-file error messages
 """
 from __future__ import annotations
+
 import functools
 import logging
-from optparse import OptionParser
 import os
 import re
-from sppmonMethods.testing import TestingMethods
 import subprocess
-from subprocess import CalledProcessError
 import sys
 import time
-from typing import Any, Dict, List, NoReturn, Union, Optional
+from argparse import ArgumentError, ArgumentParser
+from subprocess import CalledProcessError
+from typing import Any, Dict, List, NoReturn, Optional, Union
 
 from influx.influx_client import InfluxClient
 from sppConnection.api_queries import ApiQueries
@@ -80,79 +81,102 @@ from sppmonMethods.other import OtherMethods
 from sppmonMethods.protection import ProtectionMethods
 from sppmonMethods.ssh import SshMethods
 from sppmonMethods.system import SystemMethods
+from sppmonMethods.testing import TestingMethods
 from utils.connection_utils import ConnectionUtils
 from utils.execption_utils import ExceptionUtils
 from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "0.13.6  (2021/07/27)"
+VERSION = "0.13.7  (2021/08/02)"
 
 # ----------------------------------------------------------------------------
 # command line parameter parsing
 # ----------------------------------------------------------------------------
-helpText = "help_text"
-parser = OptionParser(version=VERSION)
-parser.add_option("--cfg", dest="confFileJSON", help="required: specify the JSON configuration file")
-parser.add_option("--verbose", dest="verbose", action="store_true", help="print to stdout")
-parser.add_option("--debug", dest="debug", action="store_true", help="save debug messages")
-parser.add_option("--test", dest="test", action="store_true", help="tests connection to all components")
+parser = ArgumentParser(
+    # exit_on_error=False, TODO: Enable in python version 3.9
+    description=
+    """Monitoring and long-term reporting for IBM Spectrum Protect Plus.
+ Provides a data bridge from SPP to InfluxDB and provides visualization dashboards via Grafana.
 
-parser.add_option("--constant", dest="constant", action="store_true",
+ This program provides functions to query IBM Spectrum Protect Plus Servers,
+ VSNAP, VADP and other servers via REST API and ssh. This data is stored into a InfluxDB database.""",
+ epilog="For feature-requests or bug-reports please visit https://github.com/IBM/spectrum-protect-sppmon")
+
+parser.add_argument("-v", '--version', action='version', version="Spectrum Protect Plus Monitoring (SPPMon) version " + VERSION)
+
+parser.add_argument("--cfg", required=True, dest="configFile", help="REQUIRED: specify the JSON configuration file")
+parser.add_argument("--verbose", dest="verbose", action="store_true", help="print to stdout")
+parser.add_argument("--debug", dest="debug", action="store_true", help="save debug messages")
+parser.add_argument("--test", dest="test", action="store_true", help="tests connection to all components")
+
+parser.add_argument("--constant", dest="constant", action="store_true",
                   help="execute recommended constant functions: (ssh, cpu, sppCatalog)")
 
-parser.add_option("--hourly", dest="hourly", action="store_true",
+parser.add_argument("--hourly", dest="hourly", action="store_true",
                   help="execute recommended hourly functions: (constant + jobs, vadps, storages)")
 
-parser.add_option("--daily", dest="daily", action="store_true",
+parser.add_argument("--daily", dest="daily", action="store_true",
                   help="execute recommended daily functions: (hourly +  joblogs, vms, slaStats, vmStats)")
 
-parser.add_option("--all", dest="all", action="store_true", help="execute all functions: (daily + sites)")
+parser.add_argument("--all", dest="all", action="store_true", help="execute all functions: (daily + sites)")
 
-parser.add_option("--jobs", dest="jobs", action="store_true", help="store job history")
-parser.add_option("--jobLogs", dest="jobLogs", action="store_true",
+parser.add_argument("--jobs", dest="jobs", action="store_true", help="store job history")
+parser.add_argument("--jobLogs", dest="jobLogs", action="store_true",
                   help="retrieve detailed information per job (job-sessions)")
-parser.add_option("--loadedSystem", dest="loadedSystem", action="store_true",
+parser.add_argument("--loadedSystem", dest="loadedSystem", action="store_true",
                   help="Special settings for loaded systems, reducing API-request loads")
 
-parser.add_option("--ssh", dest="ssh", action="store_true", help="execute monitoring commands via ssh")
+parser.add_argument("--ssh", dest="ssh", action="store_true", help="execute monitoring commands via ssh")
 
-parser.add_option("--vms", dest="vms", action="store_true", help="store vm statistics (hyperV, vmWare)")
-parser.add_option("--vmStats", dest="vmStats", action="store_true", help="calculate vm statistic from catalog data")
-parser.add_option("--slaStats", dest="slaStats", action="store_true", help="calculate vm's and applications per SLA")
+parser.add_argument("--vms", dest="vms", action="store_true", help="store vm statistics (hyperV, vmWare)")
+parser.add_argument("--vmStats", dest="vmStats", action="store_true", help="calculate vm statistic from catalog data")
+parser.add_argument("--slaStats", dest="slaStats", action="store_true", help="calculate vm's and applications per SLA")
 
-parser.add_option("--vadps", dest="vadps", action="store_true", help="store VADPs statistics")
-parser.add_option("--storages", dest="storages", action="store_true", help="store storages (vsnap) statistics")
+parser.add_argument("--vadps", dest="vadps", action="store_true", help="store VADPs statistics")
+parser.add_argument("--storages", dest="storages", action="store_true", help="store storages (vsnap) statistics")
 
-parser.add_option("--sites", dest="sites", action="store_true", help="store site settings")
-parser.add_option("--cpu", dest="cpu", action="store_true", help="capture SPP server CPU and RAM utilization")
-parser.add_option("--sppcatalog", dest="sppcatalog", action="store_true", help="capture Spp-Catalog Storage usage")
+parser.add_argument("--sites", dest="sites", action="store_true", help="store site settings")
+parser.add_argument("--cpu", dest="cpu", action="store_true", help="capture SPP server CPU and RAM utilization")
+parser.add_argument("--sppcatalog", dest="sppcatalog", action="store_true", help="capture Spp-Catalog Storage usage")
 
 #TODO Minimum Logs and processStats are depricated, to be removed in Version 1.1.
-parser.add_option("--minimumLogs", dest="minimumLogs", action="store_true",
+parser.add_argument("--minimumLogs", dest="minimumLogs", action="store_true",
                   help="DEPRICATED, use '--loadedSystem' instead. To be removed in v1.1")
-parser.add_option("--processStats", dest="processStats", action="store_true",
+parser.add_argument("--processStats", dest="processStats", action="store_true",
                   help="DEPRICATED, use '--ssh' instead")
 
-parser.add_option("--copy_database", dest="copy_database",
+parser.add_argument("--copy_database", dest="copy_database",
                   help="Copy all data from .cfg database into a new database, specified by `copy_database=newName`. Delete old database with caution.")
-parser.add_option("--create_dashboard", dest="create_dashboard", action="store_true",
+parser.add_argument("--create_dashboard", dest="create_dashboard", action="store_true",
                   help="Create a server unique dashboard with alerts. Option `--cfg` and `--dashboard_folder_path` required.")
-parser.add_option("--dashboard_folder_path", dest="dashboard_folder_path",
+parser.add_argument("--dashboard_folder_path", dest="dashboard_folder_path",
                   help="Used only with`--create_dashboard` option. Specifies changed folder-path of the template \"SPPMON for IBM Spectrum Protect Plus\" dashboard.")
-
-
-(OPTIONS, ARGS) = parser.parse_args()
 
 print = functools.partial(print, flush=True) # type: ignore
 
 LOGGER_NAME = 'sppmon'
 LOGGER = logging.getLogger(LOGGER_NAME)
 
-ERROR_CODE_START_ERROR = 3
-ERROR_CODE_CMD_ARGS = 2
-ERROR_CODE = 1
+ERROR_CODE_START_ERROR: int = 3
+ERROR_CODE_CMD_ARGS: int = 2
+ERROR_CODE: int = 1
+SUCCESS_CODE: int = 0
 
+try:
+    ARGS = parser.parse_args()
+except SystemExit as exit_code:
+    if(exit_code != SUCCESS_CODE):
+        print("> Error when reading SPPMon arguments.", file=sys.stderr)
+        print("> Please make sure to specify a config file and check the spelling of your arguments.", file=sys.stderr)
+        print("> Use --help to display all argument options and requirements", file=sys.stderr)
+    exit(exit_code)
+except ArgumentError as error:
+    print(error.message)
+    print("> Error when reading SPPMon arguments.", file=sys.stderr)
+    print("> Please make sure to specify a config file and check the spelling of your arguments.", file=sys.stderr)
+    print("> Use --help to display all argument options and requirements", file=sys.stderr)
+    exit(ERROR_CODE_CMD_ARGS)
 
 class SppMon:
     """Main-File for the sppmon. Only general functions here and calls for sub-modules.
@@ -173,8 +197,8 @@ class SppMon:
     """
 
     # set class variables
-    MethodUtils.verbose = OPTIONS.verbose
-    SppUtils.verbose = OPTIONS.verbose
+    MethodUtils.verbose = ARGS.verbose
+    SppUtils.verbose = ARGS.verbose
 
     # ###### API-REST page settings  ###### #
     # ## IMPORTANT NOTES ## #
@@ -287,23 +311,19 @@ class SppMon:
             ExceptionUtils.error_message("Another instance of sppmon with the same args is running")
             self.exit(ERROR_CODE_START_ERROR)
 
-        # everything is option, otherwise its a typo.
-        if(len(ARGS) > 0):
-            ExceptionUtils.error_message(f"CAREFUL: ARG DETECTED, probably typing in programm call: {ARGS}")
-
         time_stamp_name, time_stamp = SppUtils.get_capture_timestamp_sec()
         self.start_counter = time.perf_counter()
         LOGGER.debug("\n\n")
         LOGGER.debug(f"running script version: {VERSION}")
-        LOGGER.debug(f"cmdline options: {OPTIONS}")
+        LOGGER.debug(f"cmdline options: {ARGS}")
         LOGGER.debug(f"{time_stamp_name}: {time_stamp}")
         LOGGER.debug("")
 
-        if(not OPTIONS.confFileJSON):
+        if(not ARGS.configFile):
             ExceptionUtils.error_message("missing config file, aborting")
             self.exit(error_code=ERROR_CODE_CMD_ARGS)
         try:
-            self.config_file = SppUtils.read_conf_file(config_file_path=OPTIONS.confFileJSON)
+            self.config_file = SppUtils.read_conf_file(config_file_path=ARGS.configFile)
         except ValueError as error:
             ExceptionUtils.exception_info(error=error, extra_message="Error when trying to read Config file, unable to read")
             self.exit(error_code=ERROR_CODE_START_ERROR)
@@ -322,20 +342,20 @@ class SppMon:
             ValueError: Unable to open logger
 
         """
-        self.log_path = SppUtils.mk_logger_file(OPTIONS.confFileJSON, ".log")
+        self.log_path = SppUtils.mk_logger_file(ARGS.configFile, ".log")
 
         try:
             file_handler = logging.FileHandler(self.log_path)
         except Exception as error:
             # TODO here: Right exception, how to print this error?
-            print("unable to open logger")
+            print("unable to open logger", file=sys.stderr)
             raise ValueError("Unable to open Logger") from error
 
 
         file_handler_fmt = logging.Formatter(
             '%(asctime)s:[PID %(process)d]:%(levelname)s:%(module)s.%(funcName)s> %(message)s')
         file_handler.setFormatter(file_handler_fmt)
-        if(OPTIONS.debug):
+        if(ARGS.debug):
             file_handler.setLevel(logging.DEBUG)
         else:
             file_handler.setLevel(logging.ERROR)
@@ -350,13 +370,13 @@ class SppMon:
         logger.addHandler(stream_handler)
 
     def check_pid_file(self) -> bool:
-        if(OPTIONS.verbose):
+        if(ARGS.verbose):
             LOGGER.info("Checking for other SPPMon instances")
-        self.pid_file_path = SppUtils.mk_logger_file(OPTIONS.confFileJSON, ".pid_file")
+        self.pid_file_path = SppUtils.mk_logger_file(ARGS.configFile, ".pid_file")
         try:
             try:
                 file = open(self.pid_file_path, "rt")
-                match_list = re.findall(r"(\d+) " + str(OPTIONS), file.read())
+                match_list = re.findall(r"(\d+) " + str(ARGS), file.read())
                 file.close()
                 deleted_processes: List[str] = []
                 for match in match_list:
@@ -380,7 +400,7 @@ class SppMon:
                     file = open(self.pid_file_path, "rt")
                     file_str = file.read()
                     file.close()
-                    options = str(OPTIONS)
+                    options = str(ARGS)
                     for pid in deleted_processes:
                         file_str = file_str.replace(f"{pid} {options}", "")
                     # do not delete if empty since we will use it below
@@ -393,7 +413,7 @@ class SppMon:
 
             # always write your own pid into it
             file = open(self.pid_file_path, "at")
-            file.write(f"{os.getpid()} {str(OPTIONS)}")
+            file.write(f"{os.getpid()} {str(ARGS)}")
             file.close()
             return True
         except Exception as error:
@@ -405,7 +425,7 @@ class SppMon:
             file = open(self.pid_file_path, "rt")
             file_str = file.read()
             file.close()
-            new_file_str = file_str.replace(f"{os.getpid()} {str(OPTIONS)}", "").strip()
+            new_file_str = file_str.replace(f"{os.getpid()} {str(ARGS)}", "").strip()
             if(not new_file_str.strip()):
                 os.remove(self.pid_file_path)
             else:
@@ -460,9 +480,9 @@ class SppMon:
 
         # ############################ REST-API #####################################
         try:
-            ConnectionUtils.verbose = OPTIONS.verbose
+            ConnectionUtils.verbose = ARGS.verbose
             # ### Loaded Systems part 1/2 ### #
-            if(OPTIONS.minimumLogs or OPTIONS.loadedSystem):
+            if(ARGS.minimumLogs or ARGS.loadedSystem):
                 # Setting pagesize scaling settings
                 ConnectionUtils.timeout_reduction = self.loaded_timeout_reduction
                 ConnectionUtils.allowed_send_delta = self.loaded_allowed_send_delta
@@ -477,7 +497,7 @@ class SppMon:
                     send_retries=self.loaded_send_retries,
                     starting_page_size=self.loaded_starting_page_size,
                     min_page_size=self.loaded_min_page_size,
-                    verbose=OPTIONS.verbose
+                    verbose=ARGS.verbose
                 )
             else:
                 ConnectionUtils.timeout_reduction = self.timeout_reduction
@@ -493,7 +513,7 @@ class SppMon:
                     send_retries=self.send_retries,
                     starting_page_size=self.starting_page_size,
                     min_page_size=self.min_page_size,
-                    verbose=OPTIONS.verbose
+                    verbose=ARGS.verbose
                 )
 
             self.api_queries = ApiQueries(self.rest_client)
@@ -510,12 +530,12 @@ class SppMon:
         # ######################## System, Job and Hypervisor Methods ##################
         try:
             # explicit ahead due dependency
-            self.system_methods = SystemMethods(self.influx_client, self.api_queries, OPTIONS.verbose)
+            self.system_methods = SystemMethods(self.influx_client, self.api_queries, ARGS.verbose)
         except ValueError as error:
             ExceptionUtils.exception_info(error=error)
 
         # ### Loaded Systems part 2/2 ### #
-        if(OPTIONS.minimumLogs or OPTIONS.loadedSystem):
+        if(ARGS.minimumLogs or ARGS.loadedSystem):
             given_log_types = self.loaded_joblog_types
         else:
             given_log_types = self.joblog_types
@@ -526,14 +546,14 @@ class SppMon:
 
             self.job_methods = JobMethods(
                 self.influx_client, self.api_queries, self.job_log_retention_time,
-                given_log_types, OPTIONS.verbose)
+                given_log_types, ARGS.verbose)
         except ValueError as error:
             ExceptionUtils.exception_info(error=error)
 
         try:
             # dependen on system methods
             self.protection_methods = ProtectionMethods(self.system_methods, self.influx_client, self.api_queries,
-                                                        OPTIONS.verbose)
+                                                        ARGS.verbose)
         except ValueError as error:
             ExceptionUtils.exception_info(error=error)
 
@@ -544,7 +564,7 @@ class SppMon:
                 self.ssh_methods = SshMethods(
                     influx_client=self.influx_client,
                     config_file=config_file,
-                    verbose=OPTIONS.verbose)
+                    verbose=ARGS.verbose)
 
             except ValueError as error:
                 ExceptionUtils.exception_info(
@@ -564,55 +584,55 @@ class SppMon:
 
         # Temporary features / Depricated
 
-        if(OPTIONS.minimumLogs):
+        if(ARGS.minimumLogs):
             ExceptionUtils.error_message(
                 "DEPRICATED: using depricated argument '--minumumLogs'. Use to '--loadedSystem' instead.")
-        if(OPTIONS.processStats):
+        if(ARGS.processStats):
             ExceptionUtils.error_message(
                 "DEPRICATED: using depricated argument '--minumumLogs'. Use to '--ssh' instead.")
 
         # ignore setup args
         self.ignore_setup: bool = (
-            OPTIONS.create_dashboard or bool(OPTIONS.dashboard_folder_path) or
-            OPTIONS.test
+            ARGS.create_dashboard or bool(ARGS.dashboard_folder_path) or
+            ARGS.test
                                   )
         if(self.ignore_setup):
             ExceptionUtils.error_message("> WARNING: An option for a utility operation has been specified.  Bypassing normal SPPMON operation.")
 
-        if((OPTIONS.create_dashboard or bool(OPTIONS.dashboard_folder_path)) and not
-           (OPTIONS.create_dashboard and bool(OPTIONS.dashboard_folder_path))):
+        if((ARGS.create_dashboard or bool(ARGS.dashboard_folder_path)) and not
+           (ARGS.create_dashboard and bool(ARGS.dashboard_folder_path))):
            ExceptionUtils.error_message("> Using --create_dashboard without associated folder path. Aborting.")
            self.exit(ERROR_CODE_CMD_ARGS)
 
         # incremental setup, higher executes all below
-        all_args: bool = OPTIONS.all
-        daily: bool = OPTIONS.daily or all_args
-        hourly: bool = OPTIONS.hourly or daily
-        constant: bool = OPTIONS.constant or hourly
+        all_args: bool = ARGS.all
+        daily: bool = ARGS.daily or all_args
+        hourly: bool = ARGS.hourly or daily
+        constant: bool = ARGS.constant or hourly
 
         # ######## All Methods #################
 
-        self.sites: bool = OPTIONS.sites or all_args
+        self.sites: bool = ARGS.sites or all_args
 
         # ######## Daily Methods ###############
 
-        self.vms: bool = OPTIONS.vms or daily
-        self.job_logs: bool = OPTIONS.jobLogs or daily
-        self.sla_stats: bool = OPTIONS.slaStats or daily
-        self.vm_stats: bool = OPTIONS.vmStats or daily
+        self.vms: bool = ARGS.vms or daily
+        self.job_logs: bool = ARGS.jobLogs or daily
+        self.sla_stats: bool = ARGS.slaStats or daily
+        self.vm_stats: bool = ARGS.vmStats or daily
 
         # ######## Hourly Methods ##############
 
-        self.jobs: bool = OPTIONS.jobs or hourly
-        self.vadps: bool = OPTIONS.vadps or hourly
-        self.storages: bool = OPTIONS.storages or hourly
+        self.jobs: bool = ARGS.jobs or hourly
+        self.vadps: bool = ARGS.vadps or hourly
+        self.storages: bool = ARGS.storages or hourly
         # ssh vsnap pools ?
 
         # ######## Constant Methods ############
 
-        self.ssh: bool = OPTIONS.ssh or constant
-        self.cpu: bool = OPTIONS.cpu or constant
-        self.spp_catalog: bool = OPTIONS.sppcatalog or constant
+        self.ssh: bool = ARGS.ssh or constant
+        self.cpu: bool = ARGS.cpu or constant
+        self.spp_catalog: bool = ARGS.sppcatalog or constant
 
     def store_script_metrics(self) -> None:
         """Stores script metrics into influxb. To be called before exit.
@@ -641,7 +661,7 @@ class SppMon:
             insert_dict['duration'] = int((end_counter-self.start_counter)*1000)
 
             # add arguments of sppmon
-            for (key, value) in vars(OPTIONS).items():
+            for (key, value) in vars(ARGS).items():
                 insert_dict[key] = value
 
             # save occured errors
@@ -674,7 +694,7 @@ class SppMon:
                 error=error,
                 extra_message="Error when storing sppmon-metrics, skipping this step. Possible insert-buffer data loss")
 
-    def exit(self, error_code: int = False) -> NoReturn:
+    def exit(self, error_code: int = SUCCESS_CODE) -> NoReturn:
         """Executes finishing tasks and exits sppmon. To be called every time.
 
         Executes finishing tasks and displays error messages.
@@ -683,16 +703,13 @@ class SppMon:
         Does NOT return.
 
         Keyword Arguments:
-            error {int} -- Errorcode if a error occured. (default: {False})
+            error {int} -- Errorcode if a error occured. (default: {0})
         """
 
         # error with the command line arguments
         # dont store runtime here
         if(error_code == ERROR_CODE_CMD_ARGS):
-            prog_args = []
-            prog_args.append(sys.argv[0])
-            prog_args.append("--help")
-            os.execv(sys.executable, ['python'] + prog_args)
+            parser.print_help()
             sys.exit(ERROR_CODE_CMD_ARGS) # unreachable?
         if(error_code == ERROR_CODE_START_ERROR):
             ExceptionUtils.error_message("Error when starting SPPMon. Please review the errors above")
@@ -846,9 +863,9 @@ class SppMon:
 
         # ###################### OTHER METHODS #######################
 
-        if(OPTIONS.copy_database):
+        if(ARGS.copy_database):
             try:
-                self.influx_client.copy_database(OPTIONS.copy_database)
+                self.influx_client.copy_database(ARGS.copy_database)
             except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
@@ -856,7 +873,7 @@ class SppMon:
 
         # ################### NON-SETUP-METHODS #######################
 
-        if(OPTIONS.test):
+        if(ARGS.test):
             try:
                 TestingMethods.test_connection(self.config_file, self.influx_client, self.rest_client)
             except Exception as error:
@@ -864,14 +881,14 @@ class SppMon:
                     error=error,
                     extra_message="Top-level-error when testing connection.")
 
-        if(OPTIONS.create_dashboard):
+        if(ARGS.create_dashboard):
             try:
-                if(not OPTIONS.dashboard_folder_path):
+                if(not ARGS.dashboard_folder_path):
                     ExceptionUtils.error_message(
                         "Only use --create_dashboard in combination with --dashboard_folder_path=\"PATH/TO/GRAFANA/FOLDER/\"")
                 else:
                     OtherMethods.create_dashboard(
-                        dashboard_folder_path=OPTIONS.dashboard_folder_path,
+                        dashboard_folder_path=ARGS.dashboard_folder_path,
                         database_name=self.influx_client.database.name)
             except Exception as error:
                 ExceptionUtils.exception_info(
