@@ -4,25 +4,31 @@ Classes:
     RestClient
 """
 from __future__ import annotations
-import logging
+
 import json
-from typing import Optional, Tuple, Dict, List, Any
-
+import logging
 import time
-import requests
-import urllib3
-from requests.models import Response
-from requests.auth import HTTPBasicAuth
+from enum import Enum, unique
+from typing import Any, Dict, List, Optional, Tuple
 
+from requests import get, post, delete
+from requests.auth import HTTPBasicAuth
+from requests.exceptions import ReadTimeout, RequestException
+from requests.models import Response
+from requests.packages.urllib3 import disable_warnings
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from utils.connection_utils import ConnectionUtils
 from utils.execption_utils import ExceptionUtils
 from utils.spp_utils import SppUtils
 
-
 LOGGER = logging.getLogger("sppmon")
 # TODO: Remove this once in production!
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+disable_warnings(InsecureRequestWarning)
 
+@unique
+class RequestType(Enum):
+    GET = "GET"
+    POST = "POST"
 
 class RestClient():
     """Provides access to the REST-API. You need to login before using it.
@@ -88,23 +94,27 @@ class RestClient():
         Raises:
             ValueError: Login was not sucessfull.
         """
-        http_auth: HTTPBasicAuth = HTTPBasicAuth(self.__username, self.__password) # type: ignore
-        self.__srv_url = "https://{srv_address}:{port}".format(srv_address=self.__srv_address, port=self.__srv_port)
-        endpoint = "/api/endeavour/session"
+        http_auth: HTTPBasicAuth = HTTPBasicAuth(self.__username, self.__password)
+        self.__srv_url = f"https://{self.__srv_address}:{self.__srv_port}"
+        login_url = self.__srv_url + "/api/endeavour/session"
 
         LOGGER.debug(f"login to SPP REST API server: {self.__srv_url}")
         if(self.__verbose):
             LOGGER.info(f"login to SPP REST API server: {self.__srv_url}")
         try:
-            response_json = self.post_data(endpoint=endpoint, auth=http_auth) # type: ignore
+            (response_json, _) = self.__query_url(url=login_url, auth=http_auth, request_type=RequestType.POST)
         except ValueError as error:
             ExceptionUtils.exception_info(error=error)
             ExceptionUtils.error_message(
                 "Please make sure your Hostadress, port, username and password for REST-API (not SSH) login is correct."
                 + "\nYou may test this by logging in into the SPP-Website with the used credentials.")
             raise ValueError(f"REST API login request not successfull.")
+        try:
+            self.__sessionid: str = response_json["sessionid"]
+        except KeyError as error:
+            ExceptionUtils.exception_info(error)
+            raise ValueError("Login into SPP failed: No Session-ID received")
 
-        self.__sessionid: str = response_json.get("sessionid", "")
         (version, build) = self.get_spp_version_build()
 
         LOGGER.debug(f"SPP-Version: {version}, build {build}")
@@ -125,13 +135,13 @@ class RestClient():
         """
         url = self.__srv_url + "/api/endeavour/session"
         try:
-            response_logout: Response = requests.delete(url, headers=self.__headers, verify=False) # type: ignore
-        except requests.exceptions.RequestException as error: # type: ignore
-            ExceptionUtils.exception_info(error=error) # type: ignore
+            response_logout: Response = delete(url, headers=self.__headers, verify=False)
+        except RequestException as error:
+            ExceptionUtils.exception_info(error=error)
             raise ValueError("error when logging out")
 
         if response_logout.status_code != 204:
-            raise ValueError("Wrong Status code when logging out", response_logout.status_code) # type: ignore
+            raise ValueError("Wrong Status code when logging out", response_logout.status_code)
 
         if(self.__verbose):
             LOGGER.info("Rest-API logout successfull")
@@ -148,7 +158,7 @@ class RestClient():
             # New endpoint for version
             results = self.get_objects(
                 endpoint="/api/lifecycle/ping",
-                white_list=["version", "build"],
+                allow_list=["version", "build"],
                 add_time_stamp=False
             )
         except ValueError as error:
@@ -157,7 +167,7 @@ class RestClient():
             try:
                 results = self.get_objects(
                     endpoint="/ngp/version",
-                    white_list=["version", "build"],
+                    allow_list=["version", "build"],
                     add_time_stamp=False
                 )
             except ValueError as outer_error:
@@ -168,15 +178,18 @@ class RestClient():
 
     def get_objects(self,
                     endpoint: str = None, uri: str = None,
+                    params: Dict[str, Any] = None,
+                    post_data: Dict[str, Any] = None,
+                    request_type: RequestType = RequestType.GET,
                     array_name: str = None,
-                    white_list: List[str] = None, ignore_list: List[str] = None,
+                    allow_list: List[str] = None, ignore_list: List[str] = None,
                     add_time_stamp: bool = False) -> List[Dict[str, Any]]:
         """Querys a response(-list) from a REST-API endpoint or URI.
 
         Specify `array_name` if there are multiple results / list.
-        Use white_list to pick only the values specified.
+        Use allow_list to pick only the values specified.
         Use ignore_list to pick everything but the values specified.
-        Both: white_list items overwrite ignore_list items, still getting all not filtered.
+        Both: allow_list items overwrite ignore_list items, still getting all not filtered.
 
         Note:
         Do not specify both endpoint and uri, only uri will be used
@@ -185,7 +198,7 @@ class RestClient():
             endpoint {str} -- endpoint to be queried. Either use this or uri (default: {None})
             uri {str} -- uri to be queried. Either use this or endpoint (default: {None})
             array_name {str} -- name of array if there are multiple results wanted (default: {None})
-            white_list {list} -- list of item to query (default: {None})
+            allow_list {list} -- list of item to query (default: {None})
             ignore_list {list} -- query all but these items(-groups). (default: {None})
             page_size {int} -- Size of page, recommendation is 100, depending on size of data (default: {100})
             add_time_stamp {bool} -- whether to add the capture timestamp  (default: {False})
@@ -201,13 +214,13 @@ class RestClient():
         if(not endpoint and not uri):
             raise ValueError("neiter endpoint nor uri specified")
         if(endpoint and uri):
-            LOGGER.debug("added both endpoint and uri. This is unneccessary, endpoint is ignored")
+            LOGGER.debug("added both endpoint and uri. This is unneccessary, uri is ignored")
         # if neither specifed, get everything
-        if(not white_list and not ignore_list):
+        if(not allow_list and not ignore_list):
             ignore_list = []
 
         # create uri out of endpoint
-        if(not uri):
+        if(endpoint):
             next_page = self.__srv_url + endpoint
         else:
             next_page = uri
@@ -220,7 +233,7 @@ class RestClient():
             if(self.__verbose):
                 LOGGER.info(f"Collected {len(result_list)} items until now. Next page: {next_page}")
             # Request response
-            (response, send_time) = self.__query_url(url=next_page)
+            (response, send_time) = self.__query_url(next_page, params, request_type, post_data)
 
             # find follow page if available and set it
             (_, next_page_link) = SppUtils.get_nested_kv(key_name="links.nextPage.href", nested_dict=response)
@@ -237,7 +250,7 @@ class RestClient():
 
             filtered_results = ConnectionUtils.filter_values_dict(
                 result_list=page_result_list,
-                white_list=white_list,
+                allow_list=allow_list,
                 ignore_list=ignore_list)
 
             if(add_time_stamp): # direct time add to make the timestamps represent the real capture time
@@ -258,13 +271,20 @@ class RestClient():
         LOGGER.debug("objectList size %d", len(result_list))
         return result_list
 
-    def __query_url(self, url: str) -> Tuple[Dict[str, Any], float]:
-        """Sends a request to this endpoint. Repeats if timeout error occured.
-
-        Adust the pagesize on timeout.
+    def __query_url(
+        self,
+        url: str,
+        params: Dict[str, Any] = None,
+        request_type: RequestType = RequestType.GET,
+        post_data: Dict[str, str] = None,
+        auth: HTTPBasicAuth = None) -> Tuple[Dict[str, Any], float]:
+        """Sends a request to this endpoint. Repeats if timeout error occured. Adust the pagesize on timeout.
 
         Arguments:
-            url {str} -- URL to be queried.
+            url {str} -- URL to be queried. Must contain the server-uri and Endpoint.
+            post_data {str} -- additional data with filters/parameters. Only to be send with a POST-Request (default: {None})
+            auth {HTTPBasicAuth} -- Basic auth to be used to login into SPP via POST-Request(default: {None})
+            type {RequestType} -- What kind of Request should be made, defaults to GET
 
         Raises:
             ValueError: No URL specified
@@ -272,14 +292,18 @@ class RestClient():
             ValueError: Wrong status code
             ValueError: failed to parse result
             ValueError: Timeout when sending result
+            ValueError: No post-data/auth is allowed in a GET-Request
 
         Returns:
             Tuple[Dict[str, Any], float] -- Result of the request with the required send time
         """
         if(not url):
             raise ValueError("no url specified")
-
-        LOGGER.debug(f"endpoint request {url}")
+        if((post_data or auth) and type == RequestType.GET):
+            raise ValueError("No post-data/auth is allowed in a GET-Request")
+        LOGGER.debug(f"query url: {url}, type: {type}, post_data: {post_data} auth: {True if auth else False}")
+        if(not params):
+            params = {}
 
         failed_trys: int = 0
         response_query: Optional[Response] = None
@@ -288,34 +312,37 @@ class RestClient():
         while(response_query is None):
 
             # read pagesize
-            actual_page_size = ConnectionUtils.url_get_param_value(url=url, param_name="pageSize")
+            old_page_size = ConnectionUtils.url_get_param_value(url=url, param_name="pageSize")
 
-             # Always set Pagesize to avoid different pagesizes by system
-            if(not actual_page_size):
-                url = ConnectionUtils.url_set_param(url=url, param_name="pageSize", param_value=self.__page_size)
-            else:
-                # read the pagesize
+             # Always set Pagesize to avoid default pagesizes by SPP
+            if(old_page_size):
                 try:
-                    actual_page_size = int(actual_page_size[0])
+                    old_page_size = int(old_page_size[0])
                 except (ValueError, KeyError) as error:
-                    ExceptionUtils.exception_info(error, extra_message="invalid page size recorded")
-                    actual_page_size = -1
+                    ExceptionUtils.exception_info(error, extra_message="invalid old page size recorded")
 
             # adjust pagesize of url
-            if(actual_page_size != self.__page_size):
-                LOGGER.debug(f"setting new pageSize from {actual_page_size} to {self.__page_size}")
-                url = ConnectionUtils.url_set_param(url=url, param_name="pageSize", param_value=self.__page_size)
+            if(old_page_size != self.__page_size):
+                LOGGER.debug(f"setting new pageSize from {old_page_size} to {self.__page_size}")
+                params["pageSize"] = self.__page_size
 
             # send the query
             try:
                 start_time = time.perf_counter()
-                response_query = requests.get( # type: ignore
-                    url=url, headers=self.__headers, verify=False,
-                    timeout=(self.__initial_connection_timeout, self.__timeout))
+                if(request_type == RequestType.GET):
+                    response_query = get(
+                        url=url, headers=self.__headers, verify=False,
+                        params=params,
+                        timeout=(self.__initial_connection_timeout, self.__timeout))
+                elif(request_type == RequestType.POST):
+                    response_query = post(
+                        url=url, headers=self.__headers, verify=False,
+                        params=params, json=post_data, auth=auth,
+                        timeout=(self.__initial_connection_timeout, self.__timeout))
                 end_time = time.perf_counter()
                 send_time = (end_time - start_time)
 
-            except requests.exceptions.ReadTimeout as timeout_error:
+            except ReadTimeout as timeout_error:
 
                 # timeout occured, increasing failed trys
                 failed_trys += 1
@@ -354,80 +381,20 @@ class RestClient():
                     self.__page_size = ConnectionUtils.adjust_page_size(
                         page_size=self.__page_size,
                         min_page_size=self.__min_page_size,
-                        time_out=True)
+                        timeout=True)
                     # repeat with reduced page size
 
-            except requests.exceptions.RequestException as error:
+            except RequestException as error:
                 ExceptionUtils.exception_info(error=error)
                 raise ValueError("error when requesting endpoint", error)
 
-        if response_query.status_code != 200:
+        if( not response_query.ok):
             raise ValueError("Wrong Status code when requesting endpoint data",
                              response_query.status_code, url, response_query)
 
         try:
             response_json: Dict[str, Any] = response_query.json()
-        except (json.decoder.JSONDecodeError, ValueError) as error: # type: ignore
-            raise ValueError("failed to parse query in restAPI post request", response_query) # type: ignore
+        except (json.decoder.JSONDecodeError, ValueError) as error:
+            raise ValueError("failed to parse query in restAPI request", response_query)
 
         return (response_json, send_time)
-
-    def post_data(self, endpoint: str = None, url: str = None, post_data: str = None,
-                  auth: HTTPBasicAuth = None) -> Dict[str, Any]: # type: ignore
-        """Queries endpoint by a POST-Request.
-
-        Only specify `auth` if you want to log in. Either specify endpoint or url.
-
-        Keyword Arguments:
-            endpoint {str} -- Endpoint to be queried (default: {None})
-            url {str} -- URL to be queried (default: {None})
-            post_data {str} -- data with filters/parameters (default: {None})
-            auth {HTTPBasicAuth} -- auth if you want to log in (default: {None})
-
-        Raises:
-            ValueError: no endpoint or url specified
-            ValueError: both url and endpoint specified
-            ValueError: no post_data or auth specified
-            ValueError: error when sending post data
-            ValueError: wrong status code in response
-            ValueError: failed to parse query
-
-        Returns:
-            Dict[str, Any] -- [description]
-        """
-        if(not endpoint and not url):
-            raise ValueError("neither url nor endpoint specified")
-        if(endpoint and url):
-            raise ValueError("both url and endpoint specified")
-        if(not post_data and not auth):
-            raise ValueError("either provide auth or post_data")
-
-        if(not url):
-            url = self.__srv_url + endpoint
-
-        LOGGER.debug(f"post_data request {url} {post_data} {auth}")
-
-        try:
-            if(post_data):
-                response_query: Response = requests.post( # type: ignore
-                    url, headers=self.__headers, data=post_data, verify=False,
-                    timeout=(self.__initial_connection_timeout, self.__timeout))
-            else:
-                response_query: Response = requests.post( # type: ignore
-                    url, headers=self.__headers, auth=auth, verify=False,
-                    timeout=(self.__initial_connection_timeout, self.__timeout))
-        except requests.exceptions.RequestException as error: # type: ignore
-            ExceptionUtils.exception_info(error=error) # type: ignore
-            raise ValueError("Error when sending REST-API post data", endpoint, post_data)
-
-        if response_query.status_code != 200:
-            raise ValueError("Status Code Error in REST-API post data response",
-                             response_query.status_code, response_query, endpoint, post_data) # type: ignore
-
-        try:
-            response_json: Dict[str, Any] = response_query.json()
-        except (json.decoder.JSONDecodeError, ValueError) as error: # type: ignore
-            raise ValueError("failed to parse query in restAPI post request",
-                             response_query, endpoint, post_data) # type: ignore
-
-        return response_json

@@ -19,7 +19,7 @@ class ConnectionUtils:
 
     Methods:
         get_with_sub_values - Extends a dict by possible sub-dicts in its values, recursive.
-        url_set_param - Sets or removes params from an URL.
+        url_set_param - DEPRICATED: use requests.get(params=params) instead
         url_get_param_value - reads a param value from a url.
         filter_values_dict - removed unwanted items from a list of dicts.
         adjust_page_size - Adjust dynamically the pagesize for requests.
@@ -86,7 +86,8 @@ class ConnectionUtils:
 
     @staticmethod
     def url_set_param(url: str, param_name: str = None, param_value: Any = None) -> str:
-        """Sets or removes params from an URL.
+        """DEPRICATED: use requests.get(params=params) instead!
+        Sets or removes params from an URL.
 
         If you want to add or update a param specify both param_name and param_value.
         To remove a param leave the value empty.
@@ -107,6 +108,7 @@ class ConnectionUtils:
         Returns:
             {str} -- new modified URL
         """
+        ExceptionUtils.error_message("USAGE OF DEPRICATED METHOD: url_set_param")
 
         if(not url):
             raise ValueError("need url to set params")
@@ -171,7 +173,7 @@ class ConnectionUtils:
                          min_page_size: int,
                          preferred_time: float = None,
                          send_time: float = None,
-                         time_out: bool = False) -> int:
+                         timeout: bool = False) -> int:
         """Adjust dynamically the pagesize for requests.
 
         This method uses class attributes for finetuning.
@@ -182,7 +184,7 @@ class ConnectionUtils:
             min_page_size (int): minimum allowed pagesize
             preferred_time (float, optional): the perfect send time. Defaults to None.
             send_time (float, optional): the actual send time. Defaults to None.
-            time_out (bool, optional): if the requests timed out. Defaults to False.
+            timeout (bool, optional): if the requests timed out. Defaults to False.
 
         Raises:
             ValueError: no pagesize given
@@ -197,10 +199,10 @@ class ConnectionUtils:
             raise ValueError("need a old pagesize to adjust to a new one")
         if(min_page_size is None):
             raise ValueError("need min_page_size")
-        if(not time_out and (preferred_time is None or send_time is None)):
+        if(not timeout and (preferred_time is None or send_time is None)):
             raise ValueError("need both preferred and send time if not timeout")
 
-        if(time_out):
+        if(timeout):
             size_over_limit = page_size-min_page_size
             # reduce pagesize
             new_page_size = int(page_size - (size_over_limit * cls.timeout_reduction))
@@ -241,17 +243,17 @@ class ConnectionUtils:
     @classmethod
     def filter_values_dict(cls,
                            result_list: List[Dict[str, Any]],
-                           white_list: List[str] = None,
+                           allow_list: List[str] = None,
                            ignore_list: List[str] = None) -> List[Dict[str, Any]]:
         """Removes unwanted values from a list of dicts.
 
-        Use white_list to only pick the values specified.
-        Use ignore_list to pick everything but the values specified
-        Both: white_list itmes overwrite ignore_list times, still getting all items not filterd.
+        Use allow_list to only pick the values specified. Gather all values if empty/none
+        Use ignore_list to pick everything but the values specified.
+        Both: allow_list itmes overwrite ignore_list times, still getting all items not filtered.
 
         Args:
-            result_list (List[Dict[str, Any]]): items to be filtered
-            white_list (List[str], optional): items to be kept. Defaults to None.
+            result_list (List[Dict[str, Any]]): source items to be filtered
+            allow_list (List[str], optional): items to be kept. Retains all values if empty. Defaults to None.
             ignore_list (List[str], optional): items to be removed. Defaults to None.
 
         Raises:
@@ -273,16 +275,16 @@ class ConnectionUtils:
             new_result: Dict[str, Any] = {}
 
             # Only aquire items wanted
-            if(white_list):
+            if(allow_list):
 
-                for white_key in white_list:
+                for white_key in allow_list:
                     (key, value) = SppUtils.get_nested_kv(key_name=white_key, nested_dict=result)
                     if(key in new_result):
                         key = white_key
                     new_result[key] = value
 
                 # warn if something is missing
-                if(len(new_result) != len(white_list)):
+                if(len(new_result) != len(allow_list)):
                     ExceptionUtils.error_message(
                         f"Result has not same lenght as whitelist, probably typing error: {result_list}")
 

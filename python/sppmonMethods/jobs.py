@@ -31,7 +31,7 @@ class JobMethods:
     """
 
     # only here to maintain for later, unused yet
-    __job_log_white_list = [
+    __job_log_allow_list = [
         "CTGGA2340",
         "CTGGA0071",
         "CTGGA2260",
