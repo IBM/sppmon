@@ -94,35 +94,30 @@ class InfluxUtils:
 
 
     @staticmethod
-    def escape_chars(value: Any, replace_list: List[Tuple[str, str]]) -> str:
+    def escape_chars(value: Any, replace_dict: Dict[str, str]) -> str:
         """Escapes chars to a even number of escape signs. Only adds escape signs.
 
         TODO: Probably buggy with filenames, need to redo again.
 
         Arguments:
             value {str} -- string which should get escaped
-
-        Keyword Arguments:
-            unwanted_char {str} -- a single char you want to escape (default: {None})
-            unwanted_char_list {list} -- list of chars you want to escape (default: {None})
+            replace_dict {Dict[str, str]} -- Mapping of chars with replacement
 
         Raises:
-            ValueError: Neither single nor list of chars is given
+            ValueError: No replacement mapping is given
 
         Returns:
             str -- the changed string
         """
-        if(not replace_list):
-            raise ValueError("need list with char/replacement to replace something")
+        if(not replace_dict):
+            raise ValueError("need dict with char/replacement to replace something")
 
-        # make sure the string is a string
-        value = '{}'.format(value)
+        if(not isinstance(value, str)):
+            value = f'{value}'.format(value)
 
-        for(old, new) in replace_list:
-            pattern = re.compile(r'((?<!\\{1})(?:\\{2})*)' + old)
-            value = re.sub(pattern, r'\1'+new, value)
+        escaped = value.translate(str.maketrans(replace_dict))
 
-        return value
+        return escaped
 
     @classmethod
     def default_split(cls, mydict: Dict[str, Any]) -> Tuple[

@@ -6,8 +6,7 @@ Classes:
 import logging
 import re
 import time
-import difflib
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Union, Optional
 
 import requests
 from influxdb import InfluxDBClient
@@ -64,8 +63,12 @@ class InfluxClient:
     __insert_buffer: Dict[Table, List[InsertQuery]] = {}
     """used to send all insert-querys at once. Multiple Insert-Querys per table"""
 
-    __query_max_batch_size = 7500
-    """Maximum amount of querys sent at once to the influxdb. Recommended is 5000-10000."""
+    __query_max_batch_size = 10000
+    """Maximum amount of querys sent at once to the influxdb. Recommended is 5000-10000.
+    Queries automatically abort after 5 sec, but still try to write afterwards."""
+
+    __fallback_max_batch_size = 500
+    """Batch size on write requests once the first request failed to avoid the 5 second request limit"""
 
     def __init__(self, config_file: Dict[str, Any]):
         """Initalize the influx client from a config dict. Call `connect` before using the client.
@@ -561,16 +564,20 @@ class InfluxClient:
         LOGGER.debug("Appended %d items to the insert buffer", len(query_buffer))
 
         # safeguard to avoid memoryError
-        if(len(self.__insert_buffer[table]) > 5 * self.__query_max_batch_size):
+        if(len(self.__insert_buffer[table]) > 2 * self.__query_max_batch_size):
             self.flush_insert_buffer()
 
         LOGGER.debug(f"Exit insert_dicts for table: {table_name}")
 
-    def flush_insert_buffer(self) -> None:
+    def flush_insert_buffer(self, fallback: bool = False) -> None:
         """Flushes the insert buffer, send querys to influxdb server.
 
         Sends in batches defined by `__batch_size` to reduce http overhead.
         Only send-statistics remain in buffer, flush again to send those too.
+        Retries once into fallback mode if first request fails with modified settings.
+
+        Keyword Arguments:
+            fallback {bool} -- Whether to use fallback-options. Does not repeat on fallback (default: {False})
 
         Raises:
             ValueError: Critical: The query Buffer is None.
@@ -582,90 +589,112 @@ class InfluxClient:
         if(not self.__insert_buffer):
             return
 
-        # Done before to be able to clear buffer before sending
-        # therefore stats can be re-inserted
-        insert_list: List[Tuple[Table, List[str]]] = []
-        for(table, queries) in self.__insert_buffer.items():
-
-            insert_list.append((table, list(map(lambda query: query.to_query(), queries))))
-
-        # clear all querys which are now transformed
-        self.__insert_buffer.clear()
-
-        for(table, queries_str) in insert_list:
+        # pre-save the keys to avoid Runtime-Error due "dictionary keys changed during iteration"
+        # happens due re-run changing insert_buffer
+        insert_keys = list(self.__insert_buffer.keys())
+        for table in insert_keys:
+            # get empty in case the key isnt valid anymore (due fallback option)
+            queries = list(map(lambda query: query.to_query(), self.__insert_buffer.get(table, [])))
+            item_count = len(queries)
+            if(item_count == 0):
+                continue
 
             # stop time for send progess
+            if(not fallback):
+                batch_size = self.__query_max_batch_size
+            else:
+                batch_size = self.__fallback_max_batch_size
+
+            re_send: bool = False
+            error_msg: Optional[str] = None
             start_time = time.perf_counter()
             try:
-                # send batch_size querys at once
                 self.__client.write_points(
-                    points=queries_str, database=self.database.name,
+                    points=queries,
+                    database=self.database.name,
                     retention_policy=table.retention_policy.name,
-                    batch_size=self.__query_max_batch_size,
+                    batch_size=batch_size,
                     time_precision='s', protocol='line')
+                end_time = time.perf_counter()
             except InfluxDBClientError as error: # type: ignore
                 match = re.match(r".*partial write:[\s\w]+=(\d+).*", error.content)
-                if(match and int(match.group(1)) < 10000):
-                    pass # ignore this case, its unavoidable and doesnt change anything
-                else:
-                    ExceptionUtils.exception_info(error=error, extra_message="Error when sending Insert Buffer") # type: ignore
 
-            except (InfluxDBServerError, ConnectionError) as error: # type: ignore
-                ExceptionUtils.exception_info(error=error, extra_message="Error when sending Insert Buffer") # type: ignore
+                if(match and int(match.group(1)) < batch_size):
+                    # beyond 10.000 everything will be lost, below still written
+                    # ignore this case, its unavoidable and doesnt change anything
+                    pass
+                elif(re.match(r".*partial write: unable to parse .*", error.content)):
+                    # some messages are lost, other written
+                    ExceptionUtils.exception_info(error=error,
+                    extra_message=f"Some messages were lost when sending buffer for table {table.name}, but everything else should be OK")
+                    error_msg = getattr(error, 'message', repr(error))
+                else:
+                    ExceptionUtils.exception_info(error=error,
+                        extra_message=f"Client error when sending insert buffer for table {table.name}.")
+                    error_msg = getattr(error, 'message', repr(error))
+                    # re-try with a smaller batch size, unsure if this helps
+                    re_send = True
+
+            except (InfluxDBServerError, ConnectionError, requests.exceptions.ConnectionError) as error: # type: ignore
+                ExceptionUtils.exception_info(error=error,
+                    extra_message=f"Connection error when sending insert buffer for table {table.name}.")
+                error_msg = getattr(error, 'message', repr(error))
+                re_send = True
+
+            # measure timing
             end_time = time.perf_counter()
+
+            # clear the table which just got sent
+            if(re_send and not fallback):
+                ExceptionUtils.error_message("Trying to send influx buffer again with fallback options")
+                self.flush_insert_buffer(fallback=True)
+
+            # None to avoid key erro if table is popped on fallback
+            self.__insert_buffer.pop(table, None)
 
             # add metrics for the next sending process.
             # compute duration, metrics computed per batch
             self.__insert_metrics_to_buffer(
-                Keyword.INSERT, {table:len(queries_str)}, end_time-start_time, len(queries_str))
+                Keyword.INSERT, table, end_time-start_time, item_count,
+                error=error_msg)
 
-    def __insert_metrics_to_buffer(self, keyword: Keyword, tables_count: Dict[Table, int],
-                                   duration_s: float, batch_size: int = 1) -> None:
-        """Generates statistics per send Batch, total duration is split by item per table.
+    def __insert_metrics_to_buffer(self, keyword: Keyword, table: Table,
+                                   duration_s: float, item_count: int,
+                                   error: Optional[str] = None) -> None:
+        """Generates statistics of influx-requests and append them to be sent
 
         Arguments:
             keyword {Keyword} -- Kind of query.
             tables_count {dict} -- Tables send in this batch, key is table, value is count of items.
-            duration_s {float} -- Time needed to send the batch in seconds.
+            duration_s {Optional[float]} -- Time needed to send the batch in seconds. None if a error occured
+            item_count {int} -- Ammount of queries sent to the server
 
         Keyword Arguments:
-            batch_size {int} -- Ammount of queries sent in one batch sent at once. (default: {1})
+            error {Optional[str]} -- Error message if an error occured.
 
         Raises:
             ValueError: Any arg does not match the defined parameters or value is unsupported
         """
         # Arg checks
-        if(list(filter(lambda arg: arg is None, [keyword, tables_count, duration_s, batch_size]))):
-            raise ValueError("any metric arg is None. This is not supported")
-        if(not isinstance(keyword, Keyword)):
-            raise ValueError("need the keyword to be a instance of keyword.")
-        if(not tables_count or not isinstance(tables_count, dict)):
-            raise ValueError("need at least one entry of a table in tables_count.")
-        if(duration_s <= 0):
-            raise ValueError("only positive values are supported for duration. Must be not 0")
-        if(batch_size < 1):
-            raise ValueError("only positive values are supported for batch_size. Must be not 0")
-
-        # get shared record time to be saved on
-        querys = []
-
-        # save metrics for each involved table individually
-        for (table, item_count) in tables_count.items():
-            querys.append(
-                InsertQuery(
-                    table=self.__metrics_table,
-                    fields={
-                        # Calculating relative duration for this part of whole query
-                        'duration_ms':  duration_s*1000*(max(item_count, 1)/batch_size),
-                        'item_count':   item_count,
-                    },
-                    tags={
-                        'keyword':      keyword,
-                        'tableName':    table.name,
-                    },
-                    time_stamp=SppUtils.get_actual_time_sec()
-                ))
-        self.__insert_buffer[self.__metrics_table] = self.__insert_buffer.get(self.__metrics_table, []) + querys
+        if(list(filter(lambda arg: arg is None, [keyword, table, duration_s, item_count]))):
+            raise ValueError("One of the insert metrics to influx args is None. This is not supported")
+        query = InsertQuery(
+            table=self.__metrics_table,
+            fields={
+                'error': error,
+                # Calculating relative duration for this part of whole query
+                'duration_ms':  duration_s*1000,
+                'item_count':   item_count,
+            },
+            tags={
+                'keyword':      keyword,
+                'tableName':    table.name,
+            },
+            time_stamp=SppUtils.get_actual_time_sec()
+        )
+        old_queries = self.__insert_buffer.get(self.__metrics_table, [])
+        old_queries.append(query)
+        self.__insert_buffer[self.__metrics_table] = old_queries
 
     def update_row(self, table_name: str, tag_dic: Dict[str, str] = None,
                    field_dic: Dict[str, Union[str, int, float, bool]] = None, where_str: str = None):
@@ -775,10 +804,8 @@ class InfluxClient:
         else:
             length = 0
 
-        tables_count: Dict[Table, int] = {}
         for table in query.tables:
-            tables_count[table] = int(length/len(query.tables))
-
-        self.__insert_metrics_to_buffer(query.keyword, tables_count, end_time-start_time)
+            count = int(length/len(query.tables))
+            self.__insert_metrics_to_buffer(query.keyword, table, end_time-start_time, count)
 
         return result # type: ignore

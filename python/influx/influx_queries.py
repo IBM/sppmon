@@ -43,7 +43,12 @@ class InsertQuery:
         format_tags - Formats tags accordingly to the requirements of the influxdb.
     """
     # those need to be escaped
-    __bad_name_characters: List[Tuple[str, str]] = [(r'=', r'\='), (r' ', r'\ '), (r',', r'\,')]
+    __bad_name_characters: Dict[str, str] = {
+        "=": r"\=",
+        " ": r"\ ",
+        ",": r"\,",
+        "\n": r"\\n"
+    }
     """Characters which need to be replaced, as tuple list: (old, new). Reference influx wiki."""
 
     @property
@@ -143,12 +148,12 @@ class InsertQuery:
             datatype = self.table.fields.get(key, Structures.Datatype.get_auto_datatype(value))
 
             # Escape not allowed chars in Key
-            key = InfluxUtils.escape_chars(value=key, replace_list=self.__bad_name_characters)
+            key = InfluxUtils.escape_chars(value=key, replace_dict=self.__bad_name_characters)
 
 
             # Format Strings
             if(datatype == Structures.Datatype.STRING):
-                value = InfluxUtils.escape_chars(value=value, replace_list=[(r'"', r'\"')])
+                value = InfluxUtils.escape_chars(value=value, replace_dict={'"': r"\"", "\n": r"\\n"})
                 value = "\"{}\"".format(value)
 
             # Make time always be saved in seconds, save as int
@@ -183,8 +188,8 @@ class InsertQuery:
             if(not isinstance(value, str)):
                 value = f"{value}"
             # escape not allowed characters
-            key = InfluxUtils.escape_chars(value=key, replace_list=self.__bad_name_characters)
-            value = InfluxUtils.escape_chars(value=value, replace_list=self.__bad_name_characters)
+            key = InfluxUtils.escape_chars(value=key, replace_dict=self.__bad_name_characters)
+            value = InfluxUtils.escape_chars(value=value, replace_dict=self.__bad_name_characters)
 
             ret_dict[key] = value
 

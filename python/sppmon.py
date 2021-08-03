@@ -153,7 +153,7 @@ parser.add_argument("--create_dashboard", dest="create_dashboard", action="store
 parser.add_argument("--dashboard_folder_path", dest="dashboard_folder_path",
                   help="Used only with`--create_dashboard` option. Specifies changed folder-path of the template \"SPPMON for IBM Spectrum Protect Plus\" dashboard.")
 
-print = functools.partial(print, flush=True) # type: ignore
+print = functools.partial(print, flush=True)
 
 LOGGER_NAME = 'sppmon'
 LOGGER = logging.getLogger(LOGGER_NAME)
