@@ -299,7 +299,7 @@ class SshMethods:
 
             pool_dict: Dict[str, Any] = {}
 
-            # acts as white list
+            # acts as allow list
             insert_list = [
                 'compression',
                 'compression_ratio',

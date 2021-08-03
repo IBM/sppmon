@@ -277,16 +277,16 @@ class ConnectionUtils:
             # Only aquire items wanted
             if(allow_list):
 
-                for white_key in allow_list:
-                    (key, value) = SppUtils.get_nested_kv(key_name=white_key, nested_dict=result)
+                for allow_key in allow_list:
+                    (key, value) = SppUtils.get_nested_kv(key_name=allow_key, nested_dict=result)
                     if(key in new_result):
-                        key = white_key
+                        key = allow_key
                     new_result[key] = value
 
                 # warn if something is missing
                 if(len(new_result) != len(allow_list)):
                     ExceptionUtils.error_message(
-                        f"Result has not same lenght as whitelist, probably typing error: {result_list}")
+                        f"Result has not same lenght as allowlist, probably typing error: {result_list}")
 
             # aquire all but few unwanted
             if(ignore_list is not None):
