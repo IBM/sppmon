@@ -142,6 +142,7 @@ class ApiQueries:
             params = {
                 "resourceType": "vm",
                 "from": "hlo",
+                "pageSize": 1,
                 "filter": json.dumps([
                     {
                         "property": "storageProfileName",
@@ -153,20 +154,18 @@ class ApiQueries:
             # other options: volume, vm, tag, tagcategory
             post_data = {
                 "name": "*",
-                "hypervisorType": "vmware"
+                "hypervisorType": "vmware",
             }
 
-            response_json = self.__rest_client.get_objects(
-                endpoint=endpoint, post_data=post_data,
-                params=params, request_type=RequestType.POST)
-
-            sum_count = 0
-            for page in response_json:
-                sum_count += page["total"]
+            (response_json, _) = self.__rest_client.query_url(
+                self.__rest_client.get_url(endpoint),
+                params,
+                RequestType.POST,
+                post_data)
 
             result_dict["slaName"] = sla_name
             result_dict["slaId"] = sla_id
-            result_dict["vmCountBySLA"] = sum_count
+            result_dict["vmCountBySLA"] = response_json.get("total", None)
 
             time_key, time = SppUtils.get_capture_timestamp_sec()
             result_dict[time_key] = time

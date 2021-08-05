@@ -96,13 +96,13 @@ class RestClient():
         """
         http_auth: HTTPBasicAuth = HTTPBasicAuth(self.__username, self.__password)
         self.__srv_url = f"https://{self.__srv_address}:{self.__srv_port}"
-        login_url = self.__srv_url + "/api/endeavour/session"
+        login_url = self.get_url("/api/endeavour/session")
 
         LOGGER.debug(f"login to SPP REST API server: {self.__srv_url}")
         if(self.__verbose):
             LOGGER.info(f"login to SPP REST API server: {self.__srv_url}")
         try:
-            (response_json, _) = self.__query_url(url=login_url, auth=http_auth, request_type=RequestType.POST)
+            (response_json, _) = self.query_url(url=login_url, auth=http_auth, request_type=RequestType.POST)
         except ValueError as error:
             ExceptionUtils.exception_info(error=error)
             ExceptionUtils.error_message(
@@ -133,7 +133,7 @@ class RestClient():
             ValueError: Error when logging out.
             ValueError: Wrong status code when logging out.
         """
-        url = self.__srv_url + "/api/endeavour/session"
+        url = self.get_url("/api/endeavour/session")
         try:
             response_logout: Response = delete(url, headers=self.__headers, verify=False)
         except RequestException as error:
@@ -146,6 +146,22 @@ class RestClient():
         if(self.__verbose):
             LOGGER.info("Rest-API logout successfull")
         LOGGER.debug("Rest-API logout successfull")
+
+    def get_url(self, endpoint: str) -> str:
+        """Creates URL out of internal serverURL and given endpoint
+
+        Args:
+            endpoint (str): Endpoint to create URL to
+
+        Raises:
+            ValueError: No endpoint is given
+
+        Returns:
+            str: complete URL to SPP-Server
+        """
+        if(not endpoint):
+            raise ValueError("endpoint is required to create URL")
+        return self.__srv_url + endpoint
 
     def get_spp_version_build(self) -> Tuple[str, str]:
         """queries the spp version and build number.
@@ -226,7 +242,7 @@ class RestClient():
 
         # create uri out of endpoint
         if(endpoint):
-            next_page = self.__srv_url + endpoint
+            next_page =  self.get_url(endpoint)
         else:
             next_page = uri
 
@@ -239,7 +255,7 @@ class RestClient():
                 LOGGER.info(f"Collected {len(result_list)} items until now. Next page: {next_page}")
 
             # Request response
-            (response, send_time) = self.__query_url(next_page, params, request_type, post_data)
+            (response, send_time) = self.query_url(next_page, params, request_type, post_data)
 
             # find follow page if available and set it
             (_, next_page_link) = SppUtils.get_nested_kv(key_name="links.nextPage.href", nested_dict=response)
@@ -292,7 +308,7 @@ class RestClient():
         LOGGER.debug("objectList size %d", len(result_list))
         return result_list
 
-    def __query_url(
+    def query_url(
         self,
         url: str,
         params: Dict[str, Any] = None,
