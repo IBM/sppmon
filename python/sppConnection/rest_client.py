@@ -232,12 +232,15 @@ class RestClient():
             LOGGER.debug(f"Collected {len(result_list)} items until now. Next page: {next_page}")
             if(self.__verbose):
                 LOGGER.info(f"Collected {len(result_list)} items until now. Next page: {next_page}")
+
             # Request response
             (response, send_time) = self.__query_url(next_page, params, request_type, post_data)
 
             # find follow page if available and set it
             (_, next_page_link) = SppUtils.get_nested_kv(key_name="links.nextPage.href", nested_dict=response)
             next_page = next_page_link
+            # redact params because they are included within next_page_link
+            params = {}
 
             # Check if single object or not
             if(array_name):
