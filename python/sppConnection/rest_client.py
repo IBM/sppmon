@@ -52,7 +52,7 @@ class RestClient():
                  initial_connection_timeout: float,
                  pref_send_time: int,
                  request_timeout: int | None,
-                 send_retries: int,
+                 max_send_retries: int,
                  starting_page_size: int,
                  min_page_size: int,
                  verbose: bool):
@@ -72,7 +72,7 @@ class RestClient():
         self.__preferred_time = pref_send_time
         self.__page_size = starting_page_size
         self.__min_page_size = min_page_size
-        self.__send_retries = send_retries
+        self.__max_send_retries = max_send_retries
 
         self.__verbose = verbose
         try:
@@ -184,12 +184,13 @@ class RestClient():
                     array_name: str = None,
                     allow_list: List[str] = None, ignore_list: List[str] = None,
                     add_time_stamp: bool = False) -> List[Dict[str, Any]]:
-        """Querys a response(-list) from a REST-API endpoint or URI.
+        """Querys a response(-list) from a REST-API endpoint or URI from multiple pages
 
         Specify `array_name` if there are multiple results / list.
         Use allow_list to pick only the values specified.
         Use ignore_list to pick everything but the values specified.
         Both: allow_list items overwrite ignore_list items, still getting all not filtered.
+        Param pageSize is only guranteed to be valid for the first page if included within params.
 
         Note:
         Do not specify both endpoint and uri, only uri will be used
@@ -197,10 +198,12 @@ class RestClient():
         Keyword Arguments:
             endpoint {str} -- endpoint to be queried. Either use this or uri (default: {None})
             uri {str} -- uri to be queried. Either use this or endpoint (default: {None})
+            params {Dict[str, Any]} -- Dictionary with all URL-Parameters. pageSize only guranteed to be valid for first page (default: {None})
+            post_data {Dict[str, Any]} -- Dictionary with Body-Data. Only use on POST-Requests
+            request_type: {RequestType} -- Either GET or POST
             array_name {str} -- name of array if there are multiple results wanted (default: {None})
             allow_list {list} -- list of item to query (default: {None})
             ignore_list {list} -- query all but these items(-groups). (default: {None})
-            page_size {int} -- Size of page, recommendation is 100, depending on size of data (default: {100})
             add_time_stamp {bool} -- whether to add the capture timestamp  (default: {False})
 
         Raises:
@@ -218,6 +221,8 @@ class RestClient():
         # if neither specifed, get everything
         if(not allow_list and not ignore_list):
             ignore_list = []
+        if(params is None):
+            params = {}
 
         # create uri out of endpoint
         if(endpoint):
@@ -238,9 +243,14 @@ class RestClient():
 
             # find follow page if available and set it
             (_, next_page_link) = SppUtils.get_nested_kv(key_name="links.nextPage.href", nested_dict=response)
-            next_page = next_page_link
-            # redact params because they are included within next_page_link
-            params = {}
+            next_page: Optional[str] = next_page_link
+            if(next_page):
+                # Overwrite params with params from next link
+                params = ConnectionUtils.get_url_params(next_page)
+                # remove params from page
+                next_page = ConnectionUtils.url_set_params(next_page, None)
+
+
 
             # Check if single object or not
             if(array_name):
@@ -262,14 +272,22 @@ class RestClient():
                     mydict[time_key] = time_val
             result_list.extend(filtered_results)
 
-
-            # adjust pagesize
+            # adjust pagesize if either the send time is too high
+            # or regulary adjust on max-page sizes requests
+            # dont adjust if page isnt full and therefore too quick
             if(send_time > self.__preferred_time or len(page_result_list) == self.__page_size):
+                LOGGER.debug(f"send_time: {send_time}, len: {len(page_result_list)}, pageSize = {self.__page_size} ")
                 self.__page_size = ConnectionUtils.adjust_page_size(
                     page_size=len(page_result_list),
                     min_page_size=self.__min_page_size,
                     preferred_time=self.__preferred_time,
                     send_time=send_time)
+                LOGGER.debug(f"Changed pageSize from {len(page_result_list)} to {self.__page_size} ")
+                params["pageSize"] = self.__page_size
+
+
+
+
 
         LOGGER.debug("objectList size %d", len(result_list))
         return result_list
@@ -284,7 +302,7 @@ class RestClient():
         """Sends a request to this endpoint. Repeats if timeout error occured. Adust the pagesize on timeout.
 
         Arguments:
-            url {str} -- URL to be queried. Must contain the server-uri and Endpoint.
+            url {str} -- URL to be queried. Must contain the server-uri and Endpoint. Does not allow encoded parameters
             post_data {str} -- additional data with filters/parameters. Only to be send with a POST-Request (default: {None})
             auth {HTTPBasicAuth} -- Basic auth to be used to login into SPP via POST-Request(default: {None})
             type {RequestType} -- What kind of Request should be made, defaults to GET
@@ -308,26 +326,16 @@ class RestClient():
         if(not params):
             params = {}
 
-        failed_trys: int = 0
+        failed_tries: int = 0
         response_query: Optional[Response] = None
         send_time: float = -1 # prevent unbound var
 
+        # avoid unset pageSize to not get into SPP defaults
+        if(not params.get("pageSize", None)):
+            LOGGER.debug(f"setting pageSize to {self.__page_size} from unset value")
+            params["pageSize"] = self.__page_size
+
         while(response_query is None):
-
-            # read pagesize
-            old_page_size = ConnectionUtils.url_get_param_value(url=url, param_name="pageSize")
-
-             # Always set Pagesize to avoid default pagesizes by SPP
-            if(old_page_size):
-                try:
-                    old_page_size = int(old_page_size[0])
-                except (ValueError, KeyError) as error:
-                    ExceptionUtils.exception_info(error, extra_message="invalid old page size recorded")
-
-            # adjust pagesize of url
-            if(old_page_size != self.__page_size):
-                LOGGER.debug(f"setting new pageSize from {old_page_size} to {self.__page_size}")
-                params["pageSize"] = self.__page_size
 
             # send the query
             try:
@@ -348,44 +356,55 @@ class RestClient():
             except ReadTimeout as timeout_error:
 
                 # timeout occured, increasing failed trys
-                failed_trys += 1
+                failed_tries += 1
+
+                url_params = ConnectionUtils.get_url_params(url)
 
 
                 # #### Aborting cases ######
-                if(self.__send_retries < failed_trys):
+                if(failed_tries > self.__max_send_retries):
                     ExceptionUtils.exception_info(error=timeout_error)
                     # read start index for debugging
-                    start_index = ConnectionUtils.url_get_param_value(url=url, param_name="pageStartIndex")
+                    start_index = url_params.get("pageStartIndex", None)
+                    page_size = url_params.get("pageSize", None)
                     # report timeout with full information
                     raise ValueError("timeout after repeating a maximum ammount of times.",
-                                     timeout_error, failed_trys, self.__page_size, start_index)
+                                     timeout_error, failed_tries, page_size, start_index)
 
                 if(self.__page_size == self.__min_page_size):
                     ExceptionUtils.exception_info(error=timeout_error)
                     # read start index for debugging
-                    start_index = ConnectionUtils.url_get_param_value(url=url, param_name="pageStartIndex")
+                    start_index = url_params.get("pageStartIndex", None)
+                    page_size = url_params.get("pageSize", None)
                     # report timeout with full information
                     raise ValueError("timeout after using minumum pagesize. repeating the request is of no use.",
-                                     timeout_error, failed_trys, self.__page_size, start_index)
+                                     timeout_error, failed_tries, page_size, start_index)
 
                 # #### continuing cases ######
-                if(self.__send_retries == failed_trys): # last try
-                    LOGGER.debug(f"Timeout error when requesting, now last try of total {self.__send_retries}. Reducing pagesize to minimum for url: {url}")
+                if(failed_tries == self.__max_send_retries): # last try
+                    LOGGER.debug(f"Timeout error when requesting, now last try of total {self.__max_send_retries}. Reducing pagesize to minimum for url: {url}")
                     if(self.__verbose):
-                        LOGGER.info(f"Timeout error when requesting, now last try of total {self.__send_retries}. Reducing pagesize to minimum for url: {url}")
+                        LOGGER.info(f"Timeout error when requesting, now last try of total {self.__max_send_retries}. Reducing pagesize to minimum for url: {url}")
 
+                    # persist reduced size for further requests
                     self.__page_size = self.__min_page_size
                     # repeat with minimal possible size
+                    LOGGER.debug(f"setting pageSize from {params.get('pageSize', None)} to {self.__page_size}")
+                    params["pageSize"] = self.__page_size
 
-                else: # (self.__send_retries > failed_trys): # more then 1 try left
-                    LOGGER.debug(f"Timeout error when requesting, now on try {failed_trys} of {self.__send_retries}. Reducing pagesizefor url: {url}")
+                else: # (failed_tries < self.__max_send_retries): # more then 1 try left
+                    LOGGER.debug(f"Timeout error when requesting, now on try {failed_tries} of {self.__max_send_retries}. Reducing pagesizefor url: {url}")
                     if(self.__verbose):
-                        LOGGER.info(f"Timeout error when requesting, now on try {failed_trys} of {self.__send_retries}. Reducing pagesize for url: {url}")
+                        LOGGER.info(f"Timeout error when requesting, now on try {failed_tries} of {self.__max_send_retries}. Reducing pagesize for url: {url}")
+
+                    # persist reduced size for further requests
                     self.__page_size = ConnectionUtils.adjust_page_size(
-                        page_size=self.__page_size,
+                        page_size=params["pageSize"],
                         min_page_size=self.__min_page_size,
                         timeout=True)
                     # repeat with reduced page size
+                    LOGGER.debug(f"setting pageSize from {params.get('pageSize', None)} to {self.__page_size}")
+                    params["pageSize"] = self.__page_size
 
             except RequestException as error:
                 ExceptionUtils.exception_info(error=error)

@@ -5,7 +5,7 @@ Classes:
     ConnectionUtils
 """
 import logging
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 import urllib.parse as parse
 
 from utils.spp_utils import SppUtils
@@ -19,8 +19,8 @@ class ConnectionUtils:
 
     Methods:
         get_with_sub_values - Extends a dict by possible sub-dicts in its values, recursive.
-        url_set_param - DEPRICATED: use requests.get(params=params) instead
-        url_get_param_value - reads a param value from a url.
+        url_set_params - Sets params within a URL to a given mapping
+        get_url_params - reads all param values from a url
         filter_values_dict - removed unwanted items from a list of dicts.
         adjust_page_size - Adjust dynamically the pagesize for requests.
 
@@ -85,87 +85,59 @@ class ConnectionUtils:
         return full_dict
 
     @staticmethod
-    def url_set_param(url: str, param_name: str = None, param_value: Any = None) -> str:
-        """DEPRICATED: use requests.get(params=params) instead!
-        Sets or removes params from an URL.
-
-        If you want to add or update a param specify both param_name and param_value.
-        To remove a param leave the value empty.
-        To remove all params leave both name and value empty.
-        Only specifying value without name is not supported.
+    def url_set_params(url: str, new_params: Optional[Dict[str, List[str]]]) -> str:
+        """Sets params within a URL to a given mapping
 
         Arguments:
-            url {str} -- URL which gets split and changed
-
-        Keyword Arguments:
-            param_name {str} -- name of param to add/update/remove. Empty to remove all params (default: {None})
-            param_value {str} -- value to set for param_name. None to remove param_name from URL  (default: {None})
+            url {str} -- URL which is parsed and changed
+            new_params {Dict[str, List[str]]} -- new params to set for the URL
 
         Raises:
             ValueError: No URL specified
-            ValueError: Value without Name specified
 
         Returns:
             {str} -- new modified URL
         """
-        ExceptionUtils.error_message("USAGE OF DEPRICATED METHOD: url_set_param")
-
         if(not url):
             raise ValueError("need url to set params")
-        if(param_value and not param_name):
-            raise ValueError("value is useless without name")
+        if(new_params is None):
+            new_params = {}
 
-        scheme, netloc, path, params, query, fragment = parse.urlparse(url)
-        query_params = parse.parse_qs(query)
+        parse_result = parse.urlparse(url)
+        query_params_encoded = parse.urlencode(new_params, True)
 
-        # search for param_name in list. if exists, replace with new param_value
-        # if param_value=None then unset the parameter and remove from list
-        # Empty is allowed
-        if(param_value is not None):
-            query_params[param_name] = param_value
+        parse_result =  parse.ParseResult(
+            parse_result.scheme,
+            parse_result.netloc,
+            parse_result.path,
+            parse_result.params,
+            query_params_encoded, # change query params
+            parse_result.fragment)
 
-        # param_name without param value
-        elif(param_name):
-            # remove if existent
-            query_params.pop(param_name, None)
-
-        # remove all params
-        else:
-            query_params = {}
-
-        query_params_encoded = parse.urlencode(query_params, True)
-
-        tuple_params = (scheme, netloc, path, params, query_params_encoded, fragment)
-        new_url: str = parse.urlunparse(tuple_params)
+        new_url: str = parse.urlunparse(parse_result)
 
         return new_url
 
     @staticmethod
-    def url_get_param_value(url: str, param_name: str) -> Any:
-        """reads a param value from a url. Returns none if not existent
+    def get_url_params(url: str) -> Dict[str, List[str]]:
+        """reads all param values from a url
 
         Args:
-            url (str): url to be read
-            param_name (str): param to be read
+            url (str): url to be parsed
 
         Raises:
             ValueError: no url given
-            ValueError: no param_name given
 
         Returns:
-            Any: the value of the param or None if not existent
+            Dict[str, List[str]]: Dict of paramName to param-values
         """
 
         if(not url):
             raise ValueError("need url to read param")
-        if(not param_name):
-            raise ValueError("need a param_name to read a value")
-
         _, _, _, _, query, _ = parse.urlparse(url)
         query_params = parse.parse_qs(query)
+        return query_params
 
-        # search for param_name in list. if exists, return the value. otherwiese none
-        return query_params.get(param_name, None)
 
     @classmethod
     def adjust_page_size(cls,
@@ -214,31 +186,34 @@ class ConnectionUtils:
 
         time_difference_quota = send_time / preferred_time
 
-        if(abs(time_difference_quota-1) > cls.allowed_send_delta):
-            LOGGER.debug(f"adjusting page size due too high time difference, actual: {send_time}, preferred: {preferred_time}")
-            if(cls.verbose):
-                LOGGER.info(f"adjusting page size due too high time difference, actual: {send_time}, preferred: {preferred_time}")
+        if(abs(time_difference_quota-1) <= cls.allowed_send_delta):
+            # Difference is OK, too small to change
+            # nothing to do
+            return page_size
 
-            # reset to the preferred value
-            new_page_size = page_size / time_difference_quota
-            new_page_size = int(new_page_size)
+        LOGGER.debug(f"adjusting page size due too high time difference, actual: {send_time}, preferred: {preferred_time}")
+        if(cls.verbose):
+            LOGGER.info(f"adjusting page size due too high time difference, actual: {send_time}, preferred: {preferred_time}")
 
-            # limit the maximum grow, with bonus for very low areas
-            if(new_page_size > cls.max_scaling_factor * (page_size + 5)):
-                new_page_size = int(cls.max_scaling_factor * (page_size + 5))
+        # reset to the preferred value
+        new_page_size = page_size / time_difference_quota
+        new_page_size = int(new_page_size)
 
-            # avoid getting stuck on 1
-            if(new_page_size < min_page_size + 5):
-                new_page_size = min_page_size + 5
+        # limit the maximum grow, with bonus for very low areas
+        if(new_page_size > cls.max_scaling_factor * (page_size + 5)):
+            new_page_size = int(cls.max_scaling_factor * (page_size + 5))
 
-            LOGGER.debug(f"changed page size from {page_size} to {new_page_size}")
-            if(cls.verbose):
-                LOGGER.info(f"changed page size from {page_size} to {new_page_size}")
+        # avoid getting stuck on 1
+        if(new_page_size < min_page_size + 5):
+            new_page_size = min_page_size + 5
 
-            return new_page_size
+        LOGGER.debug(f"changed page size from {page_size} to {new_page_size}")
+        if(cls.verbose):
+            LOGGER.info(f"changed page size from {page_size} to {new_page_size}")
 
-        # nothing to do
-        return page_size
+        return new_page_size
+
+
 
     @classmethod
     def filter_values_dict(cls,

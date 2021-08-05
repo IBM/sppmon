@@ -263,9 +263,9 @@ class SppMon:
     loaded_timeout_reduction: float = 0.95
     """reduce of the actual pagesize on timeout in percent on loaded systems"""
 
-    send_retries: int = 3
+    max_send_retries: int = 3
     """Count of retries before failing request. Last one is min size. 0 to disable."""
-    loaded_send_retries: int = 1
+    loaded_max_send_retries: int = 1
     """Count of retries before failing request on loaded systems. Last one is min size. 0 to disable."""
 
     starting_page_size: int = 50
@@ -494,7 +494,7 @@ class SppMon:
                     initial_connection_timeout=self.initial_connection_timeout,
                     pref_send_time=self.loaded_pref_send_time,
                     request_timeout=self.loaded_request_timeout,
-                    send_retries=self.loaded_send_retries,
+                    max_send_retries=self.loaded_max_send_retries,
                     starting_page_size=self.loaded_starting_page_size,
                     min_page_size=self.loaded_min_page_size,
                     verbose=ARGS.verbose
@@ -510,7 +510,7 @@ class SppMon:
                     initial_connection_timeout=self.initial_connection_timeout,
                     pref_send_time=self.pref_send_time,
                     request_timeout=self.request_timeout,
-                    send_retries=self.send_retries,
+                    max_send_retries=self.max_send_retries,
                     starting_page_size=self.starting_page_size,
                     min_page_size=self.min_page_size,
                     verbose=ARGS.verbose
