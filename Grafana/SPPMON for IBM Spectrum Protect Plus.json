@@ -32,7 +32,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "7.5.1"
+      "version": "7.5.3"
     },
     {
       "type": "panel",
@@ -158,7 +158,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [
@@ -249,7 +249,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "",
@@ -342,7 +342,7 @@
         "showUnfilled": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "$tag_name",
@@ -506,7 +506,7 @@
         "text": {},
         "textMode": "value_and_name"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "$tag_jobName",
@@ -602,7 +602,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -776,7 +776,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [],
@@ -856,7 +856,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [],
@@ -936,7 +936,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [],
@@ -1028,7 +1028,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [],
@@ -1119,7 +1119,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "$tag_ssh_type",
@@ -1256,7 +1256,7 @@
         "showThresholdMarkers": false,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "--constant",
@@ -1495,7 +1495,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "Catalog Backup",
@@ -1581,7 +1581,7 @@
         "showUnfilled": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "$tag_COMMAND",
@@ -1689,7 +1689,7 @@
         "showUnfilled": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "$tag_COMMAND",
@@ -1791,7 +1791,7 @@
         "text": {},
         "textMode": "value_and_name"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "VM Replicated",
@@ -1938,7 +1938,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [],
@@ -2056,7 +2056,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "",
@@ -2209,7 +2209,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2436,7 +2436,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2626,7 +2626,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2824,7 +2824,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 0.5,
       "points": false,
       "renderer": "flot",
@@ -3039,7 +3039,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -3199,7 +3199,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -3373,7 +3373,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3554,7 +3554,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3720,7 +3720,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3916,7 +3916,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4089,7 +4089,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4283,7 +4283,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4464,7 +4464,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4645,7 +4645,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4827,7 +4827,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4991,7 +4991,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -5181,7 +5181,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -5374,7 +5374,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -5552,7 +5552,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -5784,7 +5784,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [
@@ -5986,7 +5986,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -6148,7 +6148,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [
@@ -6271,7 +6271,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -6407,7 +6407,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -6554,7 +6554,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -6738,7 +6738,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": true,
       "renderer": "flot",
@@ -6909,7 +6909,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": true,
       "renderer": "flot",
@@ -7037,7 +7037,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": true,
       "renderer": "flot",
@@ -7369,7 +7369,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -7760,7 +7760,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -7942,7 +7942,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8092,7 +8092,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8256,7 +8256,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8406,7 +8406,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8550,7 +8550,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8694,7 +8694,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8854,7 +8854,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -8989,7 +8989,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -9175,7 +9175,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -9318,7 +9318,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -9457,7 +9457,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -9648,7 +9648,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -9896,7 +9896,7 @@
           }
         ]
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [
@@ -10004,7 +10004,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10214,7 +10214,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10503,7 +10503,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10726,7 +10726,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10875,7 +10875,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10995,7 +10995,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -11123,7 +11123,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -11267,7 +11267,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "panelId": 108,
@@ -11329,7 +11329,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 0.5,
       "points": true,
       "renderer": "flot",
@@ -11793,7 +11793,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 0.5,
       "points": true,
       "renderer": "flot",
@@ -12254,7 +12254,7 @@
       "options": {
         "showHeader": true
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [
@@ -12505,7 +12505,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -12798,7 +12798,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -12915,13 +12915,15 @@
       "hiddenSeries": false,
       "id": 23,
       "legend": {
-        "avg": false,
+        "avg": true,
         "current": false,
+        "hideEmpty": false,
+        "hideZero": true,
         "max": false,
         "min": false,
         "show": true,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": true,
       "linewidth": 1,
@@ -12930,7 +12932,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -12940,13 +12942,19 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "Avg Duration(ns) per Item",
+          "alias": "$tag_tableName",
           "groupBy": [
             {
               "params": [
                 "$__interval"
               ],
               "type": "time"
+            },
+            {
+              "params": [
+                "tableName"
+              ],
+              "type": "tag"
             },
             {
               "params": [
@@ -13006,14 +13014,16 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:367",
           "format": "ms",
-          "label": null,
+          "label": "",
           "logBase": 1,
           "max": null,
           "min": null,
           "show": true
         },
         {
+          "$$hashKey": "object:368",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -13063,7 +13073,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -13186,5 +13196,5 @@
   "timezone": "",
   "title": "SPPMON for IBM Spectrum Protect Plus ${DS_DATASOURCE}",
   "uid": "sppmon_single_view_DS_${DS_DATASOURCE}",
-  "version": 3
+  "version": 2
 }

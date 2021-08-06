@@ -1,6 +1,7 @@
 import re
-from os.path import isfile, realpath, join
-from typing import Any, Dict, List, Pattern
+import sys
+from os.path import isfile, realpath, join, dirname
+
 
 class GenerifyDashboard:
 
@@ -13,17 +14,21 @@ class GenerifyDashboard:
             ValueError: error when reading or writing files
         """
 
+        scriptDirPath = dirname(sys.argv[0])
         dashboardName: str = "SPPMON for IBM Spectrum Protect Plus.json"
-        dasboardDir: str = realpath(join("..", "Grafana"))
-        dashboardPath: str = join(dasboardDir, dashboardName)
+        dashboardDir: str = realpath(join(scriptDirPath, "..", "Grafana"))
+        dashboardPath: str = join(dashboardDir, dashboardName)
 
         genericVarName:str = r"DS_DATASOURCE"
         genericVar: str = r"${" + genericVarName + r"}"
 
 
-        print(f"> Opening default dashboard folder: {dasboardDir}")
+        print(f"> Opening default dashboard folder: {dashboardDir}")
         print(f"> Editing default dashboard file: {dashboardName}")
         print(f"> trying to open dashboard on path {dashboardPath}")
+
+        if(not isfile(dashboardPath)):
+            raise ValueError(f"> The Path is incorrect, is not a file: {dashboardPath}")
 
         try:
             dashboardFile = open(dashboardPath, "rt")
@@ -86,6 +91,7 @@ class GenerifyDashboard:
             print(error)
             raise ValueError("Error creating new dashboard file.")
         print("> Sucessfully updated dashboard file.")
+        print("> Script finished")
 
 
 if __name__ == "__main__":
