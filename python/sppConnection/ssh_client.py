@@ -210,7 +210,7 @@ class SshClient:
         if(verbose):
             LOGGER.info("> connection successfull")
 
-        new_command_list = []
+        new_command_list: List[SshCommand] = []
         for ssh_command in commands:
 
             try:
