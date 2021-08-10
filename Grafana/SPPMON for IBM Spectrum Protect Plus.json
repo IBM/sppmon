@@ -1264,7 +1264,7 @@
           "measurement": "sppmon_metrics",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE $timeFilter AND (\"constant\" = 'True')) GROUP BY time(1d)",
+          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE $timeFilter AND (\"constant\" = 'True')) where time >= now() - 2d",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1296,7 +1296,7 @@
           "measurement": "sppmon_metrics",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE $timeFilter AND (\"hourly\" = 'True')) GROUP BY time(1d)",
+          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE $timeFilter AND (\"hourly\" = 'True')) where time >= now() - 2d",
           "rawQuery": true,
           "refId": "E",
           "resultFormat": "time_series",
@@ -1329,7 +1329,7 @@
           "measurement": "sppmon_metrics",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE $timeFilter AND (\"daily\" = 'True'))  GROUP BY time(1d)",
+          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE $timeFilter AND (\"daily\" = 'True')) where time >= now() - 2d",
           "rawQuery": true,
           "refId": "C",
           "resultFormat": "time_series",
@@ -1362,7 +1362,7 @@
           "measurement": "sppmon_metrics",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE  $timeFilter AND (\"all\" = 'True')) GROUP BY time(1d)",
+          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE $timeFilter AND (\"all\" = 'True')) where time >= now() - 2d",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series",
@@ -1436,7 +1436,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "SPPmon Collection Errors (24h)",
+      "title": "SPPmon Collection Errors delta(48h)",
       "transformations": [],
       "type": "gauge"
     },
@@ -11249,7 +11249,7 @@
       },
       "gridPos": {
         "h": 16,
-        "w": 5,
+        "w": 6,
         "x": 0,
         "y": 215
       },
@@ -11270,13 +11270,13 @@
       "pluginVersion": "7.5.3",
       "targets": [
         {
-          "panelId": 108,
+          "panelId": 142,
           "refId": "A"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "SPPmon Collection Error delta Display",
+      "title": "SPPmon Collection Error delta (48h)",
       "transformations": [],
       "type": "gauge"
     },
@@ -11306,8 +11306,8 @@
       "fillGradient": 1,
       "gridPos": {
         "h": 8,
-        "w": 9,
-        "x": 5,
+        "w": 8,
+        "x": 6,
         "y": 215
       },
       "hiddenSeries": false,
@@ -11556,7 +11556,7 @@
       },
       "folderId": null,
       "gridPos": {
-        "h": 16,
+        "h": 8,
         "w": 5,
         "x": 14,
         "y": 215
@@ -11762,6 +11762,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_DATASOURCE}",
+      "decimals": 0,
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -11770,17 +11771,18 @@
       "fillGradient": 1,
       "gridPos": {
         "h": 8,
-        "w": 9,
-        "x": 5,
+        "w": 13,
+        "x": 6,
         "y": 223
       },
       "hiddenSeries": false,
       "id": 108,
+      "interval": null,
       "legend": {
-        "avg": true,
+        "avg": false,
         "current": false,
         "hideEmpty": false,
-        "max": false,
+        "max": true,
         "min": false,
         "show": true,
         "total": false,
@@ -11795,7 +11797,7 @@
       "percentage": false,
       "pluginVersion": "7.5.3",
       "pointradius": 0.5,
-      "points": true,
+      "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
@@ -11803,13 +11805,13 @@
       "steppedLine": true,
       "targets": [
         {
-          "alias": "--daily",
+          "alias": "Daily Delta",
           "groupBy": [],
           "hide": false,
           "measurement": "sppmon_metrics",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"duration\") FROM \"sppmon_metrics\" WHERE $timeFilter GROUP BY time(12h)",
+          "query": "SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE (\"daily\" = 'True') AND $timeFilter",
           "rawQuery": false,
           "refId": "B",
           "resultFormat": "time_series",
@@ -11823,7 +11825,7 @@
               },
               {
                 "params": [],
-                "type": "difference"
+                "type": "non_negative_difference"
               }
             ]
           ],
@@ -11836,7 +11838,7 @@
           ]
         },
         {
-          "alias": "--all",
+          "alias": "All Delta",
           "groupBy": [],
           "hide": false,
           "measurement": "sppmon_metrics",
@@ -11856,7 +11858,7 @@
               },
               {
                 "params": [],
-                "type": "difference"
+                "type": "non_negative_difference"
               }
             ]
           ],
@@ -11869,13 +11871,13 @@
           ]
         },
         {
-          "alias": "--constant",
+          "alias": "Constant Delta",
           "groupBy": [],
           "hide": false,
           "measurement": "sppmon_metrics",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"duration\") FROM \"sppmon_metrics\" WHERE $timeFilter GROUP BY time(12h)",
+          "query": "SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE (\"constant\" = 'True') AND $timeFilter",
           "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
@@ -11889,7 +11891,7 @@
               },
               {
                 "params": [],
-                "type": "difference"
+                "type": "non_negative_difference"
               }
             ]
           ],
@@ -11902,7 +11904,7 @@
           ]
         },
         {
-          "alias": "--hourly",
+          "alias": "Hourly Delta",
           "groupBy": [],
           "hide": false,
           "measurement": "sppmon_metrics",
@@ -11922,7 +11924,7 @@
               },
               {
                 "params": [],
-                "type": "difference"
+                "type": "non_negative_difference"
               }
             ]
           ],
@@ -11935,7 +11937,7 @@
           ]
         },
         {
-          "alias": "Others",
+          "alias": "Others Delta",
           "groupBy": [],
           "hide": false,
           "measurement": "sppmon_metrics",
@@ -11955,7 +11957,7 @@
               },
               {
                 "params": [],
-                "type": "difference"
+                "type": "non_negative_difference"
               }
             ]
           ],
@@ -12016,6 +12018,7 @@
       "yaxes": [
         {
           "$$hashKey": "object:27143",
+          "decimals": 0,
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -12286,13 +12289,15 @@
           "measurement": "sppmon_metrics",
           "orderByTime": "DESC",
           "policy": "rp_days_14",
+          "query": "SELECT last(\"errorCount\") FROM \"rp_days_14\".\"sppmon_metrics\" WHERE $timeFilter GROUP BY \"spp_build\", \"spp_version\", \"sppmon_version\", \"influxdb_version\" ORDER BY time DESC",
+          "rawQuery": false,
           "refId": "A",
           "resultFormat": "table",
           "select": [
             [
               {
                 "params": [
-                  "duration"
+                  "errorCount"
                 ],
                 "type": "field"
               },
@@ -12339,6 +12344,18 @@
               "spp_version": "SPP version",
               "sppmon_version": "SPPMon version"
             }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "Last used time"
+              }
+            ]
           }
         }
       ],
@@ -13170,7 +13187,7 @@
       }
     }
   ],
-  "refresh": "5m",
+  "refresh": "",
   "schemaVersion": 27,
   "style": "dark",
   "tags": [],
@@ -13196,5 +13213,5 @@
   "timezone": "",
   "title": "SPPMON for IBM Spectrum Protect Plus ${DS_DATASOURCE}",
   "uid": "sppmon_single_view_DS_${DS_DATASOURCE}",
-  "version": 2
+  "version": 6
 }
