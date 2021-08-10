@@ -346,6 +346,8 @@ class SppMon:
 
         logger = logging.getLogger(LOGGER_NAME)
         logger.setLevel(logging.DEBUG)
+        logger.addHandler(file_handler)
+        logger.addHandler(stream_handler)
 
 
     def check_pid_file(self) -> bool:
