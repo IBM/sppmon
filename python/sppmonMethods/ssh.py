@@ -149,12 +149,21 @@ class SshMethods:
 
         # SERVER
         # add server later due multiple processes
-        self.__ps_grep_list = ["mongod", "beam.smp", "java"] # be aware this is double declared below
-        for grep_name in self.__ps_grep_list:
+        self.__process_grep_list = ["mongod", "beam.smp", "java"] # be aware this is double declared below
+        for grep_name in self.__process_grep_list:
             self.__client_commands[SshTypes.SERVER].append(
                 SshCommand(
                     command=f"ps -o \"%cpu,%mem,comm,rss,vsz,user,pid,etimes\" -p $(pgrep -d',' -f {grep_name}) S -ww",
                     parse_function=self._parse_ps_cmd,
+                    table_name="processStats"
+                )
+            )
+        # Top commands for CPU Only
+        for grep_name in self.__process_grep_list:
+            self.__client_commands[SshTypes.SERVER].append(
+                SshCommand(
+                    command=f"top -bs -w 512 -n1 -p $(pgrep -d',' -f {grep_name})",
+                    parse_function=self._parse_top_cmd,
                     table_name="processStats"
                 )
             )
@@ -221,6 +230,74 @@ class SshMethods:
                 ExceptionUtils.exception_info(
                     error=error, extra_message=f"Top-level-error when excecuting {ssh_type.value} ssh commands, skipping them all")
 
+    def _parse_top_cmd(self, ssh_command: SshCommand, ssh_type: SshTypes) -> Tuple[str, List[Dict[str, Any]]]:
+        """Parses the result of the `top` command, splitting it into its parts.
+
+        Arguments:
+            ssh_command {SshCommand} -- command with saved result
+            ssh_type {SshTypes} -- type of the client
+        Raises:
+            ValueError: no command given or no result saved
+            ValueError: no ssh type given
+        Returns:
+            Tuple[str, List[Dict[str, Any]]] -- Tuple of the tablename and a insert list
+        """
+
+        if(not ssh_command or not ssh_command.result):
+            raise ValueError("no command given or empty result")
+        if(not ssh_type):
+            raise ValueError("no sshtype given")
+        if(not ssh_command.table_name):
+            raise ValueError("need table name to insert parsed value")
+
+        result_lines = ssh_command.result.splitlines()
+        header = result_lines[6].split()
+
+        values: List[Dict[str, Any]] = list(
+            map(lambda row: dict(zip(header, row.split())), result_lines[7:])) # type: ignore
+
+        # All lines above (header) 5 are pruned, not used anymore. This data is tracked via ps (see Issue #71)
+
+        time_pattern = re.compile(r"(\d+):(\d{2})(?:\.(\d{2}))?")
+
+        # remove `top` from commands, it is also tracked
+        values = list(filter(lambda row: row["COMMAND"] in self.__process_grep_list, values))
+
+        for row in values:
+            # Delete Memory, this is tracked by ps command (See Issue #71)
+            row.pop("VIRT", None)
+            row.pop("RES", None)
+            row.pop("SHR", None)
+            row.pop("%MEM", None)
+            # Add information
+            row["collectionType"] = "TOP"
+
+            # unused information
+            row.pop("PR", None)
+            row.pop("NI", None)
+            row.pop("S", None)
+
+
+            # set default needed fields
+            row['hostName'] = ssh_command.host_name
+            row['ssh_type'] = ssh_type.name
+            (time_key, time_value) = SppUtils.get_capture_timestamp_sec()
+            row[time_key] = time_value
+
+            # split time into seconds
+            match = re.match(time_pattern, row['TIME+'])
+            if(match):
+                time_list = match.groups()
+                (hours, minutes, seconds) = time_list
+                if(seconds is None):
+                    seconds = 0
+                time = int(hours)*pow(60, 2) + int(minutes)*pow(60, 1) + int(seconds)*pow(60, 0)
+            else:
+                time = None
+            row['TIME+'] = time
+
+        return (ssh_command.table_name, values)
+
     def _parse_ps_cmd(self, ssh_command: SshCommand, ssh_type: SshTypes) -> Tuple[str, List[Dict[str, Any]]]:
         """Parses the result of the `df` command, splitting it into its parts.
 
@@ -246,10 +323,15 @@ class SshMethods:
         values: List[Dict[str, Any]] = list(
             map(lambda row: dict(zip(header, row.split())), result_lines[1:])) # type: ignore
 
-        # remove top statistic itself to avoid spam with useless information
-        values = list(filter(lambda row: row["COMMAND"] in self.__ps_grep_list, values))
+        # remove `ps` from commands, it is also tracked
+        values = list(filter(lambda row: row["COMMAND"] in self.__process_grep_list, values))
 
         for row in values:
+            # Remove CPU, it is tracked by TOP-Command (see Issue #71)
+            row.pop("%CPU", None)
+            # Add information
+            row["collectionType"] = "PS"
+
             # set default needed fields
             row['hostName'] = ssh_command.host_name
             row['ssh_type'] = ssh_type.name

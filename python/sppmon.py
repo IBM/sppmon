@@ -56,7 +56,8 @@ Author:
  03/29/2021 version 0.13.2 Fixes to typing, reducing error messages and tracking code for NaN bug
  06/07/2021 version 0.13.3 Hotfixing version endpoint for SPP 10.1.8.1
  06/09/2021 version 0.13.4 Hotfixing storage execption, chaning top-level execption handling to reduce the need of further hotfixes
- 06/30/2021 version 0.14    Added install script and fixed typo in config file, breaking old config files.
+ 08/06/2021 version 0.13.5 Fixing PS having unituitive CPU-recording, reintroducing TOP to collect CPU informations only
+ XX/XX/2021 version 0.14   Added install script and fixed typo in config file, breaking old config files.
 """
 from __future__ import annotations
 import functools
@@ -84,7 +85,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "0.14.0  (2021/06/30)"
+VERSION = "0.14.0  (2021/xx/xx)"
 
 
 # ----------------------------------------------------------------------------
