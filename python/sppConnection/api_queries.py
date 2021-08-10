@@ -227,13 +227,13 @@ class ApiQueries:
         return all_jobs_list
 
 
-    def get_job_log_details(self, job_logs_type: str, jobsession_id: int) -> List[Dict[str, Any]]:
+    def get_job_log_details(self, job_logs_types: List[str], jobsession_id: int, request_ids: List[str] = None) -> List[Dict[str, Any]]:
         """retrieves jobLogs for a certain jobsession.
 
         Arguments:
-            job_logs_type {str} -- types of joblogs, given as comma seperated string-array: '["DEBUG"]'
-            page_size {int} -- size of each response
+            job_logs_type {List[str]} -- types of joblogs: ["DEBUG","SUMMARY"]
             jobsession_id {int} -- only returns joblogs for this sessionID
+            request_ids {List[str]} -- messageId's to be requested. Only supply if filter wanted. (Default: None)
 
         Raises:
             ValueError: No jobsessionid given
@@ -244,7 +244,7 @@ class ApiQueries:
         """
         if(not jobsession_id):
             raise ValueError("no jobsession_id given to query Logs by an Id")
-        if(not job_logs_type):
+        if(not job_logs_types):
             raise ValueError("need to specify the jobLogType you want to query")
         # note: job id is the id of the job ( policy)
         # jobsessionid is the unique id of a execution of a job
@@ -258,21 +258,36 @@ class ApiQueries:
             "message", "messageParams", "type"]
         array_name = "logs"
 
+        filter_dict_list = [
+            {
+                "property":"jobsessionId",
+                "value":str(jobsession_id),
+                "op":"="
+            },
+            {
+                "property":"type",
+                "value": job_logs_types,
+                "op":"IN"
+            },
+        ]
+
+        if(request_ids):
+             # No idea if important, but switches ' to "
+            new_ids = list(map(lambda id: f"{id}", request_ids))
+
+            filter_dict_list.append(
+                # does NOT work yet, nothing filtered
+                # replace with request_ids once it works
+                {
+                    "property":"messageId",
+                    "value": new_ids,
+                    "op":"IN"
+                },
+            )
         params = {
-            "filter": json.dumps(
-                [
-                    {
-                        "property":"jobsessionId",
-                        "value":str(jobsession_id),
-                        "op":"="
-                    },
-                    {
-                        "property":"type",
-                        "value":job_logs_type,
-                        "op":"IN"
-                    }
-                ])
+            "filter": json.dumps(filter_dict_list)
             }
+
         #update the filter parameter to list all types if message types, not only info..
         log_list = self.__rest_client.get_objects(
             endpoint=endpoint, params=params, allow_list=allow_list, array_name=array_name)

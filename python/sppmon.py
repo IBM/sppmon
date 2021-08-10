@@ -60,6 +60,7 @@ Author:
  07/14/2021 version 0.13.6 Optimizing CQ's, reducing batch size and typo fix within cpuram table
  07/27/2021 version 0.13.7 Streamlining --test arg and checking for GrafanaReader on InfluxSetup
  08/02/2021 version 0.13.8 Enhancement and replacement of the ArgumentParser and clearer config-file error messages
+ 08/10/2021 version 0.13.9 Rework of the JobLogs and fix of Log-Filter.
 """
 from __future__ import annotations
 
@@ -89,7 +90,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "0.13.8  (2021/08/02)"
+VERSION = "0.13.9  (2021/08/10)"
 
 # ----------------------------------------------------------------------------
 # command line parameter parsing
@@ -280,9 +281,9 @@ class SppMon:
     """minimum size of a rest-api page on loaded systems"""
 
     # possible options: '["INFO","DEBUG","ERROR","SUMMARY","WARN"]'
-    joblog_types: str = '["INFO","DEBUG","ERROR","SUMMARY","WARN"]'
+    joblog_types = ["INFO","DEBUG","ERROR","SUMMARY","WARN"]
     """regular joblog query types on normal running systems"""
-    loaded_joblog_types: str = '["DEBUG","ERROR","SUMMARY","WARN"]'
+    loaded_joblog_types = ["DEBUG","ERROR","SUMMARY","WARN"]
     """jobLog types to be requested on loaded systems."""
 
     # String, cause of days etc

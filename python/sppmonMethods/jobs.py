@@ -158,7 +158,7 @@ class JobMethods:
     """LogLog messageID's which can be parsed by sppmon. Check detailed summary above the declaration."""
 
     def __init__(self, influx_client: Optional[InfluxClient], api_queries: Optional[ApiQueries],
-                 job_log_retention_time: str, job_log_type: str, verbose: bool):
+                 job_log_retention_time: str, job_log_types: List[str], verbose: bool):
 
         if(not influx_client):
             raise ValueError(
@@ -174,7 +174,7 @@ class JobMethods:
         self.__job_log_retention_time = job_log_retention_time
         """used to limit the time jobLogs are queried, only interestig for init call"""
 
-        self.__job_log_type = job_log_type
+        self.__job_log_types = job_log_types
 
     def get_all_jobs(self) -> None:
         """incrementally saves all stored jobsessions, even before first execution of sppmon"""
@@ -491,9 +491,9 @@ class JobMethods:
 
             if(self.__verbose):
                 LOGGER.info(
-                    f">>> Requesting jobLogs {self.__job_log_type} for session {job_session_id}.")
+                    f">>> Requesting jobLogs {self.__job_log_types} for session {job_session_id}.")
             LOGGER.debug(
-                f">>> Requesting jobLogs {self.__job_log_type} for session {job_session_id}.")
+                f">>> Requesting jobLogs {self.__job_log_types} for session {job_session_id}.")
 
             try:
                 # cant use `query_something` like in other places due the extra params:
@@ -502,7 +502,8 @@ class JobMethods:
                 # This list contains all joblogs for a single job-execution
                 current_job_logs = self.__api_queries.get_job_log_details(
                     jobsession_id=job_session_id,
-                    job_logs_type=self.__job_log_type)
+                    job_logs_types=self.__job_log_types,
+                    request_ids=list(self.__supported_ids.keys()))
             except ValueError as error:
                 ExceptionUtils.exception_info(error=error,
                 extra_message=f"Error when api-requesting joblogs for job_session_id {job_session_id}, skipping it")
