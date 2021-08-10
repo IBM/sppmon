@@ -240,7 +240,7 @@ class ApiQueries:
             ValueError: No joblogType specified
 
         Returns:
-            List[Dict[str, Any]] -- List of joblogs for the sessionID of the given types.
+            List[Dict[str, Any]] -- List of joblogs for requested sessionID of the given types.
         """
         if(not jobsession_id):
             raise ValueError("no jobsession_id given to query Logs by an Id")
