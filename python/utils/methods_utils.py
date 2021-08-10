@@ -60,7 +60,9 @@ class MethodUtils:
                 LOGGER.info(f"No {ssh_type.name} ssh client present. Aborting command")
             return []
 
-        ssh_cmd_response_list = []
+        # List to persist ssh-result stats over each client
+        ssh_cmd_response_list: List[Dict[str,Union[str, int, None]]] = []
+        # list to insert into influx, tuple of table and its result-lists
         result_list: List[Tuple[str, List[Dict[str, Any]]]] = []
         for client in client_list:
 
@@ -78,7 +80,8 @@ class MethodUtils:
                 continue
 
             for ssh_command in result_commands:
-                insert_dict = {}
+                # generate stats for the ssh-stats list
+                insert_dict: Dict[str, Union[str, int, None]] = {}
                 insert_dict["host"] = ssh_command.host_name
                 insert_dict["command"] = ssh_command.cmd
                 insert_dict["output"] = json.dumps(ssh_command.result)
@@ -88,13 +91,16 @@ class MethodUtils:
 
                 ssh_cmd_response_list.append(insert_dict)
 
+                # execute the command
                 try:
                     table_result_tuple = ssh_command.parse_result(ssh_type=ssh_type)
                     if(table_result_tuple):
+                        # save the command into the result set wit its table
                         result_list.append(table_result_tuple)
                 except ValueError as error:
                     ExceptionUtils.exception_info(error=error, extra_message="Error when parsing result, skipping parsing of this result")
 
+        # append the ssh command once, cause each client already added into the ssh_command list
         result_list.append(("sshCmdResponse", ssh_cmd_response_list))
         return result_list
 

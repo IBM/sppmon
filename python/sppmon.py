@@ -54,11 +54,12 @@ Author:
  02/07/2021 version 0.13   Implemented additional Office365 Joblog parsing
  02/10/2021 version 0.13.1 Fixes to partial send(influx), including influxdb version into stats
  03/29/2021 version 0.13.2 Fixes to typing, reducing error messages and tracking code for NaN bug
- 07/07/2021 version 0.13.3 Hotfixing version endpoint for SPP 10.1.8.1
+ 07/06/2021 version 0.13.3 Hotfixing version endpoint for SPP 10.1.8.1
  07/09/2021 version 0.13.4 Hotfixing storage execption, chaning top-level execption handling to reduce the need of further hotfixes
- 07/14/2021 version 0.13.5 Optimizing CQ's, reducing batch size and typo fix within cpuram table
- 07/27/2021 version 0.13.6 Streamlining --test arg and checking for GrafanaReader on InfluxSetup
- 08/02/2021 version 0.13.7 Enhancement and replacement of the ArgumentParser and clearer config-file error messages
+ 08/06/2021 version 0.13.5 Fixing PS having unituitive CPU-recording, reintroducing TOP to collect CPU informations only
+ 07/14/2021 version 0.13.6 Optimizing CQ's, reducing batch size and typo fix within cpuram table
+ 07/27/2021 version 0.13.7 Streamlining --test arg and checking for GrafanaReader on InfluxSetup
+ 08/02/2021 version 0.13.8 Enhancement and replacement of the ArgumentParser and clearer config-file error messages
 """
 from __future__ import annotations
 
@@ -88,7 +89,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "0.13.7  (2021/08/02)"
+VERSION = "0.13.8  (2021/08/02)"
 
 # ----------------------------------------------------------------------------
 # command line parameter parsing
