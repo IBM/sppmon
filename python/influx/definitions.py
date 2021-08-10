@@ -1011,6 +1011,7 @@ class Definitions:
                 'PID',
                 'USER',
                 'hostName',
+                'collectionType',
                 'ssh_type'
             ],# time key is capture time
             retention_policy=cls._RP_DAYS_14(),
