@@ -92,6 +92,109 @@ loggerEcho() {
 
 }
 
+# ############ Generate Certs #################
+
+# generating cert for SSL
+generate_cert() {
+    # param1: default key location
+    # param2: default cert location
+
+    # out-param3: actual key location
+    # out-param4: actual cert location
+
+    # returns: unsafe cert (true/false)
+
+    if (( $# != 1 && $# != 2)) ; then
+        >&2 loggerEcho "Illegal number of parameters generate_cert"
+        abortInstallScript
+    fi
+
+    local keyPath="$1"
+    local CertPath="$2"
+    local __resultKeyPath="$3"
+    local __resultCertPath"$4"
+
+    local unsafeSsl
+
+    if confirm "Automatically create a self-signed certificate? "; then
+
+        unsafeSsl=true
+
+        local keyCreateCommand="sudo openssl req -x509 -nodes -newkey rsa:4096 -keyout \"$keyPath\" -out \"$CertPath\""
+        local certDuration
+
+        while true; do # repeat until valid symbol
+            promptText "How long should it be valid in days? Leave empty for no limit" certDuration ""
+            if ! [[ "'$certDuration'" =~ ^\'[0-9]*\'$ ]] ; then
+                loggerEcho "You may only enter numbers or leave blank."
+            elif [[ -n "$certDuration" ]]; then
+                # append duration of cert
+                keyCreateCommand="$keyCreateCommand -days $certDuration"
+                break
+            else
+                break
+            fi
+        done
+
+        # Actually create the cert
+        while true; do # repeat until created
+            echo $keyCreateCommand
+            eval "$keyCreateCommand"
+            if [[ $? -ne 0 ]]; then
+                if ! confirm "cert creation failed. Do you want to try again?"; then
+                    abortInstallScript
+                fi
+            else
+                loggerEcho "> cert created sucessfully"
+                break
+            fi
+        done
+    else # Provide own cert
+
+        echo ""
+        echo "If the certificate you are providing is self-signed, sppmon will"
+        echo "need to use the --unsafeSsl option."
+        echo ""
+        if confirm "Is your cert self-signed requiring the unsafe ssl flag?"; then
+            unsafeSsl=true
+        fi
+
+        local defaultKeyPath=$keyPath
+        KeyPath=""
+        local defaultCertPath=$CertPath
+        CertPath=""
+
+        # Key
+        while [[ -z $keyPath ]]; do
+            echo ""
+            promptText "Please enter the path to the https cert key" keyPath "$defaultKeyPath"
+            if [[ -z $keyPath ]]; then
+                loggerEcho "The path of the key must not be empty"
+            fi
+        done
+        # Cert
+        while [[ -z $CertPath ]]; do
+            echo ""
+            promptText "Please enter the path to the https pulic cert" CertPath "$defaultCertPath"
+            if [[ -z $CertPath ]]; then
+                loggerEcho "The path of the cert must not be empty"
+            fi
+        done
+
+    fi
+
+    eval $__resultKeyPath="'$keyPath'"
+    eval $__resultCertPath="'$CertPath'"
+
+    if [[ $unsafeSsl ]] ; then
+        return 0
+    else
+        return 1
+    fi
+
+}
+
+
 # ############ USER PROMPTS ###################
 
 # prompt for a confirm with message, returning true or false

@@ -76,6 +76,49 @@ EOF
 
     fi
 
+    echo ""
+    echo "The following steps are optional and will setup Grafana to use SSL for"
+    echo "secure communications.  This is highly recommended!"
+    echo ""
+    if confirm "Do you want to enable HTTPS-communication for Grafana? "; then
+
+        # [server] protocol = https
+        checkReturn sudo sed -ri '"/\[server\]/,/\;?protocol\s*=.+/ s|\#*\s*protocol\s*=.+| protocol = https|"' "${config_file}"
+
+
+    else
+        # [server] protocol = http (disable HTTPS)
+        checkReturn sudo sed -ri '"/\[server\]/,/\;?protocol\s*=.+/ s|\#*\s*protocol\s*=.+| protocol = http|"' "${config_file}"
+
+        # influx certs
+        local httpsKeyPath="/etc/ssl/influxdb-selfsigned.key"
+        local httpsCertPath="/etc/ssl/influxdb-selfsigned.crt"
+
+        if [[ -e "${httpsKeyPath}" && -e "${httpsCertPath}"
+            && confirm "Do you want to re-use the influxdb-ssl certificates?" ]] ; then
+                # influx certs
+                local httpsKeyPath="/etc/ssl/influxdb-selfsigned.key"
+                local httpsCertPath="/etc/ssl/influxdb-selfsigned.crt"
+                # use the certs from above
+                unsafeSsl=true
+        else
+            # influx certs
+            local httpsKeyPath="/etc/ssl/grafana-selfsigned.key"
+            local httpsCertPath="/etc/ssl/grafana-selfsigned.crt"
+            # generate
+            if generate_cert "$httpsKeyPath" "$httpsCertPath" httpsKeyPath httpsCertPath ; then
+                unsafeSsl=true
+            fi
+        fi
+
+        # Edit config file again
+        # [server] cert_file
+        checkReturn sudo sed -ri "\"/\[server\]/,/cert_file\s*=.+/ s|\#*\s*cert_file\s*=.+| cert_file = \\\"$httpsCertPath\\\"|\"" "${config_file}"
+        # [server] cert_key
+        checkReturn sudo sed -ri "\"/\[server\]/,/cert_key\s*=.+/ s|\#*\s*cert_key\s*=.+| cert_key = \\\"$httpsKeyPath\\\"|\"" "${config_file}"
+
+
+    fi
     # Access rights
     checkReturn sudo chown -R influxdb:influxdb "${config_path}"
     checkReturn sudo mkdir -p "${influx_db_path}"
