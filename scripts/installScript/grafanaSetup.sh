@@ -26,7 +26,7 @@ EOF
     checkReturn sudo firewall-cmd --add-port=3000/tcp --permanent
     checkReturn sudo firewall-cmd --reload
 
-    local config_path=/etc/influxdb
+    local config_path=/etc/grafana
     local config_file="${config_path}/grafana.ini"
     local config_file_backup="${config_file}.orig"
     if [[ -f "${config_file_backup}" ]]; then
