@@ -42,9 +42,10 @@ EOF
 
     if confirm "Disable reporting usage data to usage.influxdata.com?"
         then
-            checkReturn sudo sed -i '"s/\;*\s*reporting_disabled\s*=.*/ reporting_disabled = true/"' "${config_file}"
+            # [analytics] reporting_enabled
+            checkReturn sudo sed -ri '/[analytics]/,/;?reporting_enabled\s*=.+/ s|;*\s*reporting_enabled\s*=.+| reporting_enabled = false|' "${config_file}"
         else
-            checkReturn sudo sed -i '"s/\;*\s*reporting_disabled\s*=.*/ reporting_disabled = false/"' "${config_file}"
+            checkReturn sudo sed -ri '/[analytics]/,/;?reporting_enabled\s*=.+/ s|;*\s*reporting_enabled\s*=.+| reporting_enabled = true|' "${config_file}"
     fi
 
     if ! confirm "Do you want to use default storage locations for all grafana data?" ; then
