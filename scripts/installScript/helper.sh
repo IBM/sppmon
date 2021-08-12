@@ -110,17 +110,17 @@ generate_cert() {
     fi
 
     local keyPath="$1"
-    local CertPath="$2"
+    local certPath="$2"
     local __resultKeyPath="$3"
-    local __resultCertPath"$4"
+    local __resultCertPath="$4"
 
     local unsafeSsl
 
-    if confirm "Automatically create a self-signed certificate? "; then
+    if confirm "Do you want to create a self-signed certificate now? Choose no for existing certificate."; then
 
         unsafeSsl=true
 
-        local keyCreateCommand="sudo openssl req -x509 -nodes -newkey rsa:4096 -keyout \"$keyPath\" -out \"$CertPath\""
+        local keyCreateCommand="sudo openssl req -x509 -nodes -newkey rsa:4096 -keyout \"$keyPath\" -out \"$certPath\""
         local certDuration
 
         while true; do # repeat until valid symbol
@@ -161,8 +161,8 @@ generate_cert() {
 
         local defaultKeyPath=$keyPath
         KeyPath=""
-        local defaultCertPath=$CertPath
-        CertPath=""
+        local defaultCertPath=$certPath
+        certPath=""
 
         # Key
         while [[ -z $keyPath ]]; do
@@ -173,10 +173,10 @@ generate_cert() {
             fi
         done
         # Cert
-        while [[ -z $CertPath ]]; do
+        while [[ -z $certPath ]]; do
             echo ""
-            promptText "Please enter the path to the https pulic cert" CertPath "$defaultCertPath"
-            if [[ -z $CertPath ]]; then
+            promptText "Please enter the path to the https pulic cert" certPath "$defaultCertPath"
+            if [[ -z $certPath ]]; then
                 loggerEcho "The path of the cert must not be empty"
             fi
         done
@@ -184,7 +184,7 @@ generate_cert() {
     fi
 
     eval $__resultKeyPath="'$keyPath'"
-    eval $__resultCertPath="'$CertPath'"
+    eval $__resultCertPath="'$certPath'"
 
     if [[ $unsafeSsl ]] ; then
         return 0
