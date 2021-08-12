@@ -302,11 +302,13 @@ EOF
         fi
         promptPasswords "Please enter the desired ${influxGrafanaReaderName} password" influxGrafanaReaderPassword "$influxGrafanaReaderPassword"
 
-        executeInfluxCommand "CREATE USER \"$influxGrafanaReaderName\" WITH PASSWORD '$influxGrafanaReaderPassword'"
+        local command_output=""
+
+        executeInfluxCommand command_output "CREATE USER \"$influxGrafanaReaderName\" WITH PASSWORD '$influxGrafanaReaderPassword'"
         local userCreateReturnCode=$?
 
         if (( $userCreateReturnCode != 0 )) ;then
-            loggerEcho "Creation failed due an error. Please read the output above."
+            loggerEcho "Creation failed due an error: ${command_output}"
             if ! confirm "Do you want to try again (y) or continue (n)? Abort by ctrl + c" "--alwaysConfirm"; then
                 # user wants to exit
                 grafanaReaderCreated=true
