@@ -104,7 +104,7 @@ generate_cert() {
 
     # returns: unsafe cert (true/false)
 
-    if (( $# != 1 && $# != 2)) ; then
+    if (( $# != 4 )) ; then
         >&2 loggerEcho "Illegal number of parameters generate_cert"
         abortInstallScript
     fi
