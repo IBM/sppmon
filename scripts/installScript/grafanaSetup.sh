@@ -118,7 +118,7 @@ EOF
                 unsafeSsl=true
             fi
         fi
-
+        echo "cert modifing"
         # Edit config file again
         # [server] cert_file
         checkReturn sudo sed -ri "\"/\[server\]/,/cert_file\s*=.+/ s|\;*\s*cert_file\s*=.+| cert_file = \\\"$httpsCertPath\\\"|\"" "${config_file}"
