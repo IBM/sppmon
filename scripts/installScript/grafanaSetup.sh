@@ -106,6 +106,8 @@ EOF
         if generate_cert "$httpsKeyPath" "$httpsCertPath" httpsKeyPath httpsCertPath ; then
             unsafeSsl=true
         fi
+        echo "key: ${httpsKeyPath}"
+        echo "cert: ${httpsCertPath}"
 
         checkReturn sudo chown -R grafana:grafana "${httpsKeyPath}"
         checkReturn sudo chown -R grafana:grafana "${httpsCertPath}"
