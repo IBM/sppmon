@@ -35,14 +35,15 @@ restartInflux() {
 }
 
 executeInfluxCommand() {
-    if (( $# > 3 || $# < 1 )); then
+    if (( $# > 4 || $# < 2 )); then
         >&2 loggerEcho "Illegal number of parameters executeInfluxCommand"
         abortInstallScript
     fi
 
-    local command=$1 # param1: command to be executed
-    local userName=$2 # param2: user to be logged in
-    local password=$3 # param3: password to be used
+    local __connectionResult=$1 # out-param1: result text from influxdb
+    local command=$2 # param2: command to be executed
+    local userName=$3 # param3: user to be logged in
+    local password=$4 # param4: password to be used
 
     local connectionTestString="influx -host $influxAddress -port $influxPort"
     if [[ -n $userName ]] ; then
@@ -72,6 +73,8 @@ executeInfluxCommand() {
 
     logger "$connectionOutput"
 
+    eval $__connectionResult="'$connectionOutput'"
+
     if [[ "${connectionOutput}" == *"ERR"* ]] ; then
         return 1
     else
@@ -88,11 +91,13 @@ verifyConnection() {
     local userName=$1 # param1: user to be logged in
     local password=$2 # param2: password to be used
 
-    loggerEcho "> verifying connection to InfluxDB"
+    local command_output=""
 
-    if ! executeInfluxCommand "SHOW DATABASES" "$userName" "$password" ; then
+    loggerEcho "> verifying connection to InfluxDB"
+    if ! executeInfluxCommand command_output "SHOW DATABASES" "$userName" "$password" ; then
 
         loggerEcho "> ERROR: The connection could not be established."
+        loggerEcho "Error message: ${command_output}"
         if ! confirm "Do you want to continue anyway?" ; then
             abortInstallScript
         fi
@@ -215,17 +220,29 @@ EOF
         echo ""
         promptLimitedText "Please enter the desired InfluxDB admin name" influxAdminName "$influxAdminName"
 
+        local command_output=""
+        checkReturn executeInfluxCommand command_output "SHOW USERS"
+
+        if [[ "${command_output}" == *"${influxAdminName}"* ]] ; then
+                loggerEcho "It seems like the user ${influxAdminName} already exists."
+                if confirm "Do you want to drop the existing user ${influxAdminName}?" ; then
+                    executeInfluxCommand command_output "DROP USER \"${influxAdminName}\""
+                fi
+        fi
+
         # sets default to presaved value if empty
         if [[ -z $influxAdminPassword ]]; then
             local influxAdminPassword
         fi
         promptPasswords "Please enter the desired InfluxDB admin password" influxAdminPassword "$influxAdminPassword"
 
-        executeInfluxCommand "CREATE USER \"$influxAdminName\" WITH PASSWORD '$influxAdminPassword' WITH ALL PRIVILEGES"
+        local command_output=""
+
+        executeInfluxCommand command_output "CREATE USER \"$influxAdminName\" WITH PASSWORD '$influxAdminPassword' WITH ALL PRIVILEGES"
         local userCreateReturnCode=$?
 
         if (( $userCreateReturnCode != 0 ));then
-            loggerEcho "Creation failed due an error. Please read the output above."
+            loggerEcho "Creation failed due an error: $command_output"
             if ! confirm "Do you want to try again (y) or continue (n)? Abort by ctrl + c" "--alwaysConfirm"; then
                 # user wants to exit
                 adminCreated=true
@@ -254,6 +271,16 @@ EOF
 
     echo ""
     loggerEcho "Creating InfluxDB '$influxGrafanaReaderName' user"
+
+    local command_output=""
+    checkReturn executeInfluxCommand command_output "SHOW USERS"
+
+    if [[ "${command_output}" == *"${influxGrafanaReaderName}"* ]] ; then
+            loggerEcho "It seems like the user ${influxGrafanaReaderName} already exists."
+            if confirm "Do you want to drop the existing user ${influxGrafanaReaderName}?" ; then
+                executeInfluxCommand command_output "DROP USER \"${influxGrafanaReaderName}\""
+            fi
+    fi
 
     # Create user
     local grafanaReaderCreated=false
