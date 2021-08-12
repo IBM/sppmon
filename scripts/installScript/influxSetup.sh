@@ -297,6 +297,7 @@ EOF
 
     # ################# START OF HTTPS ##########################
 
+    rowLimiter
 
     echo ""
     echo "The following steps are optional and will setup InfluxDB to use SSL for"
