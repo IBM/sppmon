@@ -110,7 +110,7 @@ gpgkey = https://repos.influxdata.com/influxdb.key
 EOF
 
     loggerEcho "> Installing database"
-    checkReturn sudo yum install influxdb
+    checkReturn sudo yum install influxdb-1.8.1-1
 
     local influxAddress=$(ip route get 1 | sed -n 's/^.*src \([0-9.]*\) .*$/\1/p')
     local influxPort=8086
@@ -170,12 +170,12 @@ EOF
     # [http] log-enabled = true
     #checkReturn sudo sed -ri '"/\[http\]/,/log-enabled\s*=.+/ s|\#*\s*log-enabled\s*=.+| log-enabled = true|"' "${config_file}"
 
-    # [http] flux-enabled = false
-    checkReturn sudo sed -ri '"/\[http\]/,/flux-enabled\s*=.+/ s|\#*\s*flux-enabled\s*=.+| flux-enabled = false|"' "${config_file}"
+    # [http] flux-enabled = true
+    checkReturn sudo sed -ri '"/\[http\]/,/flux-enabled\s*=.+/ s|\#*\s*flux-enabled\s*=.+| flux-enabled = true |"' "${config_file}"
     # [http] flux-log-enabled = true
     #checkReturn sudo sed -ri '"/\[http\]/,/flux-log-enabled\s*=.+/ s|\#*\s*flux-log-enabled\s*=.+| flux-log-enabled = true |"' "${config_file}"
 
-    # [http] bind-address TODO test " vs ' (port variable)
+    # [http] bind-address
     checkReturn sudo sed -ri "\"/\[http\]/,/bind-address\s*=.+/ s|\#*\s*bind-address\s*=.+| bind-address = \\\":${influxPort}\\\"|\"" "${config_file}"
 
     # DISABLE to allow user creation
