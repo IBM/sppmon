@@ -38,6 +38,9 @@ EOF
         checkReturn sudo cp -n "${config_file}" "${config_file_backup}"
     fi
 
+    # Access rights
+    checkReturn sudo chown -R grafana:grafana "${config_path}"
+
     loggerEcho "> Editing config file - part 1 -"
 
     if confirm "Disable reporting usage data to usage.influxdata.com?"
@@ -59,21 +62,32 @@ EOF
         # [paths] data
         checkReturn sudo sed -ri "\"/\[paths\]/,/data\s*=.+/ s|\;*\s*data\s*=.+| data = ${data_path}|\"" "${config_file}"
 
+        checkReturn sudo mkdir -p "${data_path}"
+        checkReturn sudo chown -R grafana:grafana "${data_path}"
+
         promptText "Specify a directory where grafana can store logs:" logs_path "/var/log/grafana"
 
         # logs
         checkReturn sudo sed -ri "\"/\[paths\]/,/logs\s*=.+/ s|\;*\s*logs\s*=.+| logs = ${logs_path}|\"" "${config_file}"
+
+        checkReturn sudo mkdir -p "${logs_path}"
+        checkReturn sudo chown -R grafana:grafana "${logs_path}"
 
         promptText "Specify a directory where grafana will automatically scan and look for plugins:" plugins_path "/var/lib/grafana/plugins"
 
         # plugins
         checkReturn sudo sed -ri "\"/\[paths\]/,/plugins\s*=.+/ s|\;*\s*plugins\s*=.+| plugins = ${plugins_path}|\"" "${config_file}"
 
+        checkReturn sudo mkdir -p "${plugins_path}"
+        checkReturn sudo chown -R grafana:grafana "${plugins_path}"
+
         promptText "Specify a folder that contains provisioning config files that grafana will apply on startup and while running:" provisioning_path "conf/provisioning"
 
         # provisioning
         checkReturn sudo sed -ri "\"/\[paths\]/,/provisioning\s*=.+/ s|\;*\s*provisioning\s*=.+| provisioning = ${provisioning_path}|\"" "${config_file}"
 
+        checkReturn sudo mkdir -p "${provisioning_path}"
+        checkReturn sudo chown -R grafana:grafana "${provisioning_path}"
     fi
 
     echo ""
@@ -83,12 +97,7 @@ EOF
     if confirm "Do you want to enable HTTPS-communication for Grafana? "; then
 
         # [server] protocol = https
-        checkReturn sudo sed -ri '"/\[server\]/,/\;?protocol\s*=.+/ s|\#*\s*protocol\s*=.+| protocol = https|"' "${config_file}"
-
-
-    else
-        # [server] protocol = http (disable HTTPS)
-        checkReturn sudo sed -ri '"/\[server\]/,/\;?protocol\s*=.+/ s|\#*\s*protocol\s*=.+| protocol = http|"' "${config_file}"
+        checkReturn sudo sed -ri '"/\[server\]/,/\;?protocol\s*=.+/ s|\;*\s*protocol\s*=.+| protocol = https|"' "${config_file}"
 
         # influx certs
         local httpsKeyPath="/etc/ssl/influxdb-selfsigned.key"
@@ -112,20 +121,19 @@ EOF
 
         # Edit config file again
         # [server] cert_file
-        checkReturn sudo sed -ri "\"/\[server\]/,/cert_file\s*=.+/ s|\#*\s*cert_file\s*=.+| cert_file = \\\"$httpsCertPath\\\"|\"" "${config_file}"
+        checkReturn sudo sed -ri "\"/\[server\]/,/cert_file\s*=.+/ s|\;*\s*cert_file\s*=.+| cert_file = \\\"$httpsCertPath\\\"|\"" "${config_file}"
         # [server] cert_key
-        checkReturn sudo sed -ri "\"/\[server\]/,/cert_key\s*=.+/ s|\#*\s*cert_key\s*=.+| cert_key = \\\"$httpsKeyPath\\\"|\"" "${config_file}"
+        checkReturn sudo sed -ri "\"/\[server\]/,/cert_key\s*=.+/ s|\;*\s*cert_key\s*=.+| cert_key = \\\"$httpsKeyPath\\\"|\"" "${config_file}"
 
+    else
+        # [server] protocol = http (disable HTTPS)
+        checkReturn sudo sed -ri '"/\[server\]/,/\;?protocol\s*=.+/ s|\;*\s*protocol\s*=.+| protocol = http|"' "${config_file}"
 
     fi
-    # Access rights
-    checkReturn sudo chown -R influxdb:influxdb "${config_path}"
-    checkReturn sudo mkdir -p "${influx_db_path}"
-    checkReturn sudo chown -R influxdb:influxdb "${influx_db_path}"
+
 
     ## email
 
-    ## https
 
 
     loggerEcho "> Starting Grafana service"
