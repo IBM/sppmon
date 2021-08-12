@@ -118,16 +118,16 @@ EOF
                 unsafeSsl=true
             fi
         fi
-        echo "cert modifing"
+
         # Edit config file again
         # [server] cert_file
-        checkReturn sudo sed -ri "\"/\[server\]/,/cert_file\s*=.+/ s|\;*\s*cert_file\s*=.+| cert_file = \\\"$httpsCertPath\\\"|\"" "${config_file}"
+        checkReturn sudo sed -ri "\"/\[server\]/,/\;*\s*cert_file\s*=.+/ s|\;*\s*cert_file\s*=.+| cert_file = \\\"${httpsCertPath}\\\"|\"" "${config_file}"
         # [server] cert_key
-        checkReturn sudo sed -ri "\"/\[server\]/,/cert_key\s*=.+/ s|\;*\s*cert_key\s*=.+| cert_key = \\\"$httpsKeyPath\\\"|\"" "${config_file}"
+        checkReturn sudo sed -ri "\"/\[server\]/,/\;*\s*cert_key\s*=.+/ s|\;*\s*cert_key\s*=.+| cert_key = \\\"${httpsKeyPath}\\\"|\"" "${config_file}"
 
     else
         # [server] protocol = http (disable HTTPS)
-        checkReturn sudo sed -ri '"/\[server\]/,/\;?protocol\s*=.+/ s|\;*\s*protocol\s*=.+| protocol = http|"' "${config_file}"
+        checkReturn sudo sed -ri '"/\[server\]/,/\;*\s*protocol\s*=.+/ s|\;*\s*protocol\s*=.+| protocol = http|"' "${config_file}"
 
     fi
 
