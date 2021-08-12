@@ -295,7 +295,7 @@ EOF
         if [[ -z $influxGrafanaReaderPassword ]]; then
             local influxGrafanaReaderPassword
         fi
-        promptPasswords "Please enter the desired GrafanaReader password" influxGrafanaReaderPassword "$influxGrafanaReaderPassword"
+        promptPasswords "Please enter the desired ${influxGrafanaReaderName} password" influxGrafanaReaderPassword "$influxGrafanaReaderPassword"
 
         executeInfluxCommand "CREATE USER \"$influxGrafanaReaderName\" WITH PASSWORD '$influxGrafanaReaderPassword'"
         local userCreateReturnCode=$?
@@ -310,7 +310,7 @@ EOF
             # else
             # Start again
         else
-            loggerEcho "> GrafanaReader creation sucessfully"
+            loggerEcho "> ${influxGrafanaReaderName} creation sucessfully"
             grafanaReaderCreated=true
         fi
 
