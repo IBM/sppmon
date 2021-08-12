@@ -83,7 +83,7 @@ saveAuth() { # topic is the describer
         sudo chmod 600 "${authFile}"
     fi
 
-    echo "$topic=\"${value}\"" >> "$authFile"
+    echo "$topic=\"${value}\"" | sudo tee -a "$authFile" >/dev/null
 }
 
 readAuth() {
