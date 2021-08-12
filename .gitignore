@@ -1,6 +1,6 @@
 
 # ### Config Files ###
-config_files
+config_files/*
 !config_files/sppconnections_default.conf
 
 # ### Grafana individual Dashboards
