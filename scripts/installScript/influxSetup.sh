@@ -223,7 +223,7 @@ EOF
         loggerEcho "Checking for existing user"
 
         local command_output=""
-        checkReturn executeInfluxCommand command_output "SHOW USERS"
+        executeInfluxCommand command_output "SHOW USERS"
 
         if [[ "${command_output}" == *"${influxAdminName}"* ]] ; then
                 loggerEcho "It seems like the user ${influxAdminName} already exists."
@@ -278,7 +278,7 @@ EOF
 
     loggerEcho "Checking for existing user"
 
-    checkReturn executeInfluxCommand command_output "SHOW USERS"
+    executeInfluxCommand command_output "SHOW USERS"
 
     if [[ "${command_output}" == *"${influxGrafanaReaderName}"* ]] ; then
             loggerEcho "It seems like the user ${influxGrafanaReaderName} already exists."
