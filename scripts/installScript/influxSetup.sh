@@ -110,7 +110,7 @@ gpgkey = https://repos.influxdata.com/influxdb.key
 EOF
 
     loggerEcho "> Installing database"
-    checkReturn sudo yum install influxdb-1.8.1-1
+    checkReturn sudo yum install influxdb-1.8.6-1
 
     local influxAddress=$(ip route get 1 | sed -n 's/^.*src \([0-9.]*\) .*$/\1/p')
     local influxPort=8086
