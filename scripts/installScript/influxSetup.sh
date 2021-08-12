@@ -157,32 +157,32 @@ EOF
 
     # Changing dirs cause on default path /var/lib permissions will fail
     # [meta] dir
-    checkReturn sudo sed -ri "\"/\[meta\]/,/dir\s*=.+/ s|\#*\s*dir\s*=.+| dir = \\\"${influx_db_path}/meta\\\"|\"" "${config_file}"
+    checkReturn sudo sed -ri "\"/\[meta\]/,/dir\s*=.*/ s|\#*\s*dir\s*=.*| dir = \\\"${influx_db_path}/meta\\\"|\"" "${config_file}"
 
 
     # [data] dir
-    checkReturn sudo sed -ri "\"/\[data\]/,/dir\s*=.+/ s|\#*\s*dir\s*=.+| dir = \\\"${influx_db_path}/data\\\"|\"" "${config_file}"
+    checkReturn sudo sed -ri "\"/\[data\]/,/dir\s*=.*/ s|\#*\s*dir\s*=.*| dir = \\\"${influx_db_path}/data\\\"|\"" "${config_file}"
     # [data] wal-dir
-    checkReturn sudo sed -ri "\"/\[data\]/,/wal-dir\s*=.+/ s|\#*\s*wal-dir\s*=.+| wal-dir = \\\"${influx_db_path}/wal\\\"|\"" "${config_file}"
+    checkReturn sudo sed -ri "\"/\[data\]/,/wal-dir\s*=.*/ s|\#*\s*wal-dir\s*=.*| wal-dir = \\\"${influx_db_path}/wal\\\"|\"" "${config_file}"
 
     # [http] enabled = true
-    #checkReturn sudo sed -ri '"/\[http\]/,/enabled\s*=.+/ s|\#*\s*enabled\s*=.+| enabled = true|"' "${config_file}"
+    #checkReturn sudo sed -ri '"/\[http\]/,/enabled\s*=.*/ s|\#*\s*enabled\s*=.*| enabled = true|"' "${config_file}"
     # [http] log-enabled = true
-    #checkReturn sudo sed -ri '"/\[http\]/,/log-enabled\s*=.+/ s|\#*\s*log-enabled\s*=.+| log-enabled = true|"' "${config_file}"
+    #checkReturn sudo sed -ri '"/\[http\]/,/log-enabled\s*=.*/ s|\#*\s*log-enabled\s*=.*| log-enabled = true|"' "${config_file}"
 
     # [http] flux-enabled = true
-    checkReturn sudo sed -ri '"/\[http\]/,/flux-enabled\s*=.+/ s|\#*\s*flux-enabled\s*=.+| flux-enabled = true |"' "${config_file}"
+    checkReturn sudo sed -ri '"/\[http\]/,/flux-enabled\s*=.*/ s|\#*\s*flux-enabled\s*=.*| flux-enabled = true |"' "${config_file}"
     # [http] flux-log-enabled = true
-    #checkReturn sudo sed -ri '"/\[http\]/,/flux-log-enabled\s*=.+/ s|\#*\s*flux-log-enabled\s*=.+| flux-log-enabled = true |"' "${config_file}"
+    #checkReturn sudo sed -ri '"/\[http\]/,/flux-log-enabled\s*=.*/ s|\#*\s*flux-log-enabled\s*=.*| flux-log-enabled = true |"' "${config_file}"
 
     # [http] bind-address
-    checkReturn sudo sed -ri "\"/\[http\]/,/bind-address\s*=.+/ s|\#*\s*bind-address\s*=.+| bind-address = \\\":${influxPort}\\\"|\"" "${config_file}"
+    checkReturn sudo sed -ri "\"/\[http\]/,/bind-address\s*=.*/ s|\#*\s*bind-address\s*=.*| bind-address = \\\":${influxPort}\\\"|\"" "${config_file}"
 
     # DISABLE to allow user creation
     # [http] auth-enabled = false
-    checkReturn sudo sed -ri '"/\[http\]/,/auth-enabled\s*=.+/ s|\#*\s*auth-enabled\s*=.+| auth-enabled = false|"' "${config_file}"
+    checkReturn sudo sed -ri '"/\[http\]/,/auth-enabled\s*=.*/ s|\#*\s*auth-enabled\s*=.*| auth-enabled = false|"' "${config_file}"
     # [http] https-enabled = false
-    checkReturn sudo sed -ri '"/\[http\]/,/https-enabled\s*=.+/ s|\#*\s*https-enabled\s*=.+| https-enabled = false|"' "${config_file}"
+    checkReturn sudo sed -ri '"/\[http\]/,/https-enabled\s*=.*/ s|\#*\s*https-enabled\s*=.*| https-enabled = false|"' "${config_file}"
 
     checkReturn sudo systemctl enable influxdb
     restartInflux
@@ -289,11 +289,11 @@ EOF
 
     loggerEcho " > Editing influxdb config file - part 2 -"
     # [http] auth-enabled = true
-    checkReturn sudo sed -ri '"/\[http\]/,/auth-enabled\s*=.+/ s|\#*\s*auth-enabled\s*=.+| auth-enabled = true|"' "${config_file}"
+    checkReturn sudo sed -ri '"/\[http\]/,/auth-enabled\s*=.*/ s|\#*\s*auth-enabled\s*=.*| auth-enabled = true|"' "${config_file}"
     # [http] pprof-auth-enabled = true
-    #checkReturn sudo sed -ri '"/\[http\]/,/pprof-enabled\s*=.+/ s|\#*\s*pprof-enabled\s*=.+| pprof-enabled = true|"' "${config_file}"
+    #checkReturn sudo sed -ri '"/\[http\]/,/pprof-enabled\s*=.*/ s|\#*\s*pprof-enabled\s*=.*| pprof-enabled = true|"' "${config_file}"
     # [http] ping-auth-enabled = true
-    #checkReturn sudo sed -ri '"/\[http\]/,/ping-auth-enabled\s*=.+/ s|\#*\s*ping-auth-enabled\s*=.+| ping-auth-enabled = true|"' "${config_file}"
+    #checkReturn sudo sed -ri '"/\[http\]/,/ping-auth-enabled\s*=.*/ s|\#*\s*ping-auth-enabled\s*=.*| ping-auth-enabled = true|"' "${config_file}"
 
     # ################# START OF HTTPS ##########################
 
@@ -305,7 +305,7 @@ EOF
     echo ""
     if confirm "Do you want to enable HTTPS-communication for the influxdb? "; then
         # [http] https-enabled = true
-        checkReturn sudo sed -ri '"/\[http\]/,/https-enabled\s*=.+/ s|\#*\s*https-enabled\s*=.+| https-enabled = true|"' "${config_file}"
+        checkReturn sudo sed -ri '"/\[http\]/,/https-enabled\s*=.*/ s|\#*\s*https-enabled\s*=.*| https-enabled = true|"' "${config_file}"
 
         echo ""
         echo "The following step will assist with the creation of a self-signed"
@@ -327,9 +327,9 @@ EOF
 
         # Edit config file again
         # [http] https-certificate
-        checkReturn sudo sed -ri "\"/\[http\]/,/https-certificate\s*=.+/ s|\#*\s*https-certificate\s*=.+| https-certificate = \\\"$httpsCertPath\\\"|\"" "${config_file}"
+        checkReturn sudo sed -ri "\"/\[http\]/,/https-certificate\s*=.*/ s|\#*\s*https-certificate\s*=.*| https-certificate = \\\"$httpsCertPath\\\"|\"" "${config_file}"
         # [http] https-private-key
-        checkReturn sudo sed -ri "\"/\[http\]/,/https-private-key\s*=.+/ s|\#*\s*https-private-key\s*=.+| https-private-key = \\\"$httpsKeyPath\\\"|\"" "${config_file}"
+        checkReturn sudo sed -ri "\"/\[http\]/,/https-private-key\s*=.*/ s|\#*\s*https-private-key\s*=.*| https-private-key = \\\"$httpsKeyPath\\\"|\"" "${config_file}"
 
 
     fi
