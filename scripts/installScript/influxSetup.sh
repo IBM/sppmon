@@ -221,12 +221,12 @@ EOF
         promptLimitedText "Please enter the desired InfluxDB admin name" influxAdminName "$influxAdminName"
 
         local command_output=""
-        checkReturn executeInfluxCommand command_output "SHOW USERS"
+        checkReturn executeInfluxCommand command_output "\"SHOW USERS\""
 
         if [[ "${command_output}" == *"${influxAdminName}"* ]] ; then
                 loggerEcho "It seems like the user ${influxAdminName} already exists."
                 if confirm "Do you want to drop the existing user ${influxAdminName}?" ; then
-                    executeInfluxCommand command_output "DROP USER \"${influxAdminName}\""
+                    executeInfluxCommand command_output "\"DROP USER \\\"${influxAdminName}\\\"\""
                 fi
         fi
 
@@ -273,12 +273,12 @@ EOF
     loggerEcho "Creating InfluxDB '$influxGrafanaReaderName' user"
 
     local command_output=""
-    checkReturn executeInfluxCommand command_output "SHOW USERS"
+    checkReturn executeInfluxCommand command_output "\"SHOW USERS\""
 
     if [[ "${command_output}" == *"${influxGrafanaReaderName}"* ]] ; then
             loggerEcho "It seems like the user ${influxGrafanaReaderName} already exists."
             if confirm "Do you want to drop the existing user ${influxGrafanaReaderName}?" ; then
-                executeInfluxCommand command_output "DROP USER \"${influxGrafanaReaderName}\""
+                executeInfluxCommand command_output "\"DROP USER \\\"${influxGrafanaReaderName}\\\"\""
             fi
     fi
 
