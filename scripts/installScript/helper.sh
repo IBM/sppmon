@@ -160,12 +160,12 @@ generate_cert() {
         fi
 
         local defaultKeyPath=$keyPath
-        KeyPath=""
+        keyPath=""
         local defaultCertPath=$certPath
         certPath=""
 
         # Key
-        while [[ -z $keyPath ]]; do
+        while [[ -z $keyPath ]] ; do
             echo ""
             promptText "Please enter the path to the https cert key" keyPath "$defaultKeyPath"
             if [[ -z $keyPath ]]; then
@@ -173,9 +173,9 @@ generate_cert() {
             fi
         done
         # Cert
-        while [[ -z $certPath ]]; do
+        while [[ -z $certPath ]] ; do
             echo ""
-            promptText "Please enter the path to the https pulic cert" certPath "$defaultCertPath"
+            promptText "Please enter the path to the https public cert" certPath "$defaultCertPath"
             if [[ -z $certPath ]]; then
                 loggerEcho "The path of the cert must not be empty"
             fi
