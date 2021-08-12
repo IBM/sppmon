@@ -79,8 +79,8 @@ saveAuth() { # topic is the describer
 
     # create file if it does not exists and add permissions
     if [[ ! -e "${authFile}" ]] ; then
-        touch "${authFile}"
-        chmod 600 "${authFile}"
+        sudo touch "${authFile}"
+        sudo chmod 600 "${authFile}"
     fi
 
     echo "$topic=\"${value}\"" >> "$authFile"

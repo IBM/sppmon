@@ -100,25 +100,15 @@ EOF
         checkReturn sudo sed -ri '"/\[server\]/,/\;?protocol\s*=.+/ s|\;*\s*protocol\s*=.+| protocol = https|"' "${config_file}"
 
         # influx certs
-        local httpsKeyPath="/etc/ssl/influxdb-selfsigned.key"
-        local httpsCertPath="/etc/ssl/influxdb-selfsigned.crt"
-
-        if [[ -e "${httpsKeyPath}" && -e "${httpsCertPath}" ]] && confirm "Do you want to re-use the influxdb-ssl certificates?" ; then
-                # influx certs
-                local httpsKeyPath="/etc/ssl/influxdb-selfsigned.key"
-                local httpsCertPath="/etc/ssl/influxdb-selfsigned.crt"
-                # use the certs from above
-                unsafeSsl=true
-        else
-            # influx certs
-            local httpsKeyPath="/etc/ssl/grafana-selfsigned.key"
-            local httpsCertPath="/etc/ssl/grafana-selfsigned.crt"
-            # generate
-            if generate_cert "$httpsKeyPath" "$httpsCertPath" httpsKeyPath httpsCertPath ; then
-                unsafeSsl=true
-            fi
+        local httpsKeyPath="/etc/ssl/grafana-selfsigned.key"
+        local httpsCertPath="/etc/ssl/grafana-selfsigned.crt"
+        # generate
+        if generate_cert "$httpsKeyPath" "$httpsCertPath" httpsKeyPath httpsCertPath ; then
+            unsafeSsl=true
         fi
 
+        checkReturn sudo chown -R grafana:grafana "${httpsKeyPath}"
+        checkReturn sudo chown -R grafana:grafana "${httpsCertPath}"
         # Edit config file again
         # [server] cert_file
         checkReturn sudo sed -ri "\"/\[server\]/,/\;*\s*cert_file\s*=.+/ s|\;*\s*cert_file\s*=.+| cert_file = \\\"${httpsCertPath}\\\"|\"" "${config_file}"
