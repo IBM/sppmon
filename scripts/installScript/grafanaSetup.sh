@@ -94,7 +94,7 @@ EOF
         local httpsKeyPath="/etc/ssl/influxdb-selfsigned.key"
         local httpsCertPath="/etc/ssl/influxdb-selfsigned.crt"
 
-        if [[ -e "${httpsKeyPath}" && -e "${httpsCertPath}" && confirm "Do you want to re-use the influxdb-ssl certificates?" ]] ; then
+        if [[ -e "${httpsKeyPath}" && -e "${httpsCertPath}" ]] && confirm "Do you want to re-use the influxdb-ssl certificates?" ; then
                 # influx certs
                 local httpsKeyPath="/etc/ssl/influxdb-selfsigned.key"
                 local httpsCertPath="/etc/ssl/influxdb-selfsigned.crt"
