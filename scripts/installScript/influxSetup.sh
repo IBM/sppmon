@@ -334,9 +334,9 @@ EOF
     # [http] auth-enabled = true
     checkReturn sudo sed -ri '"/\[http\]/,/auth-enabled\s*=.*/ s|\#*\s*auth-enabled\s*=.*| auth-enabled = true|"' "${config_file}"
     # [http] pprof-auth-enabled = true
-    #checkReturn sudo sed -ri '"/\[http\]/,/pprof-enabled\s*=.*/ s|\#*\s*pprof-enabled\s*=.*| pprof-enabled = true|"' "${config_file}"
+    checkReturn sudo sed -ri '"/\[http\]/,/pprof-enabled\s*=.*/ s|\#*\s*pprof-enabled\s*=.*| pprof-enabled = true|"' "${config_file}"
     # [http] ping-auth-enabled = true
-    #checkReturn sudo sed -ri '"/\[http\]/,/ping-auth-enabled\s*=.*/ s|\#*\s*ping-auth-enabled\s*=.*| ping-auth-enabled = true|"' "${config_file}"
+    checkReturn sudo sed -ri '"/\[http\]/,/ping-auth-enabled\s*=.*/ s|\#*\s*ping-auth-enabled\s*=.*| ping-auth-enabled = true|"' "${config_file}"
 
     # ################# START OF HTTPS ##########################
 
