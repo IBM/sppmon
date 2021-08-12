@@ -47,10 +47,12 @@ executeInfluxCommand() {
     local connectionTestString="influx -host $influxAddress -port $influxPort"
     if [[ -n $userName ]] ; then
         connectionTestString="$connectionTestString -username $userName"
+
+        if [[ -n $password ]] ; then
+            connectionTestString="$connectionTestString -password $password"
+        fi
     fi
-    if [[ -n $password ]] ; then
-        connectionTestString="$connectionTestString -password $password"
-    fi
+
     if [[ $sslEnabled != "false" ]] ; then # globalVar
         connectionTestString="$connectionTestString -ssl"
         if [[ $unsafeSsl != "false" ]] ; then # globalVar
@@ -60,6 +62,8 @@ executeInfluxCommand() {
     logger $connectionTestString -execute "${command}"
     loggerEcho "> Waiting 10 seconds to avoid connection error"
     sleep 10
+
+    echo $connectionTestString -execute "${command}"
     local connectionOutput=$($connectionTestString -execute "${command}")
     local connectionCode=$?
     logger "$connectionOutput"
