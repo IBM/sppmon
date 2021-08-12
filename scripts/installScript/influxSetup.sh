@@ -64,6 +64,8 @@ executeInfluxCommand() {
     local connectionCode=$?
     logger "$connectionOutput"
     logger "$connectionCode"
+
+    echo "connectionCode: $connectionCode"
     return $connectionCode
 
 }
@@ -78,10 +80,7 @@ verifyConnection() {
 
     loggerEcho "> verifying connection to InfluxDB"
 
-    executeInfluxCommand "SHOW DATABASES" "$userName" "$password"
-    local influxVerifyCode=$?
-
-    if [[ $influxVerifyCode -ne 0 ]]; then
+    if ! executeInfluxCommand "SHOW DATABASES" "$userName" "$password" ; then
 
         loggerEcho "> ERROR: The connection could not be established."
         if ! confirm "Do you want to continue anyway?" ; then
