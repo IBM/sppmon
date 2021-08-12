@@ -63,14 +63,20 @@ executeInfluxCommand() {
     loggerEcho "> Waiting 10 seconds to avoid connection error"
     sleep 10
 
-    echo $connectionTestString -execute "${command}"
     local connectionOutput=$($connectionTestString -execute "${command}")
-    local connectionCode=$?
-    logger "$connectionOutput"
-    logger "$connectionCode"
+    # somehow this does not result 1 if failed
+    # in regular terminal it does
+    #local connectionCode=$?
+    #logger "$connectionCode"
+    #return $connectionCode
 
-    echo "connectionCode: $connectionCode"
-    return $connectionCode
+    logger "$connectionOutput"
+
+    if [[ "${connectionOutput}" == *"ERR"* ]] ; then
+        return 1
+    else
+        return 0
+    fi
 
 }
 
