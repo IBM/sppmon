@@ -58,19 +58,19 @@ welcome() {
         loggerEcho "Starting the install script for sppmon."
         echo ""
         continue_point='SYS_SETUP'
-        echo "$continue_point" > $saveFile
+        echo "${continue_point}" > ${saveFile}
     fi
 }
 
 # Start if not used as source
-if [ "${1}" != "--source-only" ]; then
+if [ "$1" != "--source-only" ]; then
     if (( $# != 1 )); then
         >&2 loggerEcho "Illegal number of parameters for the welcome file"
         abortInstallScript
     fi
     # prelude
     local mainPath="$1"
-    source "$mainPath" "--source-only"
+    source "${mainPath}" "--source-only"
 
-    welcome "${@}" # all arguments passed
+    welcome "$@" # all arguments passed
 fi

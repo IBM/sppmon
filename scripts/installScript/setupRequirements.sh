@@ -42,7 +42,7 @@ setupRequirements() {
     loggerEcho -e "Product Name:\t\t"`cat /sys/class/dmi/id/product_name`
     loggerEcho -e "Version:\t\t"`sudo cat /sys/class/dmi/id/product_version`
     loggerEcho -e "Serial Number:\t\t"`sudo cat /sys/class/dmi/id/product_serial`
-    loggerEcho -e "Machine Type:\t\t"`vserver=$(lscpu | grep Hypervisor | wc -l); if [ $vserver -gt 0 ]; then echo "VM"; else echo "Physical"; fi `
+    loggerEcho -e "Machine Type:\t\t"`vserver=$(lscpu | grep Hypervisor | wc -l); if [ ${vserver} -gt 0 ]; then echo "VM"; else echo "Physical"; fi `
     loggerEcho -e "Operating System:\t"`hostnamectl | grep "Operating System" | cut -d ' ' -f5-`
     loggerEcho -e "Kernel:\t\t\t"`uname -r`
     loggerEcho -e "Architecture:\t\t"`arch`
@@ -62,7 +62,7 @@ setupRequirements() {
     echo "system updates ('yum upgrade').  This is recommended."
     echo ""
     if confirm "Do you want to upgrade operating system components?" ; then
-        if [ "$autoConfirm" = true ]  ; then
+        if [ "${autoConfirm}" = true ]  ; then
             yes y | sudo yum upgrade
         else
             sudo yum upgrade
@@ -72,15 +72,15 @@ setupRequirements() {
 }
 
 # Start if not used as source
-if [ "${1}" != "--source-only" ]; then
+if [ "$1" != "--source-only" ]; then
     if (( $# != 1 )); then
         >&2 loggerEcho "Illegal number of parameters for the SetupRequirements file"
         abortInstallScript
     fi
     # prelude
     local mainPath="$1"
-    source "$mainPath" "--source-only"
+    source "${mainPath}" "--source-only"
 
 
-    setupRequirements "${@}" # all arguments passed
+    setupRequirements "$@" # all arguments passed
 fi

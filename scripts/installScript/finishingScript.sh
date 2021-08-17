@@ -60,14 +60,14 @@ finishingScript() {
 }
 
 # Start if not used as source
-if [ "${1}" != "--source-only" ]; then
+if [ "$1" != "--source-only" ]; then
     if (( $# != 1 )); then
         >&2 loggerEcho "Illegal number of parameters for the finishingScript file"
         abortInstallScript
     fi
     # prelude
     local mainPath="$1"
-    source "$mainPath" "--source-only"
+    source "${mainPath}" "--source-only"
 
-    finishingScript "${@}" # all arguments passed
+    finishingScript "$@" # all arguments passed
 fi

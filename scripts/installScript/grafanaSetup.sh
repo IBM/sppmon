@@ -116,7 +116,7 @@ EOF
         local httpsKeyPath="/etc/ssl/grafana-selfsigned.key"
         local httpsCertPath="/etc/ssl/grafana-selfsigned.crt"
         # generate
-        if generate_cert "$httpsKeyPath" "$httpsCertPath" httpsKeyPath httpsCertPath ; then
+        if ! generate_cert "${httpsKeyPath}" "${httpsCertPath}" httpsKeyPath httpsCertPath ; then
             unsafeSsl=true
         fi
 
@@ -153,7 +153,7 @@ EOF
 }
 
 # Start if not used as source
-if [ "${1}" != "--source-only" ]; then
+if [ "$1" != "--source-only" ]; then
     if (( $# != 1 )); then
         >&2 loggerEcho "Illegal number of parameters for the grafanaSetup file"
         abortInstallScript
@@ -161,7 +161,7 @@ if [ "${1}" != "--source-only" ]; then
 
     # prelude
     local mainPath="$1"
-    source "$mainPath" "--source-only"
+    source "${mainPath}" "--source-only"
 
-    grafanaSetup "${@}" # all arguments passed
+    grafanaSetup "$@" # all arguments passed
 fi

@@ -13,7 +13,23 @@
 #
 # Author:
 #  Niels Korschinsky
+#
+# Functions:
+#   currentInstallCheck - Checks if the current python install is sufficent.
+#   pythonSetup - see description above.
 
+#######################################
+# Checks if the current python install is sufficent.
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   stdout: extended execution information and current python version
+#   log: execution information and current python version
+# Returns:
+#   0 if version is sufficent, 1 if not.
+#######################################
 currentInstallCheck() {
     loggerEcho "> Verifying the installed python version"
     local python_old_path=$(which python)
@@ -22,24 +38,24 @@ currentInstallCheck() {
     #  code does work with 3.8, but latest version is better.
     local required_ver="3.9.6"
 
-    if [ "$(printf '%s\n' "$required_ver" "$current_ver" | sort -V | head -n1)" = "$required_ver" ]; then
-        loggerEcho "> Compatible Python version installed ($current_ver > $required_ver)."
+    if [ "$(printf '%s\n' "${required_ver}" "${current_ver}" | sort -V | head -n1)" = "${required_ver}" ]; then
+        loggerEcho "> Compatible Python version installed (${current_ver} > ${required_ver})."
 
         loggerEcho "> Creating systemlink to /usr/bin/python3"
-        checkReturn ln -sf "$python_old_path" /usr/bin/python3
+        checkReturn ln -sf "${python_old_path}" /usr/bin/python3
         return 0
     elif command -v python3 &> /dev/null ; then
         local python_old_path=$(which python3)
         local current_ver=$(python3 -V 2>&1 | grep -oP "^Python \K.*")
 
-        if [ "$(printf '%s\n' "$required_ver" "$current_ver" | sort -V | head -n1)" = "$required_ver" ]; then
-            loggerEcho "> Compatible Python version installed ($current_ver > $required_ver)."
+        if [ "$(printf '%s\n' "${required_ver}" "${current_ver}" | sort -V | head -n1)" = "${required_ver}" ]; then
+            loggerEcho "> Compatible Python version installed (${current_ver} > ${required_ver})."
             return 0
         fi
     fi
 
     # This uses the latest python 3 install if available -> this version does matter the most.
-    loggerEcho "> Current version does not match the requirements ($current_ver < $required_ver)"
+    loggerEcho "> Current version does not match the requirements (${current_ver} < ${required_ver})"
     return 1
 }
 
@@ -106,7 +122,7 @@ pythonSetup() {
         # Confirming install
 
         current_ver=$(python3 -V 2>&1)
-        if [ "$(printf '%s\n' "$required_ver" "$current_ver" | sort -V | head -n1)" = "$required_ver" ]; then
+        if [ "$(printf '%s\n' "${required_ver}" "${current_ver}" | sort -V | head -n1)" = "${required_ver}" ]; then
             loggerEcho "> Python install sucessfull."
         else
             loggerEcho "> Python install unsucessfull."
@@ -127,7 +143,7 @@ pythonSetup() {
 }
 
 # Start if not used as source
-if [ "${1}" != "--source-only" ]; then
+if [ "$1" != "--source-only" ]; then
     if (( $# != 1 )); then
         >&2 loggerEcho "Illegal number of parameters for the pythonSetup file"
         abortInstallScript
@@ -135,7 +151,7 @@ if [ "${1}" != "--source-only" ]; then
 
     # prelude
     local mainPath="$1"
-    source "$mainPath" "--source-only"
+    source "${mainPath}" "--source-only"
 
-    pythonSetup "${@}" # all arguments passed
+    pythonSetup "$@" # all arguments passed
 fi

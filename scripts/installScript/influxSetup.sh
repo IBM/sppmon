@@ -13,7 +13,26 @@
 #
 # Author:
 #  Niels Korschinsky
+#
+# Functions:
+#   restartInflux - Restarts influxDB service and checks if it started successful.
+#   executeInfluxCommand - Executes statement onto InfluxDB and checks for success.
+#   verifyConnection - Verifies a user authentification by connecting to influxdb.
+#   influxSetup - see description above.
 
+
+#######################################
+# Restarts influxDB service and checks if it started successful.
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   stdout: execution information
+#   log: execution information
+# Returns:
+#   0 if restart is successful, 1 if not.
+#######################################
 restartInflux() {
     if (( $# != 0 )); then
         >&2 loggerEcho "Illegal number of parameters restartInflux"
@@ -31,15 +50,8 @@ restartInflux() {
 
     loggerEcho "> Waiting 10 seconds for startup of influxDB"
     sleep 10
-    #for (( i = 0; i < 10; i++)); do
-    #    sleep 1
-    #    if (( $(eval "${check_influx}") == 0 )); then
-    #        echo "Restart sucessfull"
-    #        return 0
-    #    fi
-    #done
     if (( $(eval "${check_influx}") == 0 )); then
-        loggerEcho "> Restart sucessfull"
+        loggerEcho "> Restart successful"
         return 0
     else
         loggerEcho "> Restart failed"
@@ -48,6 +60,24 @@ restartInflux() {
 
 }
 
+#######################################
+# Executes statement onto InfluxDB and checks for success.
+# Globals:
+#   influxAddress - read
+#   influxPort - read
+#   sslEnabled - read
+#   unsafeSsl - read
+# Arguments:
+#   1: Out-Param - result text from influxdb
+#   2: command to be executed
+#   3: Optional - username to login
+#   4: Optional - password of user
+# Outputs:
+#   stdout: Waiting message
+#   log: executed query, waiting message, connection output.
+# Returns:
+#   0 if query did not contain a error, 1 if it does.
+#######################################
 executeInfluxCommand() {
     if (( $# > 4 || $# < 2 )); then
         >&2 loggerEcho "Illegal number of parameters executeInfluxCommand"
@@ -59,35 +89,35 @@ executeInfluxCommand() {
     local userName=$3 # param3: user to be logged in
     local password=$4 # param4: password to be used
 
-    local connectionTestString="influx -host $influxAddress -port $influxPort"
-    if [[ -n $userName ]] ; then
-        connectionTestString="$connectionTestString -username $userName"
+    local connectionTestString="influx -host ${influxAddress} -port ${influxPort}"
+    if [[ -n ${userName} ]] ; then
+        connectionTestString="${connectionTestString} -username ${userName}"
 
-        if [[ -n $password ]] ; then
-            connectionTestString="$connectionTestString -password $password"
+        if [[ -n ${password} ]] ; then
+            connectionTestString="${connectionTestString} -password ${password}"
         fi
     fi
 
-    if [[ $sslEnabled != "false" ]] ; then # globalVar
-        connectionTestString="$connectionTestString -ssl"
-        if [[ $unsafeSsl != "false" ]] ; then # globalVar
-            connectionTestString="$connectionTestString -unsafeSsl"
+    if [[ ${sslEnabled} != "false" ]] ; then # globalVar
+        connectionTestString="${connectionTestString} -ssl"
+        if [[ ${unsafeSsl} != "false" ]] ; then # globalVar
+            connectionTestString="${connectionTestString} -unsafeSsl"
         fi
     fi
-    logger $connectionTestString -execute "${command}"
+    logger ${connectionTestString} -execute "${command}"
     loggerEcho "> Waiting 10 seconds to avoid connection error"
     sleep 10
 
-    local connectionOutput=$($connectionTestString -execute "${command}")
+    local connectionOutput=$(${connectionTestString} -execute "${command}")
     # somehow this does not result 1 if failed
     # in regular terminal it does
     #local connectionCode=$?
-    #logger "$connectionCode"
-    #return $connectionCode
+    #logger "${connectionCode}"
+    #return ${connectionCode}
 
-    logger "$connectionOutput"
+    logger "${connectionOutput}"
 
-    eval $__connectionResult="'$connectionOutput'"
+    eval "${__connectionResult}"="'${connectionOutput}'"
 
     if [[ "${connectionOutput}" == *"ERR"* ]] ; then
         return 1
@@ -97,6 +127,21 @@ executeInfluxCommand() {
 
 }
 
+#######################################
+# Verifies a user authentification by connecting to influxdb.
+# Globals:
+#   None
+# Arguments:
+#   1: Out-Param - result text from influxdb
+#   2: command to be executed
+#   3: Optional - username to login
+#   4: Optional - password of user
+# Outputs:
+#   stdout: Waiting message
+#   log: executed query, waiting message, connection output.
+# Returns:
+#   None, aborts on confirm to exit on failure
+#######################################
 verifyConnection() {
     if (( $# != 2 )); then
         >&2 loggerEcho "Illegal number of parameters verifyConnection"
@@ -108,7 +153,7 @@ verifyConnection() {
     local command_output=""
 
     loggerEcho "> verifying connection to InfluxDB"
-    if ! executeInfluxCommand command_output "SHOW DATABASES" "$userName" "$password" ; then
+    if ! executeInfluxCommand command_output "SHOW DATABASES" "${userName}" "${password}" ; then
 
         loggerEcho "> ERROR: The connection could not be established."
         loggerEcho "Error message: ${command_output}"
@@ -220,7 +265,7 @@ EOF
     #################### INFLUXADMIN USER ################
     local adminCreated=false
     # Create user
-    while [ "$adminCreated" = false ] ; do # repeat until break, when it works
+    while [ "${adminCreated}" = false ] ; do # repeat until break, when it works
 
         readAuth # read all existing auths
         # At this point SSL has not been configured, so avoid verifyConnnection() failures
@@ -228,11 +273,11 @@ EOF
         unsafeSsl="false"
 
         # Sets default to either pre-saved value or influxadmin
-        if [[ -z $influxAdminName ]]; then
+        if [[ -z ${influxAdminName} ]]; then
             local influxAdminName="influxAdmin"
         fi
         echo ""
-        promptLimitedText "Please enter the desired InfluxDB admin name" influxAdminName "$influxAdminName"
+        promptLimitedText "Please enter the desired InfluxDB admin name" influxAdminName "${influxAdminName}"
 
         loggerEcho "Checking for existing user"
 
@@ -247,18 +292,18 @@ EOF
         fi
 
         # sets default to presaved value if empty
-        if [[ -z $influxAdminPassword ]]; then
+        if [[ -z ${influxAdminPassword} ]]; then
             local influxAdminPassword
         fi
-        promptPasswords "Please enter the desired InfluxDB admin password" influxAdminPassword "$influxAdminPassword"
+        promptPasswords "Please enter the desired InfluxDB admin password" influxAdminPassword "${influxAdminPassword}"
 
         local command_output=""
 
-        executeInfluxCommand command_output "CREATE USER \"$influxAdminName\" WITH PASSWORD '$influxAdminPassword' WITH ALL PRIVILEGES"
+        executeInfluxCommand command_output "CREATE USER \"${influxAdminName}\" WITH PASSWORD '${influxAdminPassword}' WITH ALL PRIVILEGES"
         local userCreateReturnCode=$?
 
-        if (( $userCreateReturnCode != 0 ));then
-            loggerEcho "Creation failed due an error: $command_output"
+        if (( ${userCreateReturnCode} != 0 ));then
+            loggerEcho "Creation failed due an error: ${command_output}"
             if ! confirm "Do you want to try again (y) or continue (n)? Abort by ctrl + c" "--alwaysConfirm"; then
                 # user wants to exit
                 adminCreated=true
@@ -278,7 +323,7 @@ EOF
     saveAuth "influxPort" "${influxPort}"
     saveAuth "influxAddress" "${influxAddress}"
 
-    verifyConnection "$influxAdminName" "$influxAdminPassword"
+    verifyConnection "${influxAdminName}" "${influxAdminPassword}"
 
     #################### GRAFANA READER USER ################
 
@@ -286,7 +331,7 @@ EOF
     local influxGrafanaReaderName="GrafanaReader"
 
     echo ""
-    loggerEcho "Creating InfluxDB '$influxGrafanaReaderName' user"
+    loggerEcho "Creating InfluxDB '${influxGrafanaReaderName}' user"
 
     local command_output=""
 
@@ -303,7 +348,7 @@ EOF
 
     # Create user
     local grafanaReaderCreated=false
-    while [ "$grafanaReaderCreated" = false ]  ; do # repeat until break, when it works
+    while [ "${grafanaReaderCreated}" = false ]  ; do # repeat until break, when it works
 
         readAuth # read all existing auths
         # At this point SSL has not been configured, so avoid verifyConnnection() failures
@@ -311,17 +356,17 @@ EOF
         unsafeSsl="false"
 
         # sets default to presaved value if empty
-        if [[ -z $influxGrafanaReaderPassword ]]; then
+        if [[ -z ${influxGrafanaReaderPassword} ]]; then
             local influxGrafanaReaderPassword
         fi
-        promptPasswords "Please enter the desired ${influxGrafanaReaderName} password" influxGrafanaReaderPassword "$influxGrafanaReaderPassword"
+        promptPasswords "Please enter the desired ${influxGrafanaReaderName} password" influxGrafanaReaderPassword "${influxGrafanaReaderPassword}"
 
         local command_output=""
 
-        executeInfluxCommand command_output "CREATE USER \"$influxGrafanaReaderName\" WITH PASSWORD '$influxGrafanaReaderPassword'"
+        executeInfluxCommand command_output "CREATE USER \"${influxGrafanaReaderName}\" WITH PASSWORD '${influxGrafanaReaderPassword}'"
         local userCreateReturnCode=$?
 
-        if (( $userCreateReturnCode != 0 )) ;then
+        if (( ${userCreateReturnCode} != 0 )) ;then
             loggerEcho "Creation failed due an error: ${command_output}"
             if ! confirm "Do you want to try again (y) or continue (n)? Abort by ctrl + c" "--alwaysConfirm"; then
                 # user wants to exit
@@ -340,7 +385,7 @@ EOF
     saveAuth "influxGrafanaReaderName" "${influxGrafanaReaderName}"
     saveAuth "influxGrafanaReaderPassword" "${influxGrafanaReaderPassword}"
 
-    verifyConnection "$influxGrafanaReaderName" "$influxGrafanaReaderPassword"
+    verifyConnection "${influxGrafanaReaderName}" "${influxGrafanaReaderPassword}"
 
     ############# ENABLE AUTH ##################
 
@@ -371,12 +416,12 @@ EOF
         echo "signed by a certificate authority that you have already obtained,"
         echo "answer no to skip this step."
         echo ""
-        sslEnabled=true
+        sslEnabled="true"
         local httpsKeyPath="/etc/ssl/influxdb-selfsigned.key"
         local httpsCertPath="/etc/ssl/influxdb-selfsigned.crt"
 
-        if generate_cert "$httpsKeyPath" "$httpsCertPath" httpsKeyPath httpsCertPath ; then
-            unsafeSsl=true
+        if ! generate_cert "${httpsKeyPath}" "${httpsCertPath}" httpsKeyPath httpsCertPath ; then
+            unsafeSsl="true"
         fi
 
         checkReturn sudo chown -R influxdb:influxdb "${httpsKeyPath}"
@@ -384,22 +429,22 @@ EOF
 
         # Edit config file again
         # [http] https-certificate
-        checkReturn sudo sed -ri "\"/\[http\]/,/https-certificate\s*=.*/ s|\#*\s*https-certificate\s*=.*| https-certificate = \\\"$httpsCertPath\\\"|\"" "${config_file}"
+        checkReturn sudo sed -ri "\"/\[http\]/,/https-certificate\s*=.*/ s|\#*\s*https-certificate\s*=.*| https-certificate = \\\"${httpsCertPath}\\\"|\"" "${config_file}"
         # [http] https-private-key
-        checkReturn sudo sed -ri "\"/\[http\]/,/https-private-key\s*=.*/ s|\#*\s*https-private-key\s*=.*| https-private-key = \\\"$httpsKeyPath\\\"|\"" "${config_file}"
+        checkReturn sudo sed -ri "\"/\[http\]/,/https-private-key\s*=.*/ s|\#*\s*https-private-key\s*=.*| https-private-key = \\\"${httpsKeyPath}\\\"|\"" "${config_file}"
 
 
     fi
 
     ###################### END OF HTTPS ######################
 
-    saveAuth "sslEnabled" "$sslEnabled"
-    saveAuth "unsafeSsl" "$unsafeSsl"
+    saveAuth "sslEnabled" "${sslEnabled}"
+    saveAuth "unsafeSsl" "${unsafeSsl}"
 
     restartInflux
 
     # Checking connection
-    verifyConnection $influxAdminName $influxAdminPassword
+    verifyConnection ${influxAdminName} ${influxAdminPassword}
 
     loggerEcho "Finished InfluxDB Setup"
     sleep 2
@@ -408,7 +453,7 @@ EOF
 
 
 # Start if not used as source
-if [ "${1}" != "--source-only" ]; then
+if [ "$1" != "--source-only" ]; then
     if (( $# != 1 )); then
         >&2 loggerEcho "Illegal number of parameters for the influxSetup file"
         abortInstallScript
@@ -416,7 +461,7 @@ if [ "${1}" != "--source-only" ]; then
 
     # prelude
     local mainPath="$1"
-    source "$mainPath" "--source-only"
+    source "${mainPath}" "--source-only"
 
-    influxSetup "${@}" # all arguments passed
+    influxSetup "$@" # all arguments passed
 fi
