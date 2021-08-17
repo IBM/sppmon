@@ -1,4 +1,18 @@
 #!/bin/bash
+#
+# (C) IBM Corporation 2021
+#
+# Description:
+# Installation of python3 and sppmon-requirements-file.
+# Installs as alternative version due yum requirement of python2.7.
+# Also installs gcc and development tools if not available.
+#
+#
+# Repository:
+#   https://github.com/IBM/spectrum-protect-sppmon
+#
+# Author:
+#  Niels Korschinsky
 
 currentInstallCheck() {
     loggerEcho "> Verifying the installed python version"
@@ -6,7 +20,7 @@ currentInstallCheck() {
 
     local current_ver=$(python -V 2>&1 | grep -oP "^Python \K.*")
     #  code does work with 3.8, but latest version is better.
-    local required_ver="3.9.5"
+    local required_ver="3.9.6"
 
     if [ "$(printf '%s\n' "$required_ver" "$current_ver" | sort -V | head -n1)" = "$required_ver" ]; then
         loggerEcho "> Compatible Python version installed ($current_ver > $required_ver)."
@@ -31,6 +45,12 @@ currentInstallCheck() {
 
 pythonSetup() {
 
+    # if not python 3, but 4 - changes have to be made below and in many parts of the installer.
+    local python_version="396"
+    local python_version_main="3.9"
+    local python_version_dots="3.9.6"
+
+
     clear
     rowLimiter
     loggerEcho "Installation of Python and packages"
@@ -54,16 +74,16 @@ pythonSetup() {
     # check for current python install
     if ! currentInstallCheck ; then
 
-        loggerEcho "> Installing Python3.9.5"
+        loggerEcho "> Installing Python ${python_version_dots}"
 
-        checkReturn mkdir -p /tmp/python395
-        checkReturn cd /tmp/python395/
-        checkReturn wget https://www.python.org/ftp/python/3.9.5/Python-3.9.5.tgz
+        checkReturn mkdir -p "/tmp/python${python_version}"
+        checkReturn cd "/tmp/python${python_version}/"
+        checkReturn wget "https://www.python.org/ftp/python/${python_version_dots}/Python-${python_version_dots}.tgz"
         # TODO get without internet
 
-        checkReturn cd /tmp/python395/
-        checkReturn tar -xf Python-3.9.5.tgz
-        checkReturn cd /tmp/python395/Python-3.9.5
+        checkReturn cd "/tmp/python${python_version}/"
+        checkReturn tar -xf "Python-${python_version_dots}.tgz"
+        checkReturn cd "/tmp/python${python_version}/Python-${python_version_dots}"
         checkReturn ./configure --enable-optimizations --prefix=/usr --quiet
 
         # Only set alternatives if python 2.7 is installed
@@ -72,8 +92,8 @@ pythonSetup() {
             loggerEcho "> Python may take a few seconds to install. Please wait."
             checkReturn sudo make altinstall -s
 
-            loggerEcho "> Configuring alternatives between python2.7 (yum) and python3.9 (sppmon)."
-            checkReturn sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.9 2
+            loggerEcho "> Configuring alternatives between python2.7 (yum) and python ${python_version_dots} (sppmon)."
+            checkReturn sudo update-alternatives --install /usr/bin/python python "/usr/bin/python${python_version_main}" 2
             checkReturn sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
             checkReturn sudo update-alternatives --set python /usr/bin/python2.7
         else
@@ -81,7 +101,7 @@ pythonSetup() {
         fi
 
         loggerEcho "> Creating systemlink to /usr/bin/python3"
-        checkReturn sudo ln -sf /usr/bin/python3.9 /usr/bin/python3
+        checkReturn sudo ln -sf "/usr/bin/python${python_version_main}" "/usr/bin/python3"
 
         # Confirming install
 

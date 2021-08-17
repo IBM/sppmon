@@ -1,4 +1,19 @@
 #!/bin/bash
+#
+# (C) IBM Corporation 2021
+#
+# Description:
+# Installs SPPMon with all its required components on the system.
+# This script manages the control flow of the installer between its components.
+#
+# Repository:
+#   https://github.com/IBM/spectrum-protect-sppmon
+#
+# Author:
+#  Niels Korschinsky
+#
+# Version: 1.0 (2021/08/13)
+
 
 # aborting the script with a restart message
 abortInstallScript() {

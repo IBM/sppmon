@@ -1,3 +1,17 @@
+"""
+(C) IBM Corporation 2021
+
+Description:
+Creates new config files within the default config file dir.
+Uses both user input and authentification file for auth informations.
+
+
+Repository:
+  https://github.com/IBM/spectrum-protect-sppmon
+
+Author:
+ Niels Korschinsky
+"""
 
 import logging
 import re

@@ -1,3 +1,18 @@
+"""
+(C) IBM Corporation 2021
+
+Description:
+Creates crontab entrys for exiting config files.
+Uses default config file dir if nothing else is specified.
+Allows a quick default setup or to individually specifiy the timings.
+
+
+Repository:
+  https://github.com/IBM/spectrum-protect-sppmon
+
+Author:
+ Niels Korschinsky
+"""
 
 import re
 import sys
@@ -5,6 +20,7 @@ from os.path import realpath, join, dirname
 from os import DirEntry, scandir, popen
 from typing import List
 from utils import Utils
+from random import randint
 import argparse
 import logging
 
@@ -99,10 +115,12 @@ class CrontabConfig:
         minute_interval: int = 3
         hourly_interval: int = 60
         daily_interval: int = 12
-        daily_minute_offset: int = 22
+        # use first half of hour to prevent collision with --all
+        daily_minute_offset: int = randint(0,25)
         all_interval: int = 15
-        all_hour_offset: int = 2
-        all_minute_offset: int = 35
+        all_hour_offset: int = randint(0,23)
+        # use second half of hour to prevent collision with --daily
+        all_minute_offset: int = randint(35,59)
 
         if(not Utils.confirm("Do you want to use default settings or specify your own timings?", True)):
 

@@ -1,4 +1,17 @@
 #!/bin/bash
+#
+# (C) IBM Corporation 2021
+#
+# Description:
+# Logs system informations and checks for yum install.
+# Asks for updating yum installs.
+#
+#
+# Repository:
+#   https://github.com/IBM/spectrum-protect-sppmon
+#
+# Author:
+#  Niels Korschinsky
 
 setupRequirements() {
     # Part One: Setup and Requirements

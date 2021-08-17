@@ -1,4 +1,18 @@
 #!/bin/bash
+#
+# (C) IBM Corporation 2021
+#
+# Description:
+# Installation and configuration of InfluxDB, including optional HTTPS-Setup.
+# Activates Influx on startup and checks for active state.
+# Creates two users: influxAdmin (variable) and GrafanaReader.
+#
+#
+# Repository:
+#   https://github.com/IBM/spectrum-protect-sppmon
+#
+# Author:
+#  Niels Korschinsky
 
 restartInflux() {
     if (( $# != 0 )); then

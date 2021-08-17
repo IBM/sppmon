@@ -1,4 +1,17 @@
 #!/bin/bash
+#
+# (C) IBM Corporation 2021
+#
+# Description:
+# Start of the installer script, providing basic information.
+# Warns about the authentification file and explains the default mechanic.
+#
+#
+# Repository:
+#   https://github.com/IBM/spectrum-protect-sppmon
+#
+# Author:
+#  Niels Korschinsky
 
 welcome() {
     # Welcome Message

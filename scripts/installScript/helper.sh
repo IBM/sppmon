@@ -1,6 +1,16 @@
 #!/bin/bash
-
-
+#
+# (C) IBM Corporation 2021
+#
+# Description:
+# Groups helping function for logger, user interactions, prints and more
+#
+#
+# Repository:
+#   https://github.com/IBM/spectrum-protect-sppmon
+#
+# Author:
+#  Niels Korschinsky
 
 # ########### MISC / FUNCTIONS #######################
 

@@ -1,4 +1,16 @@
 #!/bin/bash
+#
+# (C) IBM Corporation 2021
+#
+# Description:
+# Manages any finishing tasks like displaying authentification informations collected and deleting them.
+#
+#
+# Repository:
+#   https://github.com/IBM/spectrum-protect-sppmon
+#
+# Author:
+#  Niels Korschinsky
 
 finishingScript() {
 
@@ -10,11 +22,11 @@ finishingScript() {
     loggerEcho "> You may find saved config files under:"
     loggerEcho ${configDir}
     if [[ -e ${authFile} ]]; then
-        echo "> The configuration state file still exists.  This file may include"
+        echo "> The authentification file still exists.  This file may include"
         echo "sensitive information such as passwords. You can optionally view"
         echo "the contents of this file now. WARNING: authentification in plain text"
         echo ""
-        if confirm "> Do you want view the configuration file contents?"; then
+        if confirm "> Do you want view the authentification file contents?"; then
             rowLimiter
             checkReturn cat "${authFile}"
             rowLimiter
@@ -30,15 +42,15 @@ finishingScript() {
     echo "via an issue opened at:"
     echo "https://github.com/IBM/spectrum-protect-sppmon/issues"
     echo ""
-    echo "> In the future if you want to configure SPPmon for additional"
+    echo "> In the future if you want to configure SPPMon for additional"
     echo "SPP servers, you can run individual installations scripts".
     echo "The scripts are located within the directory:"
     echo "${path}."
     echo ""
-    echo "> Documentation for SPPmon is available within the wiki:"
+    echo "> Documentation for SPPMon is available within the wiki:"
     echo "https://github.com/IBM/spectrum-protect-sppmon/wiki"
     echo ""
-    echo "> Please make sure to regulary pull SPPmon updates from git"
+    echo "> Please make sure to regulary pull SPPMon updates from git"
     echo "using the command:"
     echo "  git pull"
     echo ""

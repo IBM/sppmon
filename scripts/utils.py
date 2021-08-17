@@ -1,3 +1,17 @@
+"""
+(C) IBM Corporation 2021
+
+Description:
+Groups helper functions for python scripts.
+Includes logger-setup, auth-file reading, user inputs and more.
+
+Repository:
+  https://github.com/IBM/spectrum-protect-sppmon
+
+Author:
+ Niels Korschinsky
+"""
+
 
 import logging
 from os.path import realpath, join

@@ -1,4 +1,17 @@
 #!/bin/bash
+#
+# (C) IBM Corporation 2021
+#
+# Description:
+# Installation and configuration of Grafana, including optional HTTPS-Setup.
+# Activates Grafana on startup and checks for active state.
+#
+#
+# Repository:
+#   https://github.com/IBM/spectrum-protect-sppmon
+#
+# Author:
+#  Niels Korschinsky
 
 grafanaSetup() {
 
