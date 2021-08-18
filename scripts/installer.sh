@@ -263,6 +263,7 @@ main(){
     # Part zero: Welcome
     if [[ ${continue_point} == "WELCOME" ]]
         then
+            # shellcheck source=./installScript/welcome.sh
             source "${subScripts}/welcome.sh" "${mainPath}"
             # Savepoint and explanation inside of `welcome`
     fi
@@ -270,6 +271,7 @@ main(){
     # Part 1: System Setup (incomplete?)
     if [[ ${continue_point} == "SYS_SETUP" ]]
         then
+            # shellcheck source=./installScript/setupRequirements.sh
             source "${subScripts}/setupRequirements.sh" "${mainPath}"
             saveState 'PYTHON_SETUP' 'Python3 installation and package requirements'
     fi
@@ -277,6 +279,7 @@ main(){
     # Part 4: Python installation and packages
     if [[ ${continue_point} == "PYTHON_SETUP" ]]
         then
+            # shellcheck source=./installScript/pythonSetup.sh
             source "${subScripts}/pythonSetup.sh" "${mainPath}"
 
             saveState 'INFLUX_SETUP' 'InfluxDB installation and setup'
@@ -285,6 +288,7 @@ main(){
     # Part 2: InfluxDB installation and setup
     if [[ ${continue_point} == "INFLUX_SETUP" ]]
         then
+            # shellcheck source=./installScript/influxSetup.sh
             source "${subScripts}/influxSetup.sh" "${mainPath}"
             saveState 'GRAFANA_SETUP' 'Grafana installation'
     fi
@@ -292,6 +296,7 @@ main(){
     # Part 3: Grafana installation
     if [[ ${continue_point} == "GRAFANA_SETUP" ]]
         then
+            # shellcheck source=./installScript/grafanaSetup.sh
             source "${subScripts}/grafanaSetup.sh" "${mainPath}"
             saveState 'USER_MANGEMENT' 'User creation for SPP, vSnap and others'
     fi
@@ -358,6 +363,7 @@ main(){
     # Part 10: Finishing notes
     if [[ ${continue_point} == "FINISHED" ]]
         then
+            # shellcheck source=./installScript/finishingScript.sh
             source "${subScripts}/finishingScript.sh" "${mainPath}"
     fi
 
@@ -375,6 +381,7 @@ if [ "$1" != "--source-only" ]; then
     authFile="${path}/delete_me_auth.txt"
 
     # Sources
+    # shellcheck source=./installScript/helper.sh
     source "${subScripts}/helper.sh" "--source-only"
 
     # Logger
