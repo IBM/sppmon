@@ -2,9 +2,9 @@
 (C) IBM Corporation 2021
 
 Description:
-Creates crontab entrys for exiting config files.
-Uses default config file dir if nothing else is specified.
-Allows a quick default setup or to individually specifiy the timings.
+    Creates crontab entrys for exiting config files.
+    Uses default config file dir if nothing else is specified.
+    Allows a quick default setup or to individually specifiy the timings.
 
 
 Repository:
@@ -16,6 +16,7 @@ Author:
 
 import re
 import sys
+import signal
 from os.path import realpath, join, dirname
 from os import DirEntry, scandir, popen
 from typing import List
@@ -26,14 +27,26 @@ import logging
 
 LOGGER: logging.Logger
 
+
 class CrontabConfig:
+    """
+    Creates crontab entrys for exiting config files.
+    Uses default config file dir if nothing else is specified.
+    Allows a quick default setup or to individually specifiy the timings.
+    """
 
     def main(self, config_path: str, python_path: str, sppmon_path: str, auto_confirm: bool):
-        ############# ARGS ##################
-        # Arg 1: Config file DIR
-        # Arg 2: Python executable (Python3)
-        # Arg 3: SPPMON executable
-        #####################################
+        """
+        Creates crontab entrys for exiting config files.
+        Uses default config file dir if nothing else is specified.
+        Allows a quick default setup or to individually specifiy the timings.
+
+        Args:
+            config_path (str): Config file DIR
+            python_path (str): Python executable (python3)
+            sppmon_path (str): Path to SPPMon executable (sppmon.py)
+            auto_confirm (bool):
+        """
 
         fileDirPath = dirname(sys.argv[0])
         logPath = join(fileDirPath, "logs", "installLog.txt")
@@ -44,14 +57,16 @@ class CrontabConfig:
         LOGGER = Utils.setupLogger(LOGGER_NAME, logPath)
 
         Utils.printRow()
-        Utils.LOGGER=LOGGER
+        Utils.LOGGER = LOGGER
         Utils.auto_confirm = auto_confirm
+        signal.signal(signal.SIGINT, Utils.signalHandler)
 
         LOGGER.info("> Generating new Config files")
 
         # ### Config dir setup
         config_path = realpath(config_path)
-        LOGGER.info(f"> All configurations files will be read from {config_path}")
+        LOGGER.info(
+            f"> All configurations files will be read from {config_path}")
 
         # ### python setup
         python_path = realpath(python_path)
@@ -62,7 +77,6 @@ class CrontabConfig:
         LOGGER.info(f"> Following sppmon instance will be used: {sppmon_path}")
 
         Utils.printRow()
-
 
         #  get a list of all config files
         config_files: List[DirEntry[str]] = list(filter(
@@ -89,7 +103,8 @@ class CrontabConfig:
         selected_configs: List[DirEntry[str]] = []
         # If there is only one, always select it.
         if(len(config_files) == 1 or Utils.confirm("Do you want add a crontab config for all servers at once?")):
-            LOGGER.info("> Selected all available config files for crontab setup")
+            LOGGER.info(
+                "> Selected all available config files for crontab setup")
             selected_configs = config_files
         else:
             # Repeat until one config is selected
@@ -105,9 +120,11 @@ class CrontabConfig:
                     selected_configs = list(map(
                         lambda str_index: config_files[int(str_index.strip())],
                         selected_indices.split(",")))
-                    LOGGER.info(f"> Selected {len(selected_configs)} config files for crontab setup")
+                    LOGGER.info(
+                        f"> Selected {len(selected_configs)} config files for crontab setup")
                 except IndexError:
-                    LOGGER.info("One of the indices was out of bound. Please try again")
+                    LOGGER.info(
+                        "One of the indices was out of bound. Please try again")
                     continue
 
         Utils.printRow()
@@ -116,16 +133,17 @@ class CrontabConfig:
         hourly_interval: int = 60
         daily_interval: int = 12
         # use first half of hour to prevent collision with --all
-        daily_minute_offset: int = randint(0,25)
+        daily_minute_offset: int = randint(0, 25)
         all_interval: int = 15
-        all_hour_offset: int = randint(0,23)
+        all_hour_offset: int = randint(0, 23)
         # use second half of hour to prevent collision with --daily
-        all_minute_offset: int = randint(35,59)
+        all_minute_offset: int = randint(35, 59)
 
         if(not Utils.confirm("Do you want to use default settings or specify your own timings?", True)):
 
             # now selected_configs contains all required config files
-            print("SPPmon collections are broken into different groupings that are executed")
+            print(
+                "SPPmon collections are broken into different groupings that are executed")
             print("at different frequencies. Keeping the default frequencies is")
             print("recommended.")
             print("> These frequencing will be applied the same for all SPP servers")
@@ -145,9 +163,12 @@ class CrontabConfig:
                 "Specify the interval to request new joblogs (in hours: 1-48)",
                 daily_interval,
                 filter=lambda x: x.isdigit() and int(x) < 48 and int(x) >= 1))
-            LOGGER.info("> Offset-Hint: Concurrent calls are no problem for SPPMon, it is used to distribute the load on the spp-server")
+            LOGGER.info(
+                "> Offset-Hint: Concurrent calls are no problem for SPPMon, " +
+                "it is used to distribute the load on the spp-server")
             daily_minute_offset: int = int(Utils.prompt_string(
-                f"At which minute every {daily_interval} hours should SPPMON run joblogs requesting actions? (in minutes: 0-59)",
+                f"At which minute every {daily_interval} hours should SPPMON run joblogs " +
+                "requesting actions? (in minutes: 0-59)",
                 daily_minute_offset,
                 filter=lambda x: x.isdigit() and int(x) < 60))
 
@@ -160,7 +181,8 @@ class CrontabConfig:
                 all_hour_offset,
                 filter=lambda x: x.isdigit() and int(x) < 23))
             all_minute_offset: int = int(Utils.prompt_string(
-                f"At which minute every {daily_interval} days at {all_hour_offset}:xx should SPPMON perform a full scan? (in minutes: 0-59)",
+                f"At which minute every {daily_interval} days at {all_hour_offset}:xx should "+
+                "SPPMON perform a full scan? (in minutes: 0-59)",
                 all_minute_offset,
                 filter=lambda x: x.isdigit() and int(x) < 60))
 
@@ -192,16 +214,23 @@ class CrontabConfig:
             lines: List[str] = []
             # if an crontab config exists, prepend it
             if("no crontab for" not in old_crontab):
-                LOGGER.info("> WARNING: No old configurations have been edited/removed. Please remove/edit them manually by using `sudo crontab -e`")
-                LOGGER.info("> Old configuration are prepended to new configurations")
+                LOGGER.info(
+                    "> WARNING: No old configurations have been edited/removed. " +
+                    "Please remove/edit them manually by using `sudo crontab -e`")
+                LOGGER.info(
+                    "> Old configuration are prepended to new configurations")
                 lines.append(old_crontab + "\n")
 
             for entry in selected_configs:
                 lines.append(f"\n# {entry.name}:")
-                lines.append(constant_cron_pre + python_path + " " + sppmon_path + " --cfg=" + entry.path + constant_cron_post)
-                lines.append(hourly_cron_pre + python_path + " " + sppmon_path + " --cfg=" + entry.path + hourly_cron_post)
-                lines.append(daily_cron_pre + python_path + " " + sppmon_path + " --cfg=" + entry.path + daily_cron_post)
-                lines.append(all_cron_pre + python_path + " " + sppmon_path + " --cfg=" + entry.path + all_cron_post)
+                lines.append(constant_cron_pre + python_path + " " +
+                             sppmon_path + " --cfg=" + entry.path + constant_cron_post)
+                lines.append(hourly_cron_pre + python_path + " " +
+                             sppmon_path + " --cfg=" + entry.path + hourly_cron_post)
+                lines.append(daily_cron_pre + python_path + " " +
+                             sppmon_path + " --cfg=" + entry.path + daily_cron_post)
+                lines.append(all_cron_pre + python_path + " " +
+                             sppmon_path + " --cfg=" + entry.path + all_cron_post)
             # also add newline when writing lines
             temp_file.writelines(line + "\n" for line in lines)
 
@@ -217,11 +246,9 @@ class CrontabConfig:
             LOGGER.info("> Deleting temporary config file")
             LOGGER.info(popen(f"sudo rm {temp_file_path}").read())
 
-
         LOGGER.info("> Finished setting up crontab configuration")
-        LOGGER.info("> HINT: You may add additional servers by calling the script `/scripts/addCrontabConfig.py`")
-
-
+        LOGGER.info(
+            "> HINT: You may add additional servers by calling the script `/scripts/addCrontabConfig.py`")
 
 
 if __name__ == "__main__":
@@ -229,7 +256,8 @@ if __name__ == "__main__":
     fileDirPath = dirname(sys.argv[0])
     configPathDefault = realpath(join(fileDirPath, "..", "config_files"))
     pythonPathDefault = "python3"
-    sppmonPathDefault = realpath(join(fileDirPath, "..", "python", "sppmon.py"))
+    sppmonPathDefault = realpath(
+        join(fileDirPath, "..", "python", "sppmon.py"))
 
     parser = argparse.ArgumentParser(
         "Support agent to add server configuration files of SPPMon to CronTab for automatic executio ")
@@ -246,4 +274,5 @@ if __name__ == "__main__":
                         action="store_true",
                         help="Autoconfirm most confirm prompts")
     args = parser.parse_args()
-    CrontabConfig().main(args.config_path, args.python_path, args.sppmon_path, args.auto_confirm)
+    CrontabConfig().main(args.config_path, args.python_path,
+                         args.sppmon_path, args.auto_confirm)
