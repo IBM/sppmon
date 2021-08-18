@@ -1,4 +1,76 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_DATASOURCE",
+      "label": "Datasource",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "influxdb",
+      "pluginName": "InfluxDB"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "alertlist",
+      "name": "Alert list",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "7.5.3"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "influxdb",
+      "name": "InfluxDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "logs",
+      "name": "Logs",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table-old",
+      "name": "Table (old)",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -17,12 +89,12 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 37,
+  "id": null,
   "links": [],
   "panels": [
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -35,7 +107,7 @@
       "type": "row"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "description": "95% Percentille over last 24h ",
       "fieldConfig": {
         "defaults": {
@@ -86,7 +158,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [
@@ -127,7 +199,7 @@
       "type": "gauge"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "description": "95% Percentille over last 24h ",
       "fieldConfig": {
         "defaults": {
@@ -177,7 +249,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "",
@@ -220,7 +292,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "description": "95% Percentille / last 24h of each component memory usage\nMax root storage usage  / last 24h of Server and vSnap",
       "fieldConfig": {
         "defaults": {
@@ -270,7 +342,7 @@
         "showUnfilled": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "$tag_name",
@@ -374,7 +446,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "description": "Duration of the last execution of selected jobs",
       "fieldConfig": {
         "defaults": {
@@ -434,7 +506,7 @@
         "text": {},
         "textMode": "value_and_name"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "$tag_jobName",
@@ -493,7 +565,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 1,
       "description": "",
       "fieldConfig": {
@@ -530,7 +602,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -664,7 +736,7 @@
       }
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -704,7 +776,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [],
@@ -744,7 +816,7 @@
       "type": "stat"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -784,7 +856,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [],
@@ -824,7 +896,7 @@
       "type": "stat"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -864,7 +936,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [],
@@ -916,7 +988,7 @@
       "type": "stat"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -956,7 +1028,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [],
@@ -996,7 +1068,7 @@
       "type": "stat"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {
           "decimals": 0,
@@ -1047,7 +1119,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "$tag_ssh_type",
@@ -1109,7 +1181,7 @@
     {
       "dashboardFilter": "",
       "dashboardTags": [],
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -1139,7 +1211,7 @@
       "type": "alertlist"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "description": "This panel shows how much the dela did increase, leaving out going down again.\nGood for noticing errors, even if they disappeared",
       "fieldConfig": {
         "defaults": {
@@ -1184,7 +1256,7 @@
         "showThresholdMarkers": false,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "--constant",
@@ -1192,7 +1264,7 @@
           "measurement": "sppmon_metrics",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE $timeFilter AND (\"constant\" = 'True')) GROUP BY time(1d)",
+          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE $timeFilter AND (\"constant\" = 'True')) where time >= now() - 2d",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1224,7 +1296,7 @@
           "measurement": "sppmon_metrics",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE $timeFilter AND (\"hourly\" = 'True')) GROUP BY time(1d)",
+          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE $timeFilter AND (\"hourly\" = 'True')) where time >= now() - 2d",
           "rawQuery": true,
           "refId": "E",
           "resultFormat": "time_series",
@@ -1257,7 +1329,7 @@
           "measurement": "sppmon_metrics",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE $timeFilter AND (\"daily\" = 'True'))  GROUP BY time(1d)",
+          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE $timeFilter AND (\"daily\" = 'True')) where time >= now() - 2d",
           "rawQuery": true,
           "refId": "C",
           "resultFormat": "time_series",
@@ -1290,7 +1362,7 @@
           "measurement": "sppmon_metrics",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE  $timeFilter AND (\"all\" = 'True')) GROUP BY time(1d)",
+          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE $timeFilter AND (\"all\" = 'True')) where time >= now() - 2d",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series",
@@ -1364,13 +1436,13 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "SPPmon Collection Errors (24h)",
+      "title": "SPPmon Collection Errors delta(48h)",
       "transformations": [],
       "type": "gauge"
     },
     {
       "cacheTimeout": null,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1423,7 +1495,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "Catalog Backup",
@@ -1458,7 +1530,7 @@
       "type": "stat"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "description": "90% percentille of last 24h per Commandgroup",
       "fieldConfig": {
         "defaults": {
@@ -1509,7 +1581,7 @@
         "showUnfilled": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "$tag_COMMAND",
@@ -1566,7 +1638,7 @@
       "type": "bargauge"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "description": "90% percentille of last 24h",
       "fieldConfig": {
         "defaults": {
@@ -1617,7 +1689,7 @@
         "showUnfilled": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "$tag_COMMAND",
@@ -1675,7 +1747,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "description": "Sum of replicated bytes (VM) within the last 24h\nSum of transferred bytes (VM) within the last 24h\nSum of transferred bytes (Office365) within the last 24h\n",
       "fieldConfig": {
         "defaults": {
@@ -1719,7 +1791,7 @@
         "text": {},
         "textMode": "value_and_name"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "VM Replicated",
@@ -1827,7 +1899,7 @@
       "type": "stat"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -1866,7 +1938,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [],
@@ -1939,7 +2011,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1984,7 +2056,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "alias": "",
@@ -2025,7 +2097,7 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2102,7 +2174,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 1,
       "fieldConfig": {
         "defaults": {},
@@ -2137,7 +2209,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2325,7 +2397,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 1,
       "description": "Selected Processes monitored by top command\n\"java\", \"mongo\", \"beam.smp\".\nQuerie calcualted due an inner querie to filter out the PID. Simple \"mean\" would result in a falsly low result",
       "fieldConfig": {
@@ -2364,7 +2436,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2520,7 +2592,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 1,
       "fieldConfig": {
         "defaults": {},
@@ -2554,7 +2626,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2721,7 +2793,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -2752,7 +2824,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 0.5,
       "points": false,
       "renderer": "flot",
@@ -2930,7 +3002,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 1,
       "description": "Mean-Sum of process-group displayed",
       "fieldConfig": {
@@ -2967,7 +3039,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -3088,7 +3160,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 1,
       "description": "Selected Processes monitored by top command\n\"java\", \"mongo\", \"beam.smp\"",
       "fieldConfig": {
@@ -3127,7 +3199,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -3269,7 +3341,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -3301,7 +3373,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3447,7 +3519,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 0,
       "description": "",
       "fieldConfig": {
@@ -3482,7 +3554,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3617,7 +3689,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -3648,7 +3720,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3793,7 +3865,7 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -3810,7 +3882,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -3844,7 +3916,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3986,7 +4058,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -4017,7 +4089,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4180,7 +4252,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -4211,7 +4283,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4361,7 +4433,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -4392,7 +4464,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4542,7 +4614,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -4573,7 +4645,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4724,7 +4796,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -4755,7 +4827,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4882,6 +4954,161 @@
       }
     },
     {
+      "aliasColors": {
+        "Duration": "purple"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_DATASOURCE}",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 6,
+        "x": 12,
+        "y": 63
+      },
+      "hiddenSeries": false,
+      "id": 179,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.3",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "$tag_subPolicyType $tag_jobName",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "subPolicyType"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "jobName"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "none"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": false,
+          "measurement": "jobs",
+          "orderByTime": "ASC",
+          "policy": "rp_days_90",
+          "query": "SELECT \"duration\" FROM \"jobs\" WHERE (\"jobName\" = 'Hypervisor Inventory') AND $timeFilter GROUP BY \"jobName\"",
+          "rawQuery": false,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "duration"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "type",
+              "operator": "=",
+              "value": "protection"
+            },
+            {
+              "condition": "AND",
+              "key": "jobName",
+              "operator": "=~",
+              "value": "/hyperv.*/"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Hyper-V Protection Job Durations",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:35515",
+          "format": "ms",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:35516",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "alert": {
         "alertRuleTags": {},
         "conditions": [
@@ -4923,7 +5150,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -4933,8 +5160,8 @@
       "gridPos": {
         "h": 9,
         "w": 6,
-        "x": 12,
-        "y": 63
+        "x": 0,
+        "y": 72
       },
       "hiddenSeries": false,
       "id": 67,
@@ -4954,7 +5181,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -5116,7 +5343,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -5126,8 +5353,8 @@
       "gridPos": {
         "h": 9,
         "w": 6,
-        "x": 18,
-        "y": 63
+        "x": 6,
+        "y": 72
       },
       "hiddenSeries": false,
       "id": 133,
@@ -5147,7 +5374,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -5275,12 +5502,12 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 72
+        "y": 81
       },
       "id": 162,
       "panels": [],
@@ -5292,7 +5519,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -5303,7 +5530,7 @@
         "h": 8,
         "w": 11,
         "x": 0,
-        "y": 73
+        "y": 82
       },
       "hiddenSeries": false,
       "id": 172,
@@ -5325,7 +5552,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -5427,7 +5654,7 @@
       }
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -5549,7 +5776,7 @@
         "h": 8,
         "w": 13,
         "x": 11,
-        "y": 73
+        "y": 82
       },
       "id": 170,
       "options": {
@@ -5557,7 +5784,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [
@@ -5726,7 +5953,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -5737,7 +5964,7 @@
         "h": 8,
         "w": 11,
         "x": 0,
-        "y": 81
+        "y": 90
       },
       "hiddenSeries": false,
       "id": 171,
@@ -5759,7 +5986,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -5871,7 +6098,7 @@
       }
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -5913,7 +6140,7 @@
         "h": 8,
         "w": 13,
         "x": 11,
-        "y": 81
+        "y": 90
       },
       "id": 168,
       "options": {
@@ -5921,7 +6148,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [
@@ -6013,7 +6240,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -6024,7 +6251,7 @@
         "h": 8,
         "w": 11,
         "x": 0,
-        "y": 89
+        "y": 98
       },
       "hiddenSeries": false,
       "id": 167,
@@ -6044,7 +6271,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -6146,7 +6373,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 0,
       "fieldConfig": {
         "defaults": {},
@@ -6158,7 +6385,7 @@
         "h": 8,
         "w": 13,
         "x": 11,
-        "y": 89
+        "y": 98
       },
       "hiddenSeries": false,
       "id": 169,
@@ -6180,7 +6407,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -6294,7 +6521,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -6305,7 +6532,7 @@
         "h": 8,
         "w": 11,
         "x": 0,
-        "y": 97
+        "y": 106
       },
       "hiddenSeries": false,
       "id": 165,
@@ -6327,7 +6554,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -6463,12 +6690,12 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 105
+        "y": 114
       },
       "id": 75,
       "panels": [],
@@ -6480,7 +6707,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -6491,7 +6718,7 @@
         "h": 8,
         "w": 9,
         "x": 0,
-        "y": 106
+        "y": 115
       },
       "hiddenSeries": false,
       "id": 4,
@@ -6511,7 +6738,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": true,
       "renderer": "flot",
@@ -6651,7 +6878,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -6662,7 +6889,7 @@
         "h": 8,
         "w": 7,
         "x": 9,
-        "y": 106
+        "y": 115
       },
       "hiddenSeries": false,
       "id": 11,
@@ -6682,7 +6909,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": true,
       "renderer": "flot",
@@ -6779,7 +7006,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -6790,7 +7017,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 106
+        "y": 115
       },
       "hiddenSeries": false,
       "id": 12,
@@ -6810,7 +7037,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": true,
       "renderer": "flot",
@@ -7108,7 +7335,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "description": "",
       "fieldConfig": {
         "defaults": {},
@@ -7120,7 +7347,7 @@
         "h": 8,
         "w": 15,
         "x": 0,
-        "y": 114
+        "y": 123
       },
       "hiddenSeries": false,
       "id": 81,
@@ -7142,7 +7369,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -7414,7 +7641,7 @@
     {
       "cacheTimeout": null,
       "columns": [],
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -7424,7 +7651,7 @@
         "h": 8,
         "w": 9,
         "x": 15,
-        "y": 114
+        "y": 123
       },
       "id": 6,
       "links": [],
@@ -7501,7 +7728,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "description": "",
       "fieldConfig": {
         "defaults": {},
@@ -7513,7 +7740,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 122
+        "y": 131
       },
       "hiddenSeries": false,
       "id": 160,
@@ -7533,7 +7760,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -7684,7 +7911,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -7695,7 +7922,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 129
+        "y": 138
       },
       "hiddenSeries": false,
       "id": 84,
@@ -7715,7 +7942,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -7834,7 +8061,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -7845,7 +8072,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 129
+        "y": 138
       },
       "hiddenSeries": false,
       "id": 86,
@@ -7865,7 +8092,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -7998,7 +8225,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -8009,7 +8236,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 129
+        "y": 138
       },
       "hiddenSeries": false,
       "id": 85,
@@ -8029,7 +8256,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8148,7 +8375,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -8159,7 +8386,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 136
+        "y": 145
       },
       "hiddenSeries": false,
       "id": 104,
@@ -8179,7 +8406,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8292,7 +8519,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -8303,7 +8530,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 136
+        "y": 145
       },
       "hiddenSeries": false,
       "id": 148,
@@ -8323,7 +8550,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8436,7 +8663,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -8447,7 +8674,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 136
+        "y": 145
       },
       "hiddenSeries": false,
       "id": 149,
@@ -8467,7 +8694,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8577,12 +8804,12 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 143
+        "y": 152
       },
       "id": 70,
       "panels": [],
@@ -8594,7 +8821,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "description": "",
       "fieldConfig": {
         "defaults": {},
@@ -8606,7 +8833,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 144
+        "y": 153
       },
       "hiddenSeries": false,
       "id": 158,
@@ -8627,7 +8854,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -8729,7 +8956,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "description": "Selects mean of each unique storage, sums up to total per site",
       "fieldConfig": {
         "defaults": {},
@@ -8741,7 +8968,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 144
+        "y": 153
       },
       "hiddenSeries": false,
       "id": 71,
@@ -8762,7 +8989,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -8916,7 +9143,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -8927,7 +9154,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 151
+        "y": 160
       },
       "hiddenSeries": false,
       "id": 14,
@@ -8948,7 +9175,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -9059,7 +9286,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -9070,7 +9297,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 151
+        "y": 160
       },
       "hiddenSeries": false,
       "id": 159,
@@ -9091,7 +9318,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -9195,7 +9422,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 1,
       "fieldConfig": {
         "defaults": {},
@@ -9207,7 +9434,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 158
+        "y": 167
       },
       "hiddenSeries": false,
       "id": 48,
@@ -9230,7 +9457,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -9390,7 +9617,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -9401,7 +9628,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 158
+        "y": 167
       },
       "hiddenSeries": false,
       "id": 92,
@@ -9421,7 +9648,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -9603,12 +9830,12 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 163
+        "y": 172
       },
       "id": 77,
       "panels": [],
@@ -9616,7 +9843,7 @@
       "type": "row"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -9657,7 +9884,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 164
+        "y": 173
       },
       "id": 79,
       "options": {
@@ -9669,7 +9896,7 @@
           }
         ]
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [
@@ -9746,7 +9973,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -9757,7 +9984,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 164
+        "y": 173
       },
       "hiddenSeries": false,
       "id": 157,
@@ -9777,7 +10004,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -9956,7 +10183,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -9967,7 +10194,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 172
+        "y": 181
       },
       "hiddenSeries": false,
       "id": 91,
@@ -9987,7 +10214,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10169,12 +10396,12 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 180
+        "y": 189
       },
       "id": 132,
       "panels": [],
@@ -10245,7 +10472,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -10256,7 +10483,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 181
+        "y": 190
       },
       "hiddenSeries": false,
       "id": 134,
@@ -10276,7 +10503,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10467,7 +10694,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 0,
       "fieldConfig": {
         "defaults": {},
@@ -10479,7 +10706,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 181
+        "y": 190
       },
       "hiddenSeries": false,
       "id": 177,
@@ -10499,7 +10726,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10616,7 +10843,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 0,
       "fieldConfig": {
         "defaults": {},
@@ -10628,7 +10855,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 189
+        "y": 198
       },
       "hiddenSeries": false,
       "id": 175,
@@ -10648,7 +10875,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10736,7 +10963,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 0,
       "fieldConfig": {
         "defaults": {},
@@ -10748,7 +10975,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 189
+        "y": 198
       },
       "hiddenSeries": false,
       "id": 176,
@@ -10768,7 +10995,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10862,7 +11089,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 0,
       "fieldConfig": {
         "defaults": {},
@@ -10874,7 +11101,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 197
+        "y": 206
       },
       "hiddenSeries": false,
       "id": 178,
@@ -10896,7 +11123,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10981,12 +11208,12 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 205
+        "y": 214
       },
       "id": 112,
       "panels": [],
@@ -11022,9 +11249,9 @@
       },
       "gridPos": {
         "h": 16,
-        "w": 5,
+        "w": 6,
         "x": 0,
-        "y": 206
+        "y": 215
       },
       "id": 109,
       "interval": "24h",
@@ -11040,16 +11267,16 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
-          "panelId": 108,
+          "panelId": 142,
           "refId": "A"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "SPPmon Collection Error delta Display",
+      "title": "SPPmon Collection Error delta (48h)",
       "transformations": [],
       "type": "gauge"
     },
@@ -11069,7 +11296,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "description": "",
       "fieldConfig": {
         "defaults": {},
@@ -11079,9 +11306,9 @@
       "fillGradient": 1,
       "gridPos": {
         "h": 8,
-        "w": 9,
-        "x": 5,
-        "y": 206
+        "w": 8,
+        "x": 6,
+        "y": 215
       },
       "hiddenSeries": false,
       "id": 107,
@@ -11102,7 +11329,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 0.5,
       "points": true,
       "renderer": "flot",
@@ -11322,17 +11549,17 @@
     {
       "dashboardFilter": "",
       "dashboardTags": [],
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
       },
       "folderId": null,
       "gridPos": {
-        "h": 16,
+        "h": 8,
         "w": 5,
         "x": 14,
-        "y": 206
+        "y": 215
       },
       "id": 62,
       "limit": "100",
@@ -11357,7 +11584,7 @@
     {
       "dashboardFilter": "",
       "dashboardTags": [],
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -11367,7 +11594,7 @@
         "h": 16,
         "w": 5,
         "x": 19,
-        "y": 206
+        "y": 215
       },
       "id": 147,
       "limit": "100",
@@ -11534,7 +11761,8 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
+      "decimals": 0,
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -11543,17 +11771,18 @@
       "fillGradient": 1,
       "gridPos": {
         "h": 8,
-        "w": 9,
-        "x": 5,
-        "y": 214
+        "w": 13,
+        "x": 6,
+        "y": 223
       },
       "hiddenSeries": false,
       "id": 108,
+      "interval": null,
       "legend": {
-        "avg": true,
+        "avg": false,
         "current": false,
         "hideEmpty": false,
-        "max": false,
+        "max": true,
         "min": false,
         "show": true,
         "total": false,
@@ -11566,9 +11795,9 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 0.5,
-      "points": true,
+      "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
@@ -11576,13 +11805,13 @@
       "steppedLine": true,
       "targets": [
         {
-          "alias": "--daily",
+          "alias": "Daily Delta",
           "groupBy": [],
           "hide": false,
           "measurement": "sppmon_metrics",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"duration\") FROM \"sppmon_metrics\" WHERE $timeFilter GROUP BY time(12h)",
+          "query": "SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE (\"daily\" = 'True') AND $timeFilter",
           "rawQuery": false,
           "refId": "B",
           "resultFormat": "time_series",
@@ -11596,7 +11825,7 @@
               },
               {
                 "params": [],
-                "type": "difference"
+                "type": "non_negative_difference"
               }
             ]
           ],
@@ -11609,7 +11838,7 @@
           ]
         },
         {
-          "alias": "--all",
+          "alias": "All Delta",
           "groupBy": [],
           "hide": false,
           "measurement": "sppmon_metrics",
@@ -11629,7 +11858,7 @@
               },
               {
                 "params": [],
-                "type": "difference"
+                "type": "non_negative_difference"
               }
             ]
           ],
@@ -11642,13 +11871,13 @@
           ]
         },
         {
-          "alias": "--constant",
+          "alias": "Constant Delta",
           "groupBy": [],
           "hide": false,
           "measurement": "sppmon_metrics",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"duration\") FROM \"sppmon_metrics\" WHERE $timeFilter GROUP BY time(12h)",
+          "query": "SELECT non_negative_difference(\"errorCount\") FROM \"sppmon_metrics\" WHERE (\"constant\" = 'True') AND $timeFilter",
           "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
@@ -11662,7 +11891,7 @@
               },
               {
                 "params": [],
-                "type": "difference"
+                "type": "non_negative_difference"
               }
             ]
           ],
@@ -11675,7 +11904,7 @@
           ]
         },
         {
-          "alias": "--hourly",
+          "alias": "Hourly Delta",
           "groupBy": [],
           "hide": false,
           "measurement": "sppmon_metrics",
@@ -11695,7 +11924,7 @@
               },
               {
                 "params": [],
-                "type": "difference"
+                "type": "non_negative_difference"
               }
             ]
           ],
@@ -11708,7 +11937,7 @@
           ]
         },
         {
-          "alias": "Others",
+          "alias": "Others Delta",
           "groupBy": [],
           "hide": false,
           "measurement": "sppmon_metrics",
@@ -11728,7 +11957,7 @@
               },
               {
                 "params": [],
-                "type": "difference"
+                "type": "non_negative_difference"
               }
             ]
           ],
@@ -11789,6 +12018,7 @@
       "yaxes": [
         {
           "$$hashKey": "object:27143",
+          "decimals": 0,
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -11813,7 +12043,7 @@
       }
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -11822,7 +12052,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 222
+        "y": 231
       },
       "id": 143,
       "options": {
@@ -11874,7 +12104,7 @@
       "type": "logs"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -11883,7 +12113,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 222
+        "y": 231
       },
       "id": 145,
       "options": {
@@ -11935,7 +12165,7 @@
       "type": "logs"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -11944,7 +12174,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 222
+        "y": 231
       },
       "id": 146,
       "options": {
@@ -11996,7 +12226,7 @@
       "type": "logs"
     },
     {
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -12021,13 +12251,13 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 230
+        "y": 239
       },
       "id": 154,
       "options": {
         "showHeader": true
       },
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "targets": [
         {
           "groupBy": [
@@ -12059,13 +12289,15 @@
           "measurement": "sppmon_metrics",
           "orderByTime": "DESC",
           "policy": "rp_days_14",
+          "query": "SELECT last(\"errorCount\") FROM \"rp_days_14\".\"sppmon_metrics\" WHERE $timeFilter GROUP BY \"spp_build\", \"spp_version\", \"sppmon_version\", \"influxdb_version\" ORDER BY time DESC",
+          "rawQuery": false,
           "refId": "A",
           "resultFormat": "table",
           "select": [
             [
               {
                 "params": [
-                  "duration"
+                  "errorCount"
                 ],
                 "type": "field"
               },
@@ -12113,18 +12345,30 @@
               "sppmon_version": "SPPMon version"
             }
           }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "Last used time"
+              }
+            ]
+          }
         }
       ],
       "type": "table"
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 236
+        "y": 245
       },
       "id": 65,
       "panels": [],
@@ -12247,7 +12491,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -12258,7 +12502,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 237
+        "y": 246
       },
       "hiddenSeries": false,
       "id": 41,
@@ -12278,7 +12522,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -12540,7 +12784,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -12551,7 +12795,7 @@
         "h": 10,
         "w": 8,
         "x": 0,
-        "y": 246
+        "y": 255
       },
       "hiddenSeries": false,
       "id": 21,
@@ -12571,7 +12815,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -12672,7 +12916,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -12683,18 +12927,20 @@
         "h": 10,
         "w": 8,
         "x": 8,
-        "y": 246
+        "y": 255
       },
       "hiddenSeries": false,
       "id": 23,
       "legend": {
-        "avg": false,
+        "avg": true,
         "current": false,
+        "hideEmpty": false,
+        "hideZero": true,
         "max": false,
         "min": false,
         "show": true,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": true,
       "linewidth": 1,
@@ -12703,7 +12949,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -12713,13 +12959,19 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "Avg Duration(ns) per Item",
+          "alias": "$tag_tableName",
           "groupBy": [
             {
               "params": [
                 "$__interval"
               ],
               "type": "time"
+            },
+            {
+              "params": [
+                "tableName"
+              ],
+              "type": "tag"
             },
             {
               "params": [
@@ -12779,14 +13031,16 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:367",
           "format": "ms",
-          "label": null,
+          "label": "",
           "logBase": 1,
           "max": null,
           "min": null,
           "show": true
         },
         {
+          "$$hashKey": "object:368",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -12805,7 +13059,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -12816,7 +13070,7 @@
         "h": 10,
         "w": 8,
         "x": 16,
-        "y": 246
+        "y": 255
       },
       "hiddenSeries": false,
       "id": 22,
@@ -12836,7 +13090,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.1",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -12933,7 +13187,7 @@
       }
     }
   ],
-  "refresh": "5m",
+  "refresh": "",
   "schemaVersion": 27,
   "style": "dark",
   "tags": [],
@@ -12957,7 +13211,7 @@
     ]
   },
   "timezone": "",
-  "title": "SPPMON for IBM Spectrum Protect Plus",
-  "uid": "PcYuUMSMk",
-  "version": 1
+  "title": "SPPMON for IBM Spectrum Protect Plus ${DS_DATASOURCE}",
+  "uid": "sppmon_single_view_DS_${DS_DATASOURCE}",
+  "version": 6
 }
