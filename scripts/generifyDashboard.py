@@ -1,10 +1,26 @@
+"""
+(C) IBM Corporation 2021
+
+Description:
+    Generifies a dashboard for external use by stripping of datasource informations.
+    To be used by developers before sharing the dashboard.
+
+Repository:
+  https://github.com/IBM/spectrum-protect-sppmon
+
+Author:
+ Niels Korschinsky
+"""
+
 import re
 import sys
 from os.path import isfile, realpath, join, dirname
 
 
 class GenerifyDashboard:
-
+    """Generifies a dashboard for external use by stripping of datasource informations.
+    To be used by developers before sharing the dashboard.
+    """
 
     def main(self):
         """Creates from the 14 day dashboard a new dashboard for an generic import.
@@ -19,16 +35,16 @@ class GenerifyDashboard:
         dashboardDir: str = realpath(join(scriptDirPath, "..", "Grafana"))
         dashboardPath: str = join(dashboardDir, dashboardName)
 
-        genericVarName:str = r"DS_DATASOURCE"
+        genericVarName: str = r"DS_DATASOURCE"
         genericVar: str = r"${" + genericVarName + r"}"
-
 
         print(f"> Opening default dashboard folder: {dashboardDir}")
         print(f"> Editing default dashboard file: {dashboardName}")
         print(f"> trying to open dashboard on path {dashboardPath}")
 
         if(not isfile(dashboardPath)):
-            raise ValueError(f"> The Path is incorrect, is not a file: {dashboardPath}")
+            raise ValueError(
+                f"> The Path is incorrect, is not a file: {dashboardPath}")
 
         try:
             dashboardFile = open(dashboardPath, "rt")
@@ -36,15 +52,19 @@ class GenerifyDashboard:
             dashboardFile.close()
         except Exception as error:
             print(error)
-            raise ValueError("> Error opening dashboard file. It seems like the default path to the dashboard is incorrect")
+            raise ValueError(
+                "> Error opening dashboard file. It seems like the default path to the dashboard is incorrect")
 
         print("> Sucessfully opened. Updating dashboard")
 
         if("__inputs" not in dashboardStr):
-            raise ValueError("This is not a generic dashboard. Please make sure to export it with the box `export for externally` checked!")
+            raise ValueError(
+                "This is not a generic dashboard. " +
+                "Please make sure to export it with the box `export for externally` checked!")
 
         # get old var name
-        oldVarName = re.search(r""""name":\s*"(.*?)"[,\s]*""", dashboardStr).group(1)
+        oldVarName = re.search(
+            r""""name":\s*"(.*?)"[,\s]*""", dashboardStr).group(1)
         oldVar = r"\${" + oldVarName + r"}"
 
         # replace first occurence with the new variable name
