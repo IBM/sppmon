@@ -18,7 +18,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 28,
-  "iteration": 1613395804356,
+  "iteration": 1628605343070,
   "links": [],
   "panels": [
     {
@@ -48,7 +48,6 @@
       "description": "95% Percentille over last 24h ",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "decimals": 0,
           "displayName": "",
           "mappings": [],
@@ -93,9 +92,10 @@
           "values": false
         },
         "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "showThresholdMarkers": true,
+        "text": {}
       },
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "scopedVars": {
         "SPP_Server": {
           "selected": true,
@@ -149,7 +149,6 @@
       "description": "95% Percentille over last 24h ",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "decimals": 0,
           "displayName": "",
           "mappings": [],
@@ -193,9 +192,10 @@
           "values": false
         },
         "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "showThresholdMarkers": true,
+        "text": {}
       },
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "scopedVars": {
         "SPP_Server": {
           "selected": true,
@@ -249,7 +249,6 @@
       "description": "95% Percentille / last 24h of each component memory usage\nMax root storage usage  / last 24h of Server and vSnap",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "decimals": 0,
           "mappings": [],
           "max": 100,
@@ -293,9 +292,10 @@
           "fields": "",
           "values": false
         },
-        "showUnfilled": true
+        "showUnfilled": true,
+        "text": {}
       },
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "scopedVars": {
         "SPP_Server": {
           "selected": true,
@@ -410,12 +410,10 @@
       "description": "Duration of the last execution of selected jobs",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "decimals": 0,
           "mappings": [],
           "min": 0,
           "noValue": "No Execution Recorded",
-          "nullValueMode": "connected",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -465,9 +463,10 @@
           "fields": "",
           "values": false
         },
+        "text": {},
         "textMode": "value_and_name"
       },
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "scopedVars": {
         "SPP_Server": {
           "selected": true,
@@ -537,9 +536,7 @@
       "decimals": 1,
       "description": "",
       "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
+        "defaults": {},
         "overrides": []
       },
       "fill": 1,
@@ -572,7 +569,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -716,7 +713,6 @@
       "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [],
           "noValue": "Not Executed",
           "thresholds": {
@@ -751,9 +747,10 @@
           "fields": "",
           "values": false
         },
+        "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "scopedVars": {
         "SPP_Server": {
           "selected": true,
@@ -803,7 +800,6 @@
       "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [],
           "noValue": "Not Executed",
           "thresholds": {
@@ -838,9 +834,10 @@
           "fields": "",
           "values": false
         },
+        "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "scopedVars": {
         "SPP_Server": {
           "selected": true,
@@ -890,7 +887,6 @@
       "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [],
           "noValue": "Not Executed",
           "thresholds": {
@@ -925,9 +921,10 @@
           "fields": "",
           "values": false
         },
+        "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "scopedVars": {
         "SPP_Server": {
           "selected": true,
@@ -989,7 +986,6 @@
       "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [],
           "noValue": "Not Executed",
           "thresholds": {
@@ -1024,9 +1020,10 @@
           "fields": "",
           "values": false
         },
+        "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "scopedVars": {
         "SPP_Server": {
           "selected": true,
@@ -1076,7 +1073,6 @@
       "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "decimals": 0,
           "mappings": [],
           "max": 100,
@@ -1122,9 +1118,10 @@
           "fields": "",
           "values": false
         },
+        "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "scopedVars": {
         "SPP_Server": {
           "selected": true,
@@ -1197,9 +1194,7 @@
       "dashes": false,
       "datasource": null,
       "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
+        "defaults": {},
         "overrides": []
       },
       "fill": 1,
@@ -1228,7 +1223,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1352,7 +1347,6 @@
       "description": "This panel shows how much the dela did increase, leaving out going down again.\nGood for noticing errors, even if they disappeared",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [],
           "max": 50,
           "noValue": "N/A",
@@ -1391,9 +1385,10 @@
           "values": false
         },
         "showThresholdLabels": false,
-        "showThresholdMarkers": false
+        "showThresholdMarkers": false,
+        "text": {}
       },
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "scopedVars": {
         "SPP_Server": {
           "selected": true,
@@ -1403,12 +1398,12 @@
       },
       "targets": [
         {
-          "alias": "--constant",
+          "alias": "Constant Delta",
           "groupBy": [],
           "measurement": "sppmon_metrics",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM $SPP_Server.\"rp_days_14\".\"sppmon_metrics\" WHERE $timeFilter AND (\"constant\" = 'True')) GROUP BY time(1d)",
+          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM $SPP_Server.rp_days_14.\"sppmon_metrics\" WHERE $timeFilter AND (\"constant\" = 'True')) where time >= now() - 2d",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1435,12 +1430,12 @@
           ]
         },
         {
-          "alias": "--hourly",
+          "alias": "Hourly Delta",
           "groupBy": [],
           "measurement": "sppmon_metrics",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM $SPP_Server.rp_days_14.\"sppmon_metrics\" WHERE $timeFilter AND (\"hourly\" = 'True')) GROUP BY time(1d)",
+          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM $SPP_Server.rp_days_14.\"sppmon_metrics\" WHERE $timeFilter AND (\"hourly\" = 'True')) where time >= now() - 2d",
           "rawQuery": true,
           "refId": "E",
           "resultFormat": "time_series",
@@ -1467,13 +1462,13 @@
           ]
         },
         {
-          "alias": "--daily",
+          "alias": "Daily Delta",
           "groupBy": [],
           "hide": false,
           "measurement": "sppmon_metrics",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM $SPP_Server.rp_days_14.\"sppmon_metrics\" WHERE $timeFilter AND (\"daily\" = 'True'))  GROUP BY time(1d)",
+          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM $SPP_Server.rp_days_14.\"sppmon_metrics\" WHERE $timeFilter AND (\"daily\" = 'True')) where time >= now() - 2d",
           "rawQuery": true,
           "refId": "C",
           "resultFormat": "time_series",
@@ -1500,13 +1495,13 @@
           ]
         },
         {
-          "alias": "--all",
+          "alias": "All Delta",
           "groupBy": [],
           "limit": "",
           "measurement": "sppmon_metrics",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM $SPP_Server.rp_days_14.\"sppmon_metrics\" WHERE  $timeFilter AND (\"all\" = 'True')) GROUP BY time(1d)",
+          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM $SPP_Server.rp_days_14.\"sppmon_metrics\" WHERE $timeFilter AND (\"all\" = 'True')) where time >= now() - 2d",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series",
@@ -1531,56 +1526,11 @@
               "value": "True"
             }
           ]
-        },
-        {
-          "alias": "others",
-          "groupBy": [],
-          "hide": true,
-          "measurement": "sppmon_metrics",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT sum(*) FROM (SELECT non_negative_difference(\"errorCount\") FROM $SPP_Server.rp_days_14.\"sppmon_metrics\" WHERE  $timeFilter AND (\"daily\" != 'True' AND \"constant\" != 'True' AND \"all\" != 'True' AND \"hourly\" != 'True')) GROUP BY time(1d)",
-          "rawQuery": true,
-          "refId": "D",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "errorCount"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "difference"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "daily",
-              "operator": "!=",
-              "value": "True"
-            },
-            {
-              "condition": "AND",
-              "key": "constant",
-              "operator": "!=",
-              "value": "True"
-            },
-            {
-              "condition": "AND",
-              "key": "all",
-              "operator": "!=",
-              "value": "True"
-            }
-          ]
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "SPPmon Collection Errors (24h)",
+      "title": "SPPmon Collection Errors (48h)",
       "transformations": [],
       "type": "gauge"
     },
@@ -1590,11 +1540,9 @@
       "description": "",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "decimals": 0,
           "mappings": [],
           "noValue": "N/A",
-          "nullValueMode": "connected",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1638,9 +1586,10 @@
           "fields": "",
           "values": false
         },
+        "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "scopedVars": {
         "SPP_Server": {
           "selected": true,
@@ -1686,7 +1635,6 @@
       "description": "95% percentille of last 24h per Commandgroup",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "decimals": 0,
           "mappings": [],
           "max": 800,
@@ -1731,9 +1679,10 @@
           "fields": "",
           "values": false
         },
-        "showUnfilled": true
+        "showUnfilled": true,
+        "text": {}
       },
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "scopedVars": {
         "SPP_Server": {
           "selected": true,
@@ -1801,7 +1750,6 @@
       "description": "95% percentille of last 24h",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "decimals": 0,
           "mappings": [],
           "max": 100,
@@ -1846,9 +1794,10 @@
           "fields": "",
           "values": false
         },
-        "showUnfilled": true
+        "showUnfilled": true,
+        "text": {}
       },
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "scopedVars": {
         "SPP_Server": {
           "selected": true,
@@ -1917,10 +1866,8 @@
       "description": "Sum of replicated bytes (VM) within the last 24h\nSum of transferred bytes (VM) within the last 24h\nSum of transferred bytes (Office365) within the last 24h",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [],
           "noValue": "N/A",
-          "nullValueMode": "connected",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1956,9 +1903,10 @@
           "fields": "",
           "values": false
         },
+        "text": {},
         "textMode": "value_and_name"
       },
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "scopedVars": {
         "SPP_Server": {
           "selected": true,
@@ -2076,7 +2024,6 @@
       "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -2113,9 +2060,10 @@
           "fields": "/^sppmon_metrics\\.spp_version$/",
           "values": true
         },
+        "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "repeatDirection": "h",
       "scopedVars": {
         "SPP_Server": {
@@ -2169,11 +2117,9 @@
       "description": "",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "decimals": 0,
           "mappings": [],
           "noValue": "N/A",
-          "nullValueMode": "connected",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -2209,9 +2155,10 @@
           "fields": "",
           "values": false
         },
+        "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.3",
+      "pluginVersion": "7.5.3",
       "scopedVars": {
         "SPP_Server": {
           "selected": true,
@@ -2259,7 +2206,7 @@
     }
   ],
   "refresh": "15m",
-  "schemaVersion": 26,
+  "schemaVersion": 27,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -2275,6 +2222,7 @@
             "default"
           ]
         },
+        "description": null,
         "error": null,
         "hide": 0,
         "includeAll": true,
@@ -2310,5 +2258,5 @@
   "timezone": "",
   "title": "Multiple Server Overview",
   "uid": "GtH9VNSMz",
-  "version": 15
+  "version": 17
 }
