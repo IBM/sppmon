@@ -13,7 +13,7 @@
 # Author:
 #  Niels Korschinsky
 
-main() {
+setupRequirements() {
     # Part One: Setup and Requirements
 
     clear
@@ -83,5 +83,5 @@ if [ "$1" != "--source-only" ]; then
     source "${mainPath}" "--source-only"
 
 
-    main "$@" # all arguments passed
+    setupRequirements "$@" # all arguments passed
 fi

@@ -13,7 +13,7 @@
 # Author:
 #  Niels Korschinsky
 
-main() {
+welcome() {
     # Welcome Message
     clear
     rowLimiter
@@ -73,5 +73,5 @@ if [ "$1" != "--source-only" ]; then
     # shellcheck source=./installer.sh
     source "${mainPath}" "--source-only"
 
-    main "$@" # all arguments passed
+    welcome "$@" # all arguments passed
 fi
