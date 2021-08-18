@@ -13,16 +13,18 @@ Author:
  Niels Korschinsky
 """
 
-import logging
-import re
-import json
-import signal
-import os
-import sys
-from os.path import isfile, realpath, join, dirname
-from typing import Any, Dict, List
-from utils import Utils
 import argparse
+import json
+import logging
+import os
+import re
+import signal
+import subprocess
+import sys
+from os.path import dirname, isfile, join, realpath
+from typing import Any, Dict, List
+
+from utils import Utils
 
 LOGGER: logging.Logger
 
@@ -210,6 +212,16 @@ class ConfigFileSetup:
         Utils.LOGGER = LOGGER
         signal.signal(signal.SIGINT, Utils.signalHandler)
 
+        LOGGER.info("> Checking for sudo rights")
+        # Only works on Linux, therefore error here.
+        if os.name == 'posix':
+            if os.geteuid() == 0:
+                print("Already root")
+            else:
+                print("Root rights required to run script.")
+                subprocess.call(['sudo', 'python3', *sys.argv])
+                sys.exit()
+
         LOGGER.info("> Generating new Config files")
 
         # ### Config dir setup
@@ -218,11 +230,14 @@ class ConfigFileSetup:
             f"> All new configurations files will be written into the directory:\n {config_path}")
 
         # ### authFile setup
-        if(not auth_file):
-            LOGGER.info("> No authentification file specifed")
-            Utils.setupAuthFile(None)
-        else:  # take none if not exists, otherwise take auth path
-            Utils.setupAuthFile(auth_file)
+        try:
+            if(not auth_file):
+                LOGGER.info("> No authentification file specifed")
+                Utils.setupAuthFile(None)
+            else:  # take none if not exists, otherwise take auth path
+                Utils.setupAuthFile(auth_file)
+        except Exception as error:
+            LOGGER.info(f"> Setup of auth-file failed due error: {error}")
 
         # ########## EXECUTION ################
         Utils.printRow()

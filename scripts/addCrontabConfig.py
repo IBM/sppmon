@@ -14,16 +14,17 @@ Author:
  Niels Korschinsky
 """
 
-import re
-import sys
-import signal
-from os.path import realpath, join, dirname
-from os import DirEntry, scandir, popen
-from typing import List
-from utils import Utils
-from random import randint
 import argparse
 import logging
+import re
+import signal
+import sys
+from os import DirEntry, popen, scandir
+from os.path import dirname, join, realpath
+from random import randint
+from typing import List
+
+from utils import Utils
 
 LOGGER: logging.Logger
 

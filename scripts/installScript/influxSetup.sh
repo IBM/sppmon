@@ -307,10 +307,10 @@ EOF
             if ! confirm "Do you want to try again (y) or continue (n)? Abort by ctrl + c" "--alwaysConfirm"; then
                 # user wants to exit
                 adminCreated=true
-            fi
-            # else
+            else
             # Start again
-            loggerEcho "Trying again"
+                loggerEcho "Trying again"
+            fi
         else
             loggerEcho "> admin creation sucessfully"
             adminCreated=true

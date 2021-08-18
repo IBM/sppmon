@@ -105,7 +105,8 @@ pythonSetup() {
         # Only set alternatives if python 2.7 is installed
         if command -v python2.7 &> /dev/null ; then
 
-            loggerEcho "> Python may take a few seconds to install. Please wait."
+            loggerEcho "> Python may take a few minutes to install. Please wait."
+            echo "> You do not need to press anything."
             checkReturn sudo make altinstall -s
 
             loggerEcho "> Configuring alternatives between python2.7 (yum) and python ${python_version_dots} (sppmon)."

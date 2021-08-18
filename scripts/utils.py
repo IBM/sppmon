@@ -14,11 +14,11 @@ Author:
 
 
 import logging
-from os.path import realpath, join
 import re
-from os import get_terminal_size
 from getpass import getpass
-from typing import ClassVar, Optional, Callable, Any
+from os import get_terminal_size
+from os.path import join, realpath
+from typing import Any, Callable, ClassVar, Optional
 
 
 class Utils:
