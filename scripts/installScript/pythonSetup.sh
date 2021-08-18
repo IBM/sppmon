@@ -40,7 +40,7 @@ currentInstallCheck() {
     #  code does work with 3.8, but latest version is better.
     local required_ver="3.9.6"
 
-    if [ "$(printf '%s\n' "${required_ver}" "${current_ver}" | sort -V | head -n1)" = "${required_ver}" ]; then
+    if [ "$(printf '%s\n' "${required_ver}" "${current_ver}" | sort -V | head -n1)" == "${required_ver}" ]; then
         loggerEcho "> Compatible Python version installed (${current_ver} > ${required_ver})."
 
         loggerEcho "> Creating systemlink to /usr/bin/python3"
@@ -52,7 +52,7 @@ currentInstallCheck() {
         local current_ver
         current_ver=$(python3 -V 2>&1 | grep -oP "^Python \K.*")
 
-        if [ "$(printf '%s\n' "${required_ver}" "${current_ver}" | sort -V | head -n1)" = "${required_ver}" ]; then
+        if [ "$(printf '%s\n' "${required_ver}" "${current_ver}" | sort -V | head -n1)" == "${required_ver}" ]; then
             loggerEcho "> Compatible Python version installed (${current_ver} > ${required_ver})."
             return 0
         fi
@@ -127,7 +127,7 @@ pythonSetup() {
         # Confirming install
 
         current_ver=$(python3 -V 2>&1)
-        if [ "$(printf '%s\n' "${required_ver}" "${current_ver}" | sort -V | head -n1)" = "${required_ver}" ]; then
+        if [ "$(printf '%s\n' "${required_ver}" "${current_ver}" | sort -V | head -n1)" == "${required_ver}" ]; then
             loggerEcho "> Python install sucessfull."
         else
             loggerEcho "> Python install unsucessfull."

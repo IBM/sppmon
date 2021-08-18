@@ -263,7 +263,7 @@ EOF
     #################### INFLUXADMIN USER ################
     local adminCreated=false
     # Create user
-    while [ "${adminCreated}" = false ] ; do # repeat until break, when it works
+    while [ "${adminCreated}" == false ] ; do # repeat until break, when it works
 
         readAuth # read all existing auths
         # At this point SSL has not been configured, so avoid verifyConnnection() failures
@@ -346,7 +346,7 @@ EOF
 
     # Create user
     local grafanaReaderCreated=false
-    while [ "${grafanaReaderCreated}" = false ]  ; do # repeat until break, when it works
+    while [ "${grafanaReaderCreated}" == false ]  ; do # repeat until break, when it works
 
         readAuth # read all existing auths
         # At this point SSL has not been configured, so avoid verifyConnnection() failures

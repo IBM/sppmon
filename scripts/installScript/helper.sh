@@ -62,7 +62,7 @@ checkReturn() { # TODO(Niels Korschinsky) maybe this is Bugged. Other quotations
 sudoCheck() {
 
     loggerEcho "Checking if sudo privileges are available."
-    if [[ "${EUID}" = 0 ]]; then
+    if [[ "${EUID}" == 0 ]]; then
         loggerEcho "(1) already root"
     else
         # use validate option to refresh the sudo timer, or authenticate.
@@ -320,7 +320,7 @@ confirm() { # param1:message # param2: alwaysconfirm
         fi
     fi
 
-    if [ "${autoConfirm}" = true ] && ! [ "${alwaysConfirm}" = true ] ; then
+    if [ "${autoConfirm}" == true ] && ! [ "${alwaysConfirm}" == true ] ; then
         printf "%s : autoConfirm -> " "${message}"
         loggerEcho "Yes"
         return 0
@@ -444,7 +444,7 @@ promptPasswords() {
             fi
         fi
 
-        if [ "${autoConfirm}" = true ] ; then
+        if [ "${autoConfirm}" == true ] ; then
             break
         fi
 

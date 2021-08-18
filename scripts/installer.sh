@@ -323,7 +323,7 @@ main(){
         loggerEcho "Create one or more .conf files for SPPmon"
         local python_exe
         python_exe=$(which python3)
-        if [ "${autoConfirm}" = true ]  ; then
+        if [ "${autoConfirm}" == true ]  ; then
             checkReturn sudo "${python_exe}" "${path}/addConfigFile.py" "--configPath=${configDir}" "--authFile=${authFile}" "--autoConfirm"
         else
             checkReturn sudo "${python_exe}" "${path}/addConfigFile.py" "--configPath=${configDir}" "--authFile=${authFile}"
@@ -344,7 +344,7 @@ main(){
         python_exe=$(which python3)
         local sppmon_exe
         sppmon_exe=$(realpath "${path}/../python/sppmon.py")
-        if [ "${autoConfirm}" = true ]  ; then
+        if [ "${autoConfirm}" == true ]  ; then
             checkReturn sudo "${python_exe}" "${path}/addCrontabConfig.py" "--configPath=${configDir}" "--pythonPath=${python_exe}" "--sppmonPath=${sppmon_exe}" "--autoConfirm"
         else
             checkReturn sudo "${python_exe}" "${path}/addCrontabConfig.py" "--configPath=${configDir}" "--pythonPath=${python_exe}" "--sppmonPath=${sppmon_exe}"
