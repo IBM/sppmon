@@ -4,12 +4,7 @@ You may implement new methods here if they do not fit anywhere else
 Classes:
     OtherMethods
 """
-from sppConnection.rest_client import RestClient
-from sppConnection.ssh_client import SshClient, SshTypes
-from sppmonMethods.ssh import SshMethods
-from utils.methods_utils import MethodUtils
-from influx.influx_client import InfluxClient
-from typing import Dict, Any, List, Optional
+
 import logging
 import os
 import re
@@ -120,4 +115,3 @@ class OtherMethods:
             LOGGER.info("> Testing partially sucessful. SPPMon will run, but please check the warnings.")
         else:
             LOGGER.info("> Testing failed. SPPMon is not ready to be used. Please fix the connection issues.")
-

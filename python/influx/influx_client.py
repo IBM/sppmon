@@ -6,7 +6,7 @@ Classes:
 import logging
 import re
 import time
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Union, Optional
 
 import requests
 from influxdb import InfluxDBClient
@@ -64,7 +64,11 @@ class InfluxClient:
     """used to send all insert-querys at once. Multiple Insert-Querys per table"""
 
     __query_max_batch_size = 10000
-    """Maximum amount of querys sent at once to the influxdb. Recommended is 5000-10000."""
+    """Maximum amount of querys sent at once to the influxdb. Recommended is 5000-10000.
+    Queries automatically abort after 5 sec, but still try to write afterwards."""
+
+    __fallback_max_batch_size = 500
+    """Batch size on write requests once the first request failed to avoid the 5 second request limit"""
 
     def __init__(self, config_file: Dict[str, Any]):
         """Initalize the influx client from a config dict. Call `connect` before using the client.
@@ -131,9 +135,12 @@ class InfluxClient:
             # create db, nothing happens if it already exists
             self.__client.create_database(self.database.name)
 
+            self.check_grant_user("GrafanaReader", "READ")
+
             # check for exisiting retention policies and continuous queries in the influxdb
             self.check_create_rp(self.database.name)
             self.check_create_cq()
+            self.flush_insert_buffer()
 
         except (ValueError, InfluxDBClientError, InfluxDBServerError, requests.exceptions.ConnectionError) as error: # type: ignore
             ExceptionUtils.exception_info(error=error) # type: ignore
@@ -217,42 +224,52 @@ class InfluxClient:
             ValueError: Check failed due Database error
         """
         try:
-            results: List[Dict[str, List[Dict[str, Any]]]] = self.__client.get_list_continuous_queries()
+            # returns a list of dictonarys with db name as key
+            # inside the dicts there is a list of each cq
+            # the cqs are displayed as a 2 elem dict: 'name' and 'query'
+            results: List[Dict[str, List[Dict[str, str]]]] = self.__client.get_list_continuous_queries()
 
-            cq_result_list: Optional[List[Dict[str, Any]]] = None
-            for result in results:
-                # check if this is the associated database
-                cq_result_list = result.get(self.database.name, None)
-                if(cq_result_list is not None):
-                    break
-            if(cq_result_list is None):
-                cq_result_list = []
+            # get the cq's of the correct db
+            # list of 2-elem cqs: 'name' and 'query'
+            cq_result_list: List[Dict[str, str]] = next(
+                (cq.get(self.database.name, []) for cq in results
+                # only if matches the db name
+                if cq.get(self.database.name, False)), [])
 
-            cq_dict: Dict[str, ContinuousQuery] = {}
+            # save all results into a dict for quicker accessing afterwards
+            cq_result_dict: Dict[str, str] = {}
             for cq_result in cq_result_list:
-                cq_dict[cq_result['name']] = cq_result['query']
+                cq_result_dict[cq_result['name']] = cq_result['query']
 
+            # queries which need to be added
             add_cq_list: List[ContinuousQuery] = []
-            alter_cq_list: List[ContinuousQuery] = []
+            # queries to be deleted (no alter possible): save name only
+            drop_cq_list: List[str] = []
 
+            # check for each cq if it needs to be 1. dropped and 2. added
             for continuous_query in self.database.continuous_queries:
 
-                result_cq = cq_dict.get(continuous_query.name, None)
+                result_cq = cq_result_dict.get(continuous_query.name, None)
                 if(result_cq is None):
                     add_cq_list.append(continuous_query)
                 elif(result_cq != continuous_query.to_query()):
-                    alter_cq_list.append(continuous_query)
+                    LOGGER.debug(f"result_cq: {result_cq}")
+                    LOGGER.debug(f"desired_cq: {continuous_query.to_query()}")
+                    # delete result cq and then add it new
+                    # save name only
+                    drop_cq_list.append(continuous_query.name)
+                    add_cq_list.append(continuous_query)
                 # else: all good
 
-            LOGGER.debug(f"altering {len(add_cq_list)} CQ's. deleting {add_cq_list}")
+            LOGGER.debug(f"deleting {len(drop_cq_list)} CQ's: {drop_cq_list}")
             # alter not possible -> drop and readd
-            for continuous_query in alter_cq_list:
+            for query_name in drop_cq_list:
                 self.__client.drop_continuous_query(  # type: ignore
-                    name=continuous_query.name,
-                    database=continuous_query.database.name
+                    name=query_name,
+                    database=self.database.name
                 )
-            # extend to reinsert
-            add_cq_list.extend(alter_cq_list)
+
+            # adding new / altered CQ's
             LOGGER.debug(f"adding {len(add_cq_list)} CQ's. adding {add_cq_list}")
             for continuous_query in add_cq_list:
                 self.__client.create_continuous_query( # type: ignore
@@ -265,6 +282,66 @@ class InfluxClient:
         except (ValueError, InfluxDBClientError, InfluxDBServerError, requests.exceptions.ConnectionError) as error: # type: ignore
             ExceptionUtils.exception_info(error=error) # type: ignore
             raise ValueError("Continuous Query check failed")
+
+    def check_grant_user(self, username: str, permission: str):
+        """Checks and Grants the permissions for a user to match at least the required permission or a higher one.
+
+        Warns if user does not exists. Grants permission if current permissions to not fullfil the requirement.
+        This method does not abort if the check or grant was unsuccessfull!
+
+        Args:
+            username (str): name of the user to be checked
+            permission (str): permissions to be granted: READ, WRITE, ALL
+
+        Raises:
+            ValueError: No username provided
+            ValueError: no permissions provided
+        """
+        try:
+            LOGGER.debug(f"Checking/Granting user {username} for {permission} permissions on db {self.database.name}.")
+            if(not username):
+                raise ValueError("checking/granting a user permissions require an username")
+            if(not permission):
+                raise ValueError("checking/granting a user permissions require a defined set of permissions")
+
+            # Get all users to check for the required user
+            user_list: List[Dict[str, Union[str, bool]]] = self.__client.get_list_users()
+            LOGGER.debug(f"Returned list of users: {user_list}")
+
+            # get the wanted user if it exists. Default value to not throw an error.
+            user_dict = next(filter(lambda user_dict: user_dict['user'] == username , user_list), None)
+            LOGGER.debug(f"Found user: {user_dict}")
+
+            # SPPMon should not create a user since then a default password will be used
+            # It is very unlikely that this one is getting changed and therefore a risk of leaking data.
+            if(not user_dict):
+                ExceptionUtils.error_message(f"The user '{username}' does not exist. Please create it according to the documentation.")
+                return # not abort SPPMon, only minor error
+
+            if(user_dict['admin']):
+                LOGGER.debug(f"{username} is already admin. Finished check")
+                return
+
+            # get privileges of user to check if he already has matching permissions
+            db_privileges: List[Dict[str, str]] = self.__client.get_list_privileges(username)
+            LOGGER.debug(db_privileges)
+
+            # check for existing privileges
+            db_entry = next(filter(lambda entry_dict: entry_dict['database'] == self.database.name , db_privileges), None)
+            # there must be permissions of either wanted permission or higher (all)
+            if(db_entry and (db_entry['privilege'] == permission or db_entry['privilege'] == "ALL")):
+                LOGGER.debug(f"{username} has already correct permissions. Finished check")
+                return
+
+            # else give permissions
+            LOGGER.info(f"Permissions missing for user {username}, granting {permission} permissions.")
+            self.__client.grant_privilege(permission, self.database.name, username)
+
+            LOGGER.debug(f"Granted permissions to {username}")
+
+
+        except (ValueError, InfluxDBClientError, InfluxDBServerError, requests.exceptions.ConnectionError) as error: # type: ignore
+            ExceptionUtils.exception_info(error=error, extra_message="User check failed for user {username} with permissions {permission} on db {self.database.name}") # type: ignore
 
     def copy_database(self, new_database_name: str) -> None:
         if(not new_database_name):
@@ -487,16 +564,20 @@ class InfluxClient:
         LOGGER.debug("Appended %d items to the insert buffer", len(query_buffer))
 
         # safeguard to avoid memoryError
-        if(len(self.__insert_buffer[table]) > 5 * self.__query_max_batch_size):
+        if(len(self.__insert_buffer[table]) > 2 * self.__query_max_batch_size):
             self.flush_insert_buffer()
 
         LOGGER.debug(f"Exit insert_dicts for table: {table_name}")
 
-    def flush_insert_buffer(self) -> None:
+    def flush_insert_buffer(self, fallback: bool = False) -> None:
         """Flushes the insert buffer, send querys to influxdb server.
 
         Sends in batches defined by `__batch_size` to reduce http overhead.
         Only send-statistics remain in buffer, flush again to send those too.
+        Retries once into fallback mode if first request fails with modified settings.
+
+        Keyword Arguments:
+            fallback {bool} -- Whether to use fallback-options. Does not repeat on fallback (default: {False})
 
         Raises:
             ValueError: Critical: The query Buffer is None.
@@ -508,90 +589,112 @@ class InfluxClient:
         if(not self.__insert_buffer):
             return
 
-        # Done before to be able to clear buffer before sending
-        # therefore stats can be re-inserted
-        insert_list: List[Tuple[Table, List[str]]] = []
-        for(table, queries) in self.__insert_buffer.items():
-
-            insert_list.append((table, list(map(lambda query: query.to_query(), queries))))
-
-        # clear all querys which are now transformed
-        self.__insert_buffer.clear()
-
-        for(table, queries_str) in insert_list:
+        # pre-save the keys to avoid Runtime-Error due "dictionary keys changed during iteration"
+        # happens due re-run changing insert_buffer
+        insert_keys = list(self.__insert_buffer.keys())
+        for table in insert_keys:
+            # get empty in case the key isnt valid anymore (due fallback option)
+            queries = list(map(lambda query: query.to_query(), self.__insert_buffer.get(table, [])))
+            item_count = len(queries)
+            if(item_count == 0):
+                continue
 
             # stop time for send progess
+            if(not fallback):
+                batch_size = self.__query_max_batch_size
+            else:
+                batch_size = self.__fallback_max_batch_size
+
+            re_send: bool = False
+            error_msg: Optional[str] = None
             start_time = time.perf_counter()
             try:
-                # send batch_size querys at once
                 self.__client.write_points(
-                    points=queries_str, database=self.database.name,
+                    points=queries,
+                    database=self.database.name,
                     retention_policy=table.retention_policy.name,
-                    batch_size=self.__query_max_batch_size,
+                    batch_size=batch_size,
                     time_precision='s', protocol='line')
+                end_time = time.perf_counter()
             except InfluxDBClientError as error: # type: ignore
                 match = re.match(r".*partial write:[\s\w]+=(\d+).*", error.content)
-                if(match and int(match.group(1)) < 10000):
-                    pass # ignore this case, its unavoidable and doesnt change anything
-                else:
-                    ExceptionUtils.exception_info(error=error, extra_message="Error when sending Insert Buffer") # type: ignore
 
-            except (InfluxDBServerError, ConnectionError) as error: # type: ignore
-                ExceptionUtils.exception_info(error=error, extra_message="Error when sending Insert Buffer") # type: ignore
+                if(match and int(match.group(1)) < batch_size):
+                    # beyond 10.000 everything will be lost, below still written
+                    # ignore this case, its unavoidable and doesnt change anything
+                    pass
+                elif(re.match(r".*partial write: unable to parse .*", error.content)):
+                    # some messages are lost, other written
+                    ExceptionUtils.exception_info(error=error,
+                    extra_message=f"Some messages were lost when sending buffer for table {table.name}, but everything else should be OK")
+                    error_msg = getattr(error, 'message', repr(error))
+                else:
+                    ExceptionUtils.exception_info(error=error,
+                        extra_message=f"Client error when sending insert buffer for table {table.name}.")
+                    error_msg = getattr(error, 'message', repr(error))
+                    # re-try with a smaller batch size, unsure if this helps
+                    re_send = True
+
+            except (InfluxDBServerError, ConnectionError, requests.exceptions.ConnectionError) as error: # type: ignore
+                ExceptionUtils.exception_info(error=error,
+                    extra_message=f"Connection error when sending insert buffer for table {table.name}.")
+                error_msg = getattr(error, 'message', repr(error))
+                re_send = True
+
+            # measure timing
             end_time = time.perf_counter()
+
+            # clear the table which just got sent
+            if(re_send and not fallback):
+                ExceptionUtils.error_message("Trying to send influx buffer again with fallback options")
+                self.flush_insert_buffer(fallback=True)
+
+            # None to avoid key erro if table is popped on fallback
+            self.__insert_buffer.pop(table, None)
 
             # add metrics for the next sending process.
             # compute duration, metrics computed per batch
             self.__insert_metrics_to_buffer(
-                Keyword.INSERT, {table:len(queries_str)}, end_time-start_time, len(queries_str))
+                Keyword.INSERT, table, end_time-start_time, item_count,
+                error=error_msg)
 
-    def __insert_metrics_to_buffer(self, keyword: Keyword, tables_count: Dict[Table, int],
-                                   duration_s: float, batch_size: int = 1) -> None:
-        """Generates statistics per send Batch, total duration is split by item per table.
+    def __insert_metrics_to_buffer(self, keyword: Keyword, table: Table,
+                                   duration_s: float, item_count: int,
+                                   error: Optional[str] = None) -> None:
+        """Generates statistics of influx-requests and append them to be sent
 
         Arguments:
             keyword {Keyword} -- Kind of query.
             tables_count {dict} -- Tables send in this batch, key is table, value is count of items.
-            duration_s {float} -- Time needed to send the batch in seconds.
+            duration_s {Optional[float]} -- Time needed to send the batch in seconds. None if a error occured
+            item_count {int} -- Ammount of queries sent to the server
 
         Keyword Arguments:
-            batch_size {int} -- Ammount of queries sent in one batch sent at once. (default: {1})
+            error {Optional[str]} -- Error message if an error occured.
 
         Raises:
             ValueError: Any arg does not match the defined parameters or value is unsupported
         """
         # Arg checks
-        if(list(filter(lambda arg: arg is None, [keyword, tables_count, duration_s, batch_size]))):
-            raise ValueError("any metric arg is None. This is not supported")
-        if(not isinstance(keyword, Keyword)):
-            raise ValueError("need the keyword to be a instance of keyword.")
-        if(not tables_count or not isinstance(tables_count, dict)):
-            raise ValueError("need at least one entry of a table in tables_count.")
-        if(duration_s <= 0):
-            raise ValueError("only positive values are supported for duration. Must be not 0")
-        if(batch_size < 1):
-            raise ValueError("only positive values are supported for batch_size. Must be not 0")
-
-        # get shared record time to be saved on
-        querys = []
-
-        # save metrics for each involved table individually
-        for (table, item_count) in tables_count.items():
-            querys.append(
-                InsertQuery(
-                    table=self.__metrics_table,
-                    fields={
-                        # Calculating relative duration for this part of whole query
-                        'duration_ms':  duration_s*1000*(max(item_count, 1)/batch_size),
-                        'item_count':   item_count,
-                    },
-                    tags={
-                        'keyword':      keyword,
-                        'tableName':    table.name,
-                    },
-                    time_stamp=SppUtils.get_actual_time_sec()
-                ))
-        self.__insert_buffer[self.__metrics_table] = self.__insert_buffer.get(self.__metrics_table, []) + querys
+        if(list(filter(lambda arg: arg is None, [keyword, table, duration_s, item_count]))):
+            raise ValueError("One of the insert metrics to influx args is None. This is not supported")
+        query = InsertQuery(
+            table=self.__metrics_table,
+            fields={
+                'error': error,
+                # Calculating relative duration for this part of whole query
+                'duration_ms':  duration_s*1000,
+                'item_count':   item_count,
+            },
+            tags={
+                'keyword':      keyword,
+                'tableName':    table.name,
+            },
+            time_stamp=SppUtils.get_actual_time_sec()
+        )
+        old_queries = self.__insert_buffer.get(self.__metrics_table, [])
+        old_queries.append(query)
+        self.__insert_buffer[self.__metrics_table] = old_queries
 
     def update_row(self, table_name: str, tag_dic: Dict[str, str] = None,
                    field_dic: Dict[str, Union[str, int, float, bool]] = None, where_str: str = None):
@@ -701,10 +804,8 @@ class InfluxClient:
         else:
             length = 0
 
-        tables_count: Dict[Table, int] = {}
         for table in query.tables:
-            tables_count[table] = int(length/len(query.tables))
-
-        self.__insert_metrics_to_buffer(query.keyword, tables_count, end_time-start_time)
+            count = int(length/len(query.tables))
+            self.__insert_metrics_to_buffer(query.keyword, table, end_time-start_time, count)
 
         return result # type: ignore
