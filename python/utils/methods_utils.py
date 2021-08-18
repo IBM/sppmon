@@ -19,15 +19,16 @@ from utils.spp_utils import SppUtils
 LOGGER = logging.getLogger("sppmon")
 
 class MethodUtils:
-    """Wrapper for static /class connection themed helper methods. You may implement new methods in here.
+    """Wrapper for helper methods for all sppmon-super-methods. You may implement new methods in here.
 
     Attributes:
         verbose - to be set in sppmon.py
 
     Methods:
-        get_with_sub_values - Extends a dict by possible sub-dicts in its values, recursive.
-        url_set_param - Sets or removes params from an URL.
+        ssh_execute_commands - functions executes commands via ssh on several hosts.
+        query_something - Generic function to query from the REST-API and rename elements within it.
         my_print - prints a data to our own format, either prettyprint or table print.
+        joblogs_parse_params - Used to parse a string within a joblog to stat transition.
 
     """
 
@@ -193,7 +194,9 @@ class MethodUtils:
 
     @staticmethod
     def joblogs_parse_params(regex_str: str, parse_string: str, mapping_func: Callable[[Match[Any]], Dict[str, Any]]) -> Dict[str, Any]:
-        """Used to parse a string within a joblog to stat transition. Note: match[0] is full match, group 1 is match[1] in lambda.
+        """Used to parse a string within a joblog to stat transition.
+
+        Note: match[0] is full match, group 1 is match[1] in lambda.
 
         Args:
             regex_str (str): raw regex string used as pattern
