@@ -312,7 +312,8 @@ class JobMethods:
                 try:
                     insert_dict: Dict[str, Any] = {}
 
-                    insert_dict['resourceType'] = job_stats['resourceType']
+                    # fields
+                    insert_dict['resourceType'] = job_stats.get('resourceType', None)
                     insert_dict['total'] = job_stats.get('total', 0)
                     insert_dict['success'] = job_stats.get('success', 0)
                     insert_dict['failed'] = job_stats.get('failed', 0)
@@ -324,6 +325,7 @@ class JobMethods:
 
                     # time key
                     insert_dict['start'] = job['start']
+
                     # regular tag values for grouping:
                     insert_dict['id'] = job.get('id', None)
                     insert_dict['jobId'] = job.get('jobId', None)
