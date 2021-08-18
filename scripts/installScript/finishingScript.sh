@@ -28,7 +28,7 @@ finishingScript() {
         echo ""
         if confirm "> Do you want view the authentification file contents?"; then
             rowLimiter
-            checkReturn cat "${authFile}"
+            checkReturn sudo cat "${authFile}"
             rowLimiter
         fi
         echo ""

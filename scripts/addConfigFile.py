@@ -240,7 +240,7 @@ class ConfigFileSetup:
             LOGGER.info(f"> Setup of auth-file failed due error: {error}")
 
         # ########## EXECUTION ################
-        Utils.printRow()
+
         LOGGER.info("> You may add multiple SPP-Server now.")
         print("> Each server requires it's own config file")
 

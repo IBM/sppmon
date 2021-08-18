@@ -176,7 +176,7 @@ readAuth() {
     fi
     if [[ -r "${authFile}" ]]; then
         set -a # now all variables are exported
-        source "${authFile}"
+        source <(sudo cat "${authFile}")
         set +a # Not anymore
     fi
 }
