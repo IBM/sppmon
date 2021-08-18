@@ -61,6 +61,7 @@ Author:
  07/27/2021 version 0.13.7 Streamlining --test arg and checking for GrafanaReader on InfluxSetup
  08/02/2021 version 0.13.8 Enhancement and replacement of the ArgumentParser and clearer config-file error messages
  08/10/2021 version 0.13.9 Rework of the JobLogs and fix of Log-Filter.
+ 08/18/2021 version 0.14   Added install script and fixed typo in config file, breaking old config files.
 """
 from __future__ import annotations
 
@@ -89,7 +90,8 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "0.13.9  (2021/08/10)"
+VERSION = "0.14.0  (2021/08/18)"
+
 
 # ----------------------------------------------------------------------------
 # command line parameter parsing
@@ -372,6 +374,7 @@ class SppMon:
         logger.addHandler(file_handler)
         logger.addHandler(stream_handler)
 
+
     def check_pid_file(self) -> bool:
         if(ARGS.verbose):
             LOGGER.info("Checking for other SPPMon instances")
@@ -545,7 +548,10 @@ class SppMon:
 
         try:
             auth_rest: Dict[str, Any] = SppUtils.get_cfg_params(param_dict=config_file, param_name="sppServer") # type: ignore
-            self.job_log_retention_time = auth_rest.get("jobLog_rentation", self.job_log_retention_time)
+            # TODO DEPRICATED TO BE REMOVED IN 1.1
+            self.job_log_retention_time = auth_rest.get("jobLog_rentation", auth_rest.get("jobLog_retention", self.job_log_retention_time))
+            # TODO New once 1.1 is live
+            #self.job_log_retention_time = auth_rest.get("jobLog_retention", self.job_log_retention_time)
 
             self.job_methods = JobMethods(
                 self.influx_client, self.api_queries, self.job_log_retention_time,
