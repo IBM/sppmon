@@ -77,8 +77,8 @@ pythonSetup() {
     echo ""
 
     loggerEcho "> Checking gcc install"
-    gcc --version &>/dev/null
-    if (( $? != 0 ))
+
+    if ! gcc --version &>/dev/null
         then
             loggerEcho "> Installing gcc"
             checkReturn sudo yum install gcc

@@ -20,7 +20,7 @@ finishingScript() {
     loggerEcho "You've completed the install of SPPMon!"
     echo ""
     loggerEcho "> You may find saved config files under:"
-    loggerEcho ${configDir}
+    loggerEcho "${configDir}"
     if [[ -e ${authFile} ]]; then
         echo "> The authentification file still exists.  This file may include"
         echo "sensitive information such as passwords. You can optionally view"

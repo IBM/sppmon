@@ -226,8 +226,8 @@ generate_cert() {
         # Actually create the cert
         while true; do # repeat until created
             echo "${keyCreateCommand}"
-            eval "${keyCreateCommand}"
-            if [[ $? -ne 0 ]]; then
+
+            if ! eval "${keyCreateCommand}" ; then
                 if ! confirm "cert creation failed. Do you want to try again?"; then
                     abortInstallScript
                 fi
