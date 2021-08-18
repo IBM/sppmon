@@ -61,10 +61,6 @@ checkReturn() { # TODO(Niels Korschinsky) maybe this is Bugged. Other quotations
 #   None, aborts script on wrong password
 #######################################
 sudoCheck() {
-    if (( $# != 0 )); then
-        >&2 loggerEcho "Illegal number of parameters sudoCheck"
-        abortInstallScript
-    fi
 
     loggerEcho "Checking if sudo privileges are available."
     if [[ "${EUID}" = 0 ]]; then
@@ -94,10 +90,6 @@ sudoCheck() {
 #   None
 #######################################
 rowLimiter() {
-    if (( $# != 0 )); then
-        >&2 loggerEcho "Illegal number of parameters rowLimiter"
-        abortInstallScript
-    fi
 
     printf '\n'
     printf '#%.0s' $(seq 1 $(tput cols)) && printf '\n'

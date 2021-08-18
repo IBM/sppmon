@@ -34,10 +34,6 @@
 #   0 if restart is successful, 1 if not.
 #######################################
 restartInflux() {
-    if (( $# != 0 )); then
-        >&2 loggerEcho "Illegal number of parameters restartInflux"
-        abortInstallScript
-    fi
     local check_influx='systemctl is-active influxdb &>/dev/null; echo $?'
 
     if (( $(eval "${check_influx}") == 0 )); then

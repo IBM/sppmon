@@ -40,10 +40,6 @@
 #   exit -1
 #######################################
 abortInstallScript() {
-    if (( $# != 0 )); then
-        >&2 echo "Illegal number of parameters abortInstallScript"
-    fi
-
     if [[ -w "${logFile}" ]] ; then
         logger "Aborting the SPPMon install script."
         logger "Last saved point is: ${continue_point}."
@@ -113,10 +109,6 @@ saveState() {
 #   None
 #######################################
 getPath() {
-    if (( $# != 0 )); then
-        >&2 echo "Illegal number of parameters getPath"
-        abortInstallScript
-    fi
     # WARNING: Use of logger impossible due call before setup.
     dirname "$(readlink -f "$0")"
 }
@@ -170,10 +162,6 @@ saveAuth() {
 #   None
 #######################################
 readAuth() {
-    if (( $# != 0 )); then
-        >&2 loggerEcho "Illegal number of parameters readAuth"
-        abortInstallScript
-    fi
     if [[ -r "${authFile}" ]]; then
         set -a # now all variables are exported
 
@@ -199,10 +187,6 @@ readAuth() {
 #   None
 #######################################
 restoreState() {
-    if (( $# != 0 )); then
-        >&2 loggerEcho "Illegal number of parameters restoreState"
-        abortInstallScript
-    fi
 
     if [[ -f "${saveFile}" ]]; then # already executed
 
@@ -245,10 +229,6 @@ restoreState() {
 #   None
 #######################################
 removeGeneratedFiles() {
-    if (( $# != 0 )); then
-        >&2 loggerEcho "Illegal number of parameters removeGeneratedFiles"
-        abortInstallScript
-    fi
 
     if [[ -f "${saveFile}" ]]
         then
