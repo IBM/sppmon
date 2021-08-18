@@ -38,7 +38,7 @@ welcome() {
     echo ""
     if ! confirm "Do you understand the instructions and want to continue?"; then
         loggerEcho "Aborting install script. Nothing has been changed yet."
-        exit -1
+        exit 1
     fi
 
     clear
@@ -52,13 +52,13 @@ welcome() {
     echo ""
     if ! (confirm "Start the install script?" "--alwaysConfirm"); then
         loggerEcho "Aborting install script. Nothing has been changed yet."
-        exit -1
+        exit 1
     else
         echo ""
         loggerEcho "Starting the install script for sppmon."
         echo ""
         continue_point='SYS_SETUP'
-        echo "${continue_point}" > ${saveFile}
+        echo "${continue_point}" > "${saveFile}"
     fi
 }
 
@@ -69,7 +69,7 @@ if [ "$1" != "--source-only" ]; then
         abortInstallScript
     fi
     # prelude
-    local mainPath="$1"
+    mainPath="$1"
     # shellcheck source=./installer.sh
     source "${mainPath}" "--source-only"
 

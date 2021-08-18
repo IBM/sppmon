@@ -40,11 +40,10 @@
 #   None, aborts script on failure
 #######################################
 checkReturn() { # TODO(Niels Korschinsky) maybe this is Bugged. Other quotations needed?
-    eval "$@"
-    if [[ "$?" -ne 0 ]]
-        then
-            loggerEcho "ERROR when executing command: \"$@\""
-            abortInstallScript
+
+    if ! eval "$@" ; then
+        loggerEcho "ERROR when executing command: \"$*\""
+        abortInstallScript
     fi
 }
 
@@ -92,7 +91,7 @@ sudoCheck() {
 rowLimiter() {
 
     printf '\n'
-    printf '#%.0s' $(seq 1 $(tput cols)) && printf '\n'
+    printf '#%.0s' $(seq 1 "$(tput cols)") && printf '\n'
     printf '\n'
 }
 
@@ -117,12 +116,14 @@ initLogger(){
     logFile=$1
     set +a # not anymore
 
-    checkReturn touch ${logFile}
-    echo "" >> ${logFile}
-    echo "$(rowLimiter)" >> ${logFile}
-    echo "$(date) |> initialize logger " >> ${logFile}
-    echo "$(rowLimiter)" >> ${logFile}
-    echo "" >> ${logFile}
+    checkReturn touch "${logFile}"
+    {
+        echo ""
+        echo rowLimiter
+        echo "$(date) |> initialize logger "
+        echo rowLimiter
+        echo ""
+    } >> "${logFile}"
 
 }
 
@@ -144,7 +145,7 @@ logger(){
             abortInstallScript
     fi
 
-    echo "$(date) |> $@" >> "${logFile}"
+    echo "$(date) |> $*" >> "${logFile}"
 
 }
 
@@ -167,7 +168,7 @@ loggerEcho() {
             abortInstallScript
     fi
 
-    echo "$(date) |> $@" >> "${logFile}"
+    echo "$(date) |> $*" >> "${logFile}"
     echo "$@"
 
 }
@@ -224,7 +225,7 @@ generate_cert() {
 
         # Actually create the cert
         while true; do # repeat until created
-            echo ${keyCreateCommand}
+            echo "${keyCreateCommand}"
             eval "${keyCreateCommand}"
             if [[ $? -ne 0 ]]; then
                 if ! confirm "cert creation failed. Do you want to try again?"; then
@@ -269,8 +270,8 @@ generate_cert() {
 
     fi
 
-    eval ${__resultKeyPath}="'${keyPath}'"
-    eval ${__resultCertPath}="'${certPath}'"
+    eval "${__resultKeyPath}='${keyPath}'"
+    eval "${__resultCertPath}='${certPath}'"
 
     if [[ ! ${unsafeSsl} ]] ; then
         return 0
@@ -320,7 +321,7 @@ confirm() { # param1:message # param2: alwaysconfirm
     fi
 
     if [ "${autoConfirm}" = true ] && ! [ "${alwaysConfirm}" = true ] ; then
-        printf "${message} : autoConfirm -> "
+        printf "%s : autoConfirm -> " "${message}"
         loggerEcho "Yes"
         return 0
     fi
@@ -383,7 +384,7 @@ promptText() {
                 break
         fi
     done
-    eval ${__resultVal}="'${promptTextInput}'"
+    eval "${__resultVal}='${promptTextInput}'"
 
 }
 
@@ -433,7 +434,8 @@ promptPasswords() {
             loggerEcho "No empy value is allowed, please try again."
             continue # start loop again
         else
-            local symbCheck=$(echo "${promptPasswordInput}" | grep "[${prohibitedSymbols}]" >/dev/null; echo $?)
+            local symbCheck
+            symbCheck=$(echo "${promptPasswordInput}" | grep "[${prohibitedSymbols}]" >/dev/null; echo $?)
             # 0 means match, which is bad. 1 = all good
             if [[ ${symbCheck} -ne 1 ]]; then
                 loggerEcho "The ${description} must not contain any of the following symbols: ${prohibitedSymbols}"
@@ -464,7 +466,7 @@ promptPasswords() {
         fi
     done
 
-    eval ${__resultVal}="'${promptPasswordInput}'"
+    eval "${__resultVal}='${promptPasswordInput}'"
 }
 
 #######################################
@@ -496,7 +498,7 @@ promptLimitedText() {
 
     while [[ -z ${promptLimitedTextInput} ]]; do
         if [[ -n ${3+x} ]]; then # evaluates to nothing if not set, form: if [ -z {$var+x} ]; then unset; else set; fi
-            promptText "${description}" promptLimitedTextInput $3
+            promptText "${description}" promptLimitedTextInput "$3"
         else # default not given
             promptText "${description}" promptLimitedTextInput
         fi
@@ -504,7 +506,8 @@ promptLimitedText() {
         if [[ -z ${promptLimitedTextInput} ]]; then
             loggerEcho "No empy value is allowed, please try again."
         else
-            local symbCheck=$(echo "${promptLimitedTextInput}" | grep "[${prohibitedSymbols}]" >/dev/null; echo $?)
+            local symbCheck
+            symbCheck=$(echo "${promptLimitedTextInput}" | grep "[${prohibitedSymbols}]" >/dev/null; echo $?)
             # 0 means match, which is bad. 1 = all good
             if [[ ${symbCheck} -ne 1 ]]; then
                 loggerEcho "The ${description} must not contain any of the following symbols: ${prohibitedSymbols}"
@@ -513,7 +516,7 @@ promptLimitedText() {
         fi
     done
 
-    eval ${__resultVal}="'${promptLimitedTextInput}'"
+    eval "${__resultVal}='${promptLimitedTextInput}'"
 }
 
 # ######### STARTUP ##############
@@ -525,7 +528,7 @@ if [ "$1" != "--source-only" ]; then
     fi
 
     # prelude
-    local mainPath="$1"
+    mainPath="$1"
     # shellcheck source=./installer.sh
     source "${mainPath}" "--source-only"
 

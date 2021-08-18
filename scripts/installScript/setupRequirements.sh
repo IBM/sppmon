@@ -36,25 +36,25 @@ setupRequirements() {
 
     loggerEcho "> Logging System information"
     loggerEcho -e "-------------------------------System Information----------------------------"
-    loggerEcho -e "Hostname:\t\t"`hostname`
-    loggerEcho -e "uptime:\t\t\t"`uptime | awk '{print $3,$4}' | sed 's/,//'`
-    loggerEcho -e "Manufacturer:\t\t"`cat /sys/class/dmi/id/chassis_vendor`
-    loggerEcho -e "Product Name:\t\t"`cat /sys/class/dmi/id/product_name`
-    loggerEcho -e "Version:\t\t"`sudo cat /sys/class/dmi/id/product_version`
-    loggerEcho -e "Serial Number:\t\t"`sudo cat /sys/class/dmi/id/product_serial`
-    loggerEcho -e "Machine Type:\t\t"`vserver=$(lscpu | grep Hypervisor | wc -l); if [ ${vserver} -gt 0 ]; then echo "VM"; else echo "Physical"; fi `
-    loggerEcho -e "Operating System:\t"`hostnamectl | grep "Operating System" | cut -d ' ' -f5-`
-    loggerEcho -e "Kernel:\t\t\t"`uname -r`
-    loggerEcho -e "Architecture:\t\t"`arch`
-    loggerEcho -e "Processor Name:\t\t"`awk -F':' '/^model name/ {print $2}' /proc/cpuinfo | uniq | sed -e 's/^[ \t]*//'`
-    loggerEcho -e "Active User:\t\t"`w | cut -d ' ' -f1 | grep -v USER | xargs -n1`
-    loggerEcho -e "System Main IP:\t\t"`hostname -I`
+    loggerEcho -e "Hostname:\t\t""$(hostname)"
+    loggerEcho -e "uptime:\t\t\t""$(uptime | awk '{print $3,$4}' | sed 's/,//')"
+    loggerEcho -e "Manufacturer:\t\t""$(cat /sys/class/dmi/id/chassis_vendor)"
+    loggerEcho -e "Product Name:\t\t""$(cat /sys/class/dmi/id/product_name)"
+    loggerEcho -e "Version:\t\t""$(sudo cat /sys/class/dmi/id/product_version)"
+    loggerEcho -e "Serial Number:\t\t""$(sudo cat /sys/class/dmi/id/product_serial)"
+    loggerEcho -e "Machine Type:\t\t""$(vserver=$(lscpu | grep -c Hypervisor); if [ "${vserver}" -gt 0 ]; then echo "VM"; else echo "Physical"; fi )"
+    loggerEcho -e "Operating System:\t""$(hostnamectl | grep "Operating System" | cut -d ' ' -f5-)"
+    loggerEcho -e "Kernel:\t\t\t""$(uname -r)"
+    loggerEcho -e "Architecture:\t\t""$(arch)"
+    loggerEcho -e "Processor Name:\t\t""$(awk -F':' '/^model name/ {print $2}' /proc/cpuinfo | uniq | sed -e 's/^[ \t]*//')"
+    loggerEcho -e "Active User:\t\t""$(w | cut -d ' ' -f1 | grep -v USER | xargs -n1)"
+    loggerEcho -e "System Main IP:\t\t""$(hostname -I)"
     loggerEcho -e "----------------------------------Disk--------------------------------------"
     df -PhT
-    logger $(df -PhT)
+    logger "$(df -PhT)"
     loggerEcho -e "-------------------------------Package Updates-------------------------------"
     yum updateinfo summary | grep 'Security|Bugfix|Enhancement'
-    logger $(yum updateinfo summary | grep 'Security|Bugfix|Enhancement')
+    logger "$(yum updateinfo summary | grep 'Security|Bugfix|Enhancement')"
     echo ""
     loggerEcho "> finished logging."
 
@@ -78,7 +78,7 @@ if [ "$1" != "--source-only" ]; then
         abortInstallScript
     fi
     # prelude
-    local mainPath="$1"
+    mainPath="$1"
     # shellcheck source=./installer.sh
     source "${mainPath}" "--source-only"
 

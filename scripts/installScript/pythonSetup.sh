@@ -32,9 +32,11 @@
 #######################################
 currentInstallCheck() {
     loggerEcho "> Verifying the installed python version"
-    local python_old_path=$(which python)
+    local python_old_path
+    python_old_path=$(which python)
 
-    local current_ver=$(python -V 2>&1 | grep -oP "^Python \K.*")
+    local current_ver
+    current_ver=$(python -V 2>&1 | grep -oP "^Python \K.*")
     #  code does work with 3.8, but latest version is better.
     local required_ver="3.9.6"
 
@@ -45,8 +47,10 @@ currentInstallCheck() {
         checkReturn ln -sf "${python_old_path}" /usr/bin/python3
         return 0
     elif command -v python3 &> /dev/null ; then
-        local python_old_path=$(which python3)
-        local current_ver=$(python3 -V 2>&1 | grep -oP "^Python \K.*")
+        local python_old_path
+        python_old_path=$(which python3)
+        local current_ver
+        current_ver=$(python3 -V 2>&1 | grep -oP "^Python \K.*")
 
         if [ "$(printf '%s\n' "${required_ver}" "${current_ver}" | sort -V | head -n1)" = "${required_ver}" ]; then
             loggerEcho "> Compatible Python version installed (${current_ver} > ${required_ver})."
@@ -137,7 +141,7 @@ pythonSetup() {
     loggerEcho "> Installing required packages"
     #echo $(realpath $(dirname "${mainPath}")/../python/requirements.txt)
 
-    checkReturn sudo -H python3 -m pip install -U -r $(realpath $(dirname "${mainPath}")/../python/requirements.txt)
+    checkReturn sudo -H python3 -m pip install -U -r "$(realpath "$(dirname "${mainPath}")/../python/requirements.txt")"
 
     loggerEcho "Finished Python installation Setup"
 
@@ -151,7 +155,7 @@ if [ "$1" != "--source-only" ]; then
     fi
 
     # prelude
-    local mainPath="$1"
+    mainPath="$1"
     # shellcheck source=./installer.sh
     source "${mainPath}" "--source-only"
 

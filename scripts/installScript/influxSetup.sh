@@ -100,11 +100,12 @@ executeInfluxCommand() {
             connectionTestString="${connectionTestString} -unsafeSsl"
         fi
     fi
-    logger ${connectionTestString} -execute "${command}"
+    logger "${connectionTestString} -execute ${command}"
     loggerEcho "> Waiting 10 seconds to avoid connection error"
     sleep 10
 
-    local connectionOutput=$(${connectionTestString} -execute "${command}")
+    local connectionOutput
+    connectionOutput=$(${connectionTestString} -execute "${command}")
     # somehow this does not result 1 if failed
     # in regular terminal it does
     #local connectionCode=$?
@@ -113,7 +114,7 @@ executeInfluxCommand() {
 
     logger "${connectionOutput}"
 
-    eval "${__connectionResult}"="'${connectionOutput}'"
+    eval "${__connectionResult}='${connectionOutput}'"
 
     if [[ "${connectionOutput}" == *"ERR"* ]] ; then
         return 1
@@ -181,7 +182,8 @@ EOF
     loggerEcho "> Installing database"
     checkReturn sudo yum install influxdb-1.8.6-1
 
-    local influxAddress=$(ip route get 1 | sed -n 's/^.*src \([0-9.]*\) .*$/\1/p')
+    local influxAddress
+    influxAddress=$(ip route get 1 | sed -n 's/^.*src \([0-9.]*\) .*$/\1/p')
     local influxPort=8086
 
     loggerEcho "> Firewall configuration"
@@ -298,7 +300,7 @@ EOF
         executeInfluxCommand command_output "CREATE USER \"${influxAdminName}\" WITH PASSWORD '${influxAdminPassword}' WITH ALL PRIVILEGES"
         local userCreateReturnCode=$?
 
-        if (( ${userCreateReturnCode} != 0 ));then
+        if (( userCreateReturnCode != 0 )) ; then
             loggerEcho "Creation failed due an error: ${command_output}"
             if ! confirm "Do you want to try again (y) or continue (n)? Abort by ctrl + c" "--alwaysConfirm"; then
                 # user wants to exit
@@ -362,7 +364,7 @@ EOF
         executeInfluxCommand command_output "CREATE USER \"${influxGrafanaReaderName}\" WITH PASSWORD '${influxGrafanaReaderPassword}'"
         local userCreateReturnCode=$?
 
-        if (( ${userCreateReturnCode} != 0 )) ;then
+        if (( userCreateReturnCode != 0 )) ;then
             loggerEcho "Creation failed due an error: ${command_output}"
             if ! confirm "Do you want to try again (y) or continue (n)? Abort by ctrl + c" "--alwaysConfirm"; then
                 # user wants to exit
@@ -440,7 +442,7 @@ EOF
     restartInflux
 
     # Checking connection
-    verifyConnection ${influxAdminName} ${influxAdminPassword}
+    verifyConnection "${influxAdminName}" "${influxAdminPassword}"
 
     loggerEcho "Finished InfluxDB Setup"
     sleep 2
@@ -456,7 +458,7 @@ if [ "$1" != "--source-only" ]; then
     fi
 
     # prelude
-    local mainPath="$1"
+    mainPath="$1"
     # shellcheck source=./installer.sh
     source "${mainPath}" "--source-only"
 

@@ -160,7 +160,7 @@ if [ "$1" != "--source-only" ]; then
     fi
 
     # prelude
-    local mainPath="$1"
+    mainPath="$1"
     # shellcheck source=./installer.sh
     source "${mainPath}" "--source-only"
 
