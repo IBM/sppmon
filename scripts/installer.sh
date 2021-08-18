@@ -62,7 +62,7 @@ abortInstallScript() {
     rowLimiter
 
     # exit with error code
-    exit -1
+    exit 1
 }
 
 #######################################
@@ -118,7 +118,7 @@ getPath() {
         abortInstallScript
     fi
     # WARNING: Use of logger impossible due call before setup.
-    echo $(dirname "$(readlink -f "$0")")
+    dirname "$(readlink -f "$0")"
 }
 
 #######################################
@@ -176,6 +176,9 @@ readAuth() {
     fi
     if [[ -r "${authFile}" ]]; then
         set -a # now all variables are exported
+
+        # shellcheck source=./delete_me_auth.txt
+        # shellcheck disable=SC1091
         source <(sudo cat "${authFile}")
         set +a # Not anymore
     fi
@@ -352,7 +355,7 @@ main(){
         loggerEcho "Create cron jobs for automated SPPmon execution"
         echo ""
         local python_exe=$(which python3)
-        local sppmon_exe=$(realpath ${path}/../python/sppmon.py)
+        local sppmon_exe=$(realpath "${path}/../python/sppmon.py")
         if [ "${autoConfirm}" = true ]  ; then
             checkReturn sudo "${python_exe}" "${path}/addCrontabConfig.py" "--configPath=${configDir}" "--pythonPath=${python_exe}" "--sppmonPath=${sppmon_exe}" "--autoConfirm"
         else
@@ -388,7 +391,7 @@ if [ "$1" != "--source-only" ]; then
     subScripts="${path}/installScript"
     mainPath="${path}/installer.sh"
     saveFile="${subScripts}/.savefile.txt"
-    configDir=$(realpath ${path}/../config_files)
+    configDir=$(realpath "${path}/../config_files")
     authFile="${path}/delete_me_auth.txt"
 
     # Sources
@@ -397,7 +400,7 @@ if [ "$1" != "--source-only" ]; then
     # Logger
     mkdir -p "${path}/logs"
     initLogger "${path}/logs/installLog.txt"
-    logger "$(echo $@)"
+    logger "$@"
 
     # handling of signals
     trap " abortInstallScript " INT QUIT HUP

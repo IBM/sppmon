@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "timonwong.shellcheck",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "donjayamanne.githistory",
+        "njpwerner.autodocstring"
+    ]
+}
