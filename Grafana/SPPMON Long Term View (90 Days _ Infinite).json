@@ -17,8 +17,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 47,
-  "iteration": 1629364470333,
+  "id": 55,
+  "iteration": 1629367378778,
   "links": [
     {
       "asDropdown": false,
@@ -9450,6 +9450,6 @@
   },
   "timezone": "",
   "title": "SPPMON Long Term View (90 Days / Infinite)",
-  "uid": "8pQ8jDSGk",
-  "version": 10
+  "uid": "sppmon_long_term_view",
+  "version": 2
 }

@@ -17,8 +17,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 46,
-  "iteration": 1629366288905,
+  "id": 54,
+  "iteration": 1629367319536,
   "links": [
     {
       "asDropdown": true,
@@ -2246,7 +2246,6 @@
       {
         "current": {
           "selected": true,
-          "tags": [],
           "text": [
             "default"
           ],
@@ -2289,6 +2288,6 @@
   },
   "timezone": "",
   "title": "Multiple Server Overview",
-  "uid": "GtH9VNSMz",
-  "version": 9
+  "uid": "sppmon_mult_server_view",
+  "version": 2
 }
