@@ -90,7 +90,36 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": null,
-  "links": [],
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [
+        "mult_server"
+      ],
+      "targetBlank": true,
+      "title": "Multiple Server Overview",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    },
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [
+        "90_days_inf"
+      ],
+      "targetBlank": true,
+      "title": "SPPMON Long Term View (90 Days / Infinite)",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
   "panels": [
     {
       "collapsed": false,
@@ -13190,7 +13219,11 @@
   "refresh": "",
   "schemaVersion": 27,
   "style": "dark",
-  "tags": [],
+  "tags": [
+    "v1.0",
+    "${DS_DATASOURCE}",
+    "14_days"
+  ],
   "templating": {
     "list": []
   },
@@ -13213,5 +13246,5 @@
   "timezone": "",
   "title": "SPPMON for IBM Spectrum Protect Plus ${DS_DATASOURCE}",
   "uid": "sppmon_single_view_DS_${DS_DATASOURCE}",
-  "version": 6
+  "version": 4
 }

@@ -14,6 +14,7 @@ Author:
 
 import re
 import sys
+from utils import Utils
 from os.path import isfile, realpath, join, dirname
 
 
@@ -24,7 +25,7 @@ class GenerifyDashboard:
 
     def main(self):
         """Creates from the 14 day dashboard a new dashboard for an generic import.
-        Alerts are transferred
+        Alerts are transferred.
 
         Raises:
             ValueError: error when reading or writing files
@@ -65,7 +66,13 @@ class GenerifyDashboard:
         # get old var name
         oldVarName = re.search(
             r""""name":\s*"(.*?)"[,\s]*""", dashboardStr).group(1)
-        oldVar = r"\${" + oldVarName + r"}"
+
+        if(oldVarName == 'DS_DATASOURCE'):
+            Utils.printRow()
+            print("ERROR: The Dashboard is probably already generified. Aborting.\n")
+            exit(1)
+
+        oldVarEscaped = r"\${" + oldVarName + r"}"
 
         # replace first occurence with the new variable name
         dashboardStr = re.sub(
@@ -74,8 +81,11 @@ class GenerifyDashboard:
             dashboardStr,
             1)
         # replace the label
+        oldDsName = re.search(
+            r""""label":\s*"(.*?)"[,\s]*""", dashboardStr).group(1)
+
         dashboardStr = re.sub(
-            fr""""label":\s*".*?"\s*,""",
+            fr""""label":\s*"{oldDsName}"\s*,""",
             fr""""label": "Datasource",""",
             dashboardStr,
             1)
@@ -96,7 +106,13 @@ class GenerifyDashboard:
 
         # replace all occurences of the old variable
         dashboardStr = re.sub(
-            fr"""{oldVar}""",
+            fr"""{oldVarEscaped}""",
+            fr"""{genericVar}""",
+            dashboardStr
+        )
+
+        dashboardStr = re.sub(
+            fr"""{oldDsName}""",
             fr"""{genericVar}""",
             dashboardStr
         )
@@ -108,8 +124,10 @@ class GenerifyDashboard:
             dashboard_file.write(dashboardStr)
             dashboard_file.close()
         except Exception as error:
+            Utils.printRow()
             print(error)
             raise ValueError("Error creating new dashboard file.")
+        Utils.printRow()
         print("> Sucessfully updated dashboard file.")
         print("> Script finished")
 
