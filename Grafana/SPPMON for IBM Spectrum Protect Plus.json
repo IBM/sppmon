@@ -118,6 +118,20 @@
       "tooltip": "",
       "type": "dashboards",
       "url": ""
+    },
+    {
+      "asDropdown": true,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [
+        "14_days"
+      ],
+      "targetBlank": true,
+      "title": "SPPMON for IBM Spectrum Protect Plus ${DS_DATASOURCE}",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
     }
   ],
   "panels": [
@@ -13246,5 +13260,5 @@
   "timezone": "",
   "title": "SPPMON for IBM Spectrum Protect Plus ${DS_DATASOURCE}",
   "uid": "sppmon_single_view_DS_${DS_DATASOURCE}",
-  "version": 4
+  "version": 2
 }
