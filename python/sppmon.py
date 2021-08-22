@@ -62,6 +62,7 @@ Author:
  08/02/2021 version 0.13.8 Enhancement and replacement of the ArgumentParser and clearer config-file error messages
  08/10/2021 version 0.13.9 Rework of the JobLogs and fix of Log-Filter.
  08/18/2021 version 0.14   Added install script and fixed typo in config file, breaking old config files.
+ 08/22/2021 version 0.15   Added --fullLogs argument and reduced regular/loaded joblog query to SUMMARY-Only
 """
 from __future__ import annotations
 
@@ -90,7 +91,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "0.14.0  (2021/08/18)"
+VERSION = "0.15.0  (2021/08/22)"
 
 
 # ----------------------------------------------------------------------------
@@ -127,8 +128,12 @@ parser.add_argument("--all", dest="all", action="store_true", help="execute all 
 parser.add_argument("--jobs", dest="jobs", action="store_true", help="store job history")
 parser.add_argument("--jobLogs", dest="jobLogs", action="store_true",
                   help="retrieve detailed information per job (job-sessions)")
+
 parser.add_argument("--loadedSystem", dest="loadedSystem", action="store_true",
-                  help="Special settings for loaded systems, reducing API-request loads")
+                  help="Special settings for loaded systems, increasing API-request timings.")
+
+parser.add_argument("--fullLogs", dest="fullLogs", action="store_true",
+                  help="Requesting any kind of Joblogs instead of the default SUMMARY-Logs.")
 
 parser.add_argument("--ssh", dest="ssh", action="store_true", help="execute monitoring commands via ssh")
 
@@ -284,10 +289,10 @@ class SppMon:
     """minimum size of a rest-api page on loaded systems"""
 
     # possible options: '["INFO","DEBUG","ERROR","SUMMARY","WARN"]'
-    joblog_types = ["INFO","DEBUG","ERROR","SUMMARY","WARN"]
-    """regular joblog query types on normal running systems"""
-    loaded_joblog_types = ["DEBUG","ERROR","SUMMARY","WARN"]
-    """jobLog types to be requested on loaded systems."""
+    joblog_types = ["SUMMARY"]
+    """joblog query types on normal running systems"""
+    full_joblog_types = ["INFO", "DEBUG", "ERROR", "SUMMARY", "WARN"]
+    """jobLog types to be requested on full logs."""
 
     # String, cause of days etc
     # ### DATALOSS if turned down ###
@@ -540,9 +545,9 @@ class SppMon:
         except ValueError as error:
             ExceptionUtils.exception_info(error=error)
 
-        # ### Loaded Systems part 2/2 ### #
-        if(ARGS.minimumLogs or ARGS.loadedSystem):
-            given_log_types = self.loaded_joblog_types
+        # ### Full Logs ### #
+        if(ARGS.fullLogs):
+            given_log_types = self.full_joblog_types
         else:
             given_log_types = self.joblog_types
 

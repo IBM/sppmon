@@ -430,6 +430,7 @@ class Definitions:
             },
             tags=[
                 "configFile",
+                "fullLogs",
                 "copy_database",
                 "cpu",
                 "create_dashboard",
