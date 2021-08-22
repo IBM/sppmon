@@ -40,7 +40,7 @@ class InfluxClient:
         send_selection_query - sends a single `SelectionQuery` to influxdb
         copy_database - copies whole database into a new one
 
-        @depricated
+        @deprecated
         update_row - updates values and tags of already saved data
 
     """
@@ -732,7 +732,7 @@ class InfluxClient:
 
     def update_row(self, table_name: str, tag_dic: Dict[str, str] = None,
                    field_dic: Dict[str, Union[str, int, float, bool]] = None, where_str: str = None):
-        """DEPRICATED: Updates a row of the given table by given tag and field dict.
+        """DEPRECATED: Updates a row of the given table by given tag and field dict.
 
         Applies on multiple rows if `where` clause is fullfilled.
         Updates row by row, causing a high spike in call times: 3 Influx-Querys per call.

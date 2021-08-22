@@ -43,7 +43,7 @@ Author:
  08/02/2020 version 0.10.0 Introducing Retention Policies and Continuous Queries, breaking old tables
  08/25/2020 version 0.10.1 Fixes to Transfer Data, Parse Unit and Top-SSH-Command parsing
  09/01/2020 version 0.10.2 Parse_Unit fixes (JobLogs) and adjustments on timeout
- 11/10/2020 version 0.10.3 Introduced --loadedSystem argument and moved --minimumLogs to depricated
+ 11/10/2020 version 0.10.3 Introduced --loadedSystem argument and moved --minimumLogs to deprecated
  12/07/2020 version 0.10.4 Included SPP 10.1.6 addtional job information features and some bugfixes
  12/29/2020 version 0.10.5 Replaced ssh 'top' command by 'ps' command to bugfix truncating data
  01/22/2021 version 0.10.6 Removed `--processStats`, integrated in `--ssh` plus Server/vSnap `df` root recording
@@ -147,16 +147,16 @@ parser.add_argument("--copy_database", dest="copy_database",
                   help="Copy all data from .cfg database into a new database, specified by `copy_database=newName`. Delete old database with caution.")
 
 
-# DEPRICATED AREA
+# DEPRECATED AREA
 #TODO removed in Version 1.1.
 parser.add_argument("--minimumLogs", dest="minimumLogs", action="store_true",
-                  help="DEPRICATED, use '--loadedSystem' instead. To be removed in v1.1")
+                  help="DEPRECATED, use '--loadedSystem' instead. To be removed in v1.1")
 parser.add_argument("--processStats", dest="processStats", action="store_true",
-                  help="DEPRICATED, use '--ssh' instead")
+                  help="DEPRECATED, use '--ssh' instead")
 parser.add_argument("--create_dashboard", dest="create_dashboard", action="store_true",
-                  help="DEPRICATED: Just import the regular dashboard instead, choose datasource within Grafana. To be removed in v1.1")
+                  help="DEPRECATED: Just import the regular dashboard instead, choose datasource within Grafana. To be removed in v1.1")
 parser.add_argument("--dashboard_folder_path", dest="dashboard_folder_path",
-                  help="DEPRICATED: Just import the regular dashboard instead, choose datasource within Grafana. To be removed in v1.1")
+                  help="DEPRECATED: Just import the regular dashboard instead, choose datasource within Grafana. To be removed in v1.1")
 
 print = functools.partial(print, flush=True)
 
@@ -171,7 +171,7 @@ SUCCESS_CODE: int = 0
 try:
     ARGS = parser.parse_args()
 except SystemExit as exit_code:
-    if(exit_code != SUCCESS_CODE):
+    if(exit_code.code != SUCCESS_CODE):
         print("> Error when reading SPPMon arguments.", file=sys.stderr)
         print("> Please make sure to specify a config file and check the spelling of your arguments.", file=sys.stderr)
         print("> Use --help to display all argument options and requirements", file=sys.stderr)
@@ -548,7 +548,7 @@ class SppMon:
 
         try:
             auth_rest: Dict[str, Any] = SppUtils.get_cfg_params(param_dict=config_file, param_name="sppServer") # type: ignore
-            # TODO DEPRICATED TO BE REMOVED IN 1.1
+            # TODO DEPRECATED TO BE REMOVED IN 1.1
             self.job_log_retention_time = auth_rest.get("jobLog_rentation", auth_rest.get("jobLog_retention", self.job_log_retention_time))
             # TODO New once 1.1 is live
             #self.job_log_retention_time = auth_rest.get("jobLog_retention", self.job_log_retention_time)
@@ -591,14 +591,14 @@ class SppMon:
         """
         # ## call functions based on cmdline parameters
 
-        # Temporary features / Depricated
+        # Temporary features / Deprecated
 
         if(ARGS.minimumLogs):
             ExceptionUtils.error_message(
-                "DEPRICATED: using depricated argument '--minumumLogs'. Use to '--loadedSystem' instead.")
+                "DEPRECATED: using deprecated argument '--minumumLogs'. Use to '--loadedSystem' instead.")
         if(ARGS.processStats):
             ExceptionUtils.error_message(
-                "DEPRICATED: using depricated argument '--minumumLogs'. Use to '--ssh' instead.")
+                "DEPRECATED: using deprecated argument '--minumumLogs'. Use to '--ssh' instead.")
 
         # ignore setup args
         self.ignore_setup: bool = (
@@ -892,11 +892,11 @@ class SppMon:
                     error=error,
                     extra_message="Top-level-error when testing connection.")
 
-        # DEPRICATED TODO REMOVE NEXT VERSION
+        # DEPRECATED TODO REMOVE NEXT VERSION
         if(ARGS.create_dashboard):
             try:
                 ExceptionUtils.error_message(
-                    "This method is depricated. You do not need to manually create a dashboard anymore.\n" +
+                    "This method is deprecated. You do not need to manually create a dashboard anymore.\n" +
                     "Please just select the datasource when importing the regular 14-day dashboard in grafana.\n" +
                     "Devs may adjust their dashboard to be generic with the scripts/generifyDashboard.py script.")
             except ValueError as error:

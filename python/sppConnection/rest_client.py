@@ -336,7 +336,7 @@ class RestClient():
         """
         if(not url):
             raise ValueError("no url specified")
-        if((post_data or auth) and type == RequestType.GET):
+        if((post_data or auth) and request_type == RequestType.GET):
             raise ValueError("No post-data/auth is allowed in a GET-Request")
         LOGGER.debug(f"query url: {url}, type: {type}, post_data: {post_data} auth: {True if auth else False}")
         if(not params):

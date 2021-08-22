@@ -44,8 +44,8 @@ restartInflux() {
         checkReturn sudo systemctl start influxdb
     fi
 
-    loggerEcho "> Waiting 10 seconds for startup of influxDB"
-    sleep 10
+    loggerEcho "> Waiting 8 seconds for startup of influxDB"
+    sleep 8
     if (( $(eval "${check_influx}") == 0 )); then
         loggerEcho "> Restart successful"
         return 0
@@ -101,8 +101,8 @@ executeInfluxCommand() {
         fi
     fi
     logger "${connectionTestString} -execute ${command}"
-    loggerEcho "> Waiting 10 seconds to avoid connection error"
-    sleep 10
+    loggerEcho "> Waiting 3 seconds to avoid connection error"
+    sleep 3
 
     local connectionOutput
     connectionOutput=$(${connectionTestString} -execute "${command}")

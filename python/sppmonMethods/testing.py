@@ -7,7 +7,7 @@ Classes:
 
 import logging
 from difflib import SequenceMatcher
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 from influx.influx_client import InfluxClient
 from sppConnection.rest_client import RestClient
@@ -187,13 +187,13 @@ class TestingMethods():
                 "SPPMon will still complete but no storage informating will be displayed.")
 
         # Check total missing clients
-        missing_types: List[str] = []
-        for type in SshTypes:
-            LOGGER.info(f">> No ssh client of type {type.name} detected.")
-            missing_types.append(type.name)
+        missing_types: Set[SshTypes] = set(SshTypes)
+        for client in ssh_clients:
+            missing_types.remove(client.client_type)
         if(missing_types):
             warnings.append(
-                f"""No ssh-clients detected for following types: {", ".join(missing_types)}""")
+                f"""This is only a reminder: Not ssh-clients of following types are registered: {", ".join(map(str, missing_types))}""")
+
 
         if(not influx_client):
             ExceptionUtils.error_message(
@@ -449,7 +449,7 @@ class TestingMethods():
         if(ssh_errors):
             # only amplify message: change if empty
             if(not summary_message):
-                summary_message = "Testing completed with non-critical errors. " +
+                summary_message = "Testing completed with non-critical errors. " + \
                 "SPPMon will run, but data will be missing. Please review the errors listed above."
 
             # print messages
