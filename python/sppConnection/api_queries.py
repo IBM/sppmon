@@ -8,7 +8,6 @@ from typing import List, Dict, Any, Optional
 import json
 import urllib.parse
 
-from utils.connection_utils import ConnectionUtils
 from utils.execption_utils import ExceptionUtils
 from utils.spp_utils import SppUtils
 from sppConnection.rest_client import RequestType, RestClient

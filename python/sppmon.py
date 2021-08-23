@@ -245,39 +245,7 @@ class SppMon:
     # 1. decrease allowed_send_delta (>=0)
     # 2. decrease starting pagesize (>1)
 
-    initial_connection_timeout: float = 6.05
-    """Time spend waiting for the initial connection, slightly larger than 3 multiple"""
-
-    pref_send_time: int = 30
-    """preferred query send time in seconds"""
-    loaded_pref_send_time: int = 20
-    """desired send time per query in seconds for loaded systems"""
-
-    max_scaling_factor: float = 3.5
-    """max scaling factor of the pagesize increase per request"""
-    loaded_max_scaling_factor: float = 3.5
-    """max scaling factor of the pagesize increase per request for loaded systems"""
-
-    allowed_send_delta: float = 0.1
-    """delta of send allowed before adjustments are made to the pagesize in %"""
-    loaded_allowed_send_delta: float = 0.1
-    """delta of send allowed before adjustments are made to the pagesize in % on loaded systems"""
-
-    request_timeout: int | None = 60
-    """timeout for api-requests"""
-    loaded_request_timeout: int | None = 360
-    """timeout on loaded systems"""
-
-    timeout_reduction: float = 0.7
-    """reduce of the actual pagesize on timeout in percent"""
-    loaded_timeout_reduction: float = 0.95
-    """reduce of the actual pagesize on timeout in percent on loaded systems"""
-
-    max_send_retries: int = 3
-    """Count of retries before failing request. Last one is min size. 0 to disable."""
-    loaded_max_send_retries: int = 1
-    """Count of retries before failing request on loaded systems. Last one is min size. 0 to disable."""
-
+    # Pagesize size
     starting_page_size: int = 50
     """starting page size for dynamical change within rest_client"""
     loaded_starting_page_size: int = 10
@@ -288,10 +256,48 @@ class SppMon:
     loaded_min_page_size: int = 1
     """minimum size of a rest-api page on loaded systems"""
 
-    # possible options: '["INFO","DEBUG","ERROR","SUMMARY","WARN"]'
+    # Increase / Decrease of pagesize
+    max_scaling_factor: float = 3.5
+    """max scaling factor of the pagesize increase per request"""
+    loaded_max_scaling_factor: float = 2.0
+    """max scaling factor of the pagesize increase per request for loaded systems"""
+
+    timeout_reduction: float = 0.7
+    """reduce of the actual pagesize on timeout in percent"""
+    loaded_timeout_reduction: float = 0.95
+    """reduce of the actual pagesize on timeout in percent on loaded systems"""
+
+    allowed_send_delta: float = 0.15
+    """delta of send allowed before adjustments are made to the pagesize in %"""
+    loaded_allowed_send_delta: float = 0.15
+    """delta of send allowed before adjustments are made to the pagesize in % on loaded systems"""
+
+    # Send time and timeouts
+    pref_send_time: int = 30
+    """preferred query send time in seconds"""
+    loaded_pref_send_time: int = 30
+    """desired send time per query in seconds for loaded systems"""
+
+    initial_connection_timeout: float = 6.05
+    """Time spend waiting for the initial connection, slightly larger than 3 multiple"""
+
+    request_timeout: int | None = 60
+    """timeout for api-requests, none deactivates timeout"""
+    loaded_request_timeout: int | None = 180
+    """timeout on loaded systems, none deactivates timeout"""
+
+    max_send_retries: int = 3
+    """Count of retries before failing request. Last one is min size. 0 to disable."""
+    loaded_max_send_retries: int = 1
+    """Count of retries before failing request on loaded systems. Last one is min size. 0 to disable."""
+
+    # ## REST-CLIENT-OPTIONS ##
+
+    # Never observed debug-type
+    # possible options: '["INFO","DEBUG","ERROR","SUMMARY","WARN", "DETAIL"]'
     joblog_types = ["SUMMARY"]
     """joblog query types on normal running systems"""
-    full_joblog_types = ["INFO", "DEBUG", "ERROR", "SUMMARY", "WARN"]
+    full_joblog_types = ["INFO", "DEBUG", "ERROR", "SUMMARY", "WARN", "DETAIL"]
     """jobLog types to be requested on full logs."""
 
     # String, cause of days etc

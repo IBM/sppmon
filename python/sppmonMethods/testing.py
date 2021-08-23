@@ -302,7 +302,7 @@ class TestingMethods():
             rest_info: Dict[str, Any] = SppUtils.get_cfg_params(
                 config_file, "sppServer")
 
-            # see Merge #60, fixes typo. Depricated since 0.14, removed compatibility in v1.1
+            # see Merge #60, fixes typo. Deprecated since 0.14, remove compatibility in v1.1
             if("jobLog_rentation" in rest_info):
                 warnings.append(
                     "Config file has typo in sppServer-topic: Replace `jobLog_rentation` by `jobLog_retention`")

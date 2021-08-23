@@ -11,7 +11,7 @@ from __future__ import annotations
 from enum import Enum, unique
 import re
 
-from typing import List, Dict, Any, Union, Tuple, Optional
+from typing import List, Dict, Any, Union, Optional
 
 from utils.spp_utils import SppUtils
 from utils.influx_utils import InfluxUtils
