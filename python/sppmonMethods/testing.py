@@ -192,7 +192,7 @@ class TestingMethods():
             missing_types.remove(client.client_type)
         if(missing_types):
             warnings.append(
-                f"""This is only a reminder: Not ssh-clients of following types are registered: {", ".join(map(str, missing_types))}""")
+                f"""This is only a reminder: No ssh-clients of following types are registered: {", ".join(map(str, missing_types))}""")
 
 
         if(not influx_client):
