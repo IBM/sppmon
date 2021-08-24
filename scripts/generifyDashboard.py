@@ -92,10 +92,9 @@ class GenerifyDashboard:
 
         # replace dashboard name (there may be a name appended)
         dashboardStr = re.sub(
-            r""""title":\s*"SPPMON for IBM Spectrum Protect Plus.*?"\s*,""",
+            r""""title":\s*"SPPMON for IBM Spectrum Protect Plus\s*(?:(?!14-Day Dashboards).)+?\s*"\s*,""",
             fr""""title": "SPPMON for IBM Spectrum Protect Plus {genericVar}",""",
-            dashboardStr,
-            1)
+            dashboardStr)
 
         # replace uid by new one
         dashboardStr = re.sub(

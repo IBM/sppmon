@@ -16,7 +16,8 @@ Author:
 import logging
 import re
 from getpass import getpass
-from os import get_terminal_size
+from shutil import get_terminal_size
+from os import terminal_size
 from os.path import join, realpath
 from typing import Any, Callable, ClassVar, Optional
 
@@ -127,9 +128,9 @@ class Utils:
     def printRow(cls):
         """Function to print a row of `#` onto the console.
         """
-        size: int = get_terminal_size().columns
+        size: terminal_size = get_terminal_size()
         print()
-        print("#"*size)
+        print("#"*size.columns)
         print()
 
     @classmethod
