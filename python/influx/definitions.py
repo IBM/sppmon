@@ -486,7 +486,6 @@ class Definitions:
                 'vmCountBySLA':     Datatype.INT
             },
             tags=[
-                'slaId',
                 'slaName'
             ],
             retention_policy=cls._RP_DAYS_90(),

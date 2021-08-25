@@ -63,6 +63,7 @@ Author:
  08/10/2021 version 0.13.9 Rework of the JobLogs and fix of Log-Filter.
  08/18/2021 version 0.14   Added install script and fixed typo in config file, breaking old config files.
  08/22/2021 version 0.15   Added --fullLogs argument and reduced regular/loaded joblog query to SUMMARY-Only
+ 08/25/2021 version 0.15.1 Replaced SLA-Endpoint by so-far unknown endpoint, bringing it in line with other api-requests.
 """
 from __future__ import annotations
 
@@ -91,7 +92,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "0.15.0  (2021/08/22)"
+VERSION = "0.15.1  (2021/08/25)"
 
 
 # ----------------------------------------------------------------------------

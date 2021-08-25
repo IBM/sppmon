@@ -54,7 +54,11 @@ class ProtectionMethods:
         LOGGER.info("> calculating number of VMs per SLA")
         result = MethodUtils.query_something(
             name="VMs per SLA",
-            source_func=self.__api_queries.get_vms_per_sla
+            source_func=self.__api_queries.get_vms_per_sla,
+            rename_tuples=[
+                ("_id.protectionInfo.policyName", "slaName"),
+                ("count", "vmCountBySLA") # buggy request
+            ]
         )
         LOGGER.info(">> inserting number of VMs per SLA into DB")
         self.__influx_client.insert_dicts_to_buffer(
