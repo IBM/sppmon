@@ -276,7 +276,7 @@ class TestingMethods():
         errors: List[str] = []
 
         compromised_passwords: List[str] = [
-            "Test_1234a", "sppM0n_Au1h", "gr8fana_Au1h", "sppmon"]
+            "Test_1234a", "sppM0n_Au1h", "gr8fana_Au1h", "sppmon", "NOT_A_SAFE_PASSWORD"]
 
         password: str = info_dict.get("password", None)
         if(not password):

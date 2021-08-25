@@ -138,7 +138,7 @@ class InfluxClient:
 
             self.setup_db(self.database.name)
 
-            self.check_grant_user("GrafanaReader", "READ")
+            self.check_grant_user(self.grafanaReader_name, "READ")
 
             # check for exisiting retention policies and continuous queries in the influxdb
             self.check_create_rp(self.database.name)
