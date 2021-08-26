@@ -66,7 +66,7 @@ class ProtectionMethods:
         # the endpoint offers a prefix `vmware_`
         # due to compability reasons the prefix is removed
         # may be reintroduced if other types occur.
-        pattern = compile(r"vmware_")
+        pattern = compile(r"^vmware_")
         for sla in result:
             # replaces the first occurence
             sla['slaName'] = sub(pattern, "", sla['slaName'], 1)
