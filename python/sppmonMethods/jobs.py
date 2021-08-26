@@ -31,7 +31,7 @@ class JobMethods:
     """
 
     # only here to maintain for later, unused yet
-    __job_log_white_list = [
+    __job_log_allow_list = [
         "CTGGA2340",
         "CTGGA0071",
         "CTGGA2260",
@@ -158,7 +158,7 @@ class JobMethods:
     """LogLog messageID's which can be parsed by sppmon. Check detailed summary above the declaration."""
 
     def __init__(self, influx_client: Optional[InfluxClient], api_queries: Optional[ApiQueries],
-                 job_log_retention_time: str, job_log_type: str, verbose: bool):
+                 job_log_retention_time: str, job_log_types: List[str], verbose: bool):
 
         if(not influx_client):
             raise ValueError(
@@ -174,7 +174,7 @@ class JobMethods:
         self.__job_log_retention_time = job_log_retention_time
         """used to limit the time jobLogs are queried, only interestig for init call"""
 
-        self.__job_log_type = job_log_type
+        self.__job_log_types = job_log_types
 
     def get_all_jobs(self) -> None:
         """incrementally saves all stored jobsessions, even before first execution of sppmon"""
@@ -312,7 +312,8 @@ class JobMethods:
                 try:
                     insert_dict: Dict[str, Any] = {}
 
-                    insert_dict['resourceType'] = job_stats['resourceType']
+                    # fields
+                    insert_dict['resourceType'] = job_stats.get('resourceType', None)
                     insert_dict['total'] = job_stats.get('total', 0)
                     insert_dict['success'] = job_stats.get('success', 0)
                     insert_dict['failed'] = job_stats.get('failed', 0)
@@ -324,6 +325,7 @@ class JobMethods:
 
                     # time key
                     insert_dict['start'] = job['start']
+
                     # regular tag values for grouping:
                     insert_dict['id'] = job.get('id', None)
                     insert_dict['jobId'] = job.get('jobId', None)
@@ -433,15 +435,21 @@ class JobMethods:
         It automatically parses certain jobLogs into additional stats, defined by `supported_ids`.
         """
 
+        # total count of requested logs
+        logs_requested_total = 0
+        # total count of inserted logs
+        logs_to_stats_total = 0
+        # should be equal, but on failure isnt (skipped logs)
+
+        # list to be inserted after everything is updated
+        job_update_list: List[Dict[str, Any]] = []
+
+        LOGGER.info("> Requesting jobs with missing logs from influx database")
+
         table = self.__influx_client.database['jobs']
         # only store if there is something to store -> limited by job log rentation time.
         where_str = 'jobsLogsStored <> \'True\' and time > now() - %s' % self.__job_log_retention_time
         where_str += f' AND time > now() - {table.retention_policy.duration}'
-
-        jobs_updated = 0
-        logs_total_count = 0
-        LOGGER.info("> getting joblogs for jobsessions without saved logs")
-        LOGGER.info(">> requesting jobList from database")
 
         # Select all jobs without joblogs
         keyword = Keyword.SELECT
@@ -451,135 +459,134 @@ class JobMethods:
             fields=['*'],
             where_str=where_str
         )
+
         # send query and compute
-        result = self.__influx_client.send_selection_query( # type: ignore
+        missing_logs_jobs_rs = self.__influx_client.send_selection_query( # type: ignore
             query)
-        result_list: List[Dict[str, Any]] = list(
-            result.get_points())  # type: ignore
 
-        rows_affected = len(result_list)
+        # this list contains all jobs which are missing its Logs
+        # Cast from resultset into list
+        missing_logs_jobs: List[Dict[str, Any]] = list(
+            missing_logs_jobs_rs.get_points())  # type: ignore
 
-        LOGGER.info(">>> number of jobs with no joblogs stored in Influx database: {}"
-                    .format(rows_affected))
+        LOGGER.info(f">>> Number of jobs with no joblogs stored in Influx database: {len(missing_logs_jobs)}")
 
-        job_log_dict: Dict[int, List[Dict[str, Any]]] = {}
-
+        LOGGER.info("> Requesting missing jobLogs from REST-API.")
         # request all jobLogs from REST-API
-        # if errors occur, skip single row and debug
-        for row in result_list:
+        # counter only for displaying purposes
+        for counter, row in enumerate(missing_logs_jobs, 0):
+
+            # Only print every 5 rows if not verbose
+            # starts at 0, therefore already updated
+            if(self.__verbose or counter % 5 == 0):
+                LOGGER.info(
+                    f">>> computed joblogs for {counter} / {len(missing_logs_jobs)} job sessions.")
+
             job_session_id: Optional[int] = row.get('id', None)
 
-            # if somehow id is missing: skip
+            # if somehow jobLogid is missing: skip
+            # Should usually not happen
             if(job_session_id is None):
                 ExceptionUtils.error_message(
-                    f"Error: joblogId missing for row {row}")
-                continue
-
-            if(job_session_id in job_log_dict):
-                ExceptionUtils.error_message(
-                    f"Error: joblogId duplicate, skipping.{job_session_id}")
+                    f"Error: jobSessionId missing for row {row}")
                 continue
 
             if(self.__verbose):
                 LOGGER.info(
-                    f">>> requested joblogs for {len(job_log_dict)} / {rows_affected} job sessions.")
-            elif(len(job_log_dict) % 5 == 0):
-                LOGGER.info(
-                    f">>> requested joblogs for {len(job_log_dict)} / {rows_affected} job sessions.")
-
-            # request job_session_id
-            try:
-                if(self.__verbose):
-                    LOGGER.info(
-                        f"requesting jobLogs {self.__job_log_type} for session {job_session_id}.")
-                LOGGER.debug(
-                    f"requesting jobLogs {self.__job_log_type} for session {job_session_id}.")
-
-                # cant use query something like everwhere due the extra params needed
-                job_log_list = self.__api_queries.get_job_log_details(
-                    jobsession_id=job_session_id,
-                    job_logs_type=self.__job_log_type)
-            except ValueError as error:
-                ExceptionUtils.exception_info(
-                    error=error,
-                    extra_message=f"error when api-requesting joblogs for job_session_id {job_session_id}, skipping it")
-                continue
-
-            if(self.__verbose):
-                LOGGER.info(
-                    f">>> Found {len(job_log_list)} logs for jobsessionId {job_session_id}")
-
+                    f">>> Requesting jobLogs {self.__job_log_types} for session {job_session_id}.")
             LOGGER.debug(
-                f"Found {len(job_log_list)} logs for jobsessionId {job_session_id}")
-            # default empty list if no details available -> should not happen, in for safty reasons
-            # if this is none, go down to rest client and fix it. Should be empty list.
-            if(job_log_list is None):
-                job_log_list = []
-                ExceptionUtils.error_message(
-                    "A joblog_list was none, even if the type does not allow it. Please report to developers.")
-            job_log_dict[job_session_id] = job_log_list
+                f">>> Requesting jobLogs {self.__job_log_types} for session {job_session_id}.")
 
-        # list to be inserted after everything is updated
-        insert_list: List[Dict[str, Any]] = []
+            try:
+                # cant use `query_something` like in other places due the extra params:
+                # api_queries - query_something only works with no params
 
-        # Query data in ranges to avoid too many requests
-        # Results from first select query above
-        for row in result_list:
-            job_id: int = row['id']
-            job_log_list: Optional[List[Dict[str, Any]]
-                                   ] = job_log_dict.get(job_id, None)
-
-            if(job_log_list is None):
-                ExceptionUtils.error_message(
-                    f"missing job_log_list even though it is in influxdb for jobId {job_id}. Skipping it")
+                # This list contains all joblogs for a single job-execution
+                current_job_logs = self.__api_queries.get_job_log_details(
+                    jobsession_id=job_session_id,
+                    job_logs_types=self.__job_log_types,
+                    request_ids=list(self.__supported_ids.keys()))
+            except ValueError as error:
+                ExceptionUtils.exception_info(error=error,
+                extra_message=f"Error when api-requesting joblogs for job_session_id {job_session_id}, skipping it")
                 continue
 
-            # jobLogsCount will be zero if jobLogs are deleted after X days by maintenance jobs, GUI default is 60 days
-            job_logs_count = len(job_log_list)
-            if(self.__verbose):
-                LOGGER.info(">>> storing {} joblogs for jobsessionId: {} in Influx database".format(
-                    len(job_log_list), job_id))
-            LOGGER.debug(">>> storing {} joblogs for jobsessionId: {} in Influx database".format(
-                len(job_log_list), job_id))
+            job_log_count = len(current_job_logs)
+            logs_requested_total += job_log_count
 
-            for job_log in job_log_list:
-                # rename log keys and add additional information
+            if(self.__verbose):
+                LOGGER.info(
+                    f">>> Found {job_log_count} logs for jobsessionId {job_session_id}")
+            LOGGER.debug(
+                f"Found {job_log_count} logs for jobsessionId {job_session_id}")
+
+
+
+            # ####################################################################################
+            # Compute results and save logs
+            # #####################################################################################
+            # The request of REST-API Logs is finished here
+            # To not crash by saving 100.000+ Logs, directly compute results and insert them
+            # ######################################################################################
+
+            for job_log in current_job_logs:
+                # add additional information from job-session itself
                 job_log["jobId"] = row.get("jobId", None)
                 job_log["jobName"] = row.get("jobName", None)
                 job_log["jobExecutionTime"] = row.get("start", None)
-                job_log["jobLogId"] = job_log.pop("id")
-                job_log["jobSessionId"] = job_log.pop("jobsessionId")
 
-            # compute other stats out of jobList
+                # rename for clarity
+                job_log["jobLogId"] = job_log.pop("id", None)
+                job_log["jobSessionId"] = job_log.pop("jobsessionId", None)
+
+            # ##########################################################
+            # compute jobLog-Stats into each associated table
+            # ##########################################################
             try:
-                self.__job_logs_to_stats(job_log_list)
+                self.__job_logs_to_stats(current_job_logs)
             except ValueError as error:
                 ExceptionUtils.exception_info(
-                    error, extra_message=f"Failed to compute stats out of job logs, skipping for jobsessionId {job_id}")
+                    error, extra_message=f"Failed parse jobLogs into its own table, skipping for jobsessionId {job_session_id}")
 
-            for job_log in job_log_list:
+            logs_to_stats_total += job_log_count
+
+            # ##########################################################
+            # save logs within the joblog-dump
+            # ##########################################################
+
+            # Only dump them after computing stats since they are read within the computing stats part
+            for job_log in current_job_logs:
                 # dump message params to allow saving as string
                 job_log["messageParams"] = json.dumps(job_log["messageParams"])
 
             # if list is empty due beeing erased etc it will simply return and do nothing
             self.__influx_client.insert_dicts_to_buffer(
-                list_with_dicts=job_log_list, table_name="jobLogs")
+                list_with_dicts=current_job_logs, table_name="jobLogs")
 
-            jobs_updated += 1
-            logs_total_count += job_logs_count
+
+
+            # shallow copy dict to allow a update without errors
+            copied_jobsession = dict(row.items())
+
             # update job table and set jobsLogsStored = True, jobLogsCount = len(jobLogDetails)
             update_fields = {
-                "jobLogsCount": job_logs_count,
+                "jobLogsCount": job_log_count,
                 "jobsLogsStored": True
             }
-            # copy dict to allow update without errors
-            mydict = dict(row.items())
-            # update fields
+            # update the fields
             for(key, value) in update_fields.items():
-                mydict[key] = value
-            insert_list.append(mydict)
+                copied_jobsession[key] = value
+            job_update_list.append(copied_jobsession)
 
-        # Delete data to allow reinsert with different tags
+            # ##########################################################
+            # End of For-Each
+            # ##########################################################
+
+        # ##########################################################
+        # Delete each job, then re-insert
+        # ##########################################################
+
+        # Delete all jobs which got requested, no matter if failed
         delete_query = SelectionQuery(
             keyword=Keyword.DELETE,
             tables=[table],
@@ -590,6 +597,11 @@ class JobMethods:
         self.__influx_client.send_selection_query(delete_query) # type: ignore
 
         # Insert data after everything is completed
-        self.__influx_client.insert_dicts_to_buffer(table.name, insert_list)
+        self.__influx_client.insert_dicts_to_buffer(table.name, job_update_list)
 
-        LOGGER.info(">>> inserting a total of {} logs".format(logs_total_count))
+        if(logs_requested_total != logs_to_stats_total):
+            LOGGER.info(f"> Requested a total of {logs_requested_total} but only computed {logs_to_stats_total} into sppmon statistics")
+        else:
+            LOGGER.info(f">>> requested and computed a total of {logs_requested_total} logs")
+
+        LOGGER.info(f">> Updated a total of {len(job_update_list)} jobs")

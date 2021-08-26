@@ -4,14 +4,10 @@ Classes:
     ApiQueries
 """
 import logging
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 import json
-import urllib.parse
 
-from utils.connection_utils import ConnectionUtils
-from utils.execption_utils import ExceptionUtils
-from utils.spp_utils import SppUtils
-from sppConnection.rest_client import RestClient
+from sppConnection.rest_client import RequestType, RestClient
 
 
 LOGGER = logging.getLogger("sppmon")
@@ -45,10 +41,10 @@ class ApiQueries:
         """Retrieves list of sites with capture time stamp."""
         LOGGER.debug("retrieving list of sites")
         endpoint = "/api/site"
-        white_list = ['description', 'id', 'name', 'throttles']
+        allow_list = ['description', 'id', 'name', 'throttles']
         array_name = "sites"
         sites = self.__rest_client.get_objects(
-            endpoint=endpoint, white_list=white_list, array_name=array_name, add_time_stamp=True)
+            endpoint=endpoint, allow_list=allow_list, array_name=array_name, add_time_stamp=True)
         return sites
 
 
@@ -56,22 +52,22 @@ class ApiQueries:
         """retrieves a list of all storages."""
         LOGGER.debug("retrieving list of storages")
         endpoint = "/api/storage"
-        white_list = ['capacity.free', 'capacity.total', 'capacity.updateTime',
+        allow_list = ['capacity.free', 'capacity.total', 'capacity.updateTime',
                       'name', 'hostAddress', 'storageId',
                       'isReady', 'site', 'type', 'version']
         array_name = "storages"
         storages = self.__rest_client.get_objects(
-            endpoint=endpoint, white_list=white_list, array_name=array_name)
+            endpoint=endpoint, allow_list=allow_list, array_name=array_name)
         return storages
 
     def get_vadps(self) -> List[Dict[str, Any]]:
         """retrieves a list of all vadp proxys."""
         LOGGER.debug("retrieving list of vadps")
         endpoint = "/api/vadp"
-        white_list = ["id", "displayName", "ipAddr", "siteId", "state", "version"]
+        allow_list = ["id", "displayName", "ipAddr", "siteId", "state", "version"]
         array_name = "vadps"
         vadps = self.__rest_client.get_objects(
-            endpoint=endpoint, white_list=white_list, array_name=array_name, add_time_stamp=True)
+            endpoint=endpoint, allow_list=allow_list, array_name=array_name, add_time_stamp=True)
         return vadps
 
     def get_job_list(self) -> List[Dict[str, Any]]:
@@ -79,15 +75,15 @@ class ApiQueries:
         LOGGER.debug("retrieving list of all jobs")
         endpoint = "/api/endeavour/job"
         array_name = "jobs"
-        white_list = ["id", "name"]
+        allow_list = ["id", "name"]
 
-        object_list = self.__rest_client.get_objects(endpoint=endpoint, array_name=array_name, white_list=white_list)
+        object_list = self.__rest_client.get_objects(endpoint=endpoint, array_name=array_name, allow_list=allow_list)
         return object_list
 
     def get_all_vms(self) -> List[Dict[str, Any]]:
         """retrieves a list of all vm's with their statistics."""
         endpoint = "/api/endeavour/catalog/hypervisor/vm"
-        white_list = [
+        allow_list = [
             "id", "properties.name", "properties.host", "catalogTime",
             "properties.vmVersion", "properties.configInfo.osName", "properties.hypervisorType",
             "properties.isProtected", "properties.inHLO", "isEncrypted",
@@ -99,64 +95,46 @@ class ApiQueries:
         ]
         array_name = "children"
 
-        endpoint = ConnectionUtils.url_set_param(url=endpoint, param_name="embed", param_value="(children(properties))")
+        params = {
+            "embed": "(children(properties))"
+        }
         return self.__rest_client.get_objects(
             endpoint=endpoint,
+            params=params,
             array_name=array_name,
-            white_list=white_list,
+            allow_list=allow_list,
             add_time_stamp=False)
 
 
     def get_vms_per_sla(self) -> List[Dict[str, Any]]:
         """retrieves and calculates all vmware per SLA."""
+        endpoint = "/api/endeavour/catalog/recovery/hypervisorvm"
+        params = {
+            "action": "aggregate",
+            "pageSize": None
+        }
+        # other options: volume, vm, tag, tagcategory
+        post_data = {
+            "op":[
+                {
+                    "operation": "count",
+                    "fieldname": "protectionInfo.policyName",
+                    "outputname": "vmCountBySLA" # buggy request, does actually not change anything
+                }
+            ],
+            "group": [
+                "protectionInfo.policyName"
+            ]
+        }
 
-        endpoint = "/ngp/slapolicy"
-        white_list = ["name", "id"]
-        array_name = "slapolicies"
-
-        sla_policty_list = self.__rest_client.get_objects(
+        return self.__rest_client.get_objects(
             endpoint=endpoint,
-            white_list=white_list,
-            array_name=array_name,
-            add_time_stamp=False
-        )
+            params=params,
+            request_type=RequestType.POST,
+            post_data=post_data,
+            add_time_stamp=True,
+            array_name="results")
 
-        result_list: List[Dict[str, Any]] = []
-        for sla_policty in sla_policty_list:
-            try:
-                sla_name: str = sla_policty["name"]
-            except KeyError as error:
-                ExceptionUtils.exception_info(error, extra_message="skipping one sla entry due missing name.")
-                continue
-            sla_id: Optional[str] = sla_policty.get("id", None)
-
-            result_dict: Dict[str, Any] = {}
-
-            ## hotadd:
-            sla_name = urllib.parse.quote_plus(sla_name)
-
-            endpoint = "/api/hypervisor/search"
-            endpoint = ConnectionUtils.url_set_param(url=endpoint, param_name="resourceType", param_value="vm")
-            endpoint = ConnectionUtils.url_set_param(url=endpoint, param_name="from", param_value="hlo")
-            filter_str: str = '[{"property":"storageProfileName","value": "' + sla_name +'", "op":"="}]'
-            endpoint = ConnectionUtils.url_set_param(url=endpoint, param_name="filter", param_value=filter_str)
-
-            # note: currently only vmware is queried per sla, not hyperV
-            # need to check if hypervisortype must be specified
-            post_data = json.dumps({"name": "*", "hypervisorType": "vmware"})
-
-            response_json = self.__rest_client.post_data(endpoint=endpoint, post_data=post_data)
-
-            result_dict["slaName"] = sla_name
-            result_dict["slaId"] = sla_id
-            result_dict["vmCountBySLA"] = response_json.get("total")
-
-            time_key, time = SppUtils.get_capture_timestamp_sec()
-            result_dict[time_key] = time
-
-            result_list.append(result_dict)
-
-        return result_list
 
     def get_sla_dump(self) -> List[Dict[str, Any]]:
         """retrieves all storage profiles."""
@@ -164,12 +142,12 @@ class ApiQueries:
         # the HATEOAS information are containing link objects with endpoint api/spec/storageprofile
         # and this endpoint returns a different JSON structure than /api/site
         endpoint = "/api/spec/storageprofile"
-        white_list = ["name", "id", "spec.subpolicy"]
+        allow_list = ["name", "id", "spec.subpolicy"]
         array_name = "storageprofiles"
 
         return self.__rest_client.get_objects(
             endpoint=endpoint,
-            white_list=white_list,
+            allow_list=allow_list,
             array_name=array_name,
             add_time_stamp=True
         )
@@ -191,7 +169,7 @@ class ApiQueries:
             raise ValueError("no jobId is provived but required to query data")
 
         endpoint = "/api/endeavour/jobsession/history/jobid/" + str(job_id)
-        white_list = [
+        allow_list = [
             "id", "jobId", "jobName", "start", "end", "duration", "status",
             "indexStatus", "subPolicyType", 'type', 'numTasks', 'percent',
             'properties.statistics'
@@ -203,7 +181,7 @@ class ApiQueries:
 
         all_jobs_list = self.__rest_client.get_objects(
             endpoint=endpoint,
-            white_list=white_list,
+            allow_list=allow_list,
             array_name=array_name,
             add_time_stamp=False
         )
@@ -211,24 +189,24 @@ class ApiQueries:
         return all_jobs_list
 
 
-    def get_job_log_details(self, job_logs_type: str, jobsession_id: int) -> List[Dict[str, Any]]:
+    def get_job_log_details(self, job_logs_types: List[str], jobsession_id: int, request_ids: List[str] = None) -> List[Dict[str, Any]]:
         """retrieves jobLogs for a certain jobsession.
 
         Arguments:
-            job_logs_type {str} -- types of joblogs, given as comma seperated string-array: '["DEBUG"]'
-            page_size {int} -- size of each response
+            job_logs_type {List[str]} -- types of joblogs: ["DEBUG","SUMMARY"]
             jobsession_id {int} -- only returns joblogs for this sessionID
+            request_ids {List[str]} -- messageId's to be requested. Only supply if filter wanted. (Default: None)
 
         Raises:
             ValueError: No jobsessionid given
             ValueError: No joblogType specified
 
         Returns:
-            List[Dict[str, Any]] -- List of joblogs for the sessionID of the given types.
+            List[Dict[str, Any]] -- List of joblogs for requested sessionID of the given types.
         """
         if(not jobsession_id):
             raise ValueError("no jobsession_id given to query Logs by an Id")
-        if(not job_logs_type):
+        if(not job_logs_types):
             raise ValueError("need to specify the jobLogType you want to query")
         # note: job id is the id of the job ( policy)
         # jobsessionid is the unique id of a execution of a job
@@ -237,18 +215,44 @@ class ApiQueries:
 
         LOGGER.debug("retrieving jobLogs for jobsessionId: %d", jobsession_id)
         endpoint = "/api/endeavour/log/job"
-        white_list = [
+        allow_list = [
             "jobsessionId", "logTime", "id", "messageId",
             "message", "messageParams", "type"]
         array_name = "logs"
 
-        api_filter = '[{"property":"jobsessionId","value":' + str(jobsession_id) + ',"op":"="},' \
-                    '{"property":"type","value":'+ job_logs_type +',"op":"IN"}]'
+        filter_dict_list = [
+            {
+                "property":"jobsessionId",
+                "value":str(jobsession_id),
+                "op":"="
+            },
+            {
+                "property":"type",
+                "value": job_logs_types,
+                "op":"IN"
+            },
+        ]
+
+        if(request_ids):
+             # No idea if important, but switches ' to "
+            new_ids = list(map(lambda id: f"{id}", request_ids))
+
+            filter_dict_list.append(
+                # does NOT work yet, nothing filtered
+                # replace with request_ids once it works
+                {
+                    "property":"messageId",
+                    "value": new_ids,
+                    "op":"IN"
+                },
+            )
+        params = {
+            "filter": json.dumps(filter_dict_list)
+            }
 
         #update the filter parameter to list all types if message types, not only info..
-        endpoint_to_logs = ConnectionUtils.url_set_param(url=endpoint, param_name="filter", param_value=api_filter)
         log_list = self.__rest_client.get_objects(
-            endpoint=endpoint_to_logs, white_list=white_list, array_name=array_name)
+            endpoint=endpoint, params=params, allow_list=allow_list, array_name=array_name)
 
         return log_list
 
@@ -263,8 +267,8 @@ class ApiQueries:
         """retrieves catalog filesystem information of the spp server."""
         endpoint = "/api/endeavour/sysdiag/filesystem"
         array_name = "filesystems"
-        white_list = [
+        allow_list = [
             "name", "type", "status", "totalSize", "usedSize", "availableSize", "percentUsed"
         ]
         return self.__rest_client.get_objects(
-            endpoint=endpoint, array_name=array_name, white_list=white_list, add_time_stamp=True)
+            endpoint=endpoint, array_name=array_name, allow_list=allow_list, add_time_stamp=True)

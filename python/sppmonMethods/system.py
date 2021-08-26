@@ -151,8 +151,13 @@ class SystemMethods:
                 ('throttles', 'throttleRates')
             ]
             )
-        # save results for renames later
+        LOGGER.debug(f"sites: {result}")
+        # save results into internal storage to avoid additional request for ID's
+        # used instead of `site_name_by_id`
         for row in result:
             self.__site_name_dict[row['siteId']] = row['siteName']
+            # explicit none check since [] also needs to be converted into str
+            if(row['throttleRates'] != None):
+                row['throttleRates'] = str(row['throttleRates'])
 
         self.__influx_client.insert_dicts_to_buffer(table_name=table_name, list_with_dicts=result)

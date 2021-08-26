@@ -54,9 +54,11 @@ class SshMethods:
         self.__influx_client = influx_client
         self.__verbose = verbose
 
-        self.__ssh_clients = self.setup_ssh_clients(config_file)
-        if(not self.__ssh_clients):
-            raise ValueError("No ssh-clients are present. Skipping SSH-Methods creation")
+        try:
+            self.__ssh_clients = self.setup_ssh_clients(config_file)
+        except ValueError as error:
+            ExceptionUtils.exception_info(error)
+            raise ValueError("No ssh-clients are present or error when reading config file. Skipping SSH-Methods creation")
 
         # ################################################################################################
         # ################################### SSH COMMAND LIST GROUPS ####################################
@@ -177,7 +179,7 @@ class SshMethods:
             param_name="sshclients")
 
         if(not isinstance(auth_ssh, list)):
-            raise ValueError("not a list of sshconfig given", auth_ssh)
+            raise ValueError("sshconfig is not a list of clients", auth_ssh)
 
         ssh_clients: List[SshClient] = []
         for client_ssh in auth_ssh:
@@ -378,7 +380,7 @@ class SshMethods:
 
             pool_dict: Dict[str, Any] = {}
 
-            # acts as white list
+            # acts as allow list
             insert_list = [
                 'compression',
                 'compression_ratio',
