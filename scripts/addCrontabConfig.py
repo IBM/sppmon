@@ -131,7 +131,7 @@ class CrontabConfig:
         Utils.printRow()
 
         minute_interval: int = 3
-        hourly_interval: int = 60
+        hourly_interval: int = 30
         daily_interval: int = 12
         # use first half of hour to prevent collision with --all
         daily_minute_offset: int = randint(0, 25)
@@ -161,9 +161,9 @@ class CrontabConfig:
                 filter=lambda x: x.isdigit() and int(x) <= 120 and int(x) >= 15))
 
             daily_interval: int = int(Utils.prompt_string(
-                "Specify the interval to request new joblogs (in hours: 1-48)",
+                "Specify the interval to request new joblogs (in hours: 1-36)",
                 daily_interval,
-                filter=lambda x: x.isdigit() and int(x) < 48 and int(x) >= 1))
+                filter=lambda x: x.isdigit() and int(x) < 36 and int(x) >= 1))
             LOGGER.info(
                 "> Offset-Hint: Concurrent calls are no problem for SPPMon, " +
                 "it is used to distribute the load on the spp-server")
