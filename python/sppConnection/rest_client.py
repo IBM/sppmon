@@ -347,9 +347,11 @@ class RestClient():
         send_time: float = -1 # prevent unbound var
 
         # avoid unset pageSize to not get into SPP defaults
-        if(not params.get("pageSize", None)):
+        if("pageSize" not in params):
             LOGGER.debug(f"setting pageSize to {self.__page_size} from unset value")
             params["pageSize"] = self.__page_size
+        elif(params["pageSize"] is None):
+            params.pop("pageSize")
 
         while(response_query is None):
 
