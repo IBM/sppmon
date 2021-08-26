@@ -64,6 +64,7 @@ Author:
  08/18/2021 version 0.14   Added install script and fixed typo in config file, breaking old config files.
  08/22/2021 version 0.15   Added --fullLogs argument and reduced regular/loaded joblog query to SUMMARY-Only
  08/25/2021 version 0.15.1 Replaced SLA-Endpoint by so-far unknown endpoint, bringing it in line with other api-requests.
+ 08/27/2021 version 1.0.0  Release of SPPMon
 """
 from __future__ import annotations
 
@@ -92,7 +93,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "0.15.1  (2021/08/25)"
+VERSION = "1.0.0  (2021/08/27)"
 
 
 # ----------------------------------------------------------------------------
