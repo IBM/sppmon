@@ -109,6 +109,10 @@ class ApiQueries:
     def get_vms_per_sla(self) -> List[Dict[str, Any]]:
         """retrieves and calculates all vmware per SLA."""
         endpoint = "/api/endeavour/catalog/recovery/hypervisorvm"
+        allow_list = [
+            "_id.protectionInfo.storageProfileName",
+            "count"
+        ]
         params = {
             "action": "aggregate",
             "pageSize": None
@@ -118,12 +122,12 @@ class ApiQueries:
             "op":[
                 {
                     "operation": "count",
-                    "fieldname": "protectionInfo.policyName",
+                    "fieldname": "protectionInfo.storageProfileName",
                     "outputname": "vmCountBySLA" # buggy request, does actually not change anything
                 }
             ],
             "group": [
-                "protectionInfo.policyName"
+                "protectionInfo.storageProfileName"
             ]
         }
 
@@ -131,6 +135,7 @@ class ApiQueries:
             endpoint=endpoint,
             params=params,
             request_type=RequestType.POST,
+            allow_list=allow_list,
             post_data=post_data,
             add_time_stamp=True,
             array_name="results")

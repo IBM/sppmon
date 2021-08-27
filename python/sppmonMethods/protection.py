@@ -57,23 +57,10 @@ class ProtectionMethods:
             name="VMs per SLA",
             source_func=self.__api_queries.get_vms_per_sla,
             rename_tuples=[
-                ("_id.protectionInfo.policyName", "slaName"),
+                ("storageProfileName", "slaName"),
                 ("count", "vmCountBySLA") # buggy request
-            ],
-            deactivate_verbose=True
+            ]
         )
-
-        # the endpoint offers a prefix `vmware_`
-        # due to compability reasons the prefix is removed
-        # may be reintroduced if other types occur.
-        pattern = compile(r"^vmware_")
-        for sla in result:
-            # replaces the first occurence
-            sla['slaName'] = sub(pattern, "", sla['slaName'], 1)
-
-        if(self.__verbose):
-            MethodUtils.my_print(result)
-
         LOGGER.info(">> inserting number of VMs per SLA into DB")
         self.__influx_client.insert_dicts_to_buffer(
             table_name="slaStats", list_with_dicts=result)
