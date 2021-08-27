@@ -6,7 +6,6 @@ Classes:
 """
 import logging
 
-from re import compile, sub
 from typing import List, Dict, Any, Union, Optional
 
 from influx.influx_client import InfluxClient
@@ -55,11 +54,7 @@ class ProtectionMethods:
         LOGGER.info("> calculating number of VMs per SLA")
         result = MethodUtils.query_something(
             name="VMs per SLA",
-            source_func=self.__api_queries.get_vms_per_sla,
-            rename_tuples=[
-                ("storageProfileName", "slaName"),
-                ("count", "vmCountBySLA") # buggy request
-            ]
+            source_func=self.__api_queries.get_vms_per_sla
         )
         LOGGER.info(">> inserting number of VMs per SLA into DB")
         self.__influx_client.insert_dicts_to_buffer(

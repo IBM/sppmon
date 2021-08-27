@@ -16,6 +16,20 @@ straightforward as possible.
 
 ### Fixed
 
+## [1.0.1] - 2021-08-27
+
+### Fixed
+
+* Reverts SLA-Endpoint changes to stop counting removed VM's.
+  * Pagesize code inside of the rest-request remains unchanged.
+
+### Changed
+
+* Changes SLA-Request count-field name and group name to a better matching candidate.
+  * Removes the need to cut of prefix via regex
+  * Removes associated regex code
+* Changes REST-Client query time measurement from using a timer to using the result-internal timer.
+
 ## [1.0.0] - 2021-08-26
 
 ### Major changes summary

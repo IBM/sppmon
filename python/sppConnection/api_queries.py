@@ -4,9 +4,12 @@ Classes:
     ApiQueries
 """
 import logging
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import json
+import urllib.parse
 
+from utils.execption_utils import ExceptionUtils
+from utils.spp_utils import SppUtils
 from sppConnection.rest_client import RequestType, RestClient
 
 
@@ -108,38 +111,67 @@ class ApiQueries:
 
     def get_vms_per_sla(self) -> List[Dict[str, Any]]:
         """retrieves and calculates all vmware per SLA."""
-        endpoint = "/api/endeavour/catalog/recovery/hypervisorvm"
-        allow_list = [
-            "_id.protectionInfo.storageProfileName",
-            "count"
-        ]
-        params = {
-            "action": "aggregate",
-            "pageSize": None
-        }
-        # other options: volume, vm, tag, tagcategory
-        post_data = {
-            "op":[
-                {
-                    "operation": "count",
-                    "fieldname": "protectionInfo.storageProfileName",
-                    "outputname": "vmCountBySLA" # buggy request, does actually not change anything
-                }
-            ],
-            "group": [
-                "protectionInfo.storageProfileName"
-            ]
-        }
 
-        return self.__rest_client.get_objects(
+        endpoint = "/ngp/slapolicy"
+        allow_list = ["name", "id"]
+        array_name = "slapolicies"
+
+        sla_policty_list = self.__rest_client.get_objects(
             endpoint=endpoint,
-            params=params,
-            request_type=RequestType.POST,
             allow_list=allow_list,
-            post_data=post_data,
-            add_time_stamp=True,
-            array_name="results")
+            array_name=array_name,
+            add_time_stamp=False
+        )
 
+        result_list: List[Dict[str, Any]] = []
+        for sla_policty in sla_policty_list:
+            try:
+                sla_name: str = sla_policty["name"]
+            except KeyError as error:
+                ExceptionUtils.exception_info(error, extra_message="skipping one sla entry due missing name.")
+                continue
+            sla_id: Optional[str] = sla_policty.get("id", None)
+
+            result_dict: Dict[str, Any] = {}
+
+            ## hotadd:
+            sla_name = urllib.parse.quote_plus(sla_name)
+
+            endpoint = "/api/hypervisor/search"
+            params = {
+                "resourceType": "vm",
+                "from": "hlo",
+                "pageSize": 1,
+                "filter": json.dumps([
+                    {
+                        "property": "storageProfileName",
+                        "value": sla_name,
+                        "op": "="
+                    }
+                ])
+            }
+            # other options: volume, vm, tag, tagcategory
+            post_data = {
+                "name": "*",
+                "hypervisorType": "vmware",
+            }
+
+            (response_json, _) = self.__rest_client.query_url(
+                self.__rest_client.get_url(endpoint),
+                params,
+                RequestType.POST,
+                post_data)
+
+            result_dict["slaName"] = sla_name
+            result_dict["slaId"] = sla_id
+            result_dict["vmCountBySLA"] = response_json.get("total", None)
+
+            time_key, time = SppUtils.get_capture_timestamp_sec()
+            result_dict[time_key] = time
+
+            result_list.append(result_dict)
+
+        return result_list
 
     def get_sla_dump(self) -> List[Dict[str, Any]]:
         """retrieves all storage profiles."""
