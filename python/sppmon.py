@@ -65,6 +65,7 @@ Author:
  08/22/2021 version 0.15   Added --fullLogs argument and reduced regular/loaded joblog query to SUMMARY-Only
  08/25/2021 version 0.15.1 Replaced SLA-Endpoint by so-far unknown endpoint, bringing it in line with other api-requests.
  08/27/2021 version 1.0.0  Release of SPPMon
+ 08/27/2021 version 1.0.1  Reverted parts of the SLA-Endpoint change
 """
 from __future__ import annotations
 
@@ -93,7 +94,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "1.0.0  (2021/08/27)"
+VERSION = "1.0.1  (2021/08/27)"
 
 
 # ----------------------------------------------------------------------------
