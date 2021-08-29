@@ -731,11 +731,13 @@ class Definitions:
                 'vadpName':         Datatype.STRING,
                 'vadpId':           Datatype.INT,
                 'ipAddr':           Datatype.STRING,
+                'isEnabled':        Datatype.INT
             },
             tags=[
                 'siteId',
                 'siteName',
-                'version'
+                'version',
+                'name'
             ],
             retention_policy=cls._RP_HALF_YEAR(),
             continuous_queries=[

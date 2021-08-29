@@ -121,6 +121,11 @@ class ProtectionMethods:
             )
         for row in result:
             row['siteName'] = self.__system_methods.site_name_by_id(row['siteId'])
+            row['name'] = row['vadpName']
+            if (row['state'] == "ENABLED"):
+                row['isEnabled'] = 1
+            else:
+                row['isEnabled'] = 0
         if(self.__verbose):
             MethodUtils.my_print(result)
 
