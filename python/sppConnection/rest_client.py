@@ -357,7 +357,6 @@ class RestClient():
 
             # send the query
             try:
-                start_time = time.perf_counter()
                 if(request_type == RequestType.GET):
                     response_query = get(
                         url=url, headers=self.__headers, verify=False,
@@ -368,8 +367,7 @@ class RestClient():
                         url=url, headers=self.__headers, verify=False,
                         params=params, json=post_data, auth=auth,
                         timeout=(self.__initial_connection_timeout, self.__timeout))
-                end_time = time.perf_counter()
-                send_time = (end_time - start_time)
+                send_time = response_query.elapsed.total_seconds()
 
             except ReadTimeout as timeout_error:
 
