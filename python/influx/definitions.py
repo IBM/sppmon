@@ -148,7 +148,7 @@ class Definitions:
     @classmethod
     def _CQ_TMPL(
             cls, fields: List[str], new_retention_policy: RetentionPolicy,
-            group_time: str, group_args: List[str] = None, where_str: str = None) -> Callable[[Table, str], ContinuousQuery]:
+            group_time: str, group_args: List[str] = ["*"], where_str: str = None) -> Callable[[Table, str], ContinuousQuery]:
         """Creates a CQ to do whatever you want with it.
 
         Args:
@@ -728,56 +728,52 @@ class Definitions:
         cls.__add_predef_table(
             name='vadps',
             fields={
-                'state':            Datatype.STRING,
-                'vadpName':         Datatype.STRING,
-                'vadpId':           Datatype.INT,
-                'ipAddr':           Datatype.STRING,
-                'isEnabled':        Datatype.INT
+                # Dummy fields, since they are not required at tag but good to have.
+                # Having them as tags would require a dummy field and unnecessarily increase series cardinality
+                'vadpId':                       Datatype.INT,
+                'ipAddr':                       Datatype.STRING
             },
             tags=[
-                'siteId',
-                'siteName',
-                'version',
-                'name'
+                'status', # Usefull to group over state later on, as well as now. Renamed because of duplicate name.
+                'siteId', # Required for later grouping
+                'siteName', # Just addon to the siteID
+                'version', # Usefull to group on at any stage
+                'vadpName', # Required to make each vadp unique -> not dropped.
             ],
             retention_policy=cls._RP_HALF_YEAR(),
             continuous_queries=[
-                # cls._CQ_TRNSF(cls._RP_DAYS_14())
                 cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) AS enabled_count"],
+                    fields=["count(distinct(vadpId)) AS count"],
                     new_retention_policy=cls._RP_DAYS_14(),
                     group_time="1h",
-                    where_str="(state =~ /ENABLED/)"
+                    group_args=[
+                        'siteId',
+                        'siteName',
+                        'version',
+                        'status'
+                    ]
                 ),
                 cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) AS disabled_count"],
-                    new_retention_policy=cls._RP_DAYS_14(),
-                    group_time="1h",
-                    where_str="(state !~ /ENABLED/)"
-                ),
-                cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) AS enabled_count"],
+                    fields=["count(distinct(vadpId)) AS count"],
                     new_retention_policy=cls._RP_DAYS_90(),
                     group_time="6h",
-                    where_str="(state =~ /ENABLED/)"
+                    group_args=[
+                        'siteId',
+                        'siteName',
+                        'version',
+                        'status'
+                    ]
                 ),
                 cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) AS disabled_count"],
-                    new_retention_policy=cls._RP_DAYS_90(),
-                    group_time="6h",
-                    where_str="(state !~ /ENABLED/)"
-                ),
-                cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) AS enabled_count"],
+                    fields=["count(distinct(vadpId)) AS count"],
                     new_retention_policy=cls._RP_INF(),
                     group_time="1w",
-                    where_str="(state =~ /ENABLED/)"
-                ),
-                cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) AS disabled_count"],
-                    new_retention_policy=cls._RP_INF(),
-                    group_time="1w",
-                    where_str="(state !~ /ENABLED/)"
+                    group_args=[
+                        'siteId',
+                        'siteName',
+                        'version',
+                        'status'
+                    ]
                 )
             ]
         )
