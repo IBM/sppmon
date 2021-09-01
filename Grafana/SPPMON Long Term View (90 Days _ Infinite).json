@@ -9,6 +9,12 @@
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
@@ -18,7 +24,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 55,
-  "iteration": 1629367378778,
+  "iteration": 1630413895162,
   "links": [
     {
       "asDropdown": false,
@@ -73,10 +79,6 @@
       "datasource": "$SPP_Server",
       "decimals": 1,
       "description": "",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -107,7 +109,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -214,10 +216,6 @@
       "dashes": false,
       "datasource": "$SPP_Server",
       "description": "max 90% Percentille  of each component memory usage",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -245,7 +243,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -333,10 +331,6 @@
       "dashes": false,
       "datasource": "$SPP_Server",
       "description": "Duration selected jobs",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -364,7 +358,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -466,10 +460,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -496,7 +486,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -604,10 +594,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -634,7 +620,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -753,10 +739,6 @@
       "dashes": false,
       "datasource": "$SPP_Server",
       "description": "",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -786,7 +768,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -869,10 +851,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -899,7 +877,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1009,10 +987,6 @@
       "dashes": false,
       "datasource": "$SPP_Server",
       "description": "Sum of replicated bytes \nSum of transferred bytes\n",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1042,7 +1016,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1189,10 +1163,6 @@
       "dashes": false,
       "datasource": "$SPP_Server",
       "description": "",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1222,7 +1192,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1342,10 +1312,6 @@
       "dashes": false,
       "datasource": "$SPP_Server",
       "description": "",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -1373,7 +1339,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 0.5,
       "points": true,
       "renderer": "flot",
@@ -1630,7 +1596,7 @@
           }
         ]
       },
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "targets": [
         {
           "alias": "",
@@ -1736,10 +1702,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -1767,7 +1729,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 0.5,
       "points": true,
       "renderer": "flot",
@@ -2026,10 +1988,6 @@
       "dashes": false,
       "datasource": "$SPP_Server",
       "decimals": 1,
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -2059,7 +2017,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2171,10 +2129,6 @@
       "datasource": "$SPP_Server",
       "decimals": 1,
       "description": "Selected Processes monitored by top command\n\"java\", \"mongo\", \"beam.smp\"",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -2207,7 +2161,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2320,10 +2274,6 @@
       "dashes": false,
       "datasource": "$SPP_Server",
       "decimals": 1,
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -2352,7 +2302,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2459,10 +2409,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -2489,7 +2435,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 0.5,
       "points": false,
       "renderer": "flot",
@@ -2609,10 +2555,6 @@
       "datasource": "$SPP_Server",
       "decimals": 1,
       "description": "Mean-Sum of process-group displayed",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -2643,7 +2585,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -2758,10 +2700,6 @@
       "datasource": "$SPP_Server",
       "decimals": 1,
       "description": "Selected Processes monitored by top command\n\"java\", \"mongo\", \"beam.smp\"",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -2794,7 +2732,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -2901,10 +2839,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2932,7 +2866,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3019,10 +2953,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -3050,7 +2980,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3176,10 +3106,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -3206,7 +3132,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3337,10 +3263,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -3370,7 +3292,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3462,10 +3384,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -3492,7 +3410,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3582,10 +3500,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -3612,7 +3526,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3702,10 +3616,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -3732,7 +3642,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3829,10 +3739,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -3859,7 +3765,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3968,10 +3874,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -3998,7 +3900,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4107,10 +4009,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -4137,7 +4035,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4227,10 +4125,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -4257,7 +4151,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4366,10 +4260,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -4396,7 +4286,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4512,10 +4402,6 @@
       "dashes": false,
       "datasource": "$SPP_Server",
       "decimals": 0,
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -4544,7 +4430,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4644,10 +4530,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -4676,7 +4558,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -4816,10 +4698,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -4848,7 +4726,7 @@
         "alertThreshold": false
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4944,10 +4822,6 @@
       "dashes": false,
       "datasource": "$SPP_Server",
       "decimals": 0,
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -4976,7 +4850,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -5094,10 +4968,6 @@
       "dashes": false,
       "datasource": "$SPP_Server",
       "decimals": 0,
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -5126,7 +4996,7 @@
         "alertThreshold": true
       },
       "percentage": true,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -5270,10 +5140,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 0,
       "fillGradient": 1,
       "gridPos": {
@@ -5300,7 +5166,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 1,
       "points": true,
       "renderer": "flot",
@@ -5422,10 +5288,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 2,
       "gridPos": {
@@ -5452,7 +5314,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 1,
       "points": true,
       "renderer": "flot",
@@ -5551,10 +5413,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -5582,7 +5440,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -5667,10 +5525,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 0,
       "fillGradient": 1,
       "gridPos": {
@@ -5697,7 +5551,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 1,
       "points": true,
       "renderer": "flot",
@@ -5825,10 +5679,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -5857,7 +5707,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -6088,10 +5938,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -6118,7 +5964,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -6232,10 +6078,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -6262,7 +6104,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -6396,10 +6238,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -6426,7 +6264,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -6540,10 +6378,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -6570,7 +6404,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -6684,10 +6518,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -6714,7 +6544,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -6828,10 +6658,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -6858,7 +6684,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -6970,10 +6796,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -7001,7 +6823,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -7105,10 +6927,6 @@
       "dashes": false,
       "datasource": "$SPP_Server",
       "description": "Selects mean of each unique storage, sums up to total per site",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -7136,7 +6954,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -7226,10 +7044,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -7257,7 +7071,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -7361,10 +7175,6 @@
       "dashes": false,
       "datasource": "$SPP_Server",
       "description": "Selects mean of each unique storage, sums up to total per site",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -7392,7 +7202,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -7500,10 +7310,6 @@
       "dashes": false,
       "datasource": "$SPP_Server",
       "decimals": 1,
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -7533,7 +7339,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -7641,10 +7447,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -7671,7 +7473,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -7868,10 +7670,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -7883,13 +7681,15 @@
       "hiddenSeries": false,
       "id": 79,
       "legend": {
-        "avg": false,
+        "avg": true,
         "current": false,
+        "hideEmpty": true,
+        "hideZero": true,
         "max": false,
         "min": false,
         "show": true,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": true,
       "linewidth": 1,
@@ -7898,7 +7698,221 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "Enabled",
+          "groupBy": [
+            {
+              "params": [
+                "$interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "none"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "vadps",
+          "orderByTime": "ASC",
+          "policy": "$rp",
+          "query": "SELECT count(\"state\") FROM \"rp_half_year\".\"vadps\" WHERE (\"state\" =~ /ENABLED/) AND $timeFilter GROUP BY time($interval), \"siteName\"",
+          "rawQuery": false,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "enabled_count"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "tags": []
+        },
+        {
+          "alias": "Disabled",
+          "groupBy": [
+            {
+              "params": [
+                "$interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "none"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": false,
+          "measurement": "vadps",
+          "orderByTime": "ASC",
+          "policy": "$rp",
+          "query": "SELECT count(\"state\") FROM \"rp_half_year\".\"vadps\" WHERE (\"state\" =~ /ENABLED/) AND $timeFilter GROUP BY time($interval), \"siteName\"",
+          "rawQuery": false,
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "disabled_count"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "tags": []
+        },
+        {
+          "alias": "$tag_status",
+          "groupBy": [
+            {
+              "params": [
+                "$interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "status"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "none"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": false,
+          "measurement": "vadps",
+          "orderByTime": "ASC",
+          "policy": "$rp",
+          "query": "SELECT count(\"state\") FROM \"rp_half_year\".\"vadps\" WHERE (\"state\" =~ /ENABLED/) AND $timeFilter GROUP BY time($interval), \"siteName\"",
+          "rawQuery": false,
+          "refId": "C",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "count"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "VADP Proxy State Total Count",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transformations": [],
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:11956",
+          "decimals": 0,
+          "format": "none",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:11957",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$SPP_Server",
+      "fill": 1,
+      "fillGradient": 1,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 220
+      },
+      "hiddenSeries": false,
+      "id": 156,
+      "legend": {
+        "avg": true,
+        "current": false,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -7921,12 +7935,6 @@
                 "siteName"
               ],
               "type": "tag"
-            },
-            {
-              "params": [
-                "none"
-              ],
-              "type": "fill"
             }
           ],
           "measurement": "vadps",
@@ -7947,109 +7955,53 @@
               {
                 "params": [],
                 "type": "sum"
-              },
-              {
-                "params": [
-                  " / (sum(enabled_count)+sum(disabled_count))"
-                ],
-                "type": "math"
               }
             ]
           ],
           "tags": []
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "VADP Proxy State",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "transformations": [],
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:11956",
-          "format": "percentunit",
-          "label": null,
-          "logBase": 1,
-          "max": "1",
-          "min": "0",
-          "show": true
         },
         {
-          "$$hashKey": "object:11957",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 1,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 220
-      },
-      "hiddenSeries": false,
-      "id": 156,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.5.3",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
+          "alias": "$tag_siteName Disabled",
+          "groupBy": [
+            {
+              "params": [
+                "$interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "siteName"
+              ],
+              "type": "tag"
+            }
+          ],
+          "hide": false,
+          "measurement": "vadps",
+          "orderByTime": "ASC",
+          "policy": "$rp",
+          "query": "SELECT count(\"state\") FROM \"rp_half_year\".\"vadps\" WHERE (\"state\" =~ /ENABLED/) AND $timeFilter GROUP BY time($interval), \"siteName\"",
+          "rawQuery": false,
+          "refId": "C",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "disabled_count"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "tags": []
+        },
         {
-          "alias": "$tag_siteName Enabled Count",
+          "alias": "$tag_siteName $tag_status",
           "groupBy": [
             {
               "params": [
@@ -8065,23 +8017,24 @@
             },
             {
               "params": [
-                "none"
+                "status"
               ],
-              "type": "fill"
+              "type": "tag"
             }
           ],
+          "hide": false,
           "measurement": "vadps",
           "orderByTime": "ASC",
           "policy": "$rp",
           "query": "SELECT count(\"state\") FROM \"rp_half_year\".\"vadps\" WHERE (\"state\" =~ /ENABLED/) AND $timeFilter GROUP BY time($interval), \"siteName\"",
           "rawQuery": false,
-          "refId": "A",
+          "refId": "B",
           "resultFormat": "time_series",
           "select": [
             [
               {
                 "params": [
-                  "enabled_count"
+                  "count"
                 ],
                 "type": "field"
               },
@@ -8116,6 +8069,7 @@
       "yaxes": [
         {
           "$$hashKey": "object:11956",
+          "decimals": 0,
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -8130,7 +8084,7 @@
           "logBase": 1,
           "max": null,
           "min": null,
-          "show": true
+          "show": false
         }
       ],
       "yaxis": {
@@ -8144,10 +8098,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -8174,7 +8124,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8371,10 +8321,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -8401,7 +8347,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8604,10 +8550,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -8634,7 +8576,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8973,10 +8915,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -9003,7 +8941,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -9107,10 +9045,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -9137,7 +9071,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -9242,10 +9176,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "$SPP_Server",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -9272,7 +9202,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.3",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -9372,11 +9302,11 @@
     }
   ],
   "refresh": "1h",
-  "schemaVersion": 27,
+  "schemaVersion": 30,
   "style": "dark",
   "tags": [
     "90_days_inf",
-    "v1.0"
+    "v1.0.2"
   ],
   "templating": {
     "list": [
@@ -9451,5 +9381,5 @@
   "timezone": "",
   "title": "SPPMON Long Term View (90 Days / Infinite)",
   "uid": "sppmon_long_term_view",
-  "version": 2
+  "version": 4
 }
