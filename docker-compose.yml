@@ -8,6 +8,12 @@ services:
           context: ./
           dockerfile: Dockerfile
       volumes:
+        # https://docs.docker.com/compose/compose-file/compose-file-v3/#short-syntax-3
+        # have to check this
+        #- type: volume
+        #  source: ./config_files/
+        #  target: /usr/src/app/config_files
+        #  read_only: true
         - ./config_files/:/usr/src/app/config_files:ro,Z
         - /home/sppmon/sppmonLogs:/root/sppmonLogs:Z
       networks:

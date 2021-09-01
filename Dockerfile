@@ -13,7 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY ./python ./python
 
 # Config files
-COPY ./config_files ./config_files
+#COPY ./config_files ./config_files
 
 # scripts
 COPY ./scripts/addConfigFile.py ./scripts/addConfigFile.py
