@@ -9935,7 +9935,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "$tag_siteName $tag_state",
+          "alias": "$tag_siteName $tag_status",
           "groupBy": [
             {
               "params": [
