@@ -1,8 +1,8 @@
 {
   "__inputs": [
     {
-      "name": "DS_SCALEVM10V2_EXTERNAL",
-      "label": "scaleVM10v2 external",
+      "name": "DS_DATASOURCE",
+      "label": "Datasource",
       "description": "",
       "type": "datasource",
       "pluginId": "influxdb",
@@ -143,7 +143,7 @@
   "panels": [
     {
       "collapsed": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -156,7 +156,7 @@
       "type": "row"
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "description": "95% Percentille over last 24h ",
       "fieldConfig": {
         "defaults": {
@@ -248,7 +248,7 @@
       "type": "gauge"
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "description": "95% Percentille over last 24h ",
       "fieldConfig": {
         "defaults": {
@@ -341,7 +341,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "description": "95% Percentille / last 24h of each component memory usage\nMax root storage usage  / last 24h of Server and vSnap",
       "fieldConfig": {
         "defaults": {
@@ -495,7 +495,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "description": "Duration of the last execution of selected jobs",
       "fieldConfig": {
         "defaults": {
@@ -614,7 +614,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 1,
       "description": "",
       "fill": 1,
@@ -781,7 +781,7 @@
       }
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -861,7 +861,7 @@
       "type": "stat"
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -941,7 +941,7 @@
       "type": "stat"
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -1033,7 +1033,7 @@
       "type": "stat"
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -1113,7 +1113,7 @@
       "type": "stat"
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {
           "decimals": 0,
@@ -1224,7 +1224,7 @@
       "type": "stat"
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 7,
         "w": 4,
@@ -1258,7 +1258,7 @@
       "type": "alertlist"
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "description": "This panel shows how much the dela did increase, leaving out going down again.\nGood for noticing errors, even if they disappeared",
       "fieldConfig": {
         "defaults": {
@@ -1489,7 +1489,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1577,7 +1577,7 @@
       "type": "stat"
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "description": "90% percentille of last 24h per Commandgroup",
       "fieldConfig": {
         "defaults": {
@@ -1685,7 +1685,7 @@
       "type": "bargauge"
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "description": "90% percentille of last 24h",
       "fieldConfig": {
         "defaults": {
@@ -1794,7 +1794,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "description": "Sum of replicated bytes (VM) within the last 24h\nSum of transferred bytes (VM) within the last 24h\nSum of transferred bytes (Office365) within the last 24h\n",
       "fieldConfig": {
         "defaults": {
@@ -1946,7 +1946,7 @@
       "type": "stat"
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -2058,7 +2058,7 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -2144,7 +2144,7 @@
     },
     {
       "collapsed": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2221,7 +2221,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 1,
       "fill": 1,
       "fillGradient": 1,
@@ -2440,7 +2440,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 1,
       "description": "Selected Processes monitored by top command\n\"java\", \"mongo\", \"beam.smp\".\nQuerie calcualted due an inner querie to filter out the PID. Simple \"mean\" would result in a falsly low result",
       "fill": 1,
@@ -2631,7 +2631,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 1,
       "fill": 1,
       "fillGradient": 1,
@@ -2828,7 +2828,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -3033,7 +3033,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 1,
       "description": "Mean-Sum of process-group displayed",
       "fill": 1,
@@ -3187,7 +3187,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 1,
       "description": "Selected Processes monitored by top command\n\"java\", \"mongo\", \"beam.smp\"",
       "fill": 1,
@@ -3364,7 +3364,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -3538,7 +3538,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 0,
       "description": "",
       "fill": 1,
@@ -3704,7 +3704,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -3876,7 +3876,7 @@
     },
     {
       "collapsed": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -3893,7 +3893,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -4065,7 +4065,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -4255,7 +4255,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -4432,7 +4432,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -4609,7 +4609,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -4787,7 +4787,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -4947,7 +4947,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -5133,7 +5133,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -5322,7 +5322,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -5477,7 +5477,7 @@
     },
     {
       "collapsed": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -5494,7 +5494,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -5625,7 +5625,7 @@
       }
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -5925,7 +5925,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -6066,7 +6066,7 @@
       }
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -6209,7 +6209,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -6338,7 +6338,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 0,
       "fill": 1,
       "fillGradient": 1,
@@ -6482,7 +6482,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -6647,7 +6647,7 @@
     },
     {
       "collapsed": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -6664,7 +6664,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 0,
       "fillGradient": 1,
       "gridPos": {
@@ -6831,7 +6831,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 2,
       "gridPos": {
@@ -6955,7 +6955,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 0,
       "fillGradient": 1,
       "gridPos": {
@@ -7280,7 +7280,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "description": "",
       "fill": 1,
       "fillGradient": 1,
@@ -7582,7 +7582,7 @@
     {
       "cacheTimeout": null,
       "columns": [],
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fontSize": "100%",
       "gridPos": {
         "h": 8,
@@ -7665,7 +7665,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "description": "",
       "fill": 1,
       "fillGradient": 0,
@@ -7844,7 +7844,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -7990,7 +7990,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -8150,7 +8150,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -8296,7 +8296,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -8436,7 +8436,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -8576,7 +8576,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -8713,7 +8713,7 @@
     },
     {
       "collapsed": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -8730,7 +8730,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "description": "",
       "fill": 1,
       "fillGradient": 1,
@@ -8861,7 +8861,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "description": "Selects mean of each unique storage, sums up to total per site",
       "fill": 1,
       "fillGradient": 1,
@@ -9044,7 +9044,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -9183,7 +9183,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -9315,7 +9315,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 1,
       "fill": 1,
       "fillGradient": 1,
@@ -9506,7 +9506,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -9715,7 +9715,7 @@
     },
     {
       "collapsed": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -9728,7 +9728,7 @@
       "type": "row"
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -9892,7 +9892,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -10076,7 +10076,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -10285,7 +10285,7 @@
     },
     {
       "collapsed": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -10361,7 +10361,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -10579,7 +10579,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 0,
       "fill": 1,
       "fillGradient": 1,
@@ -10724,7 +10724,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 0,
       "fill": 1,
       "fillGradient": 1,
@@ -10840,7 +10840,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 0,
       "fill": 1,
       "fillGradient": 1,
@@ -10962,7 +10962,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 0,
       "fill": 1,
       "fillGradient": 1,
@@ -11077,7 +11077,7 @@
     },
     {
       "collapsed": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -11165,7 +11165,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "description": "",
       "fill": 1,
       "fillGradient": 1,
@@ -11412,7 +11412,7 @@
       }
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 8,
         "w": 5,
@@ -11447,7 +11447,7 @@
       "type": "alertlist"
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 16,
         "w": 5,
@@ -11626,7 +11626,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "decimals": 0,
       "fill": 1,
       "fillGradient": 1,
@@ -11904,7 +11904,7 @@
       }
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 8,
         "w": 8,
@@ -11964,7 +11964,7 @@
       "type": "logs"
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 8,
         "w": 8,
@@ -12024,7 +12024,7 @@
       "type": "logs"
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 8,
         "w": 8,
@@ -12084,7 +12084,7 @@
       "type": "logs"
     },
     {
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -12222,7 +12222,7 @@
     },
     {
       "collapsed": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -12350,7 +12350,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -12639,7 +12639,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -12767,7 +12767,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -12906,7 +12906,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_SCALEVM10V2_EXTERNAL}",
+      "datasource": "${DS_DATASOURCE}",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -13034,7 +13034,7 @@
   "schemaVersion": 30,
   "style": "dark",
   "tags": [
-    "scaleVM10v2 external",
+    "${DS_DATASOURCE}",
     "14_days",
     "v1.0.2"
   ],
@@ -13058,7 +13058,7 @@
     ]
   },
   "timezone": "",
-  "title": "SPPMON for IBM Spectrum Protect Plus scaleVM10v2 external",
-  "uid": "RMnql047z",
+  "title": "SPPMON for IBM Spectrum Protect Plus ${DS_DATASOURCE}",
+  "uid": "sppmon_single_view_DS_${DS_DATASOURCE}",
   "version": 1
 }
