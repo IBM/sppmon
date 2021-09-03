@@ -11,9 +11,9 @@ THE SPPMon project consists of three major components. The SPPMon core engine (t
 
 * The documentation is split into two sections: The user guide and the developer guide. The user guide includes all information needed to set up and configure the SPPMon system and data protection environment. The developer guide includes all information needed to improve the SPPMon system with more functionality, contribute to the open-source projects.
 
-* SPPMon can be setup from [scratch on a Linux operating system](Installation\System-requirements.md) or can be deployed in a [containerized environment](Installation\DockerContainer\SPPmon-as-a-Container.md). See the [install options overview](Installation\install-overview.md) for more details and a distinction between each option.
+* SPPMon can be setup from [scratch on a Linux operating system](https://github.com/IBM/spectrum-protect-sppmon/wiki/System-requirements) or can be deployed in a [containerized environment](https://github.com/IBM/spectrum-protect-sppmon/wiki/SPPmon-as-a-Container). See the [install options overview](https://github.com/IBM/spectrum-protect-sppmon/wiki/Install-overview) for more details and a distinction between each option.
 
-* Please refer to the [FAQ](Frequently-asked-Questions.md) for frequently asked questions.
-* An overview of all required and created users can be found [here](Overview-of-users.md).
+* Please refer to the [FAQ](https://github.com/IBM/spectrum-protect-sppmon/wiki/Frequently-asked-Questions) for frequently asked questions.
+* An overview of all required and created users can be found [here](https://github.com/IBM/spectrum-protect-sppmon/wiki/Overview-of-users).
 
 ## Find the documentation in the project [Wiki](https://github.com/IBM/spectrum-protect-sppmon/wiki)
