@@ -393,7 +393,7 @@ class TestingMethods():
 
         # ## InfluxDB ##
         try:
-            influx_errors, influx_warnings = ([],[]) # cls.__test_influx(influx_client)
+            influx_errors, influx_warnings = cls.__test_influx(influx_client)
         except ValueError as error:
             ExceptionUtils.exception_info(
                 error, extra_message="> Testing of the InfluxDB failed due an unknown error")
@@ -408,7 +408,7 @@ class TestingMethods():
         # ## REST-API ##
 
         try:
-            rest_errors, rest_warnings = ([],[]) #cls.__test_REST_API(rest_client)
+            rest_errors, rest_warnings = cls.__test_REST_API(rest_client)
         except ValueError as error:
             ExceptionUtils.exception_info(
                 error, extra_message="> Testing of the REST-API failed due an unknown error")
