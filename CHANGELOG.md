@@ -12,7 +12,11 @@ straightforward as possible.
 
 ### Added
 
+* Added ConnectionUtils function `rest_response_error`. This function helps extracting the response-error message and includes all important informations into a ValueError.
+
 ### Changed
+
+* REST-API Login and Statuscheck for get_objects use the new function `rest_response_error` to raise their error.
 
 ### Fixed
 
