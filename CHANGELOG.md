@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - yyyy-mm-dd
 
-Here we write upgrading notes for brands. It's a team effort to make them as
-straightforward as possible.
+### Added
+
+### Changed
+
+### Fixed
+
+## [1.1.0] - 2021-09-09
 
 ### Added
 
@@ -21,6 +26,8 @@ straightforward as possible.
 * Adds the `skip_cmd` option to the default-config file.
 
 ### Fixed
+
+* `--test`-execution: Fixes unusual KeyError when using a config file with more than one vSnap (or other) ssh-client.
 
 ## [1.0.2] - 2021-08-31
 
