@@ -12,12 +12,13 @@ straightforward as possible.
 
 ### Added
 
-* Added ConnectionUtils function `rest_response_error`. This function helps extracting the response-error message and includes all important informations into a ValueError.
+* Added ConnectionUtils function `rest_response_error`. This function helps to extract the response-error message and includes all important pieces of information into a ValueError. This error should be raised afterward.
 * Config-file option for ssh-clients `skip_cmds`. List of strings like `["mpstat", "ps"]` to skip commands on certain clients.
 
 ### Changed
 
 * REST-API Login and Statuscheck for get_objects use the new function `rest_response_error` to raise their error.
+* Adds the `skip_cmd` option to the default-config file.
 
 ### Fixed
 
