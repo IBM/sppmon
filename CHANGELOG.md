@@ -13,6 +13,7 @@ straightforward as possible.
 ### Added
 
 * Added ConnectionUtils function `rest_response_error`. This function helps extracting the response-error message and includes all important informations into a ValueError.
+* Config-file option for ssh-clients `skip_cmds`. List of strings like `["mpstat", "ps"]` to skip commands on certain clients.
 
 ### Changed
 
