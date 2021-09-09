@@ -292,8 +292,8 @@ class ConnectionUtils:
         """
 
         full_error_text = response.text
-        match = re.match(r".*?<title>(.*?)<\/title>.*", full_error_text)
-        if(match):
-            full_error_text = match.group(1)
+        #match = re.match(r".*?<title>(.*?)<\/title>.*", full_error_text)
+        #if(match):
+        #    full_error_text = match.group(1)
 
         return ValueError(message, response.status_code, response.reason, full_error_text, args)
