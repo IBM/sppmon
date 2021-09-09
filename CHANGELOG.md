@@ -7,14 +7,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - yyyy-mm-dd
 
-Here we write upgrading notes for brands. It's a team effort to make them as
-straightforward as possible.
-
 ### Added
 
 ### Changed
 
 ### Fixed
+
+## [1.1.0] - 2021-09-09
+
+### Added
+
+* Added ConnectionUtils function `rest_response_error`. This function helps to extract the response-error message and includes all important pieces of information into a ValueError. This error should be raised afterward.
+* Config-file option for ssh-clients `skip_cmds`. List of strings like `["mpstat", "ps"]` to skip commands on certain clients.
+
+### Changed
+
+* REST-API Login and Statuscheck for get_objects use the new function `rest_response_error` to raise their error.
+* Adds the `skip_cmd` option to the default-config file.
+
+### Fixed
+
+* `--test`-execution: Fixes unusual KeyError when using a config file with more than one vSnap (or other) ssh-client.
 
 ## [1.0.2] - 2021-08-31
 

@@ -67,6 +67,7 @@ Author:
  08/27/2021 version 1.0.0  Release of SPPMon
  08/27/2021 version 1.0.1  Reverted parts of the SLA-Endpoint change
  08/31/2021 version 1.0.2  Changed VADP table definition to prevent drop of false duplicates
+ 09/09/2021 version 1.1.0  Increase logging for REST-API errors, add ssh-client skip option for cfg file.
 """
 from __future__ import annotations
 
@@ -95,7 +96,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "1.0.2  (2021/08/31)"
+VERSION = "1.1.0  (2021/09/09)"
 
 
 # ----------------------------------------------------------------------------
