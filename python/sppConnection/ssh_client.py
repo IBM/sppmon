@@ -143,7 +143,7 @@ class SshClient:
     def __init__(self, auth_ssh: Dict[str, Any]):
         if(not auth_ssh):
             raise ValueError("need auth to create instance of sshclient")
-        if(not paramiko): # type: ignore
+        if(not paramiko):  # type: ignore
             raise ValueError('Error importing paramiko.')
 
         self.__host_name: str = auth_ssh["srv_address"]
@@ -157,8 +157,8 @@ class SshClient:
         except KeyError:
             raise ValueError("Unknown type of client. Please check config")
 
-        self.__client_ssh = paramiko.SSHClient() # type: ignore
-        self.__client_ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy()) # type: ignore
+        self.__client_ssh = paramiko.SSHClient()  # type: ignore
+        self.__client_ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # type: ignore
 
     def connect(self) -> None:
         """Connects to the client via ssh.
