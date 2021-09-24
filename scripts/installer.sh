@@ -359,7 +359,7 @@ main(){
         loggerEcho "Import SPPmon dashboards into Grafana"
         echo ""
         echo "> Please follow grafana import instructions"
-        echo "https://github.com/IBM/spectrum-protect-sppmon/wiki/Configure-Grafana"
+        echo "https://github.com/IBM/spectrum-protect-sppmon/wiki/Import-Grafana-Dashboards"
         saveState 'FINISHED' 'displaying finishing notes about the install of SPPMon'
     fi
 
