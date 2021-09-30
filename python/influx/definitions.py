@@ -1,4 +1,4 @@
-"""All kinds of table, retention policies and continuous queries definitions are implemented here
+"""All kinds of tables, retention policies and continuous queries definitions are implemented here
 
 Classes:
     Definitions
@@ -12,15 +12,15 @@ from influx.influx_queries import ContinuousQuery, Keyword, SelectionQuery
 
 
 class Definitions:
-    """Within this class all tables, retention policies and continuous queries are defined.
+    """Within this class, all tables, retention policies, and continuous queries are defined.
 
     Use each area to declare each type.
-    Retention Policices are *always* declared at top AS classmethod.
+    Retention Policies are *always* declared at the top as classmethod.
     You may use individual CQ below with the table declaration or define a template below the RP's.
-    See existent definitions to declare you own.
+    See existent definitions to declare your own.
 
-    Start of all execution is the single method `add_table_definitions`.
-    Do NOT use anything before executin this, the ClassVar `database` is set in there.
+    The start of all execution is the single method `add_table_definitions`.
+    Do NOT use anything before executing this, the ClassVar `database` is set in there.
 
     Attributes:
         __database
@@ -43,11 +43,11 @@ class Definitions:
 
     # ################ Retention Policies ##################
     # ################       README       ##################
-    # Be aware data is stored by either the duration or the longest CQ-GROUP BY time accessing the data
-    # Grouped into grafana-dashboards of either 14, 90 or INF Days. Select duration accordingly.
+    # Be aware data is stored by either its duration or the longest CQ-GROUP BY clause duration.
+    # Grouped into grafana-dashboards of either 14, 90, or INF Days. Select duration accordingly.
     # High Data count is stored in 14d, downsampled to 90d (1d), then to INF (1w).
     # Low Data count is stored in 90d, downsampled to INF (1w).
-    # Data which cannot be downsampled is preserved for either half or full year.
+    # Data that cannot be downsampled is preserved for either half or full year.
 
     @classmethod
     def _RP_AUTOGEN(cls):
@@ -94,11 +94,12 @@ class Definitions:
     @classmethod
     def _CQ_DWSMPL(
             cls, fields: List[str], new_retention_policy: RetentionPolicy,
-            group_time: str, group_args: List[str] = None) -> Callable[[Table, str], ContinuousQuery]:
+            group_time: str, group_args: List[str] = ["*"]) -> Callable[[Table, str], ContinuousQuery]:
         """Creates a template CQ which groups by time, * . Always uses the base table it was created from.
 
-        The callable shall aways have this format, the missing fields are filled by the `__add_table_def`-method.
-        The need of this is that no table-instance is available, since CQ are defined together with the table.
+            Downsamples the data into another retention policy, using given aggregations within the list of fields.
+            It is required to return a callable since at the time of declaration no table instance is available.
+            The tables are inserted at runtime within the setup of the influx-client.
 
         Args:
             fields (List[str]): Fields to be selected and aggregated, influx-keywords need to be escaped.
@@ -109,7 +110,7 @@ class Definitions:
         Returns:
             Callable[[Table, str], ContinuousQuery]: Lambda which is transformed into a CQ later on.
         """
-        if(not group_args):
+        if(group_args is None):
             group_args = ["*"]
         return lambda table, name: ContinuousQuery(
             name=name, database=cls.__database,
@@ -122,34 +123,14 @@ class Definitions:
             for_interval="1w"
         )
 
-    # @classmethod
-    # def _CQ_TRNSF(cls, new_retention_policy: RetentionPolicy) -> Callable[[Table, str], ContinuousQuery]:
-    #     """Creates a CQ to transfer data into a different Retention Policy.
-    #     TODO BUGGED, does not work without grouped by time()
-
-    #     Args:
-    #         new_retention_policy (RetentionPolicy): [description]
-
-    #     Returns:
-    #         Callable[[Table, str], ContinuousQuery]: [description]
-    #     """
-    #     return lambda table, name: ContinuousQuery(
-    #         name=name, database=cls.__database,
-    #         select_query=SelectionQuery(
-    #             Keyword.SELECT,
-    #             tables=[table],
-    #             into_table=Table(cls.__database, table.name, retention_policy=new_retention_policy),
-    #             fields=["*"],
-    #             group_list=["*"]),
-    #         every_interval="1m",
-    #         for_interval="1w"
-    #     )
-
     @classmethod
     def _CQ_TMPL(
             cls, fields: List[str], new_retention_policy: RetentionPolicy,
-            group_time: str, group_args: List[str] = None, where_str: str = None) -> Callable[[Table, str], ContinuousQuery]:
+            group_time: str, group_args: List[str] = ["*"], where_str: str = None) -> Callable[[Table, str], ContinuousQuery]:
         """Creates a CQ to do whatever you want with it.
+
+        It is required to return a callable since at the time of declaration no table instance is available.
+        The tables are inserted at runtime within the setup of the influx-client.
 
         Args:
             fields (List[str]): Fields to be selected and aggregated, influx-keywords need to be escaped.
@@ -161,7 +142,7 @@ class Definitions:
         Returns:
             Callable[[Table, str], ContinuousQuery]: Lambda which is transformed into a CQ later on.
         """
-        if(not group_args):
+        if(group_args is None):
             group_args = ["*"]
         return lambda table, name: ContinuousQuery(
             name=name, database=cls.__database,
@@ -728,54 +709,52 @@ class Definitions:
         cls.__add_predef_table(
             name='vadps',
             fields={
-                'state':            Datatype.STRING,
-                'vadpName':         Datatype.STRING,
-                'vadpId':           Datatype.INT,
-                'ipAddr':           Datatype.STRING,
+                # Dummy fields, since they are not required at tag but good to have.
+                # Having them as tags would require a dummy field and unnecessarily increase series cardinality
+                'vadpId':                       Datatype.INT,
+                'ipAddr':                       Datatype.STRING
             },
             tags=[
-                'siteId',
-                'siteName',
-                'version'
+                'status', # Usefull to group over state later on, as well as now. Renamed because of duplicate name.
+                'siteId', # Required for later grouping
+                'siteName', # Just addon to the siteID
+                'version', # Usefull to group on at any stage
+                'vadpName', # Required to make each vadp unique -> not dropped.
             ],
             retention_policy=cls._RP_HALF_YEAR(),
             continuous_queries=[
-                # cls._CQ_TRNSF(cls._RP_DAYS_14())
                 cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) AS enabled_count"],
+                    fields=["count(distinct(vadpId)) AS count"],
                     new_retention_policy=cls._RP_DAYS_14(),
                     group_time="1h",
-                    where_str="(state =~ /ENABLED/)"
+                    group_args=[
+                        'siteId',
+                        'siteName',
+                        'version',
+                        'status'
+                    ]
                 ),
                 cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) AS disabled_count"],
-                    new_retention_policy=cls._RP_DAYS_14(),
-                    group_time="1h",
-                    where_str="(state !~ /ENABLED/)"
-                ),
-                cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) AS enabled_count"],
+                    fields=["count(distinct(vadpId)) AS count"],
                     new_retention_policy=cls._RP_DAYS_90(),
                     group_time="6h",
-                    where_str="(state =~ /ENABLED/)"
+                    group_args=[
+                        'siteId',
+                        'siteName',
+                        'version',
+                        'status'
+                    ]
                 ),
                 cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) AS disabled_count"],
-                    new_retention_policy=cls._RP_DAYS_90(),
-                    group_time="6h",
-                    where_str="(state !~ /ENABLED/)"
-                ),
-                cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) AS enabled_count"],
+                    fields=["count(distinct(vadpId)) AS count"],
                     new_retention_policy=cls._RP_INF(),
                     group_time="1w",
-                    where_str="(state =~ /ENABLED/)"
-                ),
-                cls._CQ_TMPL(
-                    fields=["count(distinct(vadpId)) AS disabled_count"],
-                    new_retention_policy=cls._RP_INF(),
-                    group_time="1w",
-                    where_str="(state !~ /ENABLED/)"
+                    group_args=[
+                        'siteId',
+                        'siteName',
+                        'version',
+                        'status'
+                    ]
                 )
             ]
         )

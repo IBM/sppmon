@@ -114,6 +114,7 @@ class SshClient:
         host_name
         client_type
         client_name
+        skip_cmds
 
     Methods:
         execute_commands - Executes given commands on this ssh client.
@@ -130,6 +131,11 @@ class SshClient:
         return self.__client_name
 
     @property
+    def skip_cmds(self) -> List[str]:
+        "commands to be skipped with this client"
+        return self.__skip_cmds
+
+    @property
     def client_type(self) -> SshTypes:
         """type of the associated ssh client"""
         return self.__client_type
@@ -137,7 +143,7 @@ class SshClient:
     def __init__(self, auth_ssh: Dict[str, Any]):
         if(not auth_ssh):
             raise ValueError("need auth to create instance of sshclient")
-        if(not paramiko): # type: ignore
+        if(not paramiko):  # type: ignore
             raise ValueError('Error importing paramiko.')
 
         self.__host_name: str = auth_ssh["srv_address"]
@@ -145,13 +151,14 @@ class SshClient:
         self.__user_name: str = auth_ssh["username"]
         self.__password: str = auth_ssh["password"]
         self.__client_name: str = auth_ssh["name"]
+        self.__skip_cmds: List[str] = auth_ssh.get("skip_cmds", []) # optional
         try:
             self.__client_type = SshTypes(auth_ssh["type"].upper())
         except KeyError:
             raise ValueError("Unknown type of client. Please check config")
 
-        self.__client_ssh = paramiko.SSHClient() # type: ignore
-        self.__client_ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy()) # type: ignore
+        self.__client_ssh = paramiko.SSHClient()  # type: ignore
+        self.__client_ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # type: ignore
 
     def connect(self) -> None:
         """Connects to the client via ssh.
@@ -213,6 +220,10 @@ class SshClient:
         new_command_list: List[SshCommand] = []
         for ssh_command in commands:
 
+            if(self.__skip_cmd(ssh_command)):
+                LOGGER.info(f"Skipped command {ssh_command.cmd} on host {self.host_name}")
+                continue
+
             try:
                 LOGGER.debug(f"Executing command {ssh_command.cmd} on host {self.host_name}")
                 result = self.__send_command(ssh_command.cmd)
@@ -233,6 +244,19 @@ class SshClient:
 
         return new_command_list
 
+    def __skip_cmd(self, ssh_command: SshCommand) -> bool:
+        """Checks if the given SshCommand is within the list of commands to be skipped
+
+        Args:
+            ssh_command (SshCommand): Current SshCommand to be checked
+
+        Returns:
+            bool: True: Should be skipped, False: Should not be skipped
+        """
+        for skip_cmd in self.skip_cmds:
+            if (skip_cmd in ssh_command.cmd):
+                return True
+        return False
 
     def __send_command(self, ssh_command: str) ->  str:
         """Sends a command to the ssh client. Raises error if fails.

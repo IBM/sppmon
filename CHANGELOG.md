@@ -7,14 +7,54 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - yyyy-mm-dd
 
-Here we write upgrading notes for brands. It's a team effort to make them as
-straightforward as possible.
-
 ### Added
 
 ### Changed
 
 ### Fixed
+
+## [1.1.0] - 2021-09-09
+
+### Added
+
+* Added ConnectionUtils function `rest_response_error`. This function helps to extract the response-error message and includes all important pieces of information into a ValueError. This error should be raised afterward.
+* Config-file option for ssh-clients `skip_cmds`. List of strings like `["mpstat", "ps"]` to skip commands on certain clients.
+
+### Changed
+
+* REST-API Login and Statuscheck for get_objects use the new function `rest_response_error` to raise their error.
+* Adds the `skip_cmd` option to the default-config file.
+
+### Fixed
+
+* `--test`-execution: Fixes unusual KeyError when using a config file with more than one vSnap (or other) ssh-client.
+
+## [1.0.2] - 2021-08-31
+
+### Changed
+
+* Marked the default group time when using the template CQ more clearly as `[*]`
+* Grafana Dashboards:
+  * 14-Day dashboard:
+    * Changed VADP Proxy state table to support the VADPName grouping and status
+      * Used Grafana organizing mechanics to leave query intact, hiding old data with status=null and vadpName="".
+    * Changed VADP Proxy state per site to only use new data since 14-day is not too long
+      * Changed to use field count and group over status instead of two separate queries
+  * 90-Day dashboard:
+    * Changed %-Enabled VADP dashboard to total count dashboard
+    * Added for both VADP Proxy state and total count dashboard a new query, grouping over status and grouping on `count`. Old queries left intact for backward compatibility.
+    * Hides series with null/none, adding average to legend.
+
+* InfluxDB-Table `VADPs`:
+  * Moved fields `state` and `vadpName` to tags
+    * Renamed `state` to `status` to avoid issues due to double-named tags/fields
+  * Changed CQ to group only over 'old' Tags
+  * Changed aggregation from a split over enabled/disable to grouping over the state itself.
+    This removes now-duplicate CQ definitions and all `WHERE`-grouping clauses.
+
+### Fixed
+
+* VADPs are no longer dropped due to being marked as duplicates by the InfluxDB.
 
 ## [1.0.1] - 2021-08-27
 
@@ -46,11 +86,11 @@ straightforward as possible.
 
 #### Added
 
-* Install Script for automatically installing SPPMon, Python, InfluxDB, and Grafana on a blank CentOs system.
-  * Features a `--alwaysConfirm` argument for less confirmations
+* Install script for automatically installing SPPMon, Python, InfluxDB, and Grafana on a blank CentOs system.
+  * Features a `--alwaysConfirm` argument for fewer confirmations
 * Two stand-alone python scripts for automatically creating Config files and adding them to crontab
   > These scripts are used within the install script
-* Created script `scripts/generifyDashboard.py`, which is now on developer side. This makes sure a dashboard exported for external use is truly generic.
+* Created script `scripts/generifyDashboard.py`, which is now on the developer side. This makes sure a dashboard exported for external use is truly generic.
   > See Grafana changes for reasoning
 
 ### Python / Execution
@@ -59,38 +99,38 @@ straightforward as possible.
 
 * `--test`:  Fixes Abort without summary on SSH-Errors
 * Fixes empty error message without explanation if sites are an empty array
-  * Also adds debug output for easier remote tracing
-* Corrupted config-file path no longer breaks SPPMon but prints a error message
-* Partly fixes #40, but some ID's still remain missing due other issues. Descriped within issue itself.
-* JobLogs: The type-filter is no longer ignored on regular/loaded execution - requesting way less logs.
-* Fixed an error when importing individual job log statistics and `ressourceType` was missing
+  * Adds debug output for easier remote tracing
+* Corrupted config-file path no longer breaks SPPMon but prints an error message
+* Partly fixes #40, but some IDs still remain missing due to other issues. The fix is described within the issue.
+* JobLogs: The type-filter is no longer ignored on regular/loaded execution - requesting way fewer logs.
+* Fixed an error when importing individual job log statistics, and `ressourceType` was missing
 
 #### Changes
 
 * Replaces OptionParser with Argumentparser
-* Improves `--test` argument: Outsources code, improves display and messages.
+* Improves `--test` argument: Outsources code, improve display and messages.
   * Enhanced Description and help message
   * Catches typos and missing arguments within the parser
 * Removed disallowed terms from SPPMon code, using `allow_list` instead
 * Reworks REST-API POST-Requests to be merged with GET-Requests
   * This includes the repeated tries if a request fails
   * Deprecates `url_set_param`, using functionality of `requests`-package instead
-  * Using Python-Structs for url-params instead of cryptical encoded params
-* Reworks REST-API requests even more to use parameters more efficient and consistent, making the code hopefully more readable.
+  * Using Python-Structs for URL-params instead of cryptical encoded params
+* Reworks REST-API requests to use parameters more efficiently and consistently, making the code hopefully more readable.
   * Changes get_url_params to gain all parameters from URL-Encoding
   * Introduces set_url_params to set all params into URL encoding
-  * Reads params of next page and allows injecting whole dictionary of params
-* Changes vms per SLA-request to not query all vms anymore, ~~but using pageSize to 1 and reading the `total` aggregated field and not repeat for other pages~~.
+  * Reads params of next page and allows injecting the whole dictionary of params
+* Changes VMs per SLA-request to not query all VMs anymore, ~~but using pageSize to 1 and reading the `total` aggregated field and not repeat for other pages~~.
   * Changed to query so-far unknown endpoint, using count and group aggregate to query all data with a single API-request
-  > This brings the sla-request in line with the other api-requests.
-* Reworked/Commented the job-log request and prepared a filter via individual joblog-ID's
-* Labeled python argument ` -create_dashboard` and associated args as depricated, to be removed in v1.1 (See Grafana-Changes)
+  > This brings the SLA request in line with the other API requests.
+* Reworked/Commented the job-log request and prepared a filter via individual JobLog-ID's
+* Labeled python argument ` -create_dashboard` and associated args as deprecated, to be removed in v1.1 (See Grafana-Changes)
 
 ### Influx
 
 #### Changes
 
-* Checks user (GrafanaReader) for permissions (READ) on current Database, warns if user not exists and grands permissions if missing (Feature of V1.0)
+* Checks user (GrafanaReader) for permissions (READ) on current Database, warns if user not exists, and grants permissions if missing (Feature of V1.0)
 * Reworks Influx-write Queries to repeat once if failed with fallback options
   * This includes enhanced error messages
   * Influx-Statistic send is reworked to be per table
@@ -98,15 +138,15 @@ straightforward as possible.
 
 #### Fixes
 
-* Optimized Continious-Queries setup
-  * No longer all CQ are re-build on start of **all** sppmon exections, works now as intended
-  * Changed definition to match influxDB return values (7d -> 1 w)
-  * Changed quotations to match influxDB return values
+* Optimized Continuous-Queries setup
+  * No longer all CQ is re-build on the start of **all** SPPMon executions, works now as intended
+  * Changed definition to match InfluxDB return values (7d -> 1 w)
+  * Changed quotations to match InfluxDB return values
 
 #### Breaking Changes
 
 * Typo fix in stddev, breaking old data.
-  * These numbers are used nowhere, therefore this will likley not break anything
+  * These numbers are used nowhere, this will likely not break anything
   * Old Data is still available by the old name `sttdev`
 
 ### Grafana-Dashboards
@@ -116,27 +156,27 @@ straightforward as possible.
 * Added Hyper-V Job Duration Panel similar to VMWare-Panel into 14 and 90/INF Dashboard
 * Added versioning tags to each dashboard. Starting with v1.0
 * Added unique data source tags to the 14-day dashboard
-  * They have no use yet, but might be used for directly referencing onto a certain dashboard from 90-days/mult dashboard
-* Added unique tags for identifying 14-day, 90-day and mult dashboards
-* Created links from each dashboards to the others, grouped by type
+  * They have no use yet but might be used for directly referencing onto a certain dashboard from 90-days/multiple dashboards
+* Added unique tags for identifying 14-day, 90-day, and multiple dashboards
+* Created links from each dashboard to the others, grouped by type
   * The 14-days dashboards are created as dropdown
 
 #### Changes
 
 * Changed dashboard to be exported for `external use`:
-  * You may change the datasource on importing
-  * Both UID and Dashboard name will be variable generated based on datasource chosen
-  * Labeled python argument ` -create_dashboard` and associated args as depricated, to be removed in v1.1
-    > Note: Listed here only for completeness, see python changes
-  * Created pyhton stand-alone script for generifying dashboard
+  * You may change the data source on importing
+  * Both UID and Dashboard names will be variable generated based on the data source chosen
+  * Labeled Python argument ` -create_dashboard` and associated args as deprecated, to be removed in v1.1
+    > Note: Listed here only for completeness, see Python changes
+  * Created a Python stand-alone script for generifying dashboard
     > Note: Listed here only for completeness, see script changes
 
 ## [0.5.4-beta] - 2021-08-11
 
 ### Fixes
 
-* Bugfixes flat CPU-statistics due `ps` unexpected behavior.
-  * `ps` no longer tracks CPU-Data, Track of RAM and some other system informations remains.
+* Bugfixes flat CPU statistics due to `ps` unexpected behavior.
+  * `ps` no longer tracks CPU-Data, Track of RAM, and some other system information remains.
   * Re-introduced `top`-ssh command, but only collecting CPU-Statistics (see top-memory-truncation issue #14 & #32)
   > **The process-stats panel is accurate again after applying this fix.**
 
@@ -146,7 +186,7 @@ straightforward as possible.
 
 * Changed top-level exception catching: Catches any exceptions instead of only our self-defined ValueErrors
   -> Prevents a complete abort of SPPMon if something unexpected happens.
-  -> **This will reduce the need of urgent hotfixes like this one.**
+  -> **This will reduce the need for urgent hotfixes like this one.**
 * Changes empty result severity of REST-Requests from error to info
 * Changed typings from critical components to support better linting
 

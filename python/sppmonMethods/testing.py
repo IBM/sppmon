@@ -189,7 +189,8 @@ class TestingMethods():
         # Check total missing clients
         missing_types: Set[SshTypes] = set(SshTypes)
         for client in ssh_clients:
-            missing_types.remove(client.client_type)
+            if(client.client_type in missing_types):
+                missing_types.remove(client.client_type)
         if(missing_types):
             warnings.append(
                 f"""This is only a reminder: No ssh-clients of following types are registered: {", ".join(map(str, missing_types))}""")

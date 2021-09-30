@@ -5,8 +5,11 @@ Classes:
     ConnectionUtils
 """
 import logging
-from typing import Dict, Any, List, Optional
+import re
+from typing import Dict, Any, List, Optional, Tuple
 import urllib.parse as parse
+
+from requests.models import Response
 
 from utils.spp_utils import SppUtils
 from utils.execption_utils import ExceptionUtils
@@ -23,6 +26,7 @@ class ConnectionUtils:
         get_url_params - reads all param values from a url
         filter_values_dict - removed unwanted items from a list of dicts.
         adjust_page_size - Adjust dynamically the pagesize for requests.
+        rest_response_error - Returns a throwable ValueError, containing an individual message, status code, reasoning, and error message.
 
     """
 
@@ -272,3 +276,24 @@ class ConnectionUtils:
             new_result_list.append(new_result)
 
         return new_result_list
+
+    @staticmethod
+    def rest_response_error(response: Response, message: str, *args: Any) -> ValueError:
+        """Returns a throwable ValueError, containing an individual message, status code, reasoning, and error message.
+
+        Other args are appended into the value error. This does not check if the response is not ok.
+
+        Args:
+            response (Response): Response of an REST-Request with not ok status code
+            message (str): Extra message to append to the value error.
+
+        Returns:
+            ValueError: ValueError containing message, status code, reason, and response-message
+        """
+
+        full_error_text = response.text
+        match = re.match(r".*?<title>(.*?)<\/title>.*", full_error_text)
+        if(match):
+            full_error_text = match.group(1)
+
+        return ValueError(message, response.status_code, response.reason, full_error_text, args)
