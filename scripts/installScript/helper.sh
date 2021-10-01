@@ -244,6 +244,8 @@ generate_cert() {
         echo ""
         if confirm "Is your cert self-signed requiring the unsafe ssl flag?"; then
             unsafeSsl=true
+        else
+            unsafeSsl=false
         fi
 
         local defaultKeyPath=${keyPath}
@@ -273,10 +275,10 @@ generate_cert() {
     eval "${__resultKeyPath}='${keyPath}'"
     eval "${__resultCertPath}='${certPath}'"
 
-    if [[ ! ${unsafeSsl} ]] ; then
-        return 0
-    else
+    if ${unsafeSsl} ; then
         return 1
+    else
+        return 0
     fi
 
 }

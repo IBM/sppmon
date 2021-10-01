@@ -21,15 +21,15 @@ welcome() {
     loggerEcho "Welcome to the Spectrum-Protect-Plus Monitoring install wizard!"
     echo ""
     echo "This script will guide you through the install process of SPPMon. Feature"
-    echo " requests or bug reports can be submitted on the SPPmon github page:"
+    echo " requests or bug reports can be submitted on the SPPmon GitHub page:"
     echo "https://github.com/IBM/spectrum-protect-sppmon"
-    echo "For additional assistance with installing SPPmon, please refer to the SPPmon"
+    echo "For additional assistance with installing SPPmon, please refer to the SPPMon"
     echo "wiki page:"
     echo "https://github.com/IBM/spectrum-protect-sppmon/wiki"
 
     rowLimiter
 
-    echo "IMPORTANT: This install script will create a configuration-file for maintaining"
+    echo "IMPORTANT: This install script will create a configuration file for maintaining"
     echo "configuration information while the installation is in progress."
     echo "!! This file contains sensitive information such as passwords and usernames in"
     echo "plain text. !! You may use this file to obtain your authentication credentials"
@@ -43,6 +43,21 @@ welcome() {
 
     clear
     rowLimiter
+
+    echo "It is possible to install and execute SPPMon in two ways:"
+    echo "1. A regular install, using yum and installing and executing each component"
+    echo "directly on your system."
+    echo "2. Using via Docker(-compose). This won't pollute your system, while SPPMon will"
+    echo "run within the container. Accessing the runtime is possible by logging into"
+    echo "the container, as well as by the Grafana webpage as usual."
+    if confirm "Do you want to execute a regular install (y) or use a container environment (n) ?" ; then
+        setupMethod="regular"
+    else
+        setupMethod="container"
+    fi
+    saveAuth "setupMethod" "${setupMethod}"
+
+    loggerEcho "Setting up SPPMon as ${setupMethod} install."
 
     echo "There are multiple points during the installation at which you may stop"
     echo "and continue the installation later."

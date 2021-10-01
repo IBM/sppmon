@@ -162,6 +162,206 @@ verifyConnection() {
     fi
 }
 
+#######################################
+# Enable or disables influxDB auth
+# Globals:
+#   None
+# Arguments:
+#   1: path to config file
+# Outputs:
+#   stdout: execution information, confirms
+#   log: execution information, illegal duration.
+# Returns:
+#   0 if CA-signed cert, 1 if selfsigned cert, aborts on confirm to exit on failure
+#######################################
+influxHttpsSetup() {
+
+    local config_file="$1"
+
+    # [http] https-enabled = true
+    checkReturn sudo sed -ri '"/\[http\]/,/https-enabled\s*=.*/ s|\#*\s*https-enabled\s*=.*| https-enabled = true|"' "${config_file}"
+
+    echo ""
+    echo "The following step will assist with the creation of a self-signed"
+    echo "certificate for InfluxDB.  If you intend to use a self-signed"
+    echo "certificate that you have created already, or a certificate"
+    echo "signed by a certificate authority that you have already obtained,"
+    echo "answer no to skip this step."
+    echo ""
+    local httpsKeyPath="/etc/ssl/influxdb-selfsigned.key"
+    local httpsCertPath="/etc/ssl/influxdb-selfsigned.crt"
+
+    local unsafeSsl
+    if generate_cert "${httpsKeyPath}" "${httpsCertPath}" httpsKeyPath httpsCertPath ; then
+        unsafeSsl=false
+    else
+        unsafeSsl=true
+    fi
+
+    checkReturn sudo chown -R influxdb:influxdb "${httpsKeyPath}"
+    checkReturn sudo chown -R influxdb:influxdb "${httpsCertPath}"
+
+    # Edit config file again
+    # [http] https-certificate
+    checkReturn sudo sed -ri "\"/\[http\]/,/https-certificate\s*=.*/ s|\#*\s*https-certificate\s*=.*| https-certificate = \\\"${httpsCertPath}\\\"|\"" "${config_file}"
+    # [http] https-private-key
+    checkReturn sudo sed -ri "\"/\[http\]/,/https-private-key\s*=.*/ s|\#*\s*https-private-key\s*=.*| https-private-key = \\\"${httpsKeyPath}\\\"|\"" "${config_file}"
+
+    if ${unsafeSsl} ; then
+        return 1
+    else
+        return 0
+    fi
+
+}
+
+#######################################
+# Enable or disables influxDB auth
+# Globals:
+#   None
+# Arguments:
+#   1: path to config file
+#   2: bool - either 'false' or 'true' to enable/disable
+# Outputs:
+#   None
+# Returns:
+#   None, aborts on confirm to exit on failure
+#######################################
+influxSetAuth() {
+    if (( $# != 2 )); then
+        >&2 loggerEcho "Illegal number of parameters influxSetAuth"
+        abortInstallScript
+    fi
+
+    local config_path="$1"
+
+    local state_bool=$2
+    local state
+
+    if state_bool ; then
+        state="true"
+    else
+        state="false"
+    fi
+
+    "\"/\[http\]/,/bind-address\s*=.*/ s|\#*\s*bind-address\s*=.*| bind-address = \\\":${influxPort}\\\"|\"" "${config_file}"
+
+
+    # [http] auth-enabled = false
+    checkReturn sudo sed -ri "\"/\[http\]/,/auth-enabled\s*=.*/ s|\#*\s*auth-enabled\s*=.*| auth-enabled = ${state}|\"" "${config_file}"
+    # [http] https-enabled = false
+    checkReturn sudo sed -ri "\"/\[http\]/,/https-enabled\s*=.*/ s|\#*\s*https-enabled\s*=.*| https-enabled = ${state}|\"" "${config_file}"
+    # [http] pprof-auth-enabled = false
+    checkReturn sudo sed -ri "\"/\[http\]/,/pprof-enabled\s*=.*/ s|\#*\s*pprof-enabled\s*=.*| pprof-enabled = ${state}|\"" "${config_file}"
+
+}
+
+#######################################
+# Sets default influxDB conf settings like flux enabled and bind addr.
+# Globals:
+#   None
+# Arguments:
+#   1: path to config file
+# Outputs:
+#   None
+# Returns:
+#   None, aborts on confirm to exit on failure
+#######################################
+influxInitSettings() {
+    if (( $# != 1 )); then
+        >&2 loggerEcho "Illegal number of parameters influxInitSettings"
+        abortInstallScript
+    fi
+
+    local config_path="$1"
+
+    # disabled due sed error and not required yet.
+
+    # [http] enabled = true
+    #checkReturn sudo sed -ri '"/\[http\]/,/enabled\s*=.*/ s|\#*\s*enabled\s*=.*| enabled = true|"' "${config_file}"
+    # [http] log-enabled = true
+    #checkReturn sudo sed -ri '"/\[http\]/,/log-enabled\s*=.*/ s|\#*\s*log-enabled\s*=.*| log-enabled = true|"' "${config_file}"
+
+    # [http] flux-enabled = true
+    checkReturn sudo sed -ri '"/\[http\]/,/flux-enabled\s*=.*/ s|\#*\s*flux-enabled\s*=.*| flux-enabled = true |"' "${config_file}"
+    # [http] flux-log-enabled = true
+    #checkReturn sudo sed -ri '"/\[http\]/,/flux-log-enabled\s*=.*/ s|\#*\s*flux-log-enabled\s*=.*| flux-log-enabled = true |"' "${config_file}"
+
+    # [http] bind-address
+    checkReturn sudo sed -ri "\"/\[http\]/,/bind-address\s*=.*/ s|\#*\s*bind-address\s*=.*| bind-address = \\\":${influxPort}\\\"|\"" "${config_file}"
+}
+
+#######################################
+# Requests user input for location of persistent data storage
+# Globals:
+#   None
+# Arguments:
+#   1: path to config file
+# Outputs:
+#   stdout: message and answer
+#   log: message and answer
+# Returns:
+#   None, aborts on confirm to exit on failure
+#######################################
+influxSetStorage() {
+    if (( $# != 1 )); then
+        >&2 loggerEcho "Illegal number of parameters influxSetStorage"
+        abortInstallScript
+    fi
+
+    local config_path="$1"
+
+    local influx_db_path
+    echo ""
+    echo "Specify the directory location where you want to store InfluxDb data files"
+    echo "including data, meta, and wal.  The directory will be created automatically,"
+    echo "and should be located under a file system with space dedicated to SPPmon."
+    echo ""
+    promptText "Specify a directory for InfluxDB storage:" influx_db_path "$(realpath /influxDB)"
+
+    # Access rights
+    checkReturn sudo chown -R influxdb:influxdb "${config_path}"
+    checkReturn sudo mkdir -p "${influx_db_path}"
+    checkReturn sudo chown -R influxdb:influxdb "${influx_db_path}"
+
+    # Changing dirs cause on default path /var/lib permissions will fail
+    # [meta] dir
+    checkReturn sudo sed -ri "\"/\[meta\]/,/dir\s*=.*/ s|\#*\s*dir\s*=.*| dir = \\\"${influx_db_path}/meta\\\"|\"" "${config_file}"
+
+
+    # [data] dir
+    checkReturn sudo sed -ri "\"/\[data\]/,/dir\s*=.*/ s|\#*\s*dir\s*=.*| dir = \\\"${influx_db_path}/data\\\"|\"" "${config_file}"
+    # [data] wal-dir
+    checkReturn sudo sed -ri "\"/\[data\]/,/wal-dir\s*=.*/ s|\#*\s*wal-dir\s*=.*| wal-dir = \\\"${influx_db_path}/wal\\\"|\"" "${config_file}"
+}
+
+#######################################
+# Requests user input for enabling or disabling influxDB reporting
+# Globals:
+#   None
+# Arguments:
+#   1: path to config file
+# Outputs:
+#   None
+# Returns:
+#   None, aborts on confirm to exit on failure
+#######################################
+influxSetReporting() {
+    if (( $# != 1 )); then
+        >&2 loggerEcho "Illegal number of parameters influxSetReporting"
+        abortInstallScript
+    fi
+
+    local config_file="$1"
+
+    if confirm "Disable reporting usage data to usage.influxdata.com?"
+        then
+            checkReturn sudo sed -i '"s/\#*\s*reporting-disabled\s*=.*/ reporting-disabled = true/"' "${config_file}"
+        else
+            checkReturn sudo sed -i '"s/\#*\s*reporting-disabled\s*=.*/ reporting-disabled = false/"' "${config_file}"
+    fi
+}
+
 influxSetup() {
 
     clear
@@ -202,58 +402,18 @@ EOF
         checkReturn sudo cp -n "${config_file}" "${config_file_backup}"
     fi
 
-    local influx_db_path
-    echo ""
-    echo "Specify the directory location where you want to store InfluxDb data files"
-    echo "including data, meta, and wal.  The directory will be created automatically,"
-    echo "and should be located under a file system with space dedicated to SPPmon."
-    echo ""
-    promptText "Specify a directory for InfluxDB storage:" influx_db_path "$(realpath /influxDB)"
-
-    # Access rights
-    checkReturn sudo chown -R influxdb:influxdb "${config_path}"
-    checkReturn sudo mkdir -p "${influx_db_path}"
-    checkReturn sudo chown -R influxdb:influxdb "${influx_db_path}"
-
     loggerEcho "> Editing config file - part 1 -"
-    if confirm "Disable reporting usage data to usage.influxdata.com?"
-        then
-            checkReturn sudo sed -i '"s/\#*\s*reporting-disabled\s*=.*/ reporting-disabled = true/"' "${config_file}"
-        else
-            checkReturn sudo sed -i '"s/\#*\s*reporting-disabled\s*=.*/ reporting-disabled = false/"' "${config_file}"
-    fi
+
+    influxSetReporting "${config_file}"
 
     # sed -i 's/search_string/replace_string/' filename
     # sed -i -r '/header3/,/pattern/ s|pattern|replacement|' filename
 
-    # Changing dirs cause on default path /var/lib permissions will fail
-    # [meta] dir
-    checkReturn sudo sed -ri "\"/\[meta\]/,/dir\s*=.*/ s|\#*\s*dir\s*=.*| dir = \\\"${influx_db_path}/meta\\\"|\"" "${config_file}"
+    influxSetStorage "${config_file}"
 
+    influxInitSettings "${config_file}"
 
-    # [data] dir
-    checkReturn sudo sed -ri "\"/\[data\]/,/dir\s*=.*/ s|\#*\s*dir\s*=.*| dir = \\\"${influx_db_path}/data\\\"|\"" "${config_file}"
-    # [data] wal-dir
-    checkReturn sudo sed -ri "\"/\[data\]/,/wal-dir\s*=.*/ s|\#*\s*wal-dir\s*=.*| wal-dir = \\\"${influx_db_path}/wal\\\"|\"" "${config_file}"
-
-    # [http] enabled = true
-    #checkReturn sudo sed -ri '"/\[http\]/,/enabled\s*=.*/ s|\#*\s*enabled\s*=.*| enabled = true|"' "${config_file}"
-    # [http] log-enabled = true
-    #checkReturn sudo sed -ri '"/\[http\]/,/log-enabled\s*=.*/ s|\#*\s*log-enabled\s*=.*| log-enabled = true|"' "${config_file}"
-
-    # [http] flux-enabled = true
-    checkReturn sudo sed -ri '"/\[http\]/,/flux-enabled\s*=.*/ s|\#*\s*flux-enabled\s*=.*| flux-enabled = true |"' "${config_file}"
-    # [http] flux-log-enabled = true
-    #checkReturn sudo sed -ri '"/\[http\]/,/flux-log-enabled\s*=.*/ s|\#*\s*flux-log-enabled\s*=.*| flux-log-enabled = true |"' "${config_file}"
-
-    # [http] bind-address
-    checkReturn sudo sed -ri "\"/\[http\]/,/bind-address\s*=.*/ s|\#*\s*bind-address\s*=.*| bind-address = \\\":${influxPort}\\\"|\"" "${config_file}"
-
-    # DISABLE to allow user creation
-    # [http] auth-enabled = false
-    checkReturn sudo sed -ri '"/\[http\]/,/auth-enabled\s*=.*/ s|\#*\s*auth-enabled\s*=.*| auth-enabled = false|"' "${config_file}"
-    # [http] https-enabled = false
-    checkReturn sudo sed -ri '"/\[http\]/,/https-enabled\s*=.*/ s|\#*\s*https-enabled\s*=.*| https-enabled = false|"' "${config_file}"
+    influxSetAuth "${config_file}" true
 
     checkReturn sudo systemctl enable influxdb
     restartInflux
@@ -389,11 +549,7 @@ EOF
 
     loggerEcho " > Editing influxdb config file - part 2 -"
     # [http] auth-enabled = true
-    checkReturn sudo sed -ri '"/\[http\]/,/auth-enabled\s*=.*/ s|\#*\s*auth-enabled\s*=.*| auth-enabled = true|"' "${config_file}"
-    # [http] pprof-auth-enabled = true
-    checkReturn sudo sed -ri '"/\[http\]/,/pprof-enabled\s*=.*/ s|\#*\s*pprof-enabled\s*=.*| pprof-enabled = true|"' "${config_file}"
-    # [http] ping-auth-enabled = true
-    checkReturn sudo sed -ri '"/\[http\]/,/ping-auth-enabled\s*=.*/ s|\#*\s*ping-auth-enabled\s*=.*| ping-auth-enabled = true|"' "${config_file}"
+    influxSetAuth "${config_file}" true
 
     # ################# START OF HTTPS ##########################
 
@@ -404,34 +560,16 @@ EOF
     echo "secure communications.  This is highly recommended!"
     echo ""
     if confirm "Do you want to enable HTTPS-communication for the influxdb? "; then
-        # [http] https-enabled = true
-        checkReturn sudo sed -ri '"/\[http\]/,/https-enabled\s*=.*/ s|\#*\s*https-enabled\s*=.*| https-enabled = true|"' "${config_file}"
-
-        echo ""
-        echo "The following step will assist with the creation of a self-signed"
-        echo "certificate for InfluxDB.  If you intend to use a self-signed"
-        echo "certificate that you have created already, or a certificate"
-        echo "signed by a certificate authority that you have already obtained,"
-        echo "answer no to skip this step."
-        echo ""
-        sslEnabled="true"
-        local httpsKeyPath="/etc/ssl/influxdb-selfsigned.key"
-        local httpsCertPath="/etc/ssl/influxdb-selfsigned.crt"
-
-        if ! generate_cert "${httpsKeyPath}" "${httpsCertPath}" httpsKeyPath httpsCertPath ; then
-            unsafeSsl="true"
+        if influxHttpsSetup "${config_file}" ; then
+            unsafeSsl=false
+        else
+            unsafeSsl=true
         fi
 
-        checkReturn sudo chown -R influxdb:influxdb "${httpsKeyPath}"
-        checkReturn sudo chown -R influxdb:influxdb "${httpsCertPath}"
-
-        # Edit config file again
-        # [http] https-certificate
-        checkReturn sudo sed -ri "\"/\[http\]/,/https-certificate\s*=.*/ s|\#*\s*https-certificate\s*=.*| https-certificate = \\\"${httpsCertPath}\\\"|\"" "${config_file}"
-        # [http] https-private-key
-        checkReturn sudo sed -ri "\"/\[http\]/,/https-private-key\s*=.*/ s|\#*\s*https-private-key\s*=.*| https-private-key = \\\"${httpsKeyPath}\\\"|\"" "${config_file}"
-
-
+        sslEnabled="true"
+    else
+        sslEnabled="false"
+        unsafeSsl="false"
     fi
 
     ###################### END OF HTTPS ######################

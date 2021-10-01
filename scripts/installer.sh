@@ -193,6 +193,8 @@ restoreState() {
         clear
         rowLimiter
 
+        readAuth
+        
         continue_point=$(<"${saveFile}")
         loggerEcho "Welcome to the SPPMon guided installation."
         echo ""
@@ -276,7 +278,7 @@ main(){
             saveState 'PYTHON_SETUP' 'Python3 installation and package requirements'
     fi
 
-    # Part 4: Python installation and packages
+    # Part 2: Python installation and packages
     if [[ ${continue_point} == "PYTHON_SETUP" ]]
         then
             # shellcheck source=./installScript/pythonSetup.sh
@@ -285,7 +287,7 @@ main(){
             saveState 'INFLUX_SETUP' 'InfluxDB installation and setup'
     fi
 
-    # Part 2: InfluxDB installation and setup
+    # Part 3: InfluxDB installation and setup
     if [[ ${continue_point} == "INFLUX_SETUP" ]]
         then
             # shellcheck source=./installScript/influxSetup.sh
@@ -293,7 +295,7 @@ main(){
             saveState 'GRAFANA_SETUP' 'Grafana installation'
     fi
 
-    # Part 3: Grafana installation
+    # Part 4: Grafana installation
     if [[ ${continue_point} == "GRAFANA_SETUP" ]]
         then
             # shellcheck source=./installScript/grafanaSetup.sh
