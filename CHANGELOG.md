@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+* Adds FullLogs and LoadedSystem information to the Grafana SPPMon Runtime Duration panel. 
+
 ### Changed
 
 ### Fixed
