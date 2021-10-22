@@ -1,4 +1,19 @@
-"""This Module provides helper methods used across all sppmon modules.
+"""
+ ----------------------------------------------------------------------------------------------
+ (c) Copyright IBM Corporation 2020, 2021. All Rights Reserved.
+
+ IBM Spectrum Protect Family Software
+
+ Licensed materials provided under the terms of the IBM International Program
+ License Agreement. See the Software licensing materials that came with the
+ IBM Program for terms and conditions.
+
+ U.S. Government Users Restricted Rights:  Use, duplication or disclosure
+ restricted by GSA ADP Schedule Contract with IBM Corp.
+
+ ----------------------------------------------------------------------------------------------
+
+This Module provides helper methods used across all sppmon modules.
 You may implement new static/class helper methods in here.
 
 Classes:
@@ -101,7 +116,7 @@ class SppUtils:
         if(config_file_path is None):
             raise ValueError("ERROR:   missing parameter, no config file specified, ... aborting program")
         try:
-            with open(config_file_path) as config_file:
+            with open(config_file_path, "r", encoding="utf8") as config_file:
                 try:
                     settings = json.load(config_file)
                 except json.decoder.JSONDecodeError as error: # type: ignore
