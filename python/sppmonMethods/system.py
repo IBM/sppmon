@@ -63,6 +63,9 @@ class SystemMethods:
             source_func=self.__api_queries.get_file_system,
             deactivate_verbose=True
         )
+
+        # This is not a key value, but a value rename
+        # Therefore the regular rename-tuples do not work.
         value_renames = {
             'Configuration':            "Configuration",
             'Search':                   "File",

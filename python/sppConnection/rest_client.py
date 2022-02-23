@@ -157,7 +157,7 @@ class RestClient():
             raise ValueError("error when logging out")
 
         if response_logout.status_code != 204:
-            raise ValueError("Wrong Status code when logging out", response_logout.status_code)
+            raise ConnectionUtils.rest_response_error(response_logout, "Wrong Status code when logging out")
 
         if(self.__verbose):
             LOGGER.info("Rest-API logout successfull")
@@ -443,8 +443,9 @@ class RestClient():
                 raise ValueError("error when requesting endpoint", error)
 
         if( not response_query.ok):
-            raise ValueError("Wrong Status code when requesting endpoint data",
-                             response_query.status_code, url, response_query)
+            raise ConnectionUtils.rest_response_error( response_query,
+            "Wrong Status code when requesting endpoint data",
+            url)
 
         try:
             response_json: Dict[str, Any] = response_query.json()

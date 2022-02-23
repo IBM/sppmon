@@ -125,12 +125,12 @@ class SshMethods:
             # VSnap
             SshTypes.VSNAP:[
                 SshCommand(
-                    command='sudo vsnap --json pool show',
+                    command='systemctl status vsnap-api.service > /dev/null && sudo vsnap --json pool show',
                     parse_function=SshMethods._parse_pool_show_cmd,
                     table_name="vsnap_pools"
                 ),
                 SshCommand(
-                    command='sudo vsnap --json system stats',
+                    command='systemctl status vsnap-api.service > /dev/null && sudo vsnap --json system stats',
                     parse_function=SshMethods._parse_system_stats_cmd,
                     table_name="vsnap_system_stats"
                 ),

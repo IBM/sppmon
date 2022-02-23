@@ -113,7 +113,8 @@ class ProtectionMethods:
             source_func=self.__api_queries.get_vadps,
             rename_tuples=[
                 ('id', 'vadpId'),
-                ('displayName', 'vadpName')
+                ('displayName', 'vadpName'),
+                ("state", "status")
             ],
             deactivate_verbose=True
             )

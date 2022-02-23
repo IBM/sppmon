@@ -98,7 +98,7 @@ pythonSetup() {
 
         checkReturn mkdir -p "/tmp/python${python_version}"
         checkReturn cd "/tmp/python${python_version}/"
-        checkReturn wget "https://www.python.org/ftp/python/${python_version_dots}/Python-${python_version_dots}.tgz"
+        checkReturn wget --no-check-certificate "https://www.python.org/ftp/python/${python_version_dots}/Python-${python_version_dots}.tgz"
         # TODO get without internet
 
         checkReturn cd "/tmp/python${python_version}/"
