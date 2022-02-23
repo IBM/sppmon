@@ -5,15 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
 ## [Unreleased] - yyyy-mm-dd
 
 ### Added
 
-* Adds FullLogs and LoadedSystem information to the Grafana SPPMon Runtime Duration panel. 
-
 ### Changed
 
 ### Fixed
+
+## [1.1.1] - 2022-02-22
+
+### Added
+
+* Adds FullLogs and LoadedSystem information to the Grafana SPPMon Runtime Duration panel. 
+* Adds license information into each SPPMon code file.
+* Specifies the encoding and reading permission when opening config files.
+
+### Changed
+
+* Avoids the wget-certificate check when installing and downloading the python tgz in the installer.
+* Updates the requirements.txt to include sub-dependencies and updates to lates version.
+
+### Fixed
+
+* Fixes Issue #86 vSnap hanging up on start due to pool call by checking first if the `vsnap` command is available.
 
 ## [1.1.0] - 2021-09-09
 
