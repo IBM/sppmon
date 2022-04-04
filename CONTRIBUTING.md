@@ -6,26 +6,28 @@ The following is a set of guidelines for contributing to SPPMon. These are mostl
 
 #### Table Of Contents
 
-[Short Links](TODO)
+[Short Links](#short-links)
 
 [Create an Github Issue](#create-an-github-issue)
 
-* [Requesting / Implementing Features](TODO)
-* [Reporting Bugs](TODO)
+* [Requesting / Implementing Features](#requesting--implementing-features)
+* [Reporting Bugs](#reporting-bugs)
 
-[Contribute Code](TODO)
+[Contribute Code](#contributing-code)
 
-* [Fork this repository](TODO)
-* [Create a Pull Request](TODO)
-* [Coding Standards](TODO)
+* [Fork this repository](#fork-this-repository)
+* [Create a Pull Request](#create-a-pull-request)
+* [Coding Standards](#coding-standards)
 
 ## Short Links
 
-* [SPPMon Main Page](https://github.com/IBM/spectrum-protect-sppmon)
 * [Releases](https://github.com/IBM/spectrum-protect-sppmon/releases)
+* [Changelog](https://github.com/IBM/spectrum-protect-sppmon/blob/master/CHANGELOG.md)
 * [FAQ](https://github.com/IBM/spectrum-protect-sppmon/wiki/Frequently-asked-Questions)
+* [Overview of required and created users](https://github.com/IBM/spectrum-protect-sppmon/wiki/Overview-of-users)
 * [Bug Report and Feature Requests](https://github.com/IBM/spectrum-protect-sppmon/issues)
 * [Installation of SPPMon](https://github.com/IBM/spectrum-protect-sppmon/wiki/Install-overview)
+* [Command line arguments](https://github.com/IBM/spectrum-protect-sppmon/wiki/Command-line-Overview)
 * [General Wiki](https://github.com/IBM/spectrum-protect-sppmon/wiki)
 
 ## Create an GitHub issue
@@ -68,7 +70,7 @@ We will assign the Label `bug` to it.
 
 ## Contributing Code
 
-To contribute code please check out the [Developers Guide](TODO).
+To contribute code please check out the [Developers Guide](https://github.com/IBM/spectrum-protect-sppmon/wiki/Developers-Guide).
 We are using Issues and Pull requests to implement new features and fix bugs.
 Please create an issue first, then fork and open a pull request, linking to your issue.
 
@@ -95,7 +97,7 @@ Once you are happy with the of your work and want to publish it, you will need t
 
 ## Coding Standards
 
-Please refer to our [IDE and coding recommendations] when implementing new features.
+Please refer to our [IDE and coding recommendations](https://github.com/IBM/spectrum-protect-sppmon/wiki/IDE-and-coding-recommendations) when implementing new features.
 We are using Visual Studio Code, including:
 
 * Pylance 

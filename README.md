@@ -1,6 +1,6 @@
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5826/badge)](https://bestpractices.coreinfrastructure.org/projects/5826)
-
 # Welcome to SPPMon
+
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5826/badge)](https://bestpractices.coreinfrastructure.org/projects/5826)
 
 SPPMon is an open-source project initiated by the IBM Spectrum Protect Plus development team. The goal of the project is to provide a monitoring system for IBM Spectrum Protect Plus that offers multiple options for a day to day monitoring of a data protection environment. The major focus is the workflows of IBM Spectrum Protect Plus itself, such as job volume and duration or catalog protection, and the consumption of system resources like memory and CPU of all systems related to the data protection environment.
 The built-in functionality to monitor the SPP server, vSnap, VADP, and Microsoft 365 proxy systems and can be expanded easily for other systems like application servers.
@@ -15,9 +15,15 @@ THE SPPMon project consists of three major components. The SPPMon core engine (t
 
 * SPPMon can be setup from [scratch on a Linux operating system](https://github.com/IBM/spectrum-protect-sppmon/wiki/System-requirements) or can be deployed in a [containerized environment](https://github.com/IBM/spectrum-protect-sppmon/wiki/SPPmon-as-a-Container). See the [install options overview](https://github.com/IBM/spectrum-protect-sppmon/wiki/Install-overview) for more details and a distinction between each option.
 
-* Please refer to the [FAQ](https://github.com/IBM/spectrum-protect-sppmon/wiki/Frequently-asked-Questions) for frequently asked questions.
-* An overview of all required and created users can be found [here](https://github.com/IBM/spectrum-protect-sppmon/wiki/Overview-of-users).
-* The complete changelog can be found [here](https://github.com/IBM/spectrum-protect-sppmon/blob/master/CHANGELOG.md)
+* Find the full  documentation in the project [Wiki](https://github.com/IBM/spectrum-protect-sppmon/wiki)
 
+### Short Links
 
-## Find the documentation in the project [Wiki](https://github.com/IBM/spectrum-protect-sppmon/wiki)
+* [Releases](https://github.com/IBM/spectrum-protect-sppmon/releases)
+* [Changelog](https://github.com/IBM/spectrum-protect-sppmon/blob/master/CHANGELOG.md)
+* [FAQ](https://github.com/IBM/spectrum-protect-sppmon/wiki/Frequently-asked-Questions)
+* [Overview of required and created users](https://github.com/IBM/spectrum-protect-sppmon/wiki/Overview-of-users)
+* [Bug Report and Feature Requests](https://github.com/IBM/spectrum-protect-sppmon/issues)
+* [Installation of SPPMon](https://github.com/IBM/spectrum-protect-sppmon/wiki/Install-overview)
+* [Command line arguments](https://github.com/IBM/spectrum-protect-sppmon/wiki/Command-line-Overview)
+* [General Wiki](https://github.com/IBM/spectrum-protect-sppmon/wiki)
