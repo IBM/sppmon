@@ -1,3 +1,5 @@
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5826/badge)](https://bestpractices.coreinfrastructure.org/projects/5826)
+
 # Welcome to SPPMon
 
 SPPMon is an open-source project initiated by the IBM Spectrum Protect Plus development team. The goal of the project is to provide a monitoring system for IBM Spectrum Protect Plus that offers multiple options for a day to day monitoring of a data protection environment. The major focus is the workflows of IBM Spectrum Protect Plus itself, such as job volume and duration or catalog protection, and the consumption of system resources like memory and CPU of all systems related to the data protection environment.
