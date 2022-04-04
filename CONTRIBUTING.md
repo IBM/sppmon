@@ -45,3 +45,10 @@ Once you are happy with the of your work and want to publish it, you will need t
 - Optionally add comments.
 - Click the "Create pull request".
 - We will receive a notification, do the review and eventually accept the pull request into the main repository.
+
+# Coding Standards
+
+Please see the [wiki](https://github.com/IBM/spectrum-protect-sppmon/wiki) for our Coding standards. 
+We are using Visual Studio Code, including:
+- Pylance 
+- Python Docstring
