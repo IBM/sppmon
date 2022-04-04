@@ -1,5 +1,4 @@
 """
-SPDX-License-Identifier: Apache-2.0
  ----------------------------------------------------------------------------------------------
  (c) Copyright IBM Corporation 2020, 2021. All Rights Reserved.
 
@@ -12,7 +11,8 @@ SPDX-License-Identifier: Apache-2.0
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ----------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------- 
+SPDX-License-Identifier: Apache-2.0
 
 Description:
  Monitoring and long-term reporting for IBM Spectrum Protect Plus.
