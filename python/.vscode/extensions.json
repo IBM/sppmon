@@ -1,8 +1,10 @@
 {
     "recommendations": [
-        "ms-python.python",
         "ms-python.vscode-pylance",
         "njpwerner.autodocstring",
-        "donjayamanne.githistory"
+        "donjayamanne.githistory",
+        "davidanson.vscode-markdownlint",
+        "streetsidesoftware.code-spell-checker",
+        "ms-python.python"
     ]
 }

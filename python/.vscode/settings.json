@@ -1,0 +1,4 @@
+{
+    "python.analysis.completeFunctionParens": true,
+    "python.analysis.typeCheckingMode": "basic"
+}
