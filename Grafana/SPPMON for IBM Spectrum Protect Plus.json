@@ -3,12 +3,14 @@
     {
       "name": "DS_DATASOURCE",
       "label": "Datasource",
-      "description": "",
+      "description": "Please select a datasource for dashboard to reference",
       "type": "datasource",
       "pluginId": "influxdb",
       "pluginName": "InfluxDB"
     }
+
   ],
+  "__elements": [],
   "__requires": [
     {
       "type": "panel",
@@ -32,7 +34,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "8.1.5"
+      "version": "8.5.2"
     },
     {
       "type": "panel",
@@ -76,7 +78,10 @@
       {
         "$$hashKey": "object:37366",
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -93,7 +98,7 @@
   },
   "description": "Detailed overview with alerts for a single SPP-Server",
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
   "links": [
@@ -140,10 +145,10 @@
       "url": ""
     }
   ],
+  "liveNow": false,
   "panels": [
     {
       "collapsed": false,
-      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -156,7 +161,10 @@
       "type": "row"
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "description": "95% Percentille over last 24h ",
       "fieldConfig": {
         "defaults": {
@@ -207,7 +215,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "groupBy": [
@@ -239,16 +247,18 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Server CPU Usage",
       "type": "gauge"
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "description": "95% Percentille over last 24h ",
       "fieldConfig": {
         "defaults": {
@@ -298,7 +308,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "alias": "",
@@ -331,17 +341,18 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Server RAM Usage",
       "type": "gauge"
     },
     {
-      "cacheTimeout": null,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "description": "95% Percentille / last 24h of each component memory usage\nMax root storage usage  / last 24h of Server and vSnap",
       "fieldConfig": {
         "defaults": {
@@ -380,6 +391,8 @@
       "links": [],
       "options": {
         "displayMode": "lcd",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
@@ -391,7 +404,7 @@
         "showUnfilled": true,
         "text": {}
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "alias": "$tag_name",
@@ -430,7 +443,8 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "\"$tag_Mounted\" on $tag_ssh_type",
@@ -485,17 +499,18 @@
               "operator": "=",
               "value": "VSNAP"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "SPP Catalog Space",
       "type": "bargauge"
     },
     {
-      "cacheTimeout": null,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "description": "Duration of the last execution of selected jobs",
       "fieldConfig": {
         "defaults": {
@@ -511,12 +526,10 @@
                 "value": null
               },
               {
-                "color": "semi-dark-green",
-                "value": null
+                "color": "semi-dark-green"
               },
               {
-                "color": "semi-dark-green",
-                "value": null
+                "color": "semi-dark-green"
               },
               {
                 "color": "#EAB839",
@@ -555,7 +568,7 @@
         "text": {},
         "textMode": "value_and_name"
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "alias": "$tag_jobName",
@@ -600,21 +613,22 @@
               "operator": "=",
               "value": "Hypervisor Inventory"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Housekeeping-Job Durations",
       "type": "stat"
     },
     {
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "decimals": 1,
       "description": "",
       "fill": 1,
@@ -647,7 +661,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -691,7 +705,8 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "RAM-Usage",
@@ -734,13 +749,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "CPU / RAM SPP-Server (REST)",
       "tooltip": {
         "shared": true,
@@ -749,9 +763,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -759,7 +771,6 @@
         {
           "$$hashKey": "object:39939",
           "format": "percent",
-          "label": null,
           "logBase": 1,
           "max": "100",
           "min": "0",
@@ -768,10 +779,7 @@
         {
           "$$hashKey": "object:39940",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
@@ -781,7 +789,10 @@
       }
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -821,7 +832,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "groupBy": [],
@@ -852,16 +863,18 @@
               "operator": "=",
               "value": "Maintenance"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Last Maintenance",
       "type": "stat"
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -901,7 +914,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "groupBy": [],
@@ -932,16 +945,18 @@
               "operator": "=",
               "value": "Hypervisor Inventory"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Last Hypervisor Inventory",
       "type": "stat"
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -981,7 +996,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "groupBy": [],
@@ -1024,16 +1039,18 @@
               "operator": "=",
               "value": "BACKUP"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Last Catalog Backup",
       "type": "stat"
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -1073,7 +1090,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "groupBy": [],
@@ -1104,16 +1121,18 @@
               "operator": "=",
               "value": "Storage Server Inventory"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Last Storage Server Inventory",
       "type": "stat"
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fieldConfig": {
         "defaults": {
           "decimals": 0,
@@ -1164,7 +1183,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "alias": "$tag_ssh_type",
@@ -1215,16 +1234,18 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Highest CPU load by Component",
       "type": "stat"
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "gridPos": {
         "h": 7,
         "w": 4,
@@ -1250,15 +1271,16 @@
         },
         "tags": []
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "repeatDirection": "h",
-      "timeFrom": null,
-      "timeShift": null,
       "title": "SPP Alerts",
       "type": "alertlist"
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "description": "This panel shows how much the dela did increase, leaving out going down again.\nGood for noticing errors, even if they disappeared",
       "fieldConfig": {
         "defaults": {
@@ -1303,7 +1325,7 @@
         "showThresholdMarkers": false,
         "text": {}
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "alias": "--constant",
@@ -1335,7 +1357,8 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "--hourly",
@@ -1367,7 +1390,8 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "--daily",
@@ -1400,7 +1424,8 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "--all",
@@ -1433,7 +1458,8 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "others",
@@ -1478,18 +1504,19 @@
               "operator": "!=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "SPPmon Collection Errors delta(48h)",
       "transformations": [],
       "type": "gauge"
     },
     {
-      "cacheTimeout": null,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1524,7 +1551,6 @@
         "y": 12
       },
       "id": 128,
-      "interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -1542,7 +1568,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "alias": "Catalog Backup",
@@ -1568,16 +1594,18 @@
               "operator": "=~",
               "value": "/.*catalog.*/"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Catalog Backup Duration",
       "type": "stat"
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "description": "90% percentille of last 24h per Commandgroup",
       "fieldConfig": {
         "defaults": {
@@ -1617,6 +1645,8 @@
       "interval": "",
       "options": {
         "displayMode": "lcd",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
@@ -1628,7 +1658,7 @@
         "showUnfilled": true,
         "text": {}
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "alias": "$tag_COMMAND",
@@ -1676,16 +1706,18 @@
               "operator": "!=",
               "value": "mongodump"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "SPP CPU Usage (by process)",
       "type": "bargauge"
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "description": "90% percentille of last 24h",
       "fieldConfig": {
         "defaults": {
@@ -1725,6 +1757,8 @@
       "interval": "1h",
       "options": {
         "displayMode": "lcd",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
@@ -1736,7 +1770,7 @@
         "showUnfilled": true,
         "text": {}
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "alias": "$tag_COMMAND",
@@ -1784,17 +1818,18 @@
               "operator": "!=",
               "value": "mongodump"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "SPP RAM Usage (by process)",
       "type": "bargauge"
     },
     {
-      "cacheTimeout": null,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "description": "Sum of replicated bytes (VM) within the last 24h\nSum of transferred bytes (VM) within the last 24h\nSum of transferred bytes (Office365) within the last 24h\n",
       "fieldConfig": {
         "defaults": {
@@ -1820,7 +1855,6 @@
         "y": 16
       },
       "id": 125,
-      "interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -1838,7 +1872,7 @@
         "text": {},
         "textMode": "value_and_name"
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "alias": "VM Replicated",
@@ -1869,7 +1903,8 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "VM Transferred",
@@ -1906,7 +1941,8 @@
               "operator": "=",
               "value": "CTGGA2384"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "Office Transferred",
@@ -1937,16 +1973,18 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Additional Statistics (Last 24h)",
       "type": "stat"
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -1985,7 +2023,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "groupBy": [],
@@ -2016,11 +2054,10 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "SPP Version",
       "transformations": [
         {
@@ -2057,8 +2094,10 @@
       "type": "stat"
     },
     {
-      "cacheTimeout": null,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -2085,7 +2124,6 @@
         "y": 19
       },
       "id": 150,
-      "interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -2103,7 +2141,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "alias": "",
@@ -2134,17 +2172,15 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Job Logs Stored 24h",
       "type": "stat"
     },
     {
       "collapsed": false,
-      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2218,10 +2254,12 @@
       },
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "decimals": 1,
       "fill": 1,
       "fillGradient": 1,
@@ -2252,7 +2290,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2304,7 +2342,8 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "CPU-Usage",
@@ -2341,7 +2380,8 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -2354,9 +2394,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "CPU / RAM SPP-Server (REST)",
       "tooltip": {
         "shared": true,
@@ -2365,9 +2403,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -2375,7 +2411,6 @@
         {
           "$$hashKey": "object:39939",
           "format": "percent",
-          "label": null,
           "logBase": 1,
           "max": "100",
           "min": "0",
@@ -2384,10 +2419,7 @@
         {
           "$$hashKey": "object:39940",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
@@ -2437,10 +2469,12 @@
         "mongod": "#6ed0e0"
       },
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "decimals": 1,
       "description": "Selected Processes monitored by top command\n\"java\", \"mongo\", \"beam.smp\".\nQuerie calcualted due an inner querie to filter out the PID. Simple \"mean\" would result in a falsly low result",
       "fill": 1,
@@ -2475,7 +2509,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2534,7 +2568,8 @@
               "operator": "=",
               "value": "SERVER"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -2547,9 +2582,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "SPP-Server Processes CPU Usage (sshcmd: top)",
       "tooltip": {
         "shared": true,
@@ -2559,9 +2592,7 @@
       "transformations": [],
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -2578,10 +2609,7 @@
         {
           "$$hashKey": "object:395",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
@@ -2631,7 +2659,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "decimals": 1,
       "fill": 1,
       "fillGradient": 1,
@@ -2661,7 +2692,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2731,7 +2762,8 @@
               "operator": "<",
               "value": "99.5"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -2744,9 +2776,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Component CPU (sshcmd: MP-ssh)",
       "tooltip": {
         "shared": true,
@@ -2755,9 +2785,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -2766,7 +2794,6 @@
           "$$hashKey": "object:720",
           "decimals": 1,
           "format": "percent",
-          "label": null,
           "logBase": 1,
           "max": "100",
           "min": "0",
@@ -2775,16 +2802,12 @@
         {
           "$$hashKey": "object:721",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -2828,7 +2851,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -2855,7 +2881,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 0.5,
       "points": false,
       "renderer": "flot",
@@ -2936,7 +2962,8 @@
               "operator": "=",
               "value": "Mem"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -2949,9 +2976,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "RAM by Component Used (sshcmd: free)",
       "tooltip": {
         "shared": true,
@@ -2960,9 +2985,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -2970,7 +2993,6 @@
         {
           "$$hashKey": "object:1356",
           "format": "percentunit",
-          "label": null,
           "logBase": 1,
           "max": "1",
           "min": "0",
@@ -2979,16 +3001,13 @@
         {
           "$$hashKey": "object:1357",
           "format": "bytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -3030,10 +3049,12 @@
       },
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "decimals": 1,
       "description": "Mean-Sum of process-group displayed",
       "fill": 1,
@@ -3066,7 +3087,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -3125,7 +3146,8 @@
               "operator": "=",
               "value": "SERVER"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -3138,9 +3160,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "SPP-Server Processes RAM Usage (sshcmd: top)",
       "tooltip": {
         "shared": true,
@@ -3149,9 +3169,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -3167,11 +3185,9 @@
         },
         {
           "$$hashKey": "object:355",
-          "decimals": null,
           "format": "percent",
           "label": "",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": false
         }
@@ -3184,10 +3200,12 @@
     {
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "decimals": 1,
       "description": "Selected Processes monitored by top command\n\"java\", \"mongo\", \"beam.smp\"",
       "fill": 1,
@@ -3222,7 +3240,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -3275,13 +3293,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "SPP-Server Processes RAM Usage (sshcmd: top)",
       "tooltip": {
         "shared": true,
@@ -3290,9 +3307,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -3302,17 +3317,14 @@
           "format": "bytes",
           "label": "",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "$$hashKey": "object:44961",
-          "decimals": null,
           "format": "percent",
           "label": "",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": false
         }
@@ -3361,10 +3373,12 @@
       },
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -3392,7 +3406,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3442,7 +3456,8 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -3455,9 +3470,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "SPP-Server File System",
       "tooltip": {
         "shared": true,
@@ -3466,9 +3479,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -3476,7 +3487,6 @@
         {
           "$$hashKey": "object:6623",
           "format": "percent",
-          "label": null,
           "logBase": 1,
           "max": "100",
           "min": "0",
@@ -3485,16 +3495,12 @@
         {
           "$$hashKey": "object:6624",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -3538,7 +3544,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "decimals": 0,
       "description": "",
       "fill": 1,
@@ -3569,7 +3578,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3643,7 +3652,8 @@
               "operator": "=",
               "value": "VSNAP"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -3656,9 +3666,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Storage Usage (Server & vSnap)",
       "tooltip": {
         "shared": true,
@@ -3667,9 +3675,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -3678,7 +3684,6 @@
           "$$hashKey": "object:316",
           "decimals": 0,
           "format": "percent",
-          "label": null,
           "logBase": 1,
           "max": "100",
           "min": "0",
@@ -3687,16 +3692,12 @@
         {
           "$$hashKey": "object:317",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -3704,7 +3705,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -3731,7 +3735,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3783,7 +3787,8 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "Deduplication Ratio $tag_hostName",
@@ -3828,13 +3833,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Deduplication / Compression VSNAP",
       "tooltip": {
         "shared": true,
@@ -3843,9 +3847,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -3853,30 +3855,22 @@
         {
           "$$hashKey": "object:34006",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:34007",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "collapsed": false,
-      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -3893,7 +3887,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -3923,7 +3920,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -3976,13 +3973,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "All Job Durations",
       "tooltip": {
         "shared": true,
@@ -3991,36 +3987,26 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "$$hashKey": "object:2532",
-          "decimals": null,
           "format": "ms",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:2533",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -4065,7 +4051,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -4092,7 +4081,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4157,7 +4146,8 @@
               "operator": "=",
               "value": "BACKUP"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -4170,9 +4160,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "SPP Catalog Backup Duration",
       "tooltip": {
         "shared": true,
@@ -4181,9 +4169,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -4191,25 +4177,18 @@
         {
           "$$hashKey": "object:36171",
           "format": "ms",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:36172",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -4255,7 +4234,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -4282,7 +4264,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4335,7 +4317,8 @@
               "operator": "=",
               "value": "Maintenance"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -4348,9 +4331,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Maintenance Job Duration",
       "tooltip": {
         "shared": true,
@@ -4359,9 +4340,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -4369,25 +4348,18 @@
         {
           "$$hashKey": "object:34784",
           "format": "ms",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:34785",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -4432,7 +4404,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -4459,7 +4434,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4512,7 +4487,8 @@
               "operator": "=",
               "value": "Hypervisor Inventory"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -4525,9 +4501,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Hypervisor Inventory Job Duration",
       "tooltip": {
         "shared": true,
@@ -4536,9 +4510,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -4546,25 +4518,18 @@
         {
           "$$hashKey": "object:34918",
           "format": "ms",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:34919",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -4609,7 +4574,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -4636,7 +4604,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4689,7 +4657,8 @@
               "operator": "=",
               "value": "Application Server Inventory"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -4702,9 +4671,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Application Inventory Job Duration",
       "tooltip": {
         "shared": true,
@@ -4713,9 +4680,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -4723,25 +4688,18 @@
         {
           "$$hashKey": "object:35992",
           "format": "ms",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:35993",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -4787,7 +4745,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -4814,7 +4775,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -4885,7 +4846,8 @@
               "operator": "=~",
               "value": "/vmware.*/"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -4898,9 +4860,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "VMware Protection Job Durations",
       "tooltip": {
         "shared": true,
@@ -4909,9 +4869,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -4919,25 +4877,18 @@
         {
           "$$hashKey": "object:35515",
           "format": "ms",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:35516",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -4947,7 +4898,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -4974,7 +4928,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -5045,13 +4999,12 @@
               "operator": "=~",
               "value": "/hyperv.*/"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Hyper-V Protection Job Durations",
       "tooltip": {
         "shared": true,
@@ -5060,9 +5013,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -5070,25 +5021,18 @@
         {
           "$$hashKey": "object:35515",
           "format": "ms",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:35516",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -5133,7 +5077,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -5160,7 +5107,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -5225,7 +5172,8 @@
               "operator": "=~",
               "value": "/db2.*/"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -5238,9 +5186,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "DB2 Protection Job Durations",
       "tooltip": {
         "shared": true,
@@ -5249,9 +5195,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -5259,25 +5203,18 @@
         {
           "$$hashKey": "object:673875",
           "format": "ms",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:673876",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -5322,7 +5259,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -5349,7 +5289,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -5420,7 +5360,8 @@
               "operator": "=~",
               "value": "/office365/"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -5433,9 +5374,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Office365 Job Durations",
       "tooltip": {
         "shared": true,
@@ -5444,9 +5383,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -5454,30 +5391,22 @@
         {
           "$$hashKey": "object:36431",
           "format": "ms",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:36432",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "collapsed": false,
-      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -5494,7 +5423,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -5523,7 +5455,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -5576,13 +5508,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "SuccessRatio by resource type",
       "tooltip": {
         "shared": true,
@@ -5591,9 +5522,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -5602,9 +5531,7 @@
           "$$hashKey": "object:1238",
           "decimals": 0,
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
@@ -5612,7 +5539,6 @@
           "$$hashKey": "object:1239",
           "decimals": 0,
           "format": "percent",
-          "label": null,
           "logBase": 1,
           "max": "100",
           "min": "0",
@@ -5620,19 +5546,21 @@
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {
-            "align": null,
             "displayMode": "auto",
             "filterable": false,
+            "inspect": false,
             "width": 120
           },
           "mappings": [],
@@ -5640,8 +5568,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -5752,11 +5679,18 @@
       },
       "id": 170,
       "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
         "frameIndex": 0,
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "groupBy": [
@@ -5890,11 +5824,10 @@
               "operator": "!=",
               "value": "COMPLETED"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Unsuccessful jobs overview",
       "transformations": [
         {
@@ -5925,7 +5858,10 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -5954,7 +5890,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -6017,13 +5953,12 @@
               "operator": "!=",
               "value": "database"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Total count by ResourceType",
       "tooltip": {
         "shared": true,
@@ -6032,9 +5967,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -6043,9 +5976,7 @@
           "$$hashKey": "object:1238",
           "decimals": 0,
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": false
         },
@@ -6053,7 +5984,6 @@
           "$$hashKey": "object:1239",
           "decimals": 0,
           "format": "percent",
-          "label": null,
           "logBase": 1,
           "max": "100",
           "min": "0",
@@ -6061,27 +5991,28 @@
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {
-            "align": null,
             "displayMode": "auto",
-            "filterable": false
+            "filterable": false,
+            "inspect": false
           },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -6113,11 +6044,18 @@
       },
       "id": 168,
       "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
         "frameIndex": 0,
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "groupBy": [
@@ -6195,11 +6133,10 @@
               "operator": "!=",
               "value": "COMPLETED"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "List of unsucessfull jobs",
       "transformations": [],
       "type": "table"
@@ -6209,7 +6146,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -6236,7 +6176,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -6286,13 +6226,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Jobs status overview",
       "tooltip": {
         "shared": true,
@@ -6301,9 +6240,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -6312,25 +6249,18 @@
           "$$hashKey": "object:350",
           "decimals": 0,
           "format": "none",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:351",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -6338,7 +6268,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "decimals": 0,
       "fill": 1,
       "fillGradient": 1,
@@ -6368,7 +6301,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -6430,13 +6363,12 @@
               "operator": "!=",
               "value": "COMPLETED"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Failed Jobs status overview",
       "tooltip": {
         "shared": true,
@@ -6445,9 +6377,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -6456,25 +6386,18 @@
           "$$hashKey": "object:350",
           "decimals": 0,
           "format": "none",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:351",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -6482,7 +6405,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -6511,7 +6437,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -6558,7 +6484,8 @@
               "operator": "=",
               "value": "vm"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "$tag_jobName sucess ratio",
@@ -6597,13 +6524,12 @@
               "operator": "=",
               "value": "vm"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "VM Backup Statistics",
       "tooltip": {
         "shared": true,
@@ -6612,9 +6538,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -6623,17 +6547,13 @@
           "$$hashKey": "object:1238",
           "decimals": 0,
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:1239",
           "decimals": 0,
           "format": "percent",
-          "label": null,
           "logBase": 1,
           "max": "100",
           "min": "0",
@@ -6641,13 +6561,11 @@
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "collapsed": false,
-      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -6664,7 +6582,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 0,
       "fillGradient": 1,
       "gridPos": {
@@ -6691,7 +6612,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 1,
       "points": true,
       "renderer": "flot",
@@ -6735,7 +6656,8 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "VM Protected: $tag_isProtected",
@@ -6779,13 +6701,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Virtual Machine Protection Counts",
       "tooltip": {
         "shared": true,
@@ -6795,9 +6716,7 @@
       "transformations": [],
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -6805,25 +6724,18 @@
         {
           "$$hashKey": "object:79982",
           "format": "none",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:79983",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -6831,7 +6743,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 2,
       "gridPos": {
@@ -6858,7 +6773,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 1,
       "points": true,
       "renderer": "flot",
@@ -6904,13 +6819,12 @@
               "operator": ">",
               "value": "0"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Number of VMs per SLA",
       "tooltip": {
         "shared": true,
@@ -6919,9 +6833,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -6929,25 +6841,19 @@
         {
           "$$hashKey": "object:964",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "$$hashKey": "object:965",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -6955,7 +6861,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 0,
       "fillGradient": 1,
       "gridPos": {
@@ -6982,7 +6891,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 1,
       "points": true,
       "renderer": "flot",
@@ -7026,7 +6935,8 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "VM smallest",
@@ -7072,7 +6982,8 @@
               "operator": "!=",
               "value": "0"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "VM largest",
@@ -7109,7 +7020,8 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "VM 5% Percitille",
@@ -7148,7 +7060,8 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "VM 95% Percitille",
@@ -7187,13 +7100,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Virtual Machine Size (from hypervisor inventory)",
       "tooltip": {
         "shared": true,
@@ -7202,9 +7114,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -7212,25 +7122,18 @@
         {
           "$$hashKey": "object:80761",
           "format": "bits",
-          "label": null,
           "logBase": 2,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:80762",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -7280,7 +7183,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "description": "",
       "fill": 1,
       "fillGradient": 1,
@@ -7310,7 +7216,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -7400,7 +7306,8 @@
               "operator": "=",
               "value": "CTGGA2384"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "Sucess Ratio",
@@ -7470,7 +7377,8 @@
               "operator": "=",
               "value": "CTGGA2384"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "VM Success",
@@ -7522,7 +7430,8 @@
               "operator": "=",
               "value": "CTGGA2384"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -7535,9 +7444,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Daily Backup Sucess Rate (virtual disks)",
       "tooltip": {
         "shared": true,
@@ -7546,9 +7453,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -7557,7 +7462,6 @@
           "$$hashKey": "object:1222",
           "decimals": 0,
           "format": "percentunit",
-          "label": null,
           "logBase": 1,
           "max": "0",
           "min": "0",
@@ -7567,22 +7471,21 @@
           "$$hashKey": "object:1223",
           "decimals": 0,
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
-      "cacheTimeout": null,
       "columns": [],
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fontSize": "100%",
       "gridPos": {
         "h": 8,
@@ -7592,7 +7495,6 @@
       },
       "id": 6,
       "links": [],
-      "pageSize": null,
       "pluginVersion": "6.5.3",
       "showHeader": true,
       "sort": {
@@ -7612,7 +7514,6 @@
           "$$hashKey": "object:80534",
           "alias": "",
           "align": "auto",
-          "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
             "rgba(237, 129, 40, 0.89)",
@@ -7651,11 +7552,10 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Mixture of Hyper-V and VMware",
       "transform": "table",
       "type": "table-old"
@@ -7665,7 +7565,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "description": "",
       "fill": 1,
       "fillGradient": 0,
@@ -7693,7 +7596,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -7755,7 +7658,8 @@
               "operator": "=",
               "value": "CTGGA2384"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "Replicated bytes",
@@ -7793,13 +7697,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Daily Total Data Protected",
       "tooltip": {
         "shared": true,
@@ -7808,9 +7711,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -7818,25 +7719,18 @@
         {
           "$$hashKey": "object:1896",
           "format": "decbytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:1897",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -7844,7 +7738,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -7871,7 +7768,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -7939,13 +7836,12 @@
               "operator": "=",
               "value": "CTGGA2384"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "By Proxy: VM Backup Transferred Bytes",
       "tooltip": {
         "shared": true,
@@ -7954,9 +7850,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -7964,25 +7858,18 @@
         {
           "$$hashKey": "object:1896",
           "format": "decbytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:1897",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -7990,7 +7877,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -8017,7 +7907,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8079,13 +7969,12 @@
               "operator": "=",
               "value": "CTGGA2384"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "By VSnap: VM Backup Transferred Bytes",
       "tooltip": {
         "shared": true,
@@ -8114,9 +8003,7 @@
       ],
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -8124,25 +8011,18 @@
         {
           "$$hashKey": "object:1896",
           "format": "decbytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:1897",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -8150,7 +8030,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -8177,7 +8060,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8245,13 +8128,12 @@
               "operator": "=",
               "value": "CTGGA2384"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "By Type: VM Backup Transferred Bytes",
       "tooltip": {
         "shared": true,
@@ -8260,9 +8142,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -8270,25 +8150,18 @@
         {
           "$$hashKey": "object:1896",
           "format": "decbytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:1897",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -8296,7 +8169,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -8323,7 +8199,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8385,13 +8261,12 @@
               "operator": "=",
               "value": "CTGGA2384"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "By Proxy: VM Backup Throughput",
       "tooltip": {
         "shared": true,
@@ -8400,9 +8275,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -8410,25 +8283,18 @@
         {
           "$$hashKey": "object:1896",
           "format": "Bps",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:1897",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -8436,7 +8302,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -8463,7 +8332,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8525,13 +8394,12 @@
               "operator": "=",
               "value": "CTGGA2384"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "By VSnap: VM Backup Throughput",
       "tooltip": {
         "shared": true,
@@ -8540,9 +8408,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -8550,25 +8416,18 @@
         {
           "$$hashKey": "object:1896",
           "format": "Bps",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:1897",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -8576,7 +8435,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -8603,7 +8465,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -8665,13 +8527,12 @@
               "operator": "=",
               "value": "CTGGA2384"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "By Type: VM Backup Throughput",
       "tooltip": {
         "shared": true,
@@ -8680,9 +8541,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -8690,30 +8549,22 @@
         {
           "$$hashKey": "object:1896",
           "format": "Bps",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:1897",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "collapsed": false,
-      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -8730,7 +8581,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "description": "",
       "fill": 1,
       "fillGradient": 1,
@@ -8759,7 +8613,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -8809,13 +8663,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Site Storage Used (by percent)",
       "tooltip": {
         "shared": true,
@@ -8824,9 +8677,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -8835,7 +8686,6 @@
           "$$hashKey": "object:27857",
           "decimals": 0,
           "format": "percent",
-          "label": null,
           "logBase": 1,
           "max": "100",
           "min": "0",
@@ -8844,16 +8694,12 @@
         {
           "$$hashKey": "object:27858",
           "format": "decbytes",
-          "label": null,
           "logBase": 2,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -8861,7 +8707,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "description": "Selects mean of each unique storage, sums up to total per site",
       "fill": 1,
       "fillGradient": 1,
@@ -8890,7 +8739,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -8955,13 +8804,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Site Storage Used (by capacity)",
       "tooltip": {
         "shared": true,
@@ -8971,36 +8819,27 @@
       "transformations": [],
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "$$hashKey": "object:20816",
-          "decimals": null,
           "format": "bytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "$$hashKey": "object:20817",
           "format": "decbytes",
-          "label": null,
           "logBase": 2,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -9044,7 +8883,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -9072,7 +8914,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -9122,7 +8964,8 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -9135,9 +8978,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "vSnap Storage Used (by percent)",
       "tooltip": {
         "shared": true,
@@ -9146,9 +8987,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -9157,7 +8996,6 @@
           "$$hashKey": "object:27857",
           "decimals": 0,
           "format": "percent",
-          "label": null,
           "logBase": 1,
           "max": "100",
           "min": "0",
@@ -9166,16 +9004,12 @@
         {
           "$$hashKey": "object:27858",
           "format": "decbytes",
-          "label": null,
           "logBase": 2,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -9183,7 +9017,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -9211,7 +9048,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
@@ -9222,6 +9059,10 @@
       "targets": [
         {
           "alias": "$tag_hostAddress",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_DATASOURCE}"
+          },
           "groupBy": [
             {
               "params": [
@@ -9237,7 +9078,7 @@
             },
             {
               "params": [
-                "previous"
+                "none"
               ],
               "type": "fill"
             }
@@ -9266,9 +9107,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "vSnap Storage Used (by capacity)",
       "tooltip": {
         "shared": true,
@@ -9277,45 +9116,38 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "$$hashKey": "object:20816",
-          "decimals": null,
           "format": "bytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "$$hashKey": "object:20817",
           "format": "decbytes",
-          "label": null,
           "logBase": 2,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "decimals": 1,
       "fill": 1,
       "fillGradient": 1,
@@ -9346,7 +9178,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -9396,13 +9228,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "vSnap ARC Used",
       "tooltip": {
         "shared": true,
@@ -9411,9 +9242,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -9421,19 +9250,14 @@
         {
           "$$hashKey": "object:75892",
           "format": "bytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "$$hashKey": "object:75893",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
@@ -9506,7 +9330,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -9533,7 +9360,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -9597,7 +9424,8 @@
               "operator": "=",
               "value": "VSNAP"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "RAM on host $tag_hostName",
@@ -9658,7 +9486,8 @@
               "operator": "=",
               "value": "Mem"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -9671,9 +9500,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "VSnap CPU & RAM Health",
       "tooltip": {
         "shared": true,
@@ -9682,9 +9509,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -9692,7 +9517,6 @@
         {
           "$$hashKey": "object:524",
           "format": "percent",
-          "label": null,
           "logBase": 1,
           "max": "100",
           "min": "0",
@@ -9701,21 +9525,16 @@
         {
           "$$hashKey": "object:525",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "collapsed": false,
-      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -9728,21 +9547,23 @@
       "type": "row"
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fieldConfig": {
         "defaults": {
           "custom": {
-            "align": null,
             "displayMode": "auto",
-            "filterable": false
+            "filterable": false,
+            "inspect": false
           },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -9757,6 +9578,13 @@
       },
       "id": 79,
       "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
         "showHeader": true,
         "sortBy": [
           {
@@ -9765,7 +9593,7 @@
           }
         ]
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "groupBy": [
@@ -9837,11 +9665,10 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "VADP Proxy State",
       "transformations": [
         {
@@ -9892,7 +9719,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -9919,7 +9749,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -9965,13 +9795,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "VADP Proxy State per Site",
       "tooltip": {
         "shared": true,
@@ -9980,9 +9809,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -9991,25 +9818,19 @@
           "$$hashKey": "object:586",
           "decimals": 0,
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "$$hashKey": "object:587",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -10076,7 +9897,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -10103,7 +9927,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10167,7 +9991,8 @@
               "operator": "=",
               "value": "VADP"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "RAM on host $tag_hostName",
@@ -10228,7 +10053,8 @@
               "operator": "=",
               "value": "Mem"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -10241,9 +10067,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "VADP CPU & RAM Health",
       "tooltip": {
         "shared": true,
@@ -10252,9 +10076,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -10262,7 +10084,6 @@
         {
           "$$hashKey": "object:524",
           "format": "percent",
-          "label": null,
           "logBase": 1,
           "max": "100",
           "min": "0",
@@ -10271,21 +10092,16 @@
         {
           "$$hashKey": "object:525",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "collapsed": false,
-      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -10361,7 +10177,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -10388,7 +10207,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10458,7 +10277,8 @@
               "operator": "=",
               "value": "CLOUDPROXY"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "RAM on host $tag_hostName",
@@ -10519,7 +10339,8 @@
               "operator": "=",
               "value": "Mem"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -10532,9 +10353,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Cloudproxy CPU & RAM Health",
       "tooltip": {
         "shared": true,
@@ -10543,9 +10362,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -10553,7 +10370,6 @@
         {
           "$$hashKey": "object:524",
           "format": "percent",
-          "label": null,
           "logBase": 1,
           "max": "100",
           "min": "0",
@@ -10562,16 +10378,12 @@
         {
           "$$hashKey": "object:525",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -10579,7 +10391,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "decimals": 0,
       "fill": 1,
       "fillGradient": 1,
@@ -10607,7 +10422,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10643,7 +10458,8 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "Protected Items of $tag_jobName",
@@ -10672,13 +10488,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Office365 Count Protected / Selected Items",
       "tooltip": {
         "shared": true,
@@ -10687,9 +10502,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -10700,23 +10513,18 @@
           "format": "none",
           "label": "",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "$$hashKey": "object:525",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -10724,7 +10532,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "decimals": 0,
       "fill": 1,
       "fillGradient": 1,
@@ -10752,7 +10563,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10788,13 +10599,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Office365 Imported Users by Job",
       "tooltip": {
         "shared": true,
@@ -10803,9 +10613,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -10814,25 +10622,19 @@
           "$$hashKey": "object:524",
           "decimals": 0,
           "format": "none",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "$$hashKey": "object:525",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -10840,7 +10642,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "decimals": 0,
       "fill": 1,
       "fillGradient": 1,
@@ -10868,7 +10673,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -10910,13 +10715,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Office365 Protected Item Sucess Ratio",
       "tooltip": {
         "shared": true,
@@ -10925,9 +10729,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -10936,25 +10738,19 @@
           "$$hashKey": "object:524",
           "decimals": 0,
           "format": "none",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "$$hashKey": "object:525",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -10962,7 +10758,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "decimals": 0,
       "fill": 1,
       "fillGradient": 1,
@@ -10992,7 +10791,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -11028,13 +10827,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Office365 Transferred Bytes",
       "tooltip": {
         "shared": true,
@@ -11043,9 +10841,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -11054,30 +10850,23 @@
           "$$hashKey": "object:524",
           "decimals": 0,
           "format": "decbytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "$$hashKey": "object:525",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "collapsed": false,
-      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -11090,7 +10879,10 @@
       "type": "row"
     },
     {
-      "datasource": "-- Dashboard --",
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Dashboard --"
+      },
       "description": "Displays the final change rate of errors which occured, going to stay at 0 if all is on a normal \"error\"-level",
       "fieldConfig": {
         "defaults": {
@@ -11099,8 +10891,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "semi-dark-green",
-                "value": null
+                "color": "semi-dark-green"
               },
               {
                 "color": "light-green",
@@ -11125,6 +10916,7 @@
       "id": 109,
       "interval": "24h",
       "options": {
+        "orientation": "auto",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -11136,15 +10928,14 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "panelId": 142,
-          "refId": "A"
+          "refId": "A",
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "SPPmon Collection Error delta (48h)",
       "transformations": [],
       "type": "gauge"
@@ -11165,7 +10956,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "description": "",
       "fill": 1,
       "fillGradient": 1,
@@ -11194,7 +10988,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 0.5,
       "points": true,
       "renderer": "flot",
@@ -11230,7 +11024,8 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "Daily Errors",
@@ -11259,7 +11054,8 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "All Errors",
@@ -11288,7 +11084,8 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "Hourly Errors",
@@ -11317,7 +11114,8 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "Other Errors",
@@ -11364,13 +11162,12 @@
               "operator": "!=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "SPPmon Collection Errors",
       "tooltip": {
         "shared": true,
@@ -11379,9 +11176,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -11389,30 +11184,25 @@
         {
           "$$hashKey": "object:27143",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:27144",
-          "decimals": null,
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "gridPos": {
         "h": 8,
         "w": 5,
@@ -11424,7 +11214,6 @@
         "alertName": "",
         "dashboardAlerts": true,
         "dashboardTitle": "",
-        "folderId": null,
         "maxItems": "100",
         "showOptions": "current",
         "sortOrder": 3,
@@ -11438,16 +11227,16 @@
         },
         "tags": []
       },
-      "pluginVersion": "8.1.5",
-      "repeat": null,
+      "pluginVersion": "8.5.2",
       "repeatDirection": "h",
-      "timeFrom": null,
-      "timeShift": null,
       "title": "SPP active Alerts",
       "type": "alertlist"
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "gridPos": {
         "h": 16,
         "w": 5,
@@ -11473,10 +11262,8 @@
         },
         "tags": []
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "repeatDirection": "h",
-      "timeFrom": null,
-      "timeShift": null,
       "title": "SPP Alert History",
       "type": "alertlist"
     },
@@ -11626,7 +11413,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "decimals": 0,
       "fill": 1,
       "fillGradient": 1,
@@ -11638,7 +11428,6 @@
       },
       "hiddenSeries": false,
       "id": 108,
-      "interval": null,
       "legend": {
         "avg": false,
         "current": false,
@@ -11656,7 +11445,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "pointradius": 0.5,
       "points": false,
       "renderer": "flot",
@@ -11696,7 +11485,8 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "All Delta",
@@ -11729,7 +11519,8 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "Constant Delta",
@@ -11762,7 +11553,8 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "Hourly Delta",
@@ -11795,7 +11587,8 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "Others Delta",
@@ -11846,7 +11639,8 @@
               "operator": "!=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -11859,9 +11653,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "SPPmon Collection Errors delta",
       "tooltip": {
         "shared": true,
@@ -11870,9 +11662,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -11881,30 +11671,25 @@
           "$$hashKey": "object:27143",
           "decimals": 0,
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:27144",
-          "decimals": null,
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "gridPos": {
         "h": 8,
         "w": 8,
@@ -11954,17 +11739,19 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Constant Error Messages",
       "transformations": [],
       "type": "logs"
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "gridPos": {
         "h": 8,
         "w": 8,
@@ -12014,17 +11801,19 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Hourly Error Messages",
       "transformations": [],
       "type": "logs"
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "gridPos": {
         "h": 8,
         "w": 8,
@@ -12074,23 +11863,26 @@
               "operator": "!=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Other Error Messages",
       "transformations": [],
       "type": "logs"
     },
     {
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fieldConfig": {
         "defaults": {
           "custom": {
             "align": "center",
             "displayMode": "auto",
-            "filterable": false
+            "filterable": false,
+            "inspect": false
           },
           "mappings": [],
           "noValue": "Unknown",
@@ -12098,8 +11890,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -12114,9 +11905,16 @@
       },
       "id": 154,
       "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
         "showHeader": true
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "groupBy": [
@@ -12166,11 +11964,10 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "SPP & SPPMon version",
       "transformations": [
         {
@@ -12222,7 +12019,6 @@
     },
     {
       "collapsed": false,
-      "datasource": "${DS_DATASOURCE}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -12350,7 +12146,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -12424,7 +12223,8 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "All (FullLogs: $tag_fullLogs - LoadedSystem: $tag_loadedSystem)",
@@ -12464,7 +12264,8 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "constant",
@@ -12491,7 +12292,8 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "Everything Max(12h)",
@@ -12531,7 +12333,8 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "Everything not listed",
@@ -12578,7 +12381,8 @@
               "operator": "!=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         },
         {
           "alias": "hourly",
@@ -12605,7 +12409,8 @@
               "operator": "=",
               "value": "True"
             }
-          ]
+          ],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [
@@ -12618,9 +12423,7 @@
           "visible": true
         }
       ],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "SPPMON Runtime Duration",
       "tooltip": {
         "shared": true,
@@ -12629,9 +12432,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -12639,25 +12440,18 @@
         {
           "$$hashKey": "object:27143",
           "format": "ms",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:27144",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -12665,7 +12459,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -12744,13 +12541,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Average Query Duration",
       "tooltip": {
         "shared": true,
@@ -12759,33 +12555,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "dtdurationms",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -12793,7 +12580,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -12881,13 +12671,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Query Duration per Item",
       "tooltip": {
         "shared": true,
@@ -12896,9 +12685,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -12908,23 +12695,17 @@
           "format": "ms",
           "label": "",
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:368",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -12932,7 +12713,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_DATASOURCE}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_DATASOURCE}"
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -13011,13 +12795,12 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [],
+          "datasource": "${DS_DATASOURCE}"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Avgerage Query Item Count",
       "tooltip": {
         "shared": true,
@@ -13026,43 +12809,34 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     }
   ],
   "refresh": "",
-  "schemaVersion": 30,
+  "schemaVersion": 36,
   "style": "dark",
   "tags": [
     "${DS_DATASOURCE}",
     "14_days",
-    "v1.1.1"
+    "v1.1.2"
   ],
   "templating": {
     "list": []
@@ -13086,5 +12860,6 @@
   "timezone": "",
   "title": "SPPMON for IBM Spectrum Protect Plus ${DS_DATASOURCE}",
   "uid": "sppmon_single_view_DS_${DS_DATASOURCE}",
-  "version": 8
+  "version": 10,
+  "weekStart": ""
 }

@@ -103,7 +103,19 @@ class GenerifyDashboard:
             dashboardStr,
             1)
 
-        # replace all occurences of the old variable
+        # find old replaced UID, replace it by variable
+        oldUidMatch = re.search(r""""type":\s?"influxdb",\n\s+"uid":\s"([\S]+)"\s?""", dashboardStr,flags=re.MULTILINE)
+        if oldUidMatch:
+            oldUidStr = oldUidMatch.group(1)
+
+            # replace all occurrences of the old uuid
+            dashboardStr = re.sub(
+                fr"""{oldUidStr}""",
+                fr"""{genericVar}""",
+                dashboardStr
+            )
+
+        # replace all occurrences of the old variable
         dashboardStr = re.sub(
             fr"""{oldVarEscaped}""",
             fr"""{genericVar}""",
