@@ -204,18 +204,22 @@ class Utils:
                 cls.LOGGER.info("> Failed filter rule, please try again.")
                 continue
 
-            if(is_password and not cls.auto_confirm):
+            if cls.auto_confirm:
+                # exit the loop without verifying the input
+                validated = True
+                continue
+
+            if(is_password):
                 # password special confirm
-                # if empty it takes default value
+                # if the input is empty it takes default value (enter)
                 result_confirm = getpass(
                     "Please repeat input for confirmation").strip() or default
-                if(result_confirm != result):
+
+                validated = result_confirm != result
+                if(not validated):
                     cls.LOGGER.info(
                         "These passwords did not match. Please try again.")
                     print()
-                    validated = False
-                else:
-                    validated = True
             else:
                 # regular input confirm
                 validated = Utils.confirm(
