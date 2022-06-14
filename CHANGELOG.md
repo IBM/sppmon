@@ -12,13 +12,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+* Upgraded CodeQL to v2
+
 ### Fixed
+
+* Code scanning alert #2 and #3: Printing passwords into logger due to an faulty if-expression.
 
 ## [1.1.1] - 2022-02-22
 
 ### Added
 
-* Adds FullLogs and LoadedSystem information to the Grafana SPPMon Runtime Duration panel. 
+* Adds FullLogs and LoadedSystem information to the Grafana SPPMon Runtime Duration panel.
 * Adds license information into each SPPMon code file.
 * Specifies the encoding and reading permission when opening config files.
 
