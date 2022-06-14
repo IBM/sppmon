@@ -1,0 +1,351 @@
+"""
+ ----------------------------------------------------------------------------------------------
+ (c) Copyright IBM Corporation 2020, 2021. All Rights Reserved.
+
+ IBM Spectrum Protect Family Software
+
+ Licensed materials provided under the terms of the IBM International Program
+ License Agreement. See the Software licensing materials that came with the
+ IBM Program for terms and conditions.
+
+ U.S. Government Users Restricted Rights:  Use, duplication or disclosure
+ restricted by GSA ADP Schedule Contract with IBM Corp.
+
+ ----------------------------------------------------------------------------------------------
+
+Description:
+ TODO
+
+Repository:
+  https://github.com/IBM/spectrum-protect-sppmon
+
+Author:
+ Niels Korschinsky
+"""
+from __future__ import annotations
+
+import functools
+import logging
+import os
+import sys
+import time
+from argparse import ArgumentError, ArgumentParser
+from datetime import datetime
+from typing import NoReturn
+
+from influx.database_tables import RetentionPolicy
+from influx.definitions import Definitions
+from influx.influx_client import InfluxClient
+from sppcheck.excel.excel_reader import ExcelReader
+from sppcheck.generator.fakedata_controller import FakeDataController
+from sppcheck.predictor.predictor_controller import PredictorController
+from sppcheck.report.report_controller import ReportController
+from utils.exception_utils import ExceptionUtils
+from utils.methods_utils import MethodUtils
+from utils.spp_utils import SppUtils
+
+# Version:
+VERSION = "0.5  (2022/06/01)"
+
+
+# ----------------------------------------------------------------------------
+# command line parameter parsing
+# ----------------------------------------------------------------------------
+parser = ArgumentParser(
+    # exit_on_error=False, TODO: Enable in python version 3.9
+    description="""TODO
+    """,
+    epilog="For feature-requests or bug-reports please visit https://github.com/IBM/spectrum-protect-sppmon")
+
+# required options
+parser.add_argument("--cfg", dest="configFile", required=True, help="REQUIRED: Specify the JSON configuration file for influxDB login purposes")
+
+# sheet options
+parser.add_argument("--sheet", dest="sheetPath", help="Path to filled sizing sheet, parsing the contents into the influxDB. Requires args: --sizerVersion, --startDate")
+parser.add_argument("--sizerVersion", dest="sizerVersion", help="Specify the version of the vSnap sizer sheet, e.g v1.0 or v2.1.1")
+parser.add_argument("--startDate", dest="startDate", help="Date of start of the system in format \"YYYY-MM-DD\", e.g. startDate=01-01-2019")
+
+
+# generation
+parser.add_argument("--genFakeData", dest="genFakeData", action="store_true", help="generate fake data. Automatically uses the fake data.")
+parser.add_argument("--predictYears", dest="predictYears", type=int, help="Predict the development for the next x years.")
+parser.add_argument("--pdfReport", dest="pdfReport", action="store_true", help="create a new PDF report based on the prediction.")
+
+# generation options
+parser.add_argument("--latestData", dest="latestData", action="store_true", help="create reports (and fakedata) using only the latest 90 day data, but at a higher frequency(<6h).")
+parser.add_argument("--fakeData", dest="fakeData", action="store_true", help="use existing Fakedata to create any reports.")
+
+# general purpose options
+parser.add_argument("-v", '--version', action='version', version="TODO " + VERSION)
+parser.add_argument("--verbose", dest="verbose", action="store_true", help="print to stdout")
+parser.add_argument("--debug", dest="debug", action="store_true", help="save debug messages")
+parser.add_argument("--test", dest="test", action="store_true", help="tests connection to all components")
+
+
+print = functools.partial(print, flush=True)
+
+LOGGER_NAME = 'sppmon'
+LOGGER = logging.getLogger(LOGGER_NAME)
+
+ERROR_CODE_START_ERROR: int = 3
+ERROR_CODE_CMD_ARGS: int = 2
+ERROR_CODE: int = 1
+SUCCESS_CODE: int = 0
+
+try:
+    ARGS = parser.parse_args()
+except SystemExit as exit_code:
+    if(exit_code.code != SUCCESS_CODE):
+        # TODO
+        print("> Error when reading the Sizing tool arguments.", file=sys.stderr)
+        print("> Please make sure to specify a config file and check the spelling of your arguments.", file=sys.stderr)
+        print("> Use --help to display all argument options and requirements", file=sys.stderr)
+    exit(exit_code)
+except ArgumentError as error:
+    print(error.message)
+    # TODO
+    print("> Error when reading the Sizing tools arguments.", file=sys.stderr)
+    print("> Please make sure to specify a config file and check the spelling of your arguments.", file=sys.stderr)
+    print("> Use --help to display all argument options and requirements", file=sys.stderr)
+    exit(ERROR_CODE_CMD_ARGS)
+
+
+class SPPCheck:
+    """TODO
+
+    Attributes:
+
+
+    Methods:
+
+
+    """
+
+    # set class variables
+    MethodUtils.verbose = ARGS.verbose
+    SppUtils.verbose = ARGS.verbose
+
+    def exit(self, error_code: int = SUCCESS_CODE) -> NoReturn:
+        """Executes finishing tasks and exits of SPPCheck. To be called every time.
+
+        Executes finishing tasks and displays error messages.
+        Specify only error message if something did went wrong.
+        Use Error codes specified at top of module.
+        Does NOT return.
+
+        Keyword Arguments:
+            error {int} -- Errorcode if a error occured. (default: {0})
+        """
+
+        # error with the command line arguments
+        # dont store runtime here
+        if(error_code == ERROR_CODE_CMD_ARGS):
+            parser.print_help()
+            sys.exit(ERROR_CODE_CMD_ARGS)  # unreachable?
+        if(error_code == ERROR_CODE_START_ERROR):
+            ExceptionUtils.error_message("Error when starting SPPCheck. Please review the errors above")
+            sys.exit(ERROR_CODE_START_ERROR)
+
+        script_end_time = SppUtils.get_actual_time_sec()
+        LOGGER.debug("Script end time: %d", script_end_time)
+
+        try:
+            # self.store_script_metrics()
+
+            if(self.__influx_client):
+                self.__influx_client.disconnect()
+
+        except ValueError as error:
+            ExceptionUtils.exception_info(error=error, extra_message="Error occured while exiting SPPCheck")
+            error_code = ERROR_CODE
+
+        SppUtils.remove_pid_file(self.pid_file_path, ARGS)
+
+        # Both error-clauses are actually the same, but for possiblility of an split between error cases
+        # always last due beeing true for any number != 0
+        if(error_code == ERROR_CODE or error_code):
+            ExceptionUtils.error_message("Error occurred while executing SPPCheck")
+        elif ExceptionUtils.stored_errors:
+            print(f"Total of {len(ExceptionUtils.stored_errors)} errors occurred during the execution. Check Messages above.")
+        else:
+            LOGGER.info("\n\n!!! script completed without any errors !!!\n")
+
+        print(f"check log for details: grep \"PID {os.getpid()}\" {self.log_path} > sppcheck.log.{os.getpid()}")
+        sys.exit(error_code)
+
+    def __init__(self):
+        self.log_path: str = ""
+        """path to logger, set in set_logger."""
+        self.pid_file_path: str = ""
+        """path to pid_file, set in check_pid_file."""
+
+        try:
+            self.log_path = SppUtils.mk_logger_file(ARGS.configFile, ".log")
+            SppUtils.set_logger(self.log_path, LOGGER_NAME, ARGS.debug)
+
+            LOGGER.info("Starting the Sizing tool")
+
+            self.pid_file_path = SppUtils.mk_logger_file(ARGS.configFile, ".pid_file")
+            if(not SppUtils.check_pid_file(self.pid_file_path, ARGS)):
+                ExceptionUtils.error_message("Another instance of SPPCheck with the same args is running")
+                self.exit(ERROR_CODE_START_ERROR)
+
+            time_stamp_name, time_stamp = SppUtils.get_capture_timestamp_sec()
+            self.start_counter = time.perf_counter()
+            LOGGER.debug("\n\n")
+            LOGGER.debug(f"running script version: {VERSION}")
+            LOGGER.debug(f"cmdline options: {ARGS}")
+            LOGGER.debug(f"{time_stamp_name}: {time_stamp}")
+            LOGGER.debug("")
+
+
+            LOGGER.info("Setting up configurations")
+            self.setup_args()
+        except ValueError as error:
+            ExceptionUtils.exception_info(error=error, extra_message="Exiting startup process due to critical failure")
+            self.exit(ERROR_CODE_START_ERROR)
+
+
+    def setup_args(self) -> None:
+        # Temporary features / Deprecated
+
+        ## None ##
+
+        # ### Special dependencies between arguments ###
+        # Important: ignores config file, this is done via required components
+
+        # trigger, if not all are true or all are false
+        if bool(ARGS.sheetPath) and not (bool(ARGS.sizerVersion) and bool(ARGS.startDate)):
+            ExceptionUtils.error_message("> Using --sheetPath without associated --sizerVersion or --startDate arg. Aborting.")
+            self.exit(ERROR_CODE_CMD_ARGS)
+        if bool(ARGS.sizerVersion) and not (bool(ARGS.sheetPath) and bool(ARGS.startDate)):
+            ExceptionUtils.error_message("> Using --sizerVersion without associated --sheetPath or --startDate arg. Aborting.")
+            self.exit(ERROR_CODE_CMD_ARGS)
+
+        if ARGS.latestData and not (ARGS.predictYears or ARGS.pdfReport or ARGS.genFakeData):
+            ExceptionUtils.error_message("Warning: the --latestData flag only works in conunction with --predictYears, --pdfReport or --genFakeData. Aborting")
+            self.exit(ERROR_CODE_CMD_ARGS)
+
+        if ARGS.fakeData and not (ARGS.predictYears or ARGS.pdfReport):
+            ExceptionUtils.error_message("Warning: the --fakeData flag only works in conunction with --predictYears or --pdfReport. Aborting")
+            self.exit(ERROR_CODE_CMD_ARGS)
+
+        # ### Trigger init of components ###
+
+        if ARGS.startDate:
+            try:
+                self.start_date = datetime.fromisoformat(ARGS.startDate)
+            except Exception as ex:
+                ExceptionUtils.exception_info(ex, "Unable to parse the date from the --startDate argument")
+                self.exit(ERROR_CODE_CMD_ARGS)
+
+        if not ARGS.configFile:
+            ExceptionUtils.error_message("missing config file, aborting")
+            self.exit(ERROR_CODE_CMD_ARGS)
+
+        self.config_file = SppUtils.read_conf_file(config_file_path=ARGS.configFile)
+
+        # number 0 is false, so that is ok.
+        if ARGS.predictYears:
+            try:
+                self.__predict_years = int(ARGS.predictYears)
+            except Exception as error:
+                ExceptionUtils.exception_info(error, "The arg --predictYears does not have a numeric value")
+                self.exit(ERROR_CODE_CMD_ARGS)
+        else:
+            self.__predict_years = None
+
+        self.__influx_client = InfluxClient(self.config_file)
+        """client used to connect to the influxdb, set in setup_critical_configs."""
+        self.__influx_client.connect()
+
+        date = datetime.now().isoformat("_", "seconds")
+        # replace to avoid query error in influxdb
+        self.__rp_timestamp = f"{date}".replace("-", "_").replace(":","_")
+
+        if ARGS.latestData:
+            self.__dp_interval_hour = 6
+            self.__datagen_range_days = 90
+            self.__select_rp = Definitions.RP_DAYS_90()
+            self.__rp_timestamp = "latest_" + self.__rp_timestamp
+        else:
+            self.__dp_interval_hour = 168
+            self.__datagen_range_days = 2 * 365
+            self.__select_rp = Definitions.RP_INF()
+
+        # overwrite select RP if fakedata should be used
+        self.__fakedata_rp_name = "fakeData"
+        if ARGS.fakeData or ARGS.genFakeData:
+            self.__select_rp = RetentionPolicy(self.__fakedata_rp_name, self.__influx_client.database, "INF")
+            self.__rp_timestamp = "fake_" + self.__rp_timestamp
+
+    def main(self):
+        LOGGER.info("Starting argument execution")
+
+        excel_rp = None
+        if bool(ARGS.sheetPath):
+            try:
+                excel_reader = ExcelReader(
+                    ARGS.sheetPath, ARGS.sizerVersion,
+                    self.__influx_client, self.start_date,
+                    self.__dp_interval_hour,
+                    self.__rp_timestamp)
+                excel_rp = excel_reader.report_rp
+                excel_reader.parse_insert_sheet()
+            except Exception as error:
+                ExceptionUtils.exception_info(
+                    error=error,
+                    extra_message="Top-level-error when reading and inserting the sheet")
+
+        if ARGS.genFakeData:
+            try:
+                fakedata_controller = FakeDataController(
+                    self.__influx_client, self.__dp_interval_hour,
+                    self.__datagen_range_days, self.__fakedata_rp_name)
+                fakedata_controller.gen_fake_data()
+            except Exception as error:
+                ExceptionUtils.exception_info(
+                    error=error,
+                    extra_message="Top-level-error when reading the generating storage data")
+
+        prediction_rp = None
+        if self.__predict_years:
+            try:
+                predictor_controller = PredictorController(
+                    self.__influx_client, self.__dp_interval_hour,
+                    self.__select_rp, self.__rp_timestamp,
+                    self.__predict_years)
+                prediction_rp = predictor_controller.report_rp
+                #predictor_controller.predict_all_data()
+            except Exception as error:
+                ExceptionUtils.exception_info(
+                    error=error,
+                    extra_message="Top-level-error when creating Grafana report")
+
+        if ARGS.pdfReport:
+            try:
+                report_controller = ReportController(
+                    self.__influx_client,
+                    self.__dp_interval_hour,
+                    self.__select_rp,
+                    self.__rp_timestamp,
+                    self.start_date,
+                    self.config_file,
+                    self.__predict_years,
+                    prediction_rp,
+                    excel_rp
+                    )
+                report_controller.createPdfReport()
+            except Exception as error:
+                ExceptionUtils.exception_info(
+                    error=error,
+                    extra_message="Top-level-error when creating PDF report")
+
+
+
+
+        self.exit()
+
+
+if __name__ == "__main__":
+    SPPCheck().main()

@@ -37,7 +37,7 @@ from enum import Enum, unique
 import socket
 import paramiko
 
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 
 
 LOGGER = logging.getLogger("sppmon")

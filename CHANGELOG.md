@@ -5,20 +5,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-
 ## [Unreleased] - yyyy-mm-dd
 
 ### Added
 
+* sizingTool function and internal structure
+  * DataGenerator for generating fake testing data.
+* Adds FullLogs and LoadedSystem information to the Grafana SPPMon Runtime Duration panel.
+* Adds clarification that all timestamps are changed into second precision on insert.
+* Adds support for batch insert to insert into a different retention policy
+* Selection queries now also support an alternative retention policy to query from
+* CreateRP-Method in the influxClient to allow creating non-lasting retention policies
+* Adds pandas-stubs, openpyxl and pyxlsb to requirements file
+* Prints total count of errors during the execution if there are any - instead of "script finished" output
+
 ### Changed
 
+* Moved pid files-functions and other functions from SPPMon to helper functions.
+  * Adjusted log messages to make their message generic if required.
+  * Added arguments to replace self-access.
+* Changed default log and pid-file locations from `home/sppmonLogs/FILE` to `spectrum-protect-sppmon/sppmonLogs/FILE`
+* Added init declarations in the SPPMon `__init__` function to allow overview of all self-vars
+* Changed SelectionQueries to only take a single table instead of an List of such, as it isn't required and complicates the code
+* Predefined retention policies are no longer protected in the definitions module.
+* Sending a select query now raises a error when it fails.
+* Allows SelectionQueries from table to be another inner-selection query
+  * Changed all calls of the constructor
+  * Made sure to only allow inner queries when using the selection-keyword.
+* Changed the severity of unknown type-annotation due to submodules not being typed from error to warning.
+* Minor printing edits when generifing Dashboard
+
 ### Fixed
+
+* Fixed typo in exception_utils.py file, renaming it and all references on it.
+* Lots of Typos in the inline documentation
+* SelectionQuery and associated methods: Introduces Optional annotation to fix linter error
+
+### Known Issues
+
 
 ## [1.1.1] - 2022-02-22
 
 ### Added
 
-* Adds FullLogs and LoadedSystem information to the Grafana SPPMon Runtime Duration panel. 
+* Adds FullLogs and LoadedSystem information to the Grafana SPPMon Runtime Duration panel.
 * Adds license information into each SPPMon code file.
 * Specifies the encoding and reading permission when opening config files.
 
@@ -142,7 +172,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   * Changed to query so-far unknown endpoint, using count and group aggregate to query all data with a single API-request
   > This brings the SLA request in line with the other API requests.
 * Reworked/Commented the job-log request and prepared a filter via individual JobLog-ID's
-* Labeled python argument ` -create_dashboard` and associated args as deprecated, to be removed in v1.1 (See Grafana-Changes)
+* Labeled python argument `-create_dashboard` and associated args as deprecated, to be removed in v1.1 (See Grafana-Changes)
 
 ### Influx
 
@@ -184,7 +214,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Changed dashboard to be exported for `external use`:
   * You may change the data source on importing
   * Both UID and Dashboard names will be variable generated based on the data source chosen
-  * Labeled Python argument ` -create_dashboard` and associated args as deprecated, to be removed in v1.1
+  * Labeled Python argument `-create_dashboard` and associated args as deprecated, to be removed in v1.1
     > Note: Listed here only for completeness, see Python changes
   * Created a Python stand-alone script for generifying dashboard
     > Note: Listed here only for completeness, see script changes
@@ -275,7 +305,7 @@ InfluxDB tables:
 * `jobs_statistics`: New
 * `jobLogs`: Renaming of arguments, adding `jobExecutionTime`.
 * `sppmon_metrics`: Added `influxdb_version` and new arguments
-* `vmReplicateSummary` and `vmReplicateStats`: `removed tag `messageId`
+* `vmReplicateSummary` and `vmReplicateStats`: `removed tag` messageId
 * `vadps`: Moved 3 tags to fields, adjusted CQ to run on distinct ID's
 * `ProcessStats`: Removed 2 fields and 3 tags due change `top` to `ps` command.
 * `office365stats` and `office365transfBytes` new

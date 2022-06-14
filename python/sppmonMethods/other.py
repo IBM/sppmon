@@ -37,7 +37,7 @@ from utils.methods_utils import MethodUtils
 import logging
 
 
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 
 LOGGER = logging.getLogger("sppmon")
 

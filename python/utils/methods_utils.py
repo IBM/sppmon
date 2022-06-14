@@ -36,7 +36,7 @@ from typing import Callable, List, Match, Tuple, Dict, Any, Union, Set
 from prettytable import PrettyTable
 from sppConnection.ssh_client import SshClient, SshCommand, SshTypes
 
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 from utils.spp_utils import SppUtils
 
 LOGGER = logging.getLogger("sppmon")

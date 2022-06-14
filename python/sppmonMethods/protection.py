@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -37,7 +37,7 @@ from sppmonMethods.system import SystemMethods
 from sppConnection.api_queries import ApiQueries
 
 
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
@@ -196,7 +196,7 @@ class ProtectionMethods:
 
         time_query = SelectionQuery(
             keyword=Keyword.SELECT,
-            tables=[vms_table],
+            table_or_query=vms_table,
             fields=['time', 'commited'],
             limit=1,
             order_direction="DESC"
@@ -216,7 +216,7 @@ class ProtectionMethods:
 
         vm_stats_query = SelectionQuery(
             keyword=Keyword.SELECT,
-            tables=[vm_stats_table],
+            table_or_query=vm_stats_table,
             fields=['*'],
             where_str=where_str,
             limit=1
@@ -243,7 +243,7 @@ class ProtectionMethods:
         ]
         query = SelectionQuery(
             keyword=Keyword.SELECT,
-            tables=[vms_table],
+            table_or_query=vms_table,
             fields=fields,
             where_str=where_str
         )

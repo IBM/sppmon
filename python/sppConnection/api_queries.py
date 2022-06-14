@@ -31,12 +31,13 @@ from typing import List, Dict, Any, Optional
 import json
 import urllib.parse
 
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 from utils.spp_utils import SppUtils
 from sppConnection.rest_client import RequestType, RestClient
 
 
-LOGGER = logging.getLogger("sppmon")
+LOGGER_NAME = 'sppmon'
+LOGGER = logging.getLogger(LOGGER_NAME)
 
 
 class ApiQueries:

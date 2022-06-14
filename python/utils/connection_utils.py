@@ -35,7 +35,7 @@ import urllib.parse as parse
 from requests.models import Response
 
 from utils.spp_utils import SppUtils
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 
 
 LOGGER = logging.getLogger("sppmon")

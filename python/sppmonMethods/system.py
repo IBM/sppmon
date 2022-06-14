@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -32,7 +32,7 @@ import logging
 import re
 from typing import Union, Optional, Dict, Any
 
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 from utils.methods_utils import MethodUtils
 from sppConnection.api_queries import ApiQueries
 from influx.influx_client import InfluxClient
@@ -142,7 +142,7 @@ class SystemMethods:
         table = self.__influx_client.database[table_name]
         query = SelectionQuery(
             keyword=Keyword.SELECT,
-            tables=[table],
+            table_or_query=table,
             # description, throttleRates cause we need a field to query
             fields=["siteId", "siteName", "description", "throttleRates"],
             where_str=f"siteId = \'{site_id}\'",

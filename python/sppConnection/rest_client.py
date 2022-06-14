@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -41,7 +41,7 @@ from requests.models import Response
 from requests.packages.urllib3 import disable_warnings
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from utils.connection_utils import ConnectionUtils
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 from utils.spp_utils import SppUtils
 
 LOGGER = logging.getLogger("sppmon")
@@ -131,7 +131,7 @@ class RestClient():
             ExceptionUtils.error_message(
                 "Please make sure your Hostadress, port, username and password for REST-API (not SSH) login is correct."
                 + "\nYou may test this by logging in into the SPP-Website with the used credentials.")
-            raise ValueError(f"REST API login request not successfull.")
+            raise ValueError(f"REST API login request not successfully.")
         try:
             self.__sessionid: str = response_json["sessionid"]
         except KeyError as error:

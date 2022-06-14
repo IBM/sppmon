@@ -34,7 +34,7 @@ from typing import Any, Dict, List, Tuple
 
 from influx.influx_client import InfluxClient
 from sppConnection.ssh_client import SshClient, SshCommand, SshTypes
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 

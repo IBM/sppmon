@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Description:
@@ -88,13 +88,12 @@ from __future__ import annotations
 import functools
 import logging
 import os
-import re
-import subprocess
+
 import sys
 import time
 from argparse import ArgumentError, ArgumentParser
-from subprocess import CalledProcessError
-from typing import Any, Dict, List, NoReturn, Optional, Union
+
+from typing import Any, Dict, NoReturn, Optional, Union
 
 from influx.influx_client import InfluxClient
 from sppConnection.api_queries import ApiQueries
@@ -105,7 +104,7 @@ from sppmonMethods.ssh import SshMethods
 from sppmonMethods.system import SystemMethods
 from sppmonMethods.testing import TestingMethods
 from utils.connection_utils import ConnectionUtils
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
@@ -118,13 +117,12 @@ VERSION = "1.1.1  (2021/02/22)"
 # ----------------------------------------------------------------------------
 parser = ArgumentParser(
     # exit_on_error=False, TODO: Enable in python version 3.9
-    description=
-    """Monitoring and long-term reporting for IBM Spectrum Protect Plus.
+    description="""Monitoring and long-term reporting for IBM Spectrum Protect Plus.
  Provides a data bridge from SPP to InfluxDB and provides visualization dashboards via Grafana.
 
  This program provides functions to query IBM Spectrum Protect Plus Servers,
  VSNAP, VADP and other servers via REST API and ssh. This data is stored into a InfluxDB database.""",
- epilog="For feature-requests or bug-reports please visit https://github.com/IBM/spectrum-protect-sppmon")
+    epilog="For feature-requests or bug-reports please visit https://github.com/IBM/spectrum-protect-sppmon")
 
 parser.add_argument("-v", '--version', action='version', version="Spectrum Protect Plus Monitoring (SPPMon) version " + VERSION)
 
@@ -134,25 +132,25 @@ parser.add_argument("--debug", dest="debug", action="store_true", help="save deb
 parser.add_argument("--test", dest="test", action="store_true", help="tests connection to all components")
 
 parser.add_argument("--constant", dest="constant", action="store_true",
-                  help="execute recommended constant functions: (ssh, cpu, sppCatalog)")
+                    help="execute recommended constant functions: (ssh, cpu, sppCatalog)")
 
 parser.add_argument("--hourly", dest="hourly", action="store_true",
-                  help="execute recommended hourly functions: (constant + jobs, vadps, storages)")
+                    help="execute recommended hourly functions: (constant + jobs, vadps, storages)")
 
 parser.add_argument("--daily", dest="daily", action="store_true",
-                  help="execute recommended daily functions: (hourly +  joblogs, vms, slaStats, vmStats)")
+                    help="execute recommended daily functions: (hourly +  joblogs, vms, slaStats, vmStats)")
 
 parser.add_argument("--all", dest="all", action="store_true", help="execute all functions: (daily + sites)")
 
 parser.add_argument("--jobs", dest="jobs", action="store_true", help="store job history")
 parser.add_argument("--jobLogs", dest="jobLogs", action="store_true",
-                  help="retrieve detailed information per job (job-sessions)")
+                    help="retrieve detailed information per job (job-sessions)")
 
 parser.add_argument("--loadedSystem", dest="loadedSystem", action="store_true",
-                  help="Special settings for loaded systems, increasing API-request timings.")
+                    help="Special settings for loaded systems, increasing API-request timings.")
 
 parser.add_argument("--fullLogs", dest="fullLogs", action="store_true",
-                  help="Requesting any kind of Joblogs instead of the default SUMMARY-Logs.")
+                    help="Requesting any kind of Joblogs instead of the default SUMMARY-Logs.")
 
 parser.add_argument("--ssh", dest="ssh", action="store_true", help="execute monitoring commands via ssh")
 
@@ -168,19 +166,19 @@ parser.add_argument("--cpu", dest="cpu", action="store_true", help="capture SPP 
 parser.add_argument("--sppcatalog", dest="sppcatalog", action="store_true", help="capture Spp-Catalog Storage usage")
 
 parser.add_argument("--copy_database", dest="copy_database",
-                  help="Copy all data from .cfg database into a new database, specified by `copy_database=newName`. Delete old database with caution.")
+                    help="Copy all data from .cfg database into a new database, specified by `copy_database=newName`. Delete old database with caution.")
 
 
 # DEPRECATED AREA
-#TODO removed in Version 1.1.
+# TODO removed in Version 1.1.
 parser.add_argument("--minimumLogs", dest="minimumLogs", action="store_true",
-                  help="DEPRECATED, use '--loadedSystem' instead. To be removed in v1.1")
+                    help="DEPRECATED, use '--loadedSystem' instead. To be removed in v1.1")
 parser.add_argument("--processStats", dest="processStats", action="store_true",
-                  help="DEPRECATED, use '--ssh' instead")
+                    help="DEPRECATED, use '--ssh' instead")
 parser.add_argument("--create_dashboard", dest="create_dashboard", action="store_true",
-                  help="DEPRECATED: Just import the regular dashboard instead, choose datasource within Grafana. To be removed in v1.1")
+                    help="DEPRECATED: Just import the regular dashboard instead, choose datasource within Grafana. To be removed in v1.1")
 parser.add_argument("--dashboard_folder_path", dest="dashboard_folder_path",
-                  help="DEPRECATED: Just import the regular dashboard instead, choose datasource within Grafana. To be removed in v1.1")
+                    help="DEPRECATED: Just import the regular dashboard instead, choose datasource within Grafana. To be removed in v1.1")
 
 print = functools.partial(print, flush=True)
 
@@ -206,6 +204,7 @@ except ArgumentError as error:
     print("> Please make sure to specify a config file and check the spelling of your arguments.", file=sys.stderr)
     print("> Use --help to display all argument options and requirements", file=sys.stderr)
     exit(ERROR_CODE_CMD_ARGS)
+
 
 class SppMon:
     """Main-File for the sppmon. Only general functions here and calls for sub-modules.
@@ -338,11 +337,20 @@ class SppMon:
         """path to logger, set in set_logger."""
         self.pid_file_path: str = ""
         """path to pid_file, set in check_pid_file."""
+        self.influx_client: Optional[InfluxClient] = None
+        """client used to connect to the influxdb, set in setup_critical_configs."""
+        self.rest_client: Optional[RestClient] = None
+        """client used to connect to the SPP rest API, set in setup_optional_configs."""
+        self.api_queries: Optional[ApiQueries] = None
+        """module containing predefined calls to the SPP rest API, set in setup_optional_configs."""
 
-        self.set_logger()
+        self.log_path = SppUtils.mk_logger_file(ARGS.configFile, ".log")
+        SppUtils.set_logger(self.log_path, LOGGER_NAME, ARGS.debug)
 
         LOGGER.info("Starting SPPMon")
-        if(not self.check_pid_file()):
+
+        self.pid_file_path = SppUtils.mk_logger_file(ARGS.configFile, ".pid_file")
+        if(not SppUtils.check_pid_file(self.pid_file_path, ARGS)):
             ExceptionUtils.error_message("Another instance of sppmon with the same args is running")
             self.exit(ERROR_CODE_START_ERROR)
 
@@ -368,110 +376,6 @@ class SppMon:
         self.set_critial_configs(self.config_file)
         self.set_optional_configs(self.config_file)
 
-    def set_logger(self) -> None:
-        """Sets global logger for stdout and file logging.
-
-        Changes logger aquired by LOGGER_NAME.
-
-        Raises:
-            ValueError: Unable to open logger
-
-        """
-        self.log_path = SppUtils.mk_logger_file(ARGS.configFile, ".log")
-
-        try:
-            file_handler = logging.FileHandler(self.log_path)
-        except Exception as error:
-            # TODO here: Right exception, how to print this error?
-            print("unable to open logger", file=sys.stderr)
-            raise ValueError("Unable to open Logger") from error
-
-
-        file_handler_fmt = logging.Formatter(
-            '%(asctime)s:[PID %(process)d]:%(levelname)s:%(module)s.%(funcName)s> %(message)s')
-        file_handler.setFormatter(file_handler_fmt)
-        if(ARGS.debug):
-            file_handler.setLevel(logging.DEBUG)
-        else:
-            file_handler.setLevel(logging.ERROR)
-
-
-        stream_handler = logging.StreamHandler()
-        stream_handler.setLevel(logging.INFO)
-
-        logger = logging.getLogger(LOGGER_NAME)
-        logger.setLevel(logging.DEBUG)
-        logger.addHandler(file_handler)
-        logger.addHandler(stream_handler)
-
-
-    def check_pid_file(self) -> bool:
-        if(ARGS.verbose):
-            LOGGER.info("Checking for other SPPMon instances")
-        self.pid_file_path = SppUtils.mk_logger_file(ARGS.configFile, ".pid_file")
-        try:
-            try:
-                file = open(self.pid_file_path, "rt")
-                match_list = re.findall(r"(\d+) " + str(ARGS), file.read())
-                file.close()
-                deleted_processes: List[str] = []
-                for match in match_list:
-                    # add spaces to make clear the whole number is matched
-                    match = f' {match} '
-                    try:
-                        if(os.name == 'nt'):
-                            args = ['ps', '-W']
-                        else:
-                            args = ['ps', '-p', match]
-                        result = subprocess.run(args, check=True, capture_output=True)
-                        if(re.search(match, str(result.stdout))):
-                            return False
-                        # not in there -> delete entry
-                        deleted_processes.append(match)
-                    except CalledProcessError as error:
-                        deleted_processes.append(match)
-
-                # delete processes which did get killed, not often called
-                if(deleted_processes):
-                    file = open(self.pid_file_path, "rt")
-                    file_str = file.read()
-                    file.close()
-                    options = str(ARGS)
-                    for pid in deleted_processes:
-                        file_str = file_str.replace(f"{pid} {options}", "")
-                    # do not delete if empty since we will use it below
-                    file = open(self.pid_file_path, "wt")
-                    file.write(file_str.strip())
-                    file.close()
-
-            except FileNotFoundError:
-                pass # no file created yet
-
-            # always write your own pid into it
-            file = open(self.pid_file_path, "at")
-            file.write(f"{os.getpid()} {str(ARGS)}")
-            file.close()
-            return True
-        except Exception as error:
-            ExceptionUtils.exception_info(error)
-            raise ValueError("Error when checking pid file")
-
-    def remove_pid_file(self) -> None:
-        try:
-            file = open(self.pid_file_path, "rt")
-            file_str = file.read()
-            file.close()
-            new_file_str = file_str.replace(f"{os.getpid()} {str(ARGS)}", "").strip()
-            if(not new_file_str.strip()):
-                os.remove(self.pid_file_path)
-            else:
-                file = open(self.pid_file_path, "wt")
-                file.write(new_file_str)
-                file.close()
-        except Exception as error:
-            ExceptionUtils.exception_info(error, "Error when removing pid_file")
-
-
     def set_critial_configs(self, config_file: Dict[str, Any]) -> None:
         """Sets up any critical infrastructure, to be called within the init.
 
@@ -494,7 +398,7 @@ class SppMon:
 
         except ValueError as err:
             ExceptionUtils.exception_info(error=err, extra_message="error while setting up critical config. Aborting")
-            self.influx_client = None # set none, otherwise the variable is undeclared
+            self.influx_client = None  # set none, otherwise the variable is undeclared
             self.exit(error_code=ERROR_CODE)
 
     def set_optional_configs(self, config_file: Dict[str, Any]) -> None:
@@ -577,11 +481,11 @@ class SppMon:
             given_log_types = self.joblog_types
 
         try:
-            auth_rest: Dict[str, Any] = SppUtils.get_cfg_params(param_dict=config_file, param_name="sppServer") # type: ignore
+            auth_rest: Dict[str, Any] = SppUtils.get_cfg_params(param_dict=config_file, param_name="sppServer")  # type: ignore
             # TODO DEPRECATED TO BE REMOVED IN 1.1
             self.job_log_retention_time = auth_rest.get("jobLog_rentation", auth_rest.get("jobLog_retention", self.job_log_retention_time))
             # TODO New once 1.1 is live
-            #self.job_log_retention_time = auth_rest.get("jobLog_retention", self.job_log_retention_time)
+            # self.job_log_retention_time = auth_rest.get("jobLog_retention", self.job_log_retention_time)
 
             self.job_methods = JobMethods(
                 self.influx_client, self.api_queries, self.job_log_retention_time,
@@ -615,7 +519,6 @@ class SppMon:
             # Variable needs to be declared
             self.ssh_methods = None
 
-
     def setup_args(self) -> None:
         """This method set up all required parameters and transforms arg groups into individual args.
         """
@@ -632,16 +535,15 @@ class SppMon:
 
         # ignore setup args
         self.ignore_setup: bool = (
-            ARGS.create_dashboard or bool(ARGS.dashboard_folder_path) or
-            ARGS.test
-                                  )
+            ARGS.create_dashboard or bool(ARGS.dashboard_folder_path)
+            or ARGS.test)
         if(self.ignore_setup):
             ExceptionUtils.error_message("> WARNING: An option for a utility operation has been specified.  Bypassing normal SPPMON operation.")
 
         if((ARGS.create_dashboard or bool(ARGS.dashboard_folder_path)) and not
            (ARGS.create_dashboard and bool(ARGS.dashboard_folder_path))):
-           ExceptionUtils.error_message("> Using --create_dashboard without associated folder path. Aborting.")
-           self.exit(ERROR_CODE_CMD_ARGS)
+            ExceptionUtils.error_message("> Using --create_dashboard without associated folder path. Aborting.")
+            self.exit(ERROR_CODE_CMD_ARGS)
 
         # incremental setup, higher executes all below
         all_args: bool = ARGS.all
@@ -697,7 +599,7 @@ class SppMon:
 
             # end total sppmon runtime
             end_counter = time.perf_counter()
-            insert_dict['duration'] = int((end_counter-self.start_counter)*1000)
+            insert_dict['duration'] = int((end_counter - self.start_counter) * 1000)
 
             # add arguments of sppmon
             for (key, value) in vars(ARGS).items():
@@ -751,7 +653,7 @@ class SppMon:
         # dont store runtime here
         if(error_code == ERROR_CODE_CMD_ARGS):
             parser.print_help()
-            sys.exit(ERROR_CODE_CMD_ARGS) # unreachable?
+            sys.exit(ERROR_CODE_CMD_ARGS)  # unreachable?
         if(error_code == ERROR_CODE_START_ERROR):
             ExceptionUtils.error_message("Error when starting SPPMon. Please review the errors above")
             sys.exit(ERROR_CODE_START_ERROR)
@@ -772,14 +674,16 @@ class SppMon:
             ExceptionUtils.exception_info(error=error, extra_message="Error occured while exiting sppmon")
             error_code = ERROR_CODE
 
-        self.remove_pid_file()
+        SppUtils.remove_pid_file(self.pid_file_path, ARGS)
 
-        # Both error-clauses are actually the same, but for possiblility of an split between error cases
+        # Both error-clauses are actually the same, but for possibility of an split between error cases
         # always last due beeing true for any number != 0
-        if(error_code == ERROR_CODE or error_code):
+        if error_code == ERROR_CODE or error_code:
             ExceptionUtils.error_message("Error occured while executing sppmon")
-        elif(not self.ignore_setup):
-            LOGGER.info("\n\n!!! script completed !!!\n")
+        elif ExceptionUtils.stored_errors:
+            print(f"Total of {len(ExceptionUtils.stored_errors)} errors occurred during the execution. Check Messages above.")
+        elif not self.ignore_setup:
+            LOGGER.info("\n\n!!! script completed without any errors !!!\n")
 
         print(f"check log for details: grep \"PID {os.getpid()}\" {self.log_path} > sppmon.log.{os.getpid()}")
         sys.exit(error_code)
@@ -844,7 +748,7 @@ class SppMon:
         # ####################### SSH METHODS ########################
         if(self.ssh and self.ssh_methods):
             # execute ssh statements for, VSNAP, VADP, other ssh hosts
-             # store all job logs per job session instance
+            # store all job logs per job session instance
             try:
                 self.ssh_methods.ssh()
                 self.influx_client.flush_insert_buffer()
@@ -922,19 +826,20 @@ class SppMon:
                     error=error,
                     extra_message="Top-level-error when testing connection.")
 
-        # DEPRECATED TODO REMOVE NEXT VERSION
+        # DEPRECATED TODO REMOVE NEXT VERSION v1.2
         if(ARGS.create_dashboard):
             try:
                 ExceptionUtils.error_message(
-                    "This method is deprecated. You do not need to manually create a dashboard anymore.\n" +
-                    "Please just select the datasource when importing the regular 14-day dashboard in grafana.\n" +
-                    "Devs may adjust their dashboard to be generic with the scripts/generifyDashboard.py script.")
+                    "This method is deprecated. You do not need to manually create a dashboard anymore.\n"
+                    + "Please just select the datasource when importing the regular 14-day dashboard in grafana.\n"
+                    + "Devs may adjust their dashboard to be generic with the scripts/generifyDashboard.py script.")
             except ValueError as error:
                 ExceptionUtils.exception_info(
                     error=error,
                     extra_message="Top-level-error when creating dashboard")
 
         self.exit()
+
 
 if __name__ == "__main__":
     SppMon().main()

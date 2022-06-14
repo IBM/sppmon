@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>SPPCheck Reporting Website</title>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+    <meta name="description" content="Report of the SPPCheck Prediction about the health of the SPP-Server '$SERVERNAME'.">
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="SPPCheck Reporting Website" />
+    <meta property="og:description" content="Report of the SPPCheck Prediction about the health of the SPP-Server '$SERVERNAME'." />
+    <meta property="og:image" content="./SpectrumProtectPlus-dark.svg" />
+    <meta property="og:image:type" content="image/svg" />
+    <meta property="og:image:width" content="192" />
+    <meta property="og:image:height" content="192" />
+    <meta property="og:image:alt" content="SPP-Icon" />
+    <style type="text/css">
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            color: #292929;
+            font: 90% Roboto, Arial, sans-serif;
+            font-weight: 300;
+            background-color: #fff;
+        }
+
+        p {
+            padding: 0 10px;
+            line-height: 1.8;
+        }
+
+        ul li {
+            padding-right: 10px;
+            line-height: 1.6;
+        }
+
+        h3 {
+            padding: 5px 20px;
+            margin: 0;
+        }
+
+        div#header {
+            position: relative;
+        }
+
+        div#header h1 {
+            height: 80px;
+            line-height: 80px;
+            margin: 0;
+            padding-left: 10px;
+            background: #e0e0e0;
+            color: #292929;
+        }
+
+        div#header a {
+            position: absolute;
+            right: 0;
+            top: 23px;
+            padding: 10px;
+            color: #006;
+        }
+
+        div#navigation {
+            background: #7cb71c;
+        }
+
+        div#navigation li {
+            list-style: none;
+        }
+
+        div#extra {
+            background: #147FA9;
+        }
+
+        div#footer {
+            background: #42444e;
+            color: #fff;
+        }
+
+        div#footer p {
+            padding: 20px 10px;
+        }
+
+        div#wrapper {
+            float: left;
+            width: 100%;
+        }
+
+        div#content {
+            margin-left: 200px;
+        }
+
+        div#navigation {
+            float: left;
+            width: 200px;
+            margin-left: -100%;
+        }
+
+        div#extra {
+            clear: left;
+            width: 100%;
+        }
+    </style>
+
+</head>
+<body>
+<div id="container">
+
+    <div id="header">
+        <h1>
+            <img src="./SpectrumProtectPlus-dark.svg">
+            SPPCheck Report of SPP-Server '$SERVERNAME'
+        </h1>
+    </div>
+    <div id="wrapper">
+        <div id="content">
+            <div id="overview">
+                <h2>Overview of the Report</h2>
+                <table>
+                    <tr>
+                        <th> Metric </th>
+                        <th> $SHORT Prediction </th>
+                        <th> $LONG Prediction </th>
+                    </tr>
+                    <tr>
+                        <td> Total used physical Capacity (Storage) </td>
+                        <td> OK </td>
+                        <td> Warning</td>
+                    </tr>
+                    <tr>
+                        <td> Total vSnap quantity </td>
+                        <td> OK </td>
+                        <td> Not OK</td>
+                    </tr>
+                    <tr>
+                        <td> Total VADP quantity</td>
+                        <td> OK </td>
+                        <td> NOT OK</td>
+                    </tr>
+                    <tr>
+                        <td> Server Memory (RAM) </td>
+                        <td> OK </td>
+                        <td> OK </td>
+                    </tr>
+                    <tr>
+                        <td> Server Catalog </td>
+                        <td> N/A </td>
+                        <td> N/A </td>
+                    </tr>
+                    <tr>
+                        <td> Server Recovery Catalog</td>
+                        <td> OK </td>
+                        <td> OK </td>
+                    </tr>
+                </table>
+            </div>
+            <h3>Explanation</h3>
+            <p> The Storage Capacity will last for 4 years. </p>
+            <p> The Server catalog does not have enough data</p>
+        </div>
+    </div>
+    <div id="navigation">
+        <p><strong>2. Navigation Menu</strong></p>
+        <h3>Styling Flex Container</h3>
+        <ul>
+            <li>flex-direction</li>
+            <li>flex-wrap</li>
+            <li>justify-content</li>
+            <li>align-content</li>
+            <li>align-items</li>
+        </ul>
+        <h3>Designing Flex Items </h3>
+        <ul>
+            <li>order</li>
+            <li>align-self</li>
+            <li>flex-grow</li>
+            <li>flex-shrink</li>
+            <li>flex-basis</li>
+        </ul>
+    </div>
+    <div id="extra">
+        <p><strong>3. Additional Stuff</strong></p>
+        <h3>In this guide you will learn:</h3>
+        <ul>
+            <li>How to use CSS Flexbox to build modern layouts</li>
+            <li>How to align items both vertically and horizontally</li>
+            <li>How to order items within container</li>
+            <li>And more</li>
+        </ul>
+    </div>
+    <div id="footer"><p>Footer</p>
+    </div>
+</div>
+<script type="text/javascript">AddFillerLink("content", "navigation", "extra")</script>
+</body>
+</html>

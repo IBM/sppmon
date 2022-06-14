@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -27,8 +27,13 @@ Classes:
     Definitions
 """
 from __future__ import annotations
+
 from typing import Callable, ClassVar, Dict, List, Optional, Union
-from utils.execption_utils import ExceptionUtils
+
+import sppcheck.excel.excel_reader as er
+from sppcheck.predictor.predictor_influx_connector import \
+    PredictorInfluxConnector
+from utils.exception_utils import ExceptionUtils
 
 from influx.database_tables import Database, Datatype, RetentionPolicy, Table
 from influx.influx_queries import ContinuousQuery, Keyword, SelectionQuery
@@ -49,12 +54,12 @@ class Definitions:
         __database
 
     Classmethod for internal use:
-        _RP_AUTOGEN
-        _RP_INF
-        _RP_YEAR
-        _RP_HALF_YEAR
-        _RP_DAYS_90
-        _RP_DAYS_14
+        RP_AUTOGEN
+        RP_INF
+        RP_YEAR
+        RP_HALF_YEAR
+        RP_DAYS_90
+        RP_DAYS_14
         _CQ_DWSMPL
         __add_predef_table
 
@@ -73,37 +78,37 @@ class Definitions:
     # Data that cannot be downsampled is preserved for either half or full year.
 
     @classmethod
-    def _RP_AUTOGEN(cls):
+    def RP_AUTOGEN(cls):
         """"Default auto-generated RP, leave at inf to not loose data in case of non-definition"""
         return RetentionPolicy(name="autogen", database=cls.__database, duration="INF")
 
     @classmethod
-    def _RP_INF(cls): # notice: just inf is a influx error -> counted AS numberlit
+    def RP_INF(cls):  # notice: just inf is a influx error -> counted AS numberlit
         """Infinite duration for long time preservation of heavy downsampled data"""
         return RetentionPolicy(name="rp_inf", database=cls.__database, duration="INF")
 
     @classmethod
-    def _RP_YEAR(cls):
+    def RP_YEAR(cls):
         """Year duration for long time preservation of non-downsampled data"""
         return RetentionPolicy(name="rp_year", database=cls.__database, duration="56w")
 
     @classmethod
-    def _RP_HALF_YEAR(cls):
+    def RP_HALF_YEAR(cls):
         """Half-year duration for long time preservation of non-downsampled data"""
         return RetentionPolicy(name="rp_half_year", database=cls.__database, duration="28w")
 
     @classmethod
-    def _RP_DAYS_90(cls):
+    def RP_DAYS_90(cls):
         """3 Month duration for either non-downsampled data of low count/day or medium-downsampled of high count/day."""
         return RetentionPolicy(name="rp_days_90", database=cls.__database, duration="90d")
 
     @classmethod
-    def _RP_DAYS_14(cls):
+    def RP_DAYS_14(cls):
         """2w duration for non-downsampled data of high count/day"""
         return RetentionPolicy(name="rp_days_14", database=cls.__database, duration="14d", default=True)
 
     @classmethod
-    def _RP_DAYS_7(cls):
+    def RP_DAYS_7(cls):
         """1w duration for special non-downsampled data of high count/day, to allow an aggregate before downsampling"""
         return RetentionPolicy(name="rp_days_7", database=cls.__database, duration="7d")
 
@@ -139,7 +144,7 @@ class Definitions:
             name=name, database=cls.__database,
             select_query=SelectionQuery(
                 Keyword.SELECT,
-                tables=[table],
+                table_or_query=table,
                 into_table=Table(cls.__database, table.name, retention_policy=new_retention_policy),
                 fields=fields,
                 group_list=[f"time({group_time})"] + group_args),
@@ -149,7 +154,7 @@ class Definitions:
     @classmethod
     def _CQ_TMPL(
             cls, fields: List[str], new_retention_policy: RetentionPolicy,
-            group_time: str, group_args: List[str] = ["*"], where_str: str = None) -> Callable[[Table, str], ContinuousQuery]:
+            group_time: str, group_args: List[str] = ["*"], where_str: Optional[str] = None) -> Callable[[Table, str], ContinuousQuery]:
         """Creates a CQ to do whatever you want with it.
 
         It is required to return a callable since at the time of declaration no table instance is available.
@@ -171,7 +176,7 @@ class Definitions:
             name=name, database=cls.__database,
             select_query=SelectionQuery(
                 Keyword.SELECT,
-                tables=[table],
+                table_or_query=table,
                 into_table=Table(cls.__database, table.name, retention_policy=new_retention_policy),
                 fields=fields,
                 where_str=where_str,
@@ -180,10 +185,14 @@ class Definitions:
         )
 
     @classmethod
-    def __add_predef_table(cls, name: str, fields: Dict[str, Datatype], tags: List[str],
-                           time_key: Optional[str] = None, retention_policy: RetentionPolicy = None,
-                           continuous_queries: List[Union[ContinuousQuery, Callable[[Table, str], ContinuousQuery]]] = None
-                           ) -> None:
+    def add_predef_table(cls, name: str, fields: Dict[str, Datatype], tags: List[str],
+                         time_key: Optional[str] = None,
+                         retention_policy: Optional[RetentionPolicy] = None,
+                         continuous_queries: Optional[
+                             List[Union[
+                                 ContinuousQuery,
+                                 Callable[[Table, str], ContinuousQuery]]]] = None
+                        ) -> None:
         """Declares a new predefined table. Recommended to to with every table you may want to insert into the influxdb.
 
 
@@ -195,7 +204,7 @@ class Definitions:
 
         Arguments:
             name {str} -- Name of the table/measurement
-            fields {Dict[str, Datatype]} -- fields of the table. At least one entry, name AS key, dataype AS value.
+            fields {Dict[str, Datatype]} -- fields of the table. At least one entry, name AS key, datatype AS value.
             tags {List[str]} -- tags of the table. Always of datatype string
 
         Keyword Arguments:
@@ -207,13 +216,13 @@ class Definitions:
 
         # create a retention instance out of the constructor methods
         if(not retention_policy):
-            retention_policy = cls._RP_AUTOGEN()
+            retention_policy = cls.RP_AUTOGEN()
 
         # add to save used policies
         cls.__database.retention_policies.add(retention_policy)
 
         # switch needed to allow table default value to be used.
-        # avoids redudant default declaration
+        # avoids redundant default declaration
         if(time_key):
             table = Table(
                 database=cls.__database,
@@ -253,9 +262,9 @@ class Definitions:
 
     @classmethod
     def add_table_definitions(cls, database: Database):
-        """Set ups all table, CQ and RP definitions. Those are undelcared before.
+        """Set ups all table, CQ and RP definitions. Those are undeclared before.
 
-        Always call this method before using any Definiton-CLS methods.
+        Always call this method before using any Definition-CLS methods.
         ClassVar database is set within.
 
         Args:
@@ -282,8 +291,8 @@ class Definitions:
         #   time_key="time", # OPTIONAL, remove for capture time. Declare it AS field too if you want to save it beside AS `time`.
         #   retention_policy=cls._RP_DURATION_N(), # OPTIONAL, `autogen` used if empty. Recommended to set.
         #   continuous_queries=[                                    # OPTIONAL, recommended based on RP-Duration
-        #       cls._CQ_TMPL(["mean(*)"], cls._RP_DAYS_90(), "6h"), # REMOVE this line if RP_DAYS_90 used
-        #       cls._CQ_TMPL(["mean(*)"], cls._RP_INF(), "1w")      # Edit both mean(*)-cases if a special aggregation is required. You may also use mean(field_name) AS field_name to keep the old name.
+        #       cls._CQ_TMPL(["mean(*)"], cls.RP_DAYS_90(), "6h"), # REMOVE this line if RP_DAYS_90 used
+        #       cls._CQ_TMPL(["mean(*)"], cls.RP_INF(), "1w")      # Edit both mean(*)-cases if a special aggregation is required. You may also use mean(field_name) AS field_name to keep the old name.
         #       ]
         #   )
         # ################################################################################
@@ -294,7 +303,7 @@ class Definitions:
 
         # ################## Job Tables ##############################
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='jobs',
             fields={  # FIELDS
                 'duration':         Datatype.INT,
@@ -317,17 +326,17 @@ class Definitions:
                 'jobsLogsStored'
             ],
             time_key='start',
-            retention_policy=cls._RP_DAYS_90(),
+            retention_policy=cls.RP_DAYS_90(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
                     "mean(\"duration\") AS \"duration\"", "sum(jobLogsCount) AS jobLogsCount",
                     "mean(numTasks) AS numTasks", "mean(percent) AS percent",
                     "count(id) AS count"
-                    ], cls._RP_INF(), "1w")
+                    ], cls.RP_INF(), "1w")
             ]
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='jobs_statistics',
             fields={
                 'total':            Datatype.INT,
@@ -347,17 +356,17 @@ class Definitions:
                 'subPolicyType',
             ],
             time_key='start',
-            retention_policy=cls._RP_DAYS_90(),
+            retention_policy=cls.RP_DAYS_90(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
                     "mean(total) AS total", "mean(success) AS success",
                     "mean(failed) AS failed", "mean(skipped) AS skipped",
                     "count(id) AS count"
-                    ], cls._RP_INF(), "1w")
+                    ], cls.RP_INF(), "1w")
             ]
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='jobLogs',
             fields={  # FIELDS
                 # Due high numbers these ID's are saved AS fields. Maybe remove ID's?
@@ -376,16 +385,16 @@ class Definitions:
                 'jobId'
             ],
             time_key='logTime',
-            retention_policy=cls._RP_HALF_YEAR(),
+            retention_policy=cls.RP_HALF_YEAR(),
             continuous_queries=[
-                # cls._CQ_TRNSF(cls._RP_DAYS_14())
+                # cls._CQ_TRNSF(cls.RP_DAYS_14())
             ]
         )
 
         # ############# SPPMon Execution Tables ########################
 
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='influx_metrics',
             fields={  # FIELDS
                 'duration_ms':      Datatype.FLOAT,
@@ -396,22 +405,22 @@ class Definitions:
                 'tableName'
             ],
             time_key='time',
-            retention_policy=cls._RP_DAYS_14(),
+            retention_policy=cls.RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
                     "mean(duration_ms) AS duration_ms",
                     "mean(item_count) AS item_count",
                     "stddev(*)"
-                    ], cls._RP_DAYS_90(), "6h"),
+                    ], cls.RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
                     "mean(duration_ms) AS duration_ms",
                     "mean(item_count) AS item_count",
                     "stddev(*)"
-                    ], cls._RP_INF(), "1w")
+                    ], cls.RP_INF(), "1w")
             ]
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='sshCmdResponse',
             fields={
                 'output':           Datatype.STRING
@@ -421,11 +430,11 @@ class Definitions:
                 'host',
                 'ssh_type'
             ],
-            retention_policy=cls._RP_HALF_YEAR()
+            retention_policy=cls.RP_HALF_YEAR()
             # time_key unset
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='sppmon_metrics',
             fields={
                 'duration':         Datatype.INT,
@@ -469,22 +478,22 @@ class Definitions:
                 'vsnapInfo',
                 'sppmon_version',
             ],
-            retention_policy=cls._RP_DAYS_14(),
+            retention_policy=cls.RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
                     "mean(\"duration\") AS \"duration\"",
                     "sum(errorCount) AS sum_errorCount"
-                    ], cls._RP_DAYS_90(), "6h"), # errorMessages is dropped due beeing str
+                    ], cls.RP_DAYS_90(), "6h"), # errorMessages is dropped due beeing str
                 cls._CQ_DWSMPL([
                     "mean(\"duration\") AS \"duration\"",
                     "sum(errorCount) AS sum_errorCount"
-                    ], cls._RP_INF(), "1w")
+                    ], cls.RP_INF(), "1w")
             ]
         )
 
         # ############### VM SLA Tables ##########################
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='slaStats',
             fields={
                 'vmCountBySLA':     Datatype.INT
@@ -493,15 +502,15 @@ class Definitions:
                 'slaId',
                 'slaName'
             ],
-            retention_policy=cls._RP_DAYS_90(),
+            retention_policy=cls.RP_DAYS_90(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
                     "mean(vmCountBySLA) AS vmCountBySLA"
-                    ], cls._RP_INF(), "1w")
+                    ], cls.RP_INF(), "1w")
             ]
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name="vms",
             fields={
                 'uptime':           Datatype.TIMESTAMP,
@@ -526,7 +535,7 @@ class Definitions:
                 'hypervisorType'
             ],
             time_key='catalogTime',
-            retention_policy=cls._RP_DAYS_14(),
+            retention_policy=cls.RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL(
                     fields=[ # strings are not calculated, uptime AS timestamp removed
@@ -537,7 +546,7 @@ class Definitions:
                         "mean(coresPerCpu) AS coresPerCpu",
                         "mean(memory) AS memory"
                     ],
-                    new_retention_policy=cls._RP_DAYS_90(),
+                    new_retention_policy=cls.RP_DAYS_90(),
                     group_time="6h",
                     group_args=[
                         'host',
@@ -559,7 +568,7 @@ class Definitions:
                         "mean(coresPerCpu) AS coresPerCpu",
                         "mean(memory) AS memory"
                     ],
-                    new_retention_policy=cls._RP_INF(),
+                    new_retention_policy=cls.RP_INF(),
                     group_time="1w",
                     group_args=[
                         'host',
@@ -581,7 +590,7 @@ class Definitions:
                 #     regex_query=f"SELECT count(name) AS vmCount, max(commited) AS vmMaxSize, min(commited) AS vmMinSize\
                 #         sum(commited) AS vmSizeTotal, mean(commited) AS vmAvgSize, count(distinct(datacenterName)) AS nrDataCenters\
                 #         count(distinct(host)) AS nrHosts\
-                #         INTO {cls._RP_DAYS_90()}.vmStats FROM {cls._RP_DAYS_14()}.vms GROUP BY \
+                #         INTO {cls.RP_DAYS_90()}.vmStats FROM {cls.RP_DAYS_14()}.vms GROUP BY \
                 #         time(1d)"
                 #         # TODO: Issue with vmCount per x, no solution found yet.
                 #         # see Issue #93
@@ -589,7 +598,7 @@ class Definitions:
             ]
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='vmStats',
             fields={
                 'vmCount':              Datatype.INT,
@@ -621,9 +630,9 @@ class Definitions:
             },
             tags=[],
             time_key='time',
-            retention_policy=cls._RP_DAYS_90(),
+            retention_policy=cls.RP_DAYS_90(),
             continuous_queries=[
-                # cls._CQ_TRNSF(cls._RP_DAYS_14()), # removed due bug.
+                # cls._CQ_TRNSF(cls.RP_DAYS_14()), # removed due bug.
                 cls._CQ_DWSMPL([ # see issue #97 why this long list is required..
                     "mean(vmCount) AS vmCount",
                     "mean(vmMaxSize) AS vmMaxSize",
@@ -644,12 +653,12 @@ class Definitions:
                     "mean(vmCountVMware) AS vmCountVMware",
                     "mean(nrDataCenters) AS nrDataCenters",
                     "mean(nrHosts) AS nrHosts",
-                    ], cls._RP_INF(), "1w")
+                    ], cls.RP_INF(), "1w")
             ]
 
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='vmBackupSummary',
             fields={
                 'transferredBytes':         Datatype.INT,
@@ -668,7 +677,7 @@ class Definitions:
                 'messageId'
             ],
             time_key='time',
-            retention_policy=cls._RP_DAYS_14(),
+            retention_policy=cls.RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
                     "mean(\"throughputBytes/s\") AS \"throughputBytes/s\"",
@@ -676,18 +685,18 @@ class Definitions:
                     "sum(transferredBytes) AS sum_transferredBytes",
                     "sum(protectedVMDKs) AS sum_protectedVMDKs",
                     "sum(TotalVMDKs) AS sum_TotalVMDKs"
-                    ], cls._RP_DAYS_90(), "6h"),
+                    ], cls.RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
                     "mean(\"throughputBytes/s\") AS \"throughputBytes/s\"",
                     "mean(queueTimeSec) AS queueTimeSec",
                     "sum(transferredBytes) AS sum_transferredBytes",
                     "sum(protectedVMDKs) AS sum_protectedVMDKs",
                     "sum(TotalVMDKs) AS sum_TotalVMDKs"
-                    ], cls._RP_INF(), "1w")
+                    ], cls.RP_INF(), "1w")
             ]
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='vmReplicateSummary',
             fields={
                 'total':                      Datatype.INT,
@@ -696,18 +705,18 @@ class Definitions:
             },
             tags=[], # None
             time_key='time',
-            retention_policy=cls._RP_DAYS_90(),
+            retention_policy=cls.RP_DAYS_90(),
             continuous_queries=[
-                # cls._CQ_TRNSF(cls._RP_DAYS_14()),
+                # cls._CQ_TRNSF(cls.RP_DAYS_14()),
                 cls._CQ_DWSMPL([
                     "mean(\"duration\") AS \"duration\"",
                     "sum(total) AS sum_total",
                     "sum(failed) AS sum_failed"
-                    ], cls._RP_INF(), "1w")
+                    ], cls.RP_INF(), "1w")
             ]
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='vmReplicateStats',
             fields={
                 'replicatedBytes':          Datatype.INT,
@@ -716,20 +725,20 @@ class Definitions:
             },
             tags=[],# None
             time_key='time',
-            retention_policy=cls._RP_DAYS_90(),
+            retention_policy=cls.RP_DAYS_90(),
             continuous_queries=[
-                # cls._CQ_TRNSF(cls._RP_DAYS_14()),
+                # cls._CQ_TRNSF(cls.RP_DAYS_14()),
                 cls._CQ_DWSMPL([
                     "mean(\"throughputBytes/sec\") AS \"throughputBytes/sec\"",
                     "sum(replicatedBytes) AS replicatedBytes",
                     "mean(\"duration\") AS \"duration\""
-                    ], cls._RP_INF(), "1w")
+                    ], cls.RP_INF(), "1w")
             ]
         )
 
         # ############### VADP VSNAP Tables ##########################
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='vadps',
             fields={
                 # Dummy fields, since they are not required at tag but good to have.
@@ -744,11 +753,11 @@ class Definitions:
                 'version', # Usefull to group on at any stage
                 'vadpName', # Required to make each vadp unique -> not dropped.
             ],
-            retention_policy=cls._RP_HALF_YEAR(),
+            retention_policy=cls.RP_HALF_YEAR(),
             continuous_queries=[
                 cls._CQ_TMPL(
                     fields=["count(distinct(vadpId)) AS count"],
-                    new_retention_policy=cls._RP_DAYS_14(),
+                    new_retention_policy=cls.RP_DAYS_14(),
                     group_time="1h",
                     group_args=[
                         'siteId',
@@ -759,7 +768,7 @@ class Definitions:
                 ),
                 cls._CQ_TMPL(
                     fields=["count(distinct(vadpId)) AS count"],
-                    new_retention_policy=cls._RP_DAYS_90(),
+                    new_retention_policy=cls.RP_DAYS_90(),
                     group_time="6h",
                     group_args=[
                         'siteId',
@@ -770,7 +779,7 @@ class Definitions:
                 ),
                 cls._CQ_TMPL(
                     fields=["count(distinct(vadpId)) AS count"],
-                    new_retention_policy=cls._RP_INF(),
+                    new_retention_policy=cls.RP_INF(),
                     group_time="1w",
                     group_args=[
                         'siteId',
@@ -782,7 +791,7 @@ class Definitions:
             ]
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='storages',
             fields={
                 'free':             Datatype.INT,
@@ -802,7 +811,7 @@ class Definitions:
                 'hostAddress'
             ],
             time_key='updateTime',
-            retention_policy=cls._RP_DAYS_14(),
+            retention_policy=cls.RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
                     "mean(free) AS free",
@@ -810,18 +819,18 @@ class Definitions:
                     "mean(pct_used) AS pct_used",
                     "mean(total) AS total",
                     "mean(used) AS used",
-                    ], cls._RP_DAYS_90(), "6h"),
+                    ], cls.RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
                     "mean(free) AS free",
                     "mean(pct_free) AS pct_free",
                     "mean(pct_used) AS pct_used",
                     "mean(total) AS total",
                     "mean(used) AS used",
-                    ], cls._RP_INF(), "1w")
+                    ], cls.RP_INF(), "1w")
             ]
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='vsnap_pools',
             fields={
                 'compression_ratio':        Datatype.FLOAT,
@@ -845,7 +854,7 @@ class Definitions:
                 'hostName',
                 'ssh_type'
             ], # time key unset, updateTime is not what we want -> it is not updated
-            retention_policy=cls._RP_DAYS_14(),
+            retention_policy=cls.RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
                     "mean(compression_ratio) AS compression_ratio",
@@ -857,7 +866,7 @@ class Definitions:
                     "mean(size_free) AS size_free",
                     "mean(size_total) AS size_total",
                     "mean(size_used) AS size_used"
-                    ], cls._RP_DAYS_90(), "6h"),
+                    ], cls.RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
                     "mean(compression_ratio) AS compression_ratio",
                     "mean(deduplication_ratio) AS deduplication_ratio",
@@ -868,12 +877,12 @@ class Definitions:
                     "mean(size_free) AS size_free",
                     "mean(size_total) AS size_total",
                     "mean(size_used) AS size_used"
-                    ], cls._RP_INF(), "1w")
+                    ], cls.RP_INF(), "1w")
             ]
 
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='vsnap_system_stats',
             fields={
                 'size_arc_max':             Datatype.INT,
@@ -887,7 +896,7 @@ class Definitions:
                 'hostName',
                 'ssh_type'
             ],
-            retention_policy=cls._RP_DAYS_14(),
+            retention_policy=cls.RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
                     "mean(size_arc_max) AS size_arc_max",
@@ -896,7 +905,7 @@ class Definitions:
                     "mean(size_ddt_disk) AS size_ddt_disk",
                     "mean(size_zfs_arc_meta_max) AS size_zfs_arc_meta_max",
                     "mean(size_zfs_arc_meta_used) AS size_zfs_arc_meta_used"
-                    ], cls._RP_DAYS_90(), "6h"),
+                    ], cls.RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
                     "mean(size_arc_max) AS size_arc_max",
                     "mean(size_arc_used) AS size_arc_used",
@@ -904,13 +913,13 @@ class Definitions:
                     "mean(size_ddt_disk) AS size_ddt_disk",
                     "mean(size_zfs_arc_meta_max) AS size_zfs_arc_meta_max",
                     "mean(size_zfs_arc_meta_used) AS size_zfs_arc_meta_used"
-                    ], cls._RP_INF(), "1w")
+                    ], cls.RP_INF(), "1w")
             ]
         )
 
         # ############# SPP System Stats #####################
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='cpuram',
             fields={
                 'cpuUtil':          Datatype.FLOAT,
@@ -924,7 +933,7 @@ class Definitions:
                 'data3Util':         Datatype.FLOAT
             },
             tags=[],
-            retention_policy=cls._RP_DAYS_14(),
+            retention_policy=cls.RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
                     "mean(cpuUtil) AS cpuUtil",
@@ -937,7 +946,7 @@ class Definitions:
                     "mean(data3Size) AS data3Size",
                     "mean(data3Util) AS data3Util",
                     "stddev(*)"
-                    ], cls._RP_DAYS_90(), "6h"),
+                    ], cls.RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
                     "mean(cpuUtil) AS cpuUtil",
                     "mean(memorySize) AS memorySize",
@@ -949,11 +958,11 @@ class Definitions:
                     "mean(data3Size) AS data3Size",
                     "mean(data3Util) AS data3Util",
                     "stddev(*)"
-                    ], cls._RP_INF(), "1w")
+                    ], cls.RP_INF(), "1w")
             ]
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='sites',
             fields={
                 'throttleRates':   Datatype.STRING,
@@ -963,14 +972,14 @@ class Definitions:
                 'siteId',
                 'siteName'
             ],
-            retention_policy=cls._RP_HALF_YEAR(),
+            retention_policy=cls.RP_HALF_YEAR(),
             continuous_queries=[
-                # cls._CQ_TRNSF(cls._RP_DAYS_14())
+                # cls._CQ_TRNSF(cls.RP_DAYS_14())
             ]
             # time_key unset
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name="sppcatalog",
             fields={
                 'totalSize':                Datatype.INT,
@@ -983,25 +992,25 @@ class Definitions:
                 'name',
                 'type'
             ],
-            retention_policy=cls._RP_DAYS_14(),
+            retention_policy=cls.RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
                     "mean(totalSize) AS totalSize",
                     "mean(usedSize) AS usedSize",
                     "mean(availableSize) AS availableSize",
                     "mean(percentUsed) AS percentUsed"
-                    ], cls._RP_DAYS_90(), "6h"),
+                    ], cls.RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
                     "mean(totalSize) AS totalSize",
                     "mean(usedSize) AS usedSize",
                     "mean(availableSize) AS availableSize",
                     "mean(percentUsed) AS percentUsed"
-                    ], cls._RP_INF(), "1w")
+                    ], cls.RP_INF(), "1w")
             ]
             # capture time
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name="processStats",
             fields={
                 '%CPU':                     Datatype.FLOAT,
@@ -1018,7 +1027,7 @@ class Definitions:
                 'collectionType',
                 'ssh_type'
             ],# time key is capture time
-            retention_policy=cls._RP_DAYS_14(),
+            retention_policy=cls.RP_DAYS_14(),
             continuous_queries=[
                 # ~Different pattern here due the removal of the PID grouping.~
                 # Best would be a RP of 2 hours but due the group by (6h) and (1w) the duration would be increased to 1w
@@ -1036,7 +1045,7 @@ class Definitions:
                 #         "sum(\"VIRT\") AS \"VIRT\"",
                 #         "sum(\"MEM_ABS\") AS \"MEM_ABS\"",
                 #         ],
-                #     cls._RP_DAYS_14(), "1s",
+                #     cls.RP_DAYS_14(), "1s",
                 #     [
                 #         'COMMAND',
                 #         'NI',
@@ -1058,7 +1067,7 @@ class Definitions:
                     "mean(MEM_ABS) AS MEM_ABS",
                     "stddev(\"%CPU\") AS \"stddev_%CPU\"",
                     "stddev(\"%MEM\") AS \"stddev_%MEM\""
-                    ], cls._RP_DAYS_90(), "6h"),
+                    ], cls.RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
                     "mean(\"%CPU\") AS \"%CPU\"",
                     "mean(\"%MEM\") AS \"%MEM\"",
@@ -1069,11 +1078,11 @@ class Definitions:
                     "mean(MEM_ABS) AS MEM_ABS",
                     "stddev(\"%CPU\") AS \"sttdev_%CPU\"",
                     "stddev(\"%MEM\") AS \"sttdev_%MEM\""
-                    ], cls._RP_INF(), "1w"),
+                    ], cls.RP_INF(), "1w"),
             ]
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name='ssh_mpstat_cmd',
             fields={
                 "%usr":                 Datatype.FLOAT,
@@ -1096,7 +1105,7 @@ class Definitions:
                 'hostName',
                 'ssh_type'
             ],
-            retention_policy=cls._RP_DAYS_14(),
+            retention_policy=cls.RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
                     "mean(\"%usr\") AS \"%usr\"",
@@ -1110,7 +1119,7 @@ class Definitions:
                     "mean(\"%gnice\") AS \"%gnice\"",
                     "mean(\"%idle\") AS \"%idle\"",
                     "mean(cpu_count) AS cpu_count"
-                    ], cls._RP_DAYS_90(), "6h"),
+                    ], cls.RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
                     "mean(\"%usr\") AS \"%usr\"",
                     "mean(\"%nice\") AS \"%nice\"",
@@ -1123,12 +1132,12 @@ class Definitions:
                     "mean(\"%gnice\") AS \"%gnice\"",
                     "mean(\"%idle\") AS \"%idle\"",
                     "mean(cpu_count) AS cpu_count"
-                    ], cls._RP_INF(), "1w")
+                    ], cls.RP_INF(), "1w")
             ]
             # capture time
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name="ssh_free_cmd",
             fields={
                 #"available":                Datatype.INT, removed, integrated into "free"
@@ -1144,7 +1153,7 @@ class Definitions:
                 'hostName',
                 'ssh_type'
             ],
-            retention_policy=cls._RP_DAYS_14(),
+            retention_policy=cls.RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
                     "mean(\"buff/cache\") AS \"buff/cache\"",
@@ -1152,19 +1161,19 @@ class Definitions:
                     "mean(shared) AS shared",
                     "mean(total) AS total",
                     "mean(used) AS used"
-                    ], cls._RP_DAYS_90(), "6h"),
+                    ], cls.RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
                     "mean(\"buff/cache\") AS \"buff/cache\"",
                     "mean(free) AS free",
                     "mean(shared) AS shared",
                     "mean(total) AS total",
                     "mean(used) AS used"
-                    ], cls._RP_INF(), "1w")
+                    ], cls.RP_INF(), "1w")
             ]
             # capture time
         )
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name="df_ssh",
             fields={
                 "Size":                     Datatype.INT,
@@ -1178,27 +1187,27 @@ class Definitions:
                 "hostName",
                 "ssh_type"
             ],
-            retention_policy=cls._RP_DAYS_14(),
+            retention_policy=cls.RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
                     "mean(\"Use%\") AS \"Use%\"",
                     "mean(Available) AS Available",
                     "mean(Used) AS Used",
                     "mean(Size) AS Size"
-                    ], cls._RP_DAYS_90(), "6h"),
+                    ], cls.RP_DAYS_90(), "6h"),
                 cls._CQ_DWSMPL([
                     "mean(\"Use%\") AS \"Use%\"",
                     "mean(Available) AS Available",
                     "mean(Used) AS Used",
                     "mean(Size) AS Size"
-                    ], cls._RP_INF(), "1w")
+                    ], cls.RP_INF(), "1w")
             ]
             # capture time
         ),
 
         # ################# Other Tables ############################
 
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name="office365Stats",
             fields={
                 "protectedItems":           Datatype.INT,
@@ -1211,13 +1220,13 @@ class Definitions:
                 'ssh_type',
                 "jobSessionId" # dropped in downsampling
             ],
-            retention_policy=cls._RP_DAYS_14(),
+            retention_policy=cls.RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
                     "sum(protectedItems) AS sum_protectedItems",
                     "sum(selectedItems) AS sum_selectedItems",
                     "sum(imported365Users) AS sum_imported365Users"
-                    ], cls._RP_DAYS_90(), "6h",
+                    ], cls.RP_DAYS_90(), "6h",
                     group_args=[
                         "jobId",
                         'jobName',
@@ -1227,7 +1236,7 @@ class Definitions:
                     "sum(protectedItems) AS sum_protectedItems",
                     "sum(selectedItems) AS sum_selectedItems",
                     "sum(imported365Users) AS sum_imported365Users"
-                    ], cls._RP_INF(), "1w",
+                    ], cls.RP_INF(), "1w",
                     group_args=[
                         "jobId",
                         'jobName',
@@ -1236,7 +1245,7 @@ class Definitions:
             ],
             time_key="jobExecutionTime"
         ),
-        cls.__add_predef_table(
+        cls.add_predef_table(
             name="office365TransfBytes",
             fields={
                 "itemName":                 Datatype.STRING,
@@ -1249,11 +1258,11 @@ class Definitions:
                 'jobName',
                 "jobSessionId" # dropped in downsampling
             ],
-            retention_policy=cls._RP_DAYS_14(),
+            retention_policy=cls.RP_DAYS_14(),
             continuous_queries=[
                 cls._CQ_DWSMPL([
                     "sum(transferredBytes) AS transferredBytes"
-                    ], cls._RP_DAYS_90(), "6h",
+                    ], cls.RP_DAYS_90(), "6h",
                     group_args=[
                         "itemType",
                         "jobId",
@@ -1262,7 +1271,7 @@ class Definitions:
                     ]),
                 cls._CQ_DWSMPL([
                     "sum(transferredBytes) AS transferredBytes"
-                    ], cls._RP_INF(), "1w",
+                    ], cls.RP_INF(), "1w",
                     group_args=[
                         "itemType",
                         "jobId",
@@ -1272,6 +1281,42 @@ class Definitions:
             ]
             # time key unset
         )
+
+        # ################# SPPCheck Tables ############################
+
+        cls.add_predef_table(
+            name=PredictorInfluxConnector.sppcheck_table_name,
+            fields={
+                PredictorInfluxConnector.sppcheck_value_name:                    Datatype.INT,
+            },
+            tags=[
+                PredictorInfluxConnector.sppcheck_tag_name,
+                "site",
+                "siteName"
+
+            ],
+            # this rp is unused, but in here for safety. Overwritten by prediction-RP
+            retention_policy=cls.RP_INF(),
+            # No continuous queries
+            # timekey unset -> default key
+
+        )
+
+        cls.add_predef_table(
+            name=er.ExcelReader.sppcheck_excel_table_name,
+            fields={
+                er.ExcelReader.sppcheck_excel_value_name:                    Datatype.INT,
+            },
+            tags=[
+                er.ExcelReader.sppcheck_excel_tag_name,
+            ],
+            # this rp is unused, but in here for safety. Overwritten by excel-RP
+            retention_policy=cls.RP_INF(),
+            # No continuous queries
+            # timekey unset -> default key
+
+        )
+
 
 
 

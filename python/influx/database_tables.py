@@ -36,7 +36,7 @@ import json
 from typing import Any, Dict, List, Set, Tuple, Union
 
 import influx.influx_queries as Queries
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 from utils.influx_utils import InfluxUtils
 from utils.spp_utils import SppUtils
 
@@ -320,7 +320,7 @@ class Table:
         time_stamp_field = self.time_key
         # helper variable to only overwrite if it is not the time_stamp_field
         time_overwrite_allowed = True
-        # actualy timestamp saved
+        # actually timestamp saved
         time_stamp: Union[str, int, None] = None
 
 

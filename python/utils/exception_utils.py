@@ -21,7 +21,7 @@ Author:
  Niels Korschinsky
 
 Description:
-    This Module provides static/class execptions helper methods.
+    This Module provides static/class exceptions helper methods.
 
 Classes:
     ExceptionUtils
@@ -38,7 +38,7 @@ class ExceptionUtils:
     """Wrapper for static/class exception helper methods.
 
     Attributes:
-        stored_errors - List with all error messages occured
+        stored_errors - List with all error messages occurred
 
     Methods:
         error_message - Prints and saves a error message without raising anything.
@@ -47,7 +47,7 @@ class ExceptionUtils:
     """
 
     stored_errors: List[str] = []
-    """List with all error messages occured"""
+    """List with all error messages occurred"""
 
     @classmethod
     def error_message(cls, message: str):

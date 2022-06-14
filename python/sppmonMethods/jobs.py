@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -36,7 +36,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from influx.influx_client import InfluxClient
 from influx.influx_queries import Keyword, SelectionQuery
 from sppConnection.api_queries import ApiQueries
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 from utils.influx_utils import InfluxUtils
 from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
@@ -236,7 +236,7 @@ class JobMethods:
         query = SelectionQuery(
             keyword=keyword,
             fields=['id', 'jobName'],
-            tables=[table],
+            table_or_query=table,
             where_str=f'jobId = \'{job_id}\' AND time > now() - {table.retention_policy.duration}'
             # unnecessary filter?
         )
@@ -297,7 +297,7 @@ class JobMethods:
             query = SelectionQuery(
                 keyword=keyword,
                 fields=['*'],
-                tables=[table],
+                table_or_query=table,
                 where_str=where_str,
                 order_direction='DESC',
                 limit=display_number_of_jobs
@@ -478,7 +478,7 @@ class JobMethods:
         keyword = Keyword.SELECT
         query = SelectionQuery(
             keyword=keyword,
-            tables=[table],
+            table_or_query=table,
             fields=['*'],
             where_str=where_str
         )
@@ -612,7 +612,7 @@ class JobMethods:
         # Delete all jobs which got requested, no matter if failed
         delete_query = SelectionQuery(
             keyword=Keyword.DELETE,
-            tables=[table],
+            table_or_query=table,
             where_str=where_str
         )
 
