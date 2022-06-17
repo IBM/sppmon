@@ -35,7 +35,7 @@ from typing import Dict, Any, Optional
 from influx.database_tables import RetentionPolicy
 
 from influx.influx_client import InfluxClient
-from sppcheck.report.picture_downloader import PictureDownloader
+from sppCheck.report.picture_downloader import PictureDownloader
 
 class ReportController:
 

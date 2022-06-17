@@ -28,11 +28,12 @@ Classes:
 """
 from __future__ import annotations
 
+
+import __main__
+from os.path import basename
+
 from typing import Callable, ClassVar, Dict, List, Optional, Union
 
-import sppcheck.excel.excel_reader as er
-from sppcheck.predictor.predictor_influx_connector import \
-    PredictorInfluxConnector
 from utils.exception_utils import ExceptionUtils
 
 from influx.database_tables import Database, Datatype, RetentionPolicy, Table
@@ -1287,38 +1288,43 @@ class Definitions:
 
         # ################# SPPCheck Tables ############################
 
-        cls.add_predef_table(
-            name=PredictorInfluxConnector.sppcheck_table_name,
-            fields={
-                PredictorInfluxConnector.sppcheck_value_name:                    Datatype.INT,
-            },
-            tags=[
-                PredictorInfluxConnector.sppcheck_tag_name,
-                "site",
-                "siteName"
+        if basename(__main__.__file__) == "sppcheck.py":
 
-            ],
-            # this rp is unused, but in here for safety. Overwritten by prediction-RP
-            retention_policy=cls.RP_INF(),
-            # No continuous queries
-            # timekey unset -> default key
+            import sppCheck.excel.excel_reader as er
+            import sppCheck.predictor.predictor_influx_connector as p_i_c
 
-        )
+            cls.add_predef_table(
+                name=p_i_c.PredictorInfluxConnector.sppcheck_table_name,
+                fields={
+                    p_i_c.PredictorInfluxConnector.sppcheck_value_name:                    Datatype.INT,
+                },
+                tags=[
+                    p_i_c.PredictorInfluxConnector.sppcheck_tag_name,
+                    "site",
+                    "siteName"
 
-        cls.add_predef_table(
-            name=er.ExcelReader.sppcheck_excel_table_name,
-            fields={
-                er.ExcelReader.sppcheck_excel_value_name:                    Datatype.INT,
-            },
-            tags=[
-                er.ExcelReader.sppcheck_excel_tag_name,
-            ],
-            # this rp is unused, but in here for safety. Overwritten by excel-RP
-            retention_policy=cls.RP_INF(),
-            # No continuous queries
-            # timekey unset -> default key
+                ],
+                # this rp is unused, but in here for safety. Overwritten by prediction-RP
+                retention_policy=cls.RP_INF(),
+                # No continuous queries
+                # timekey unset -> default key
 
-        )
+            )
+
+            cls.add_predef_table(
+                name=er.ExcelReader.sppcheck_excel_table_name,
+                fields={
+                    er.ExcelReader.sppcheck_excel_value_name:                    Datatype.INT,
+                },
+                tags=[
+                    er.ExcelReader.sppcheck_excel_tag_name,
+                ],
+                # this rp is unused, but in here for safety. Overwritten by excel-RP
+                retention_policy=cls.RP_INF(),
+                # No continuous queries
+                # timekey unset -> default key
+
+            )
 
 
 

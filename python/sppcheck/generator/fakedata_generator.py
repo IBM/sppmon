@@ -32,7 +32,7 @@ from math import floor
 from scipy.stats import truncnorm
 from typing import List
 
-from sppcheck.generator.generator_interface import GeneratorInterface
+from sppCheck.generator.generator_interface import GeneratorInterface
 
 class FakeDataGenerator(GeneratorInterface):
 

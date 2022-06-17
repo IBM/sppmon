@@ -29,7 +29,7 @@ Classes:
 
 from influx.database_tables import RetentionPolicy
 from influx.influx_client import InfluxClient
-from sppcheck.predictor.predictor_influx_connector import \
+from sppCheck.predictor.predictor_influx_connector import \
     PredictorInfluxConnector
 from utils.exception_utils import ExceptionUtils
 

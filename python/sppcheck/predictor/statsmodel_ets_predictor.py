@@ -34,7 +34,7 @@ from datetime import datetime
 from typing import Dict, Union
 
 from pandas import Series
-from sppcheck.predictor.predictor_interface import PredictorInterface
+from sppCheck.predictor.predictor_interface import PredictorInterface
 from statsmodels.tsa.exponential_smoothing.ets import ETSModel, ETSResults
 
 from utils.exception_utils import ExceptionUtils

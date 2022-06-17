@@ -27,6 +27,8 @@ Classes:
     ExcelReader
 """
 
+from __future__ import annotations
+
 import re
 from datetime import datetime
 from logging import getLogger
@@ -39,7 +41,7 @@ import influx.influx_client as ic
 from pandas import (DataFrame, DateOffset, DatetimeIndex, ExcelFile, Series,
                     date_range, read_excel)
 from pandas.core.frame import DataFrame
-from sppcheck.excel.excel_dict_builder import ExcelDictBuilder
+from sppCheck.excel.excel_dict_builder import ExcelDictBuilder
 from utils.sppcheck_utils import SizingUtils
 from utils.exception_utils import ExceptionUtils
 from utils.spp_utils import SppUtils

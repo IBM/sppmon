@@ -412,7 +412,7 @@ class SppMon:
         try:
             ConnectionUtils.verbose = ARGS.verbose
             # ### Loaded Systems part 1/2 ### #
-            if(ARGS.minimumLogs or ARGS.loadedSystem):
+            if ARGS.loadedSystem:
                 # Setting pagesize scaling settings
                 ConnectionUtils.timeout_reduction = self.loaded_timeout_reduction
                 ConnectionUtils.allowed_send_delta = self.loaded_allowed_send_delta
@@ -516,16 +516,9 @@ class SppMon:
         # None
 
         # ignore setup args
-        self.ignore_setup: bool = (
-            ARGS.create_dashboard or bool(ARGS.dashboard_folder_path)
-            or ARGS.test)
+        self.ignore_setup: bool = ARGS.test
         if(self.ignore_setup):
             ExceptionUtils.error_message("> WARNING: An option for a utility operation has been specified.  Bypassing normal SPPMON operation.")
-
-        if((ARGS.create_dashboard or bool(ARGS.dashboard_folder_path)) and not
-           (ARGS.create_dashboard and bool(ARGS.dashboard_folder_path))):
-            ExceptionUtils.error_message("> Using --create_dashboard without associated folder path. Aborting.")
-            self.exit(ERROR_CODE_CMD_ARGS)
 
         # incremental setup, higher executes all below
         all_args: bool = ARGS.all

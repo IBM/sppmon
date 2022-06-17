@@ -27,6 +27,8 @@ Classes:
     TODO
 """
 
+from __future__ import annotations
+
 from typing import Any, ClassVar, Dict, Generator, List, Optional, Tuple, Union
 
 
@@ -35,8 +37,8 @@ from influx.influx_client import InfluxClient
 from influx.influx_queries import Keyword, SelectionQuery
 from numpy import float64
 from pandas import Series
-from sppcheck.predictor.predictor_interface import PredictorInterface
-from sppcheck.predictor.statsmodel_ets_predictor import \
+from sppCheck.predictor.predictor_interface import PredictorInterface
+from sppCheck.predictor.statsmodel_ets_predictor import \
     StatsmodelEtsPredictor
 from utils.sppcheck_utils import SizingUtils
 from utils.exception_utils import ExceptionUtils

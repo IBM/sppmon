@@ -33,13 +33,14 @@ from argparse import ArgumentError, ArgumentParser
 from datetime import datetime
 from typing import NoReturn
 
+
 from influx.database_tables import RetentionPolicy
 from influx.definitions import Definitions
 from influx.influx_client import InfluxClient
-from sppcheck.excel.excel_reader import ExcelReader
-from sppcheck.generator.fakedata_controller import FakeDataController
-from sppcheck.predictor.predictor_controller import PredictorController
-from sppcheck.report.report_controller import ReportController
+from sppCheck.excel.excel_reader import ExcelReader
+from sppCheck.generator.fakedata_controller import FakeDataController
+from sppCheck.predictor.predictor_controller import PredictorController
+from sppCheck.report.report_controller import ReportController
 from utils.exception_utils import ExceptionUtils
 from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils

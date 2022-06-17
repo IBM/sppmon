@@ -33,8 +33,8 @@ from time import mktime
 from typing import Dict, List, Union
 
 from influx.influx_client import InfluxClient
-from sppcheck.generator.fakedata_generator import FakeDataGenerator
-from sppcheck.generator.generator_interface import GeneratorInterface
+from sppCheck.generator.fakedata_generator import FakeDataGenerator
+from sppCheck.generator.generator_interface import GeneratorInterface
 from utils.sppcheck_utils import SizingUtils
 from utils.exception_utils import ExceptionUtils
 
