@@ -1,4 +1,35 @@
 {
     "python.analysis.completeFunctionParens": true,
-    "python.analysis.typeCheckingMode": "basic"
+    "python.analysis.typeCheckingMode": "strict",
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportMissingTypeStubs": "warning",
+
+        "reportUnknownMemberType": "warning",
+        "reportUnknownArgumentType": "warning",
+        "reportUnknownLambdaType": "warning",
+        "reportUnknownVariableType": "warning",
+        "reportUnknownParameterType": "warning",
+
+        "reportUnnecessaryIsInstance": "warning",
+
+    },
+    "cSpell.words": [
+        "autogen",
+        "joblog",
+        "vadps",
+        "sppmon",
+        "Hotfixing",
+        "joblogs",
+        "Wendler",
+        "Grafana",
+        "inplace",
+        "Korschinsky",
+        "mktime",
+        "Niels",
+        "scipy",
+        "sppcheck",
+        "truncnorm",
+        "vadp",
+        "vsnap"
+    ]
 }

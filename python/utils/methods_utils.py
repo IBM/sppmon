@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -36,7 +36,7 @@ from typing import Callable, List, Match, Tuple, Dict, Any, Union, Set
 from prettytable import PrettyTable
 from sppConnection.ssh_client import SshClient, SshCommand, SshTypes
 
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 from utils.spp_utils import SppUtils
 
 LOGGER = logging.getLogger("sppmon")
@@ -63,7 +63,7 @@ class MethodUtils:
                              command_list: List[SshCommand]) -> List[Tuple[str, List[Dict[str, Any]]]]:
         """
         functions executes commands via ssh on several hosts.
-        the hosts (other, vsnap, vadp) can be defined in the JSON configuation file
+        the hosts (other, vsnap, vadp) can be defined in the JSON configuration file
         commands which shall be executed on vsnap and / or vadp proxies in the dedicated ist of strings.
         'otherCommands' is a list of commands which are executed on hosts which are not of type: vsnap | vadp.
 
@@ -193,13 +193,13 @@ class MethodUtils:
             return
 
         # get all possible distinct keys,
-        row_keys_unorderd: Set[str] = set()
+        row_keys_unordered: Set[str] = set()
         for row in data:
-            row_keys_unorderd.update(row.keys())
+            row_keys_unordered.update(row.keys())
 
         # make sure every row has all keys, fill with None
         # cast to list to have one order
-        row_keys = list(row_keys_unorderd)
+        row_keys = list(row_keys_unordered)
         row_val_list: List[List[Any]] = []
         for row in data:
             row_vals: List[Any] = []

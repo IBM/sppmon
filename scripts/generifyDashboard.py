@@ -2,7 +2,7 @@
 (C) IBM Corporation 2021
 
 Description:
-    Generifies a dashboard for external use by stripping of datasource informations.
+    Generifies a dashboard for external use by replacing the individual datasource data by generic one.
     To be used by developers before sharing the dashboard.
 
 Repository:
@@ -19,7 +19,7 @@ from os.path import isfile, realpath, join, dirname
 
 
 class GenerifyDashboard:
-    """Generifies a dashboard for external use by stripping of datasource informations.
+    """Generifies a dashboard for external use by replacing the individual datasource data by generic one.
     To be used by developers before sharing the dashboard.
     """
 
@@ -56,7 +56,7 @@ class GenerifyDashboard:
             raise ValueError(
                 "> Error opening dashboard file. It seems like the default path to the dashboard is incorrect")
 
-        print("> Sucessfully opened. Updating dashboard")
+        print("> Successfully opened. Checking current state of dashboard")
 
         if("__inputs" not in dashboardStr):
             raise ValueError(
@@ -72,9 +72,11 @@ class GenerifyDashboard:
             print("ERROR: The Dashboard is probably already generified. Aborting.\n")
             exit(1)
 
+        print("> Updating dashboard")
+
         oldVarEscaped = r"\${" + oldVarName + r"}"
 
-        # replace first occurence with the new variable name
+        # replace first occurrence with the new variable name
         dashboardStr = re.sub(
             fr""""name":\s*"{oldVarName}"\s*,""",
             fr""""name": "{genericVarName}",""",
@@ -139,7 +141,7 @@ class GenerifyDashboard:
             print(error)
             raise ValueError("Error creating new dashboard file.")
         Utils.printRow()
-        print("> Sucessfully updated dashboard file.")
+        print("> Successfully updated dashboard file.")
         print("> Script finished")
 
 

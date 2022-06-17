@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -21,7 +21,7 @@ Author:
  Niels Korschinsky
 
 Description:
-    This Module provides all functionality arround ssh commands and requests.
+    This Module provides all functionality around ssh commands and requests.
     You may implement new ssh methods in here.
 
 Classes:
@@ -34,7 +34,7 @@ from typing import Any, Dict, List, Tuple
 
 from influx.influx_client import InfluxClient
 from sppConnection.ssh_client import SshClient, SshCommand, SshTypes
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
@@ -246,14 +246,14 @@ class SshMethods:
         LOGGER.info(f"> executing ssh commands for each sshclient-type individually.")
         for ssh_type in SshTypes:
             try:
-                LOGGER.info(f">> executing ssh commands, which are labled to be executed for {ssh_type.value} ssh clients")
+                LOGGER.info(f">> executing ssh commands, which are labeled to be executed for {ssh_type.value} ssh clients")
                 self.__exec_save_commands(
                     ssh_type=ssh_type,
                     command_list=self.__client_commands[ssh_type] + self.__all_command_list
                 )
             except ValueError as error:
                 ExceptionUtils.exception_info(
-                    error=error, extra_message=f"Top-level-error when excecuting {ssh_type.value} ssh commands, skipping them all")
+                    error=error, extra_message=f"Top-level-error when executing {ssh_type.value} ssh commands, skipping them all")
 
     def _parse_top_cmd(self, ssh_command: SshCommand, ssh_type: SshTypes) -> Tuple[str, List[Dict[str, Any]]]:
         """Parses the result of the `top` command, splitting it into its parts.
@@ -641,7 +641,7 @@ class SshMethods:
             row['ssh_type'] = ssh_type.name
             row[time_key] = SppUtils.get_actual_time_sec()
 
-            # recalculate values to be more usefull
+            # recalculate values to be more useful
             if('available' in row):
                 row['free'] = int(row.pop('available'))
                 row['used'] = int(row['total']) - int(row['free'])

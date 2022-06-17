@@ -5,10 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-
 ## [Unreleased] - yyyy-mm-dd
 
 ### Added
+
+* SPPCheck function and internal structure
+  * Unfinished yet, though first results are available.
+* Added Grafana Dashboard for SPPCheck
 
 ### Changed
 
@@ -17,6 +20,49 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 * Code scanning alert #2 and #3: Printing passwords into logger due to an faulty if-expression.
+
+### Known Issues
+
+## [1.2.0] - 2022-06-17
+
+### Added
+
+* Adds FullLogs and LoadedSystem information to the Grafana SPPMon Runtime Duration panel.
+* Adds clarification that all timestamps are changed into second precision on insert.
+* Adds support for batch insert to insert into a different retention policy
+* Selection queries now also support an alternative retention policy to query from
+* CreateRP-Method in the influxClient to allow creating non-lasting retention policies
+* Adds pandas-stubs, openpyxl and pyxlsb to requirements file
+* Prints total count of errors during the execution if there are any - instead of "script finished" output
+* Added type spelling dictionary to the settings file
+* Added linting settings to the settings file
+
+### Changed
+
+* Moved pid files-functions and other functions from SPPMon to helper functions.
+  * Adjusted log messages to make their message generic if required.
+  * Added arguments to replace self-access.
+* Changed default log and pid-file locations from `home/sppmonLogs/FILE` to `spectrum-protect-sppmon/sppmonLogs/FILE`
+* Added init declarations in the SPPMon `__init__` function to allow overview of all self-vars
+* Changed SelectionQueries to only take a single table instead of an List of such, as it isn't required and complicates the code
+* Predefined retention policies are no longer protected in the definitions module.
+* Sending a select query now raises a error when it fails.
+* Allows SelectionQueries from table to be another inner-selection query
+  * Changed all calls of the constructor
+  * Made sure to only allow inner queries when using the selection-keyword.
+* Changed the severity of unknown type-annotation due to submodules not being typed from error to warning.
+* Minor printing edits when generifing Dashboard
+* Removes deprecated functions
+
+### Fixed
+
+* Fixed typo in exception_utils.py file, renaming it and all references on it.
+* Lots of typos in the inline documentation
+* SelectionQuery and associated methods: Introduces Optional annotation to fix linter error
+
+### Known Issues
+
+* In newer Grafana versions the dashboard import might corrupt the datasource name. A fix is unavailable yet, though the error is only visual.
 
 ## [1.1.1] - 2022-02-22
 
@@ -125,7 +171,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Corrupted config-file path no longer breaks SPPMon but prints an error message
 * Partly fixes #40, but some IDs still remain missing due to other issues. The fix is described within the issue.
 * JobLogs: The type-filter is no longer ignored on regular/loaded execution - requesting way fewer logs.
-* Fixed an error when importing individual job log statistics, and `ressourceType` was missing
+* Fixed an error when importing individual job log statistics, and `resourceType` was missing
 
 #### Changes
 
@@ -137,7 +183,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Reworks REST-API POST-Requests to be merged with GET-Requests
   * This includes the repeated tries if a request fails
   * Deprecates `url_set_param`, using functionality of `requests`-package instead
-  * Using Python-Structs for URL-params instead of cryptical encoded params
+  * Using Python-Structs for URL-params instead of cryptic encoded params
 * Reworks REST-API requests to use parameters more efficiently and consistently, making the code hopefully more readable.
   * Changes get_url_params to gain all parameters from URL-Encoding
   * Introduces set_url_params to set all params into URL encoding
@@ -146,7 +192,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   * Changed to query so-far unknown endpoint, using count and group aggregate to query all data with a single API-request
   > This brings the SLA request in line with the other API requests.
 * Reworked/Commented the job-log request and prepared a filter via individual JobLog-ID's
-* Labeled python argument ` -create_dashboard` and associated args as deprecated, to be removed in v1.1 (See Grafana-Changes)
+* Labeled python argument `-create_dashboard` and associated args as deprecated, to be removed in v1.1 (See Grafana-Changes)
 
 ### Influx
 
@@ -188,7 +234,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Changed dashboard to be exported for `external use`:
   * You may change the data source on importing
   * Both UID and Dashboard names will be variable generated based on the data source chosen
-  * Labeled Python argument ` -create_dashboard` and associated args as deprecated, to be removed in v1.1
+  * Labeled Python argument `-create_dashboard` and associated args as deprecated, to be removed in v1.1
     > Note: Listed here only for completeness, see Python changes
   * Created a Python stand-alone script for generifying dashboard
     > Note: Listed here only for completeness, see script changes
@@ -267,10 +313,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-* Reminder: `--minimumLogs` depricated, to be removed in V1.0. Use `--loadedSystem` instead
-* `--processStats` depricated, integrated into `--ssh`
-* `transfer_data` removed. Use `copy_datase` instead.
-  * removed `--old_database`, integraded into `copy_database` CFG file.
+* Reminder: `--minimumLogs` deprecated, to be removed in V1.0. Use `--loadedSystem` instead
+* `--processStats` deprecated, integrated into `--ssh`
+* `transfer_data` removed. Use `copy_database` instead.
+  * removed `--old_database`, integrated into `copy_database` CFG file.
 * `--test` implemented
 
 InfluxDB tables:
@@ -279,7 +325,7 @@ InfluxDB tables:
 * `jobs_statistics`: New
 * `jobLogs`: Renaming of arguments, adding `jobExecutionTime`.
 * `sppmon_metrics`: Added `influxdb_version` and new arguments
-* `vmReplicateSummary` and `vmReplicateStats`: `removed tag `messageId`
+* `vmReplicateSummary` and `vmReplicateStats`: `removed tag` messageId
 * `vadps`: Moved 3 tags to fields, adjusted CQ to run on distinct ID's
 * `ProcessStats`: Removed 2 fields and 3 tags due change `top` to `ps` command.
 * `office365stats` and `office365transfBytes` new

@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -21,7 +21,7 @@ Author:
  Niels Korschinsky
 
 Description:
-    This Module provides all functionality arround the spp-system itself.
+    This Module provides all functionality around the spp-system itself.
     You may implement new system methods in here.
 
 Classes:
@@ -32,7 +32,7 @@ import logging
 import re
 from typing import Union, Optional, Dict, Any
 
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 from utils.methods_utils import MethodUtils
 from sppConnection.api_queries import ApiQueries
 from influx.influx_client import InfluxClient
@@ -47,7 +47,7 @@ class SystemMethods:
         sppcatalog - Saves the spp filesystem catalog information in the influxdb.
         cpuram - Saves the cpu and ram usage of the spp system.
         site_name_by_id - Returns a site_name by a associated site_id.
-        sites - Collects all site informations including throttle rate.
+        sites - Collects all site information including throttle rate.
 
     """
 
@@ -142,7 +142,7 @@ class SystemMethods:
         table = self.__influx_client.database[table_name]
         query = SelectionQuery(
             keyword=Keyword.SELECT,
-            tables=[table],
+            table_or_query=table,
             # description, throttleRates cause we need a field to query
             fields=["siteId", "siteName", "description", "throttleRates"],
             where_str=f"siteId = \'{site_id}\'",
@@ -161,7 +161,7 @@ class SystemMethods:
         return result
 
     def sites(self) -> None:
-        """Collects all site informations including throttle rate.
+        """Collects all site information including throttle rate.
 
         This information does not contain much statistic information.
         It should only be called if new sites were added or changed.

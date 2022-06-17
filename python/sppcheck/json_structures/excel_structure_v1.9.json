@@ -1,0 +1,141 @@
+
+{
+    "Sizing Results": "ignore",
+    "Custom Notes": "ignore",
+    "Enter custom notes here": "ignore",
+
+    "Primary Copy": {
+        "prefix": "primary_",
+
+        "Peak vSnap front-end rate": "peak_front_end_rate",
+        "Peak vSnap back-end rate": "peak_back_end_rate",
+        "Peak copy to object stg. rate": "peak_copy_to_obj_rate",
+
+        "Front-end data": "front_end_data",
+        "Number of  VMs (VMware only)": "count_vmware",
+        "Managed data": "managed_data",
+
+        "Compression savings (%)": "compression_savings_percent",
+        "Compression savings": "compression_savings_absolute",
+
+        "Dedup savings (%)": "dedub_savings_percent",
+        "Dedup savings": "dedub_savings_absolute",
+
+        "Data reduction savings (%)": "data_reduction_percent",
+        "Data reduction savings": "data_reduction_absolute",
+
+        "vSnap size estimate - data": "vsnap_size_est_data",
+        "vSnap size estimate - logs": "vsnap_size_est_logs",
+        "vSnap physical capacity estimate (subtotal)": "vsnap_size_est_subtotal",
+
+        "vSnap reserve": {
+            "prefix": "vsnap_",
+
+            "vSnap reserve": "reserve_percent",
+            "vSnap size estimate - reserve": "reserve_absolute",
+            "vSnap base capacity": "base_capacity_w_reserve",
+
+            "Replication phyical capacity estimate": "replication_size_est",
+
+            "vSnap physical capacity estimate": "size_est_w_reserve"
+
+        },
+
+        "vSnap quantity": "vsnap_count",
+
+        "per vSnap requirements": {
+            "prefix": "per_vsnap_",
+
+            "peak vSnap front-end rate": "peak_front_end_rate",
+            "peak vSnap back-end rate": "peak_back_end_rate",
+
+            "vSnap pool size": "pool_size",
+            "vSnap CPU cores": "cpu_cores",
+
+            "vSnap memory": "memory",
+            "vSnap log SSD; optional": "optional_log_ssd",
+
+            "vSnap cache SSD; optional": "optional_cache_ssd",
+            "vSnap cloud cache SSD": "cloud_cache_ssh"
+        },
+
+        "dedicated VADP quantity": "vadp_count_dedicated",
+        "total VADP (dedicated + combined)": "vadp_count_total",
+
+        "per dedicated VADP requirements": {
+            "prefix": "per_vadp_",
+
+            "VADP CPU cores": "cpu_cores",
+            "VADP memory": "memory",
+            "VADP \"Softcap task limit\"": "softcap"
+        }
+    },
+
+    "Spectrum Protect Plus Server": {
+        "prefix": "spp_",
+
+        "Spectrum Protect Plus server quantity": "server_count",
+
+        "server CPU cores": "cpu_cores",
+        "server memory": "memory",
+
+        "Configuration catalog": "config_catalog",
+        "Recovery catalog": "recovery_catalog"
+    },
+    "Replication Copy": {
+        "prefix": "replication_",
+
+        "Peak replication rate": "peak_front_end_rate",
+        "Peak back-end rate": "replace_me",
+        "Peak copy to object stg. Rate": "replace_me",
+
+        "Managed data": "managed_data",
+
+        "Compression savings (%)": "compression_savings_percent",
+        "Compression savings": "compression_savings_absolute",
+
+        "Dedup savings (%)": "dedub_savings_percent",
+        "Dedup savings": "dedub_savings_absolute",
+
+        "Data reduction savings (%)": "data_reduction_percent",
+        "Data reduction savings": "data_reduction_absolute",
+
+        "vSnap size estimate - data": "vsnap_size_est_data",
+        "vSmap size estimate - logs": "vsnap_size_est_logs",
+        "vSnap physical capacity estimate (subtotal)": "vsnap_size_est_physical_subtotal",
+
+        "vSnap reserve": {
+            "prefix": "vsnap_",
+
+            "vSnap reserve": "reserve_percent",
+            "vSnap size estimate - reserve": "reserve_absolute",
+
+            "vSnap physical capacity estimate": "size_est_physical_w_reserve"
+        },
+
+        "vSnap quantity": "vsnap_count",
+
+        "per vSnap requirements": {
+            "prefix": "per_vsnap_",
+
+            "vSnap pool size": "pool_size",
+            "vSnap CPU": "cpu_cores",
+
+            "vSnap memory": "replace_me",
+            "vSnap log SSD; optional": "replace_me",
+
+            "vSnap cache SSD; optional": "replace_me",
+            "vSnap cloud cache SSD": "replace_me"
+        }
+    },
+
+    "Object Storage Copy": {
+        "prefix": "object_",
+
+        "Copy to object storage rate": "peak_copy_rate",
+
+        "Object storage capacity estimate": "storage_size_est",
+
+        "Offload Reserve Estimate (TiB)": "replace_me"
+    }
+}

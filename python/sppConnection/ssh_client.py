@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -37,7 +37,7 @@ from enum import Enum, unique
 import socket
 import paramiko
 
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 
 
 LOGGER = logging.getLogger("sppmon")
@@ -55,7 +55,7 @@ class SshTypes(Enum):
         return self.name
 
 class SshCommand:
-    """Used to wrap up all informations about a sshcommands.
+    """Used to wrap up all information about a sshcommands.
 
     Attributes:
         cmd
@@ -236,9 +236,9 @@ class SshClient:
 
         self.connect()
 
-        LOGGER.debug("> connection successfull")
+        LOGGER.debug("> connection successful")
         if(verbose):
-            LOGGER.info("> connection successfull")
+            LOGGER.info("> connection successful")
 
         new_command_list: List[SshCommand] = []
         for ssh_command in commands:
@@ -301,7 +301,7 @@ class SshClient:
         if(not ssh_command or not ssh_command):
             raise ValueError("need command to execute")
 
-        LOGGER.debug(f">> excecuting command:   {ssh_command}")
+        LOGGER.debug(f">> executing command:   {ssh_command}")
 
         try:
             (_, ssh_stdout, _) = self.__client_ssh.exec_command(ssh_command) # type: ignore

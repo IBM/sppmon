@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -21,7 +21,7 @@ Author:
  Niels Korschinsky
 
 Description:
-    This Module provides sppmon testing methods.
+    This Module provides SPPMon testing methods.
     You may implement new methods to test the functionality of SPPMon
 
 Classes:
@@ -35,7 +35,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple, Union
 from influx.influx_client import InfluxClient
 from sppConnection.rest_client import RestClient
 from sppConnection.ssh_client import SshClient, SshTypes
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
@@ -62,7 +62,7 @@ class TestingMethods():
             Tuple[List[str], List[str]]: Two lists: Errors and Warnings
         """
 
-        # Note: Use influx_client due the necessarity to set it up anyway beforehand
+        # Note: Use influx_client due the necessarily to set it up anyway beforehand
         # First connect is inside of this testing
 
         LOGGER.info("> Testing and configuring InfluxDB")
@@ -108,7 +108,7 @@ class TestingMethods():
                 "Connecting and Disconnecting to the InfluxDB failed. Probably either a URL or Auth error.")
             return (errors, warnings)
 
-        LOGGER.info("Tested InfluxDB sucessfully. Ready for use")
+        LOGGER.info("Tested InfluxDB successfully. Ready for use")
         return (errors, warnings)
 
     @classmethod
@@ -138,7 +138,7 @@ class TestingMethods():
             rest_client.login()
             (version_nr, build_nr) = rest_client.get_spp_version_build()
             LOGGER.info(
-                f">> Sucessfully connected to SPP V{version_nr}, build {build_nr}.")
+                f">> Successfully connected to SPP V{version_nr}, build {build_nr}.")
             rest_client.logout()
         except ValueError:
             errors.append(
@@ -166,7 +166,7 @@ class TestingMethods():
         """
 
         LOGGER.info(
-            "> Testing all types of SSH-Clients: Server, VAPDs, vSnaps, Cloudproxy and others")
+            "> Testing all types of SSH-Clients: Server, VADPs, vSnaps, Cloudproxy and others")
 
         warnings: List[str] = []
         errors: List[str] = []
@@ -204,10 +204,10 @@ class TestingMethods():
         if(not list(filter(lambda client: client.client_type == SshTypes.VSNAP, ssh_clients))):
             LOGGER.info(
                 ">> WARNING: No vSnap is registered as SHH-Client. " +
-                "SPPMon will still complete but no storage informating will be displayed.")
+                "SPPMon will still complete but no storage information will be displayed.")
             warnings.append(
                 "No vSnap is registered as SHH-Client. " +
-                "SPPMon will still complete but no storage informating will be displayed.")
+                "SPPMon will still complete but no storage information will be displayed.")
 
         # Check total missing clients
         missing_types: Set[SshTypes] = set(SshTypes)
@@ -221,9 +221,9 @@ class TestingMethods():
 
         if(not influx_client):
             ExceptionUtils.error_message(
-                "Further testing is depentend on the InfluxDB. Impossible to test due errors.")
+                "Further testing is dependent on the InfluxDB. Impossible to test due errors.")
             errors.append(
-                "Further testing is depentend on the InfluxDB. Impossible to test due errors.")
+                "Further testing is dependent on the InfluxDB. Impossible to test due errors.")
             return (errors, warnings)
 
         try:
@@ -246,7 +246,7 @@ class TestingMethods():
                 client.connect()
                 client.disconnect()
 
-                LOGGER.info("Sucessfully connected.")
+                LOGGER.info("Successfully connected.")
 
             except ValueError as error:
                 ExceptionUtils.exception_info(
@@ -256,7 +256,7 @@ class TestingMethods():
                 continue
 
             LOGGER.info(
-                f"Testing indivial commands for client {client.host_name}")
+                f"Testing individual commands for client {client.host_name}")
 
             # it is not easy possible / much work needed to execute all commands one by one
             # Therefore I check the errors before executing and afterwards
@@ -289,7 +289,7 @@ class TestingMethods():
                     "\n".join(map(lambda command: "\t" + command.cmd, command_list)))
 
             else:
-                LOGGER.info("Sucessfully executed commands.")
+                LOGGER.info("Successfully executed commands.")
 
         return (errors, warnings)
 
@@ -389,7 +389,7 @@ class TestingMethods():
         """
 
         # Note: Use influx_client and rest_client due the variable-heavy setup (rest)
-        # and necessarity to set it up anyway beforehand (influx)
+        # and necessarily to set it up anyway beforehand (influx)
         # First connect is inside of this testing
         if(not config_file):
             raise ValueError("SPPmon does not work without a config file")
@@ -477,7 +477,7 @@ class TestingMethods():
                 "SPPMon will run, but data will be missing. Please review the errors listed above."
 
             # print messages
-            LOGGER.info("### Non-Critial errors which cause a data loss ###")
+            LOGGER.info("### Non-Critical errors which cause a data loss ###")
             for i, error in enumerate(ssh_errors, 1):
                 LOGGER.info(f"Nr {i}: {error}")
             print("\n", flush=True)

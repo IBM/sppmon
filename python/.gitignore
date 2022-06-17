@@ -181,3 +181,10 @@ python.sln
 
 # windows seems to use .vs instead of .vscode
 .vs/*
+
+# line counter
+.VSCodeCounter
+
+# sppcheck pictures
+sppcheck/report/pictures/*
+!sppcheck/report/pictures/.gitkeep
