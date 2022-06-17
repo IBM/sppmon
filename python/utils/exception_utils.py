@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -81,7 +81,7 @@ class ExceptionUtils:
             line_number = -1
 
         if(error != error_2):
-            LOGGER.error("two different error messages somehow, be aware some data migth be corrupt")
+            LOGGER.error("two different error messages somehow, be aware some data might be corrupt")
 
         cls.stored_errors.extend(error.args) # save error message
 

@@ -60,7 +60,7 @@ class RestClient():
         login - Logs in into the REST-API. Call this before using any methods.
         logout - Logs out of the REST-API.
         get_spp_version_build - queries the spp version and build number.
-        get_objects - Querys a response(-list) from a REST-API endpoint or URI.
+        get_objects - queries a response(-list) from a REST-API endpoint or URI.
         post_data - Queries endpoint by a POST-Request.
 
     """
@@ -115,7 +115,7 @@ class RestClient():
         Sets up the sessionId and the server URL.
 
         Raises:
-            ValueError: Login was not sucessfull.
+            ValueError: Login was not successfully.
         """
         http_auth: HTTPBasicAuth = HTTPBasicAuth(self.__username, self.__password)
         self.__srv_url = f"https://{self.__srv_address}:{self.__srv_port}"
@@ -167,8 +167,8 @@ class RestClient():
             raise ConnectionUtils.rest_response_error(response_logout, "Wrong Status code when logging out")
 
         if(self.__verbose):
-            LOGGER.info("Rest-API logout successfull")
-        LOGGER.debug("Rest-API logout successfull")
+            LOGGER.info("Rest-API logout successfully")
+        LOGGER.debug("Rest-API logout successfully")
 
     def get_url(self, endpoint: str) -> str:
         """Creates URL out of internal serverURL and given endpoint
@@ -223,13 +223,13 @@ class RestClient():
                     array_name: str = None,
                     allow_list: List[str] = None, ignore_list: List[str] = None,
                     add_time_stamp: bool = False) -> List[Dict[str, Any]]:
-        """Querys a response(-list) from a REST-API endpoint or URI from multiple pages
+        """queries a response(-list) from a REST-API endpoint or URI from multiple pages
 
         Specify `array_name` if there are multiple results / list.
         Use allow_list to pick only the values specified.
         Use ignore_list to pick everything but the values specified.
         Both: allow_list items overwrite ignore_list items, still getting all not filtered.
-        Param pageSize is only guranteed to be valid for the first page if included within params.
+        Param pageSize is only guaranteed to be valid for the first page if included within params.
 
         Note:
         Do not specify both endpoint and uri, only uri will be used
@@ -237,7 +237,7 @@ class RestClient():
         Keyword Arguments:
             endpoint {str} -- endpoint to be queried. Either use this or uri (default: {None})
             uri {str} -- uri to be queried. Either use this or endpoint (default: {None})
-            params {Dict[str, Any]} -- Dictionary with all URL-Parameters. pageSize only guranteed to be valid for first page (default: {None})
+            params {Dict[str, Any]} -- Dictionary with all URL-Parameters. pageSize only guaranteed to be valid for first page (default: {None})
             post_data {Dict[str, Any]} -- Dictionary with Body-Data. Only use on POST-Requests
             request_type: {RequestType} -- Either GET or POST
             array_name {str} -- name of array if there are multiple results wanted (default: {None})
@@ -246,18 +246,18 @@ class RestClient():
             add_time_stamp {bool} -- whether to add the capture timestamp  (default: {False})
 
         Raises:
-            ValueError: Neither a endpoint nor uri is specfied
+            ValueError: Neither a endpoint nor uri is specified
             ValueError: Negative or 0 pagesize
             ValueError: array_name is specified but it is only a single object
 
         Returns:
-            {List[Dict[str, Any]]} -- List of dictonarys as the results
+            {List[Dict[str, Any]]} -- List of dictionaries as the results
         """
         if(not endpoint and not uri):
-            raise ValueError("neiter endpoint nor uri specified")
+            raise ValueError("neither endpoint nor uri specified")
         if(endpoint and uri):
-            LOGGER.debug("added both endpoint and uri. This is unneccessary, uri is ignored")
-        # if neither specifed, get everything
+            LOGGER.debug("added both endpoint and uri. This is unnecessary, uri is ignored")
+        # if neither specified, get everything
         if(not allow_list and not ignore_list):
             ignore_list = []
         if(params is None):
@@ -312,8 +312,8 @@ class RestClient():
             result_list.extend(filtered_results)
 
             # adjust pagesize if either the send time is too high
-            # or regulary adjust on max-page sizes requests
-            # dont adjust if page isnt full and therefore too quick
+            # or regularly adjust on max-page sizes requests
+            # dont adjust if page isn't full and therefore too quick
             if(send_time > self.__preferred_time or len(page_result_list) == self.__page_size):
                 LOGGER.debug(f"send_time: {send_time}, len: {len(page_result_list)}, pageSize = {self.__page_size} ")
                 self.__page_size = ConnectionUtils.adjust_page_size(
@@ -338,7 +338,7 @@ class RestClient():
         request_type: RequestType = RequestType.GET,
         post_data: Dict[str, str] = None,
         auth: HTTPBasicAuth = None) -> Tuple[Dict[str, Any], float]:
-        """Sends a request to this endpoint. Repeats if timeout error occured. Adust the pagesize on timeout.
+        """Sends a request to this endpoint. Repeats if timeout error occurred. Adust the pagesize on timeout.
 
         Arguments:
             url {str} -- URL to be queried. Must contain the server-uri and Endpoint. Does not allow encoded parameters
@@ -394,7 +394,7 @@ class RestClient():
 
             except ReadTimeout as timeout_error:
 
-                # timeout occured, increasing failed trys
+                # timeout occurred, increasing failed trys
                 failed_tries += 1
 
                 url_params = ConnectionUtils.get_url_params(url)
@@ -407,7 +407,7 @@ class RestClient():
                     start_index = url_params.get("pageStartIndex", None)
                     page_size = url_params.get("pageSize", None)
                     # report timeout with full information
-                    raise ValueError("timeout after repeating a maximum ammount of times.",
+                    raise ValueError("timeout after repeating a maximum amount of times.",
                                      timeout_error, failed_tries, page_size, start_index)
 
                 if(self.__page_size == self.__min_page_size):
@@ -416,7 +416,7 @@ class RestClient():
                     start_index = url_params.get("pageStartIndex", None)
                     page_size = url_params.get("pageSize", None)
                     # report timeout with full information
-                    raise ValueError("timeout after using minumum pagesize. repeating the request is of no use.",
+                    raise ValueError("timeout after using minimum pagesize. repeating the request is of no use.",
                                      timeout_error, failed_tries, page_size, start_index)
 
                 # #### continuing cases ######
@@ -432,7 +432,7 @@ class RestClient():
                     params["pageSize"] = self.__page_size
 
                 else: # (failed_tries < self.__max_send_retries): # more then 1 try left
-                    LOGGER.debug(f"Timeout error when requesting, now on try {failed_tries} of {self.__max_send_retries}. Reducing pagesizefor url: {url}")
+                    LOGGER.debug(f"Timeout error when requesting, now on try {failed_tries} of {self.__max_send_retries}. Reducing pagesize for url: {url}")
                     if(self.__verbose):
                         LOGGER.info(f"Timeout error when requesting, now on try {failed_tries} of {self.__max_send_retries}. Reducing pagesize for url: {url}")
 

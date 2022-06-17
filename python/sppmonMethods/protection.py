@@ -21,7 +21,7 @@ Author:
  Niels Korschinsky
 
 Description:
-    This Module provides all functionality arround protected apps and VM's.
+    This Module provides all functionality around protected apps and VM's.
     You may implement new protection methods in here.
 
 Classes:
@@ -49,9 +49,9 @@ class ProtectionMethods:
 
     Methods:
         vms_per_sla - Calculates the number of VM's per SLA.
-        sla_dumps - Captures and saves SLA subpolicys.
-        vadps - Requests and stores all VAPD proxys from the SPP-server.
-        storages - Saves all storages such as vsnaps.
+        sla_dumps - Captures and saves SLA subpolicies.
+        vadps - Requests and stores all VADP proxies from the SPP-server.
+        storages - Saves all storages such as vSnaps.
         store_vms - Stores all vms stats individually
         create_inventory_summary - Retrieves and calculate VM inventory summary by influx catalog data.
 
@@ -84,7 +84,7 @@ class ProtectionMethods:
             table_name="slaStats", list_with_dicts=result)
 
     def sla_dumps(self) -> None:
-        """Captures and saves SLA subpolicys."""
+        """Captures and saves SLA subpolicies."""
         # capture and display / store SLA dumps
         sla_dump_list = MethodUtils.query_something(
             name="slaDumps",
@@ -96,7 +96,7 @@ class ProtectionMethods:
             ]
         )
 
-        LOGGER.info(">> updating slaStat table with dump of SLA subpolicy")
+        LOGGER.info(">> updating slaStat table with dump of SLA subpolicies")
         table_name = "slaStats"
         for row in sla_dump_list:
             sla_dump = row['slaDump']
@@ -113,7 +113,7 @@ class ProtectionMethods:
             )
 
     def vadps(self) -> None:
-        """Requests and stores all VAPD proxys from the SPP-server."""
+        """Requests and stores all VADP proxies from the SPP-server."""
         table_name = 'vadps'
         result = MethodUtils.query_something(
             name=table_name,
@@ -133,7 +133,7 @@ class ProtectionMethods:
         self.__influx_client.insert_dicts_to_buffer(table_name=table_name, list_with_dicts=result)
 
     def storages(self) -> None:
-        """Saves all storages such as vsnaps."""
+        """Saves all storages such as vSnap."""
 
         table_name = 'storages'
 
@@ -144,7 +144,7 @@ class ProtectionMethods:
             deactivate_verbose=True
         )
 
-        # get calulated extra info
+        # get calculated extra info
         for row in result:
             row['siteName'] = self.__system_methods.site_name_by_id(row['site'])
             if('free' in row and row['free'] != None and
@@ -191,13 +191,13 @@ class ProtectionMethods:
             "> computing inventory information (not from catalog, means not only backup data is calculated)")
 
         # ########## Part 1: Check if something need to be computed #############
-        # query the timestamp of the last vm, commited as a field is always needed by influx rules.
+        # query the timestamp of the last vm, committed as a field is always needed by influx rules.
         vms_table = self.__influx_client.database["vms"]
 
         time_query = SelectionQuery(
             keyword=Keyword.SELECT,
             table_or_query=vms_table,
-            fields=['time', 'commited'],
+            fields=['time', 'committed'],
             limit=1,
             order_direction="DESC"
         )

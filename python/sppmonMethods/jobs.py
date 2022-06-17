@@ -21,7 +21,7 @@ Author:
  Niels Korschinsky
 
 Description:
-    This Module provides all functionality arround executed jobs.
+    This Module provides all functionality around executed jobs.
     You may implement new job methods in here.
 
 Classes:
@@ -70,8 +70,8 @@ class JobMethods:
     # value is a tuple of
     # #1 the tablename
     # #2 a lambda which maps each elem to a name. Must contain at least one argument!
-    # #3 list of tuples: keys of additional informations to be saved: (#1: key, #2: rename). Part 2 optional, only if rename
-    # the values are delived by the param_list of the joblog
+    # #3 list of tuples: keys of additional information to be saved: (#1: key, #2: rename). Part 2 optional, only if rename
+    # the values are delivered by the param_list of the joblog
     # if the value is something like 10sec or 10gb use `parse_unit` to parse it.
     __supported_ids: Dict[str,
                           Tuple[
@@ -195,7 +195,7 @@ class JobMethods:
         self.__verbose = verbose
 
         self.__job_log_retention_time = job_log_retention_time
-        """used to limit the time jobLogs are queried, only interestig for init call"""
+        """used to limit the time jobLogs are queried, only interesting for init call"""
 
         self.__job_log_types = job_log_types
 
@@ -373,9 +373,9 @@ class JobMethods:
 
 
     def __job_logs_to_stats(self, list_with_logs: List[Dict[str, Any]]) -> None:
-        """Parses joblogs into their own statisic table, using declared supported ID's
+        """Parses joblogs into their own statistic table, using declared supported ID's
 
-        To parse more jobLogs define additional entrys in the attribute `supported_ids`.
+        To parse more jobLogs define additional entries in the attribute `supported_ids`.
 
         Arguments:
             list_with_logs {List[Dict[str, Any]]} -- List with all saved joblogs
@@ -423,7 +423,7 @@ class JobMethods:
             # Issue 9, In case where all tag values duplicate another record, including the timestamp, Influx will throw the insert
             # out as a duplicate.  In some cases, the changing of epoch timestamps from millisecond to second precision is
             # cause duplicate timestamps.  To avoid this for certain tables, add seconds to the timestamp as needed to
-            # ensure uniqueness.  Only use this when some innacuracy of the timestamps is acceptable
+            # ensure uniqueness.  Only use this when some inaccuracy of the timestamps is acceptable
             cur_timestamp = job_log['logTime']
             if(table_name == 'vmBackupSummary'):
 
@@ -453,8 +453,8 @@ class JobMethods:
     def job_logs(self) -> None:
         """saves all jobLogs for the jobsessions in influx catalog.
 
-        Make sure to call `get_all_jobs` before to aquire all jobsessions.
-        In order to save them it deletes and rewrites all affected jobsession entrys.
+        Make sure to call `get_all_jobs` before to acquire all jobsessions.
+        In order to save them it deletes and rewrites all affected jobsession entries.
         It automatically parses certain jobLogs into additional stats, defined by `supported_ids`.
         """
 
@@ -462,7 +462,7 @@ class JobMethods:
         logs_requested_total = 0
         # total count of inserted logs
         logs_to_stats_total = 0
-        # should be equal, but on failure isnt (skipped logs)
+        # should be equal, but on failure isn't (skipped logs)
 
         # list to be inserted after everything is updated
         job_update_list: List[Dict[str, Any]] = []
@@ -470,7 +470,7 @@ class JobMethods:
         LOGGER.info("> Requesting jobs with missing logs from influx database")
 
         table = self.__influx_client.database['jobs']
-        # only store if there is something to store -> limited by job log rentation time.
+        # only store if there is something to store -> limited by job log retention time.
         where_str = 'jobsLogsStored <> \'True\' and time > now() - %s' % self.__job_log_retention_time
         where_str += f' AND time > now() - {table.retention_policy.duration}'
 
@@ -582,7 +582,7 @@ class JobMethods:
                 # dump message params to allow saving as string
                 job_log["messageParams"] = json.dumps(job_log["messageParams"])
 
-            # if list is empty due beeing erased etc it will simply return and do nothing
+            # if list is empty due being erased etc it will simply return and do nothing
             self.__influx_client.insert_dicts_to_buffer(
                 list_with_dicts=current_job_logs, table_name="jobLogs")
 

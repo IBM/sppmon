@@ -21,7 +21,7 @@ Author:
  Niels Korschinsky
 
 Description:
-    Provides all query structues used for the influxdb.
+    Provides all query structures used for the influxdb.
 
 Classes:
     Keyword
@@ -103,7 +103,7 @@ class InsertQuery:
         self.__time_stamp = SppUtils.to_epoch_secs(time_stamp)
         fields = self.format_fields(fields)
 
-        # make sure you have some fields if they are not privided
+        # make sure you have some fields if they are not provided
         if(not list(filter(lambda field_tup: field_tup[1] is not None, fields.items()))):
             # need default def to be able to do anything
             if(not table.fields):
@@ -127,7 +127,7 @@ class InsertQuery:
         return f"InsertQuery: {self.to_query()}"
 
     def to_query(self) -> str:
-        """Comutes the query into a string, returning it.
+        """Computes the query into a string, returning it.
 
         Returns:
             str -- a full functional insert query as string
@@ -402,7 +402,7 @@ class SelectionQuery:
 class ContinuousQuery:
     """Structure for a Continuous Query with a SELECT-INTO-Query inside.
 
-    Use `to_query` to format data into a string. Do not create a instance outside of module `definitons.py`
+    Use `to_query` to format data into a string. Do not create a instance outside of module `definitions.py`
     __eq__ and __hash__ implemented for SET-use.
 
     Attributes:

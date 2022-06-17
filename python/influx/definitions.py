@@ -296,7 +296,7 @@ class Definitions:
         #       ]
         #   )
         # ################################################################################
-        # DISCLAMER: This annoying repetition of fields is caused due issue #97
+        # DISCLAIMER: This annoying repetition of fields is caused due issue #97
         # see https://github.com/influxdata/influxdb/issues/7332
         # This is a tradeoff, worse readable code for easier Grafana-Support
         # ################################################################################
@@ -483,7 +483,7 @@ class Definitions:
                 cls._CQ_DWSMPL([
                     "mean(\"duration\") AS \"duration\"",
                     "sum(errorCount) AS sum_errorCount"
-                    ], cls.RP_DAYS_90(), "6h"), # errorMessages is dropped due beeing str
+                    ], cls.RP_DAYS_90(), "6h"), # errorMessages is dropped due being str
                 cls._CQ_DWSMPL([
                     "mean(\"duration\") AS \"duration\"",
                     "sum(errorCount) AS sum_errorCount"
@@ -515,6 +515,7 @@ class Definitions:
             fields={
                 'uptime':           Datatype.TIMESTAMP,
                 'powerState':       Datatype.STRING,
+                # cannot fix these typos without breaking existing tables
                 'commited':         Datatype.INT,
                 'uncommited':       Datatype.INT,
                 'shared':           Datatype.INT,
@@ -539,6 +540,7 @@ class Definitions:
             continuous_queries=[
                 cls._CQ_DWSMPL(
                     fields=[ # strings are not calculated, uptime AS timestamp removed
+                        # cannot fix these typos without breaking existing tables
                         "mean(commited) AS commited",
                         "mean(uncommited) AS uncommited",
                         "mean(shared) AS shared",
@@ -556,11 +558,12 @@ class Definitions:
                         'inHLO',
                         'isEncrypted',
                         'datacenterName',
-                        #'id',  ## Not ID to allow a meaningfull grouping
+                        #'id',  ## Not ID to allow a meaningful grouping
                         'hypervisorType'
                     ]),
                 cls._CQ_DWSMPL(
                     fields=[
+                        # cannot fix these typos without breaking existing tables
                         "mean(commited) AS commited",
                         "mean(uncommited) AS uncommited",
                         "mean(shared) AS shared",
@@ -578,7 +581,7 @@ class Definitions:
                         'inHLO',
                         'isEncrypted',
                         'datacenterName',
-                        #'id',  ## Not ID to allow a meaningfull grouping
+                        #'id',  ## Not ID to allow a meaningful grouping
                         'hypervisorType'
                     ]),
 
@@ -747,10 +750,10 @@ class Definitions:
                 'ipAddr':                       Datatype.STRING
             },
             tags=[
-                'status', # Usefull to group over state later on, as well as now. Renamed because of duplicate name.
+                'status', # Useful to group over state later on, as well as now. Renamed because of duplicate name.
                 'siteId', # Required for later grouping
                 'siteName', # Just addon to the siteID
-                'version', # Usefull to group on at any stage
+                'version', # Useful to group on at any stage
                 'vadpName', # Required to make each vadp unique -> not dropped.
             ],
             retention_policy=cls.RP_HALF_YEAR(),

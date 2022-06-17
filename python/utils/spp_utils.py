@@ -267,7 +267,7 @@ class SppUtils:
         Raises:
             ValueError: no param dict given or not of type dict
             ValueError: no param name given or not string
-            ValueError: no config found for param name or completly empty
+            ValueError: no config found for param name or completely empty
             ValueError: config found is not a dict or list.
             ValueError: parameters within the config are none.
 
@@ -337,7 +337,7 @@ class SppUtils:
 
         Arguments:
             keyName {str} -- Path to the value wanted
-            nested_dict {Dict[str, Any]} -- dictionary with values beeing other dictionaries or the result.
+            nested_dict {Dict[str, Any]} -- dictionary with values being other dictionaries or the result.
 
         Raises:
             ValueError: no str key given.
@@ -435,7 +435,7 @@ class SppUtils:
         Specify a delimiter if used, default splitting to a single space.
         Only specify `given unit` if the unit is not within the data itself.
         specify `unit_start_pos` if the unit is within data without delimiter.
-        check dict `datatypes` for parseable units.
+        check dict `datatypes` for parsable units.
 
         Arguments:
             data {Union[str, Number]} -- data w/wo unit to be parsed.
@@ -465,7 +465,7 @@ class SppUtils:
         if(data == 'null'):
             return None
         if(delimiter is None):
-            raise ValueError("delimteter cannot be None")
+            raise ValueError("delimiter cannot be None")
 
         data_parts = list(map(lambda part: part.strip(" "), data.split(delimiter)))
 

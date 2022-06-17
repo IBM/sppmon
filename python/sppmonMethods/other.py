@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -50,7 +50,7 @@ class OtherMethods:
             raise ValueError("SPPmon does not work without a config file")
 
         LOGGER.info("Testing all connections required for SPPMon to work")
-        working: bool = True # SPPMon itself will finish sucessfull (no critical errors)
+        working: bool = True # SPPMon itself will finish successful (no critical errors)
         no_warnings: bool = True # SPPMon will finish without any warnings (no errors at all)
 
         # ## InfluxDB ##
@@ -60,12 +60,12 @@ class OtherMethods:
             influx_client.connect()
             influx_client.disconnect()
             if(not influx_client.use_ssl):
-                ExceptionUtils.error_message("> WARNING: Mandatory SSL is disabled. We hightly recommend to enable it!")
+                ExceptionUtils.error_message("> WARNING: Mandatory SSL is disabled. We highly recommend to enable it!")
                 no_warnings = False
 
             LOGGER.info("InfluxDB is ready for use")
         except ValueError as error:
-            ExceptionUtils.exception_info(error, extra_message="> Testing of the InfluxDB failed. This is a crictial component of SPPMon.")
+            ExceptionUtils.exception_info(error, extra_message="> Testing of the InfluxDB failed. This is a critical component of SPPMon.")
             working = False
 
         # ## REST-API ##
@@ -76,11 +76,11 @@ class OtherMethods:
                 raise ValueError("Rest-client is setup. Unavailable to test it.")
             rest_client.login()
             (version_nr, build_nr) = rest_client.get_spp_version_build()
-            LOGGER.info(f">> Sucessfully connected to SPP V{version_nr}, build {build_nr}.")
+            LOGGER.info(f">> Successfully connected to SPP V{version_nr}, build {build_nr}.")
             rest_client.logout()
             LOGGER.info("> REST-API is ready for use")
         except ValueError as error:
-            ExceptionUtils.exception_info(error, extra_message="> Testing of the REST-API failed. This is a crictial component of SPPMon.")
+            ExceptionUtils.exception_info(error, extra_message="> Testing of the REST-API failed. This is a critical component of SPPMon.")
             working = False
 
         # ## SSH-CLIENTS ##
@@ -104,7 +104,7 @@ class OtherMethods:
 
                     if(type == SshTypes.VSNAP):
                         LOGGER.info(">> WARNING: Without vSnap as ssh client you have no access to storage information. You may add vSnap's for additional monitoring and alerts.")
-                        no_warnings = False # ssh will still work, but thats definitly a warning
+                        no_warnings = False # ssh will still work, but thats definitely a warning
 
             ssh_methods: SshMethods = SshMethods(influx_client, config_file, False)
             # Connection check
@@ -130,16 +130,16 @@ class OtherMethods:
                     ssh_working = False
 
         if(ssh_working):
-            LOGGER.info("> Testing of SSH-clients sucessfull.")
+            LOGGER.info("> Testing of SSH-clients successfully.")
         else:
-            LOGGER.info("> Testing of SSH-clients failed! SPPMon will still work, not all informations are available.")
+            LOGGER.info("> Testing of SSH-clients failed! SPPMon will still work, not all information are available.")
             no_warnings = False
 
         # #### Conclusion ####
 
         if(working and no_warnings):
-            LOGGER.info("> All components tested sucessfully. SPPMon is ready to be used!")
+            LOGGER.info("> All components tested successfully. SPPMon is ready to be used!")
         elif(working):
-            LOGGER.info("> Testing partially sucessful. SPPMon will run, but please check the warnings.")
+            LOGGER.info("> Testing partially successful. SPPMon will run, but please check the warnings.")
         else:
             LOGGER.info("> Testing failed. SPPMon is not ready to be used. Please fix the connection issues.")

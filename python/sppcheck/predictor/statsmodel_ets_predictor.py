@@ -116,7 +116,7 @@ class StatsmodelEtsPredictor(PredictorInterface):
             error="mul",
             trend="mul",
             initialization_method="estimated", # no real documentation here
-            missing="skip" # drop missing values, like nan -> doesnt work due to freq not beeing detected even if set
+            missing="skip" # drop missing values, like nan -> doesnt work due to freq not being detected even if set
             ).fit(optimized=True, disp=False) # type: ignore
         prediction: Series = ets_fit.forecast(forecast_dp_count)
 

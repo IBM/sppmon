@@ -21,7 +21,7 @@ Author:
  Niels Korschinsky
 
 Description:
-    This Module provides all functionality arround the spp-system itself.
+    This Module provides all functionality around the spp-system itself.
     You may implement new system methods in here.
 
 Classes:
@@ -47,7 +47,7 @@ class SystemMethods:
         sppcatalog - Saves the spp filesystem catalog information in the influxdb.
         cpuram - Saves the cpu and ram usage of the spp system.
         site_name_by_id - Returns a site_name by a associated site_id.
-        sites - Collects all site informations including throttle rate.
+        sites - Collects all site information including throttle rate.
 
     """
 
@@ -161,7 +161,7 @@ class SystemMethods:
         return result
 
     def sites(self) -> None:
-        """Collects all site informations including throttle rate.
+        """Collects all site information including throttle rate.
 
         This information does not contain much statistic information.
         It should only be called if new sites were added or changed.

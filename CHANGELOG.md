@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   * Made sure to only allow inner queries when using the selection-keyword.
 * Changed the severity of unknown type-annotation due to submodules not being typed from error to warning.
 * Minor printing edits when generifing Dashboard
+* Removes deprecated functions
 
 ### Fixed
 
@@ -166,7 +167,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Corrupted config-file path no longer breaks SPPMon but prints an error message
 * Partly fixes #40, but some IDs still remain missing due to other issues. The fix is described within the issue.
 * JobLogs: The type-filter is no longer ignored on regular/loaded execution - requesting way fewer logs.
-* Fixed an error when importing individual job log statistics, and `ressourceType` was missing
+* Fixed an error when importing individual job log statistics, and `resourceType` was missing
 
 #### Changes
 
@@ -178,7 +179,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Reworks REST-API POST-Requests to be merged with GET-Requests
   * This includes the repeated tries if a request fails
   * Deprecates `url_set_param`, using functionality of `requests`-package instead
-  * Using Python-Structs for URL-params instead of cryptical encoded params
+  * Using Python-Structs for URL-params instead of cryptic encoded params
 * Reworks REST-API requests to use parameters more efficiently and consistently, making the code hopefully more readable.
   * Changes get_url_params to gain all parameters from URL-Encoding
   * Introduces set_url_params to set all params into URL encoding
@@ -308,10 +309,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-* Reminder: `--minimumLogs` depricated, to be removed in V1.0. Use `--loadedSystem` instead
-* `--processStats` depricated, integrated into `--ssh`
-* `transfer_data` removed. Use `copy_datase` instead.
-  * removed `--old_database`, integraded into `copy_database` CFG file.
+* Reminder: `--minimumLogs` deprecated, to be removed in V1.0. Use `--loadedSystem` instead
+* `--processStats` deprecated, integrated into `--ssh`
+* `transfer_data` removed. Use `copy_database` instead.
+  * removed `--old_database`, integrated into `copy_database` CFG file.
 * `--test` implemented
 
 InfluxDB tables:

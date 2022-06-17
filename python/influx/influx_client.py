@@ -64,8 +64,8 @@ class InfluxClient:
         create_rp - Creates a new retention policy for the specified database
         check_create_rp - Checks if any retention policy needs to be altered or added
         check_create_cq - Checks if any continuous query needs to be altered or added
-        insert_dicts_to_buffer - Method to insert data into influxb
-        flush_insert_buffer - flushes buffer, send querys to influxdb
+        insert_dicts_to_buffer - Method to insert data into InfluxDB
+        flush_insert_buffer - flushes buffer, send queries to influxdb
         send_selection_query - sends a single `SelectionQuery` to influxdb
         copy_database - copies whole database into a new one
 
@@ -94,20 +94,20 @@ class InfluxClient:
         return self.__database
 
     __insert_buffer: Dict[Table, List[InsertQuery]] = {}
-    """used to send all insert-querys at once. Multiple Insert-Querys per table"""
+    """used to send all insert-queries at once. Multiple Insert-queries per table"""
 
     __query_max_batch_size = 10000
-    """Maximum amount of querys sent at once to the influxdb. Recommended is 5000-10000.
+    """Maximum amount of queries sent at once to the influxdb. Recommended is 5000-10000.
     Queries automatically abort after 5 sec, but still try to write afterwards."""
 
     __fallback_max_batch_size = 500
     """Batch size on write requests once the first request failed to avoid the 5 second request limit"""
 
     def __init__(self, config_file: Dict[str, Any]):
-        """Initalize the influx client from a config dict. Call `connect` before using the client.
+        """Initialize the influx client from a config dict. Call `connect` before using the client.
 
         Arguments:
-            auth_influx {dictonary} -- Dictionary with required parameters.
+            auth_influx {dictionary} -- Dictionary with required parameters.
 
         Raises:
             ValueError: Raises a ValueError if any important parameters are missing within the file
@@ -338,7 +338,7 @@ class InfluxClient:
             ValueError: Check failed due Database error
         """
         try:
-            # returns a list of dictonarys with db name as key
+            # returns a list of dictionaries with db name as key
             # inside the dicts there is a list of each cq
             # the cqs are displayed as a 2 elem dict: 'name' and 'query'
             results: List[Dict[str, List[Dict[str, str]]]] = self.__client.get_list_continuous_queries()
@@ -401,7 +401,7 @@ class InfluxClient:
         """Checks and Grants the permissions for a user to match at least the required permission or a higher one.
 
         Warns if user does not exists. Grants permission if current permissions to not fullfil the requirement.
-        This method does not abort if the check or grant was unsuccessfull!
+        This method does not abort if the check or grant was unsuccessful!
 
         Args:
             username (str): name of the user to be checked
@@ -461,15 +461,15 @@ class InfluxClient:
         if(not new_database_name):
             raise ValueError("copy_database requires a new database name to copy to.")
 
-        # Programm information
-        LOGGER.info(f"Copy Database: transfering the data from database {self.database.name} into {new_database_name}.")
+        # Program information
+        LOGGER.info(f"Copy Database: transferring the data from database {self.database.name} into {new_database_name}.")
         LOGGER.info("> Info: This also includes all data from `autogen` retention policy, sorted into the correct retention policies.")
 
         # create db, nothing happens if it already exists
         LOGGER.info("> Creating the new database if it didn't already exist")
         self.setup_db(new_database_name)
 
-        # check for exisiting retention policies and continuous queries in the influxdb
+        # check for existing retention policies and continuous queries in the influxdb
         LOGGER.info(">> Checking and creating retention policies for the new database. Ignoring continuous queries.")
         self.check_create_rp(new_database_name)
         # self.check_create_cq() # Note: Not possible due full qualified statements. this would also not truly conserve the data
@@ -493,7 +493,7 @@ class InfluxClient:
             # Not every database name should be replaced
             match = re.search(r"BEGIN(.*(INTO\s+(.+)\..+\..+)\s+(FROM\s+\w+\.(\w+)\.\w+)(?:\s+WHERE\s+(.+))?\s+GROUP BY.*)END", cq_query_str)
             if(not match):
-                raise ValueError(f">> error when matching continous query {cq_query_str}. Aborting.")
+                raise ValueError(f">> error when matching continuos query {cq_query_str}. Aborting.")
 
             full_match = match.group(1)
             into_clause = match.group(2)
@@ -502,10 +502,10 @@ class InfluxClient:
             from_rp = match.group(5)
             where_clause = match.group(6)
 
-            # Add timelimit in where clause to prevent massive truncation due the rentention-policy time limit
+            # Add timelimit in where clause to prevent massive truncation due the retention-policy time limit
             new_full_match = full_match
             if(not con_query.select_query or con_query.select_query.into_table is None):
-                    ExceptionUtils.error_message(f">> Into table of continous query is none. Adjust query manually! {full_match}")
+                    ExceptionUtils.error_message(f">> Into table of continuos query is none. Adjust query manually! {full_match}")
             elif(con_query.select_query.into_table.retention_policy.duration != '0s'):
                     # Caution: if truncation of a query is above 10.000 it won't be saved!
                     clause = f"time > now() - {con_query.select_query.into_table.retention_policy.duration}"
@@ -528,7 +528,7 @@ class InfluxClient:
 
         LOGGER.info("> Finished Computing, starting to send.")
 
-        # how many lines were transfered
+        # how many lines were transferred
         line_count: int = 0
         # how often was a query partially written, not line count!
         dropped_count: int = 0
@@ -610,7 +610,7 @@ class InfluxClient:
         version: str = self.__client.ping()
         LOGGER.info(f">> Changed timeout of influxDB to old timeout of {self.__client._timeout}, version: {version}") # type: ignore
 
-        LOGGER.info(f"> Total transfered {line_count} lines of results.")
+        LOGGER.info(f"> Total transferred {line_count} lines of results.")
         if(dropped_count):
             LOGGER.info(f"> WARNING: Could not count lines of {dropped_count} queries due an expected error. No need for manual action.")
         if(critical_drop):
@@ -622,7 +622,7 @@ class InfluxClient:
         elif(line_count == 0):
             ExceptionUtils.error_message("ERROR: No data was transferred, make sure your database name is correct and the db is not empty.")
         else:
-            LOGGER.info("Database copied sucessfully")
+            LOGGER.info("Database copied successfully")
 
 
 
@@ -659,7 +659,7 @@ class InfluxClient:
         if(other_retention_policy):
             table = Table(table.database, table.name, table.fields, table.tags, table.time_key, other_retention_policy)
 
-        # Generate querys for each dict
+        # Generate queries for each dict
         query_buffer = []
         for mydict in list_with_dicts:
             try:
@@ -689,7 +689,7 @@ class InfluxClient:
         LOGGER.debug(f"Exit insert_dicts for table: {table_name}")
 
     def flush_insert_buffer(self, fallback: bool = False) -> None:
-        """Flushes the insert buffer, send querys to influxdb server.
+        """Flushes the insert buffer, send queries to influxdb server.
 
         Sends in batches defined by `__batch_size` to reduce http overhead.
         Only send-statistics remain in buffer, flush again to send those too.
@@ -712,13 +712,13 @@ class InfluxClient:
         # happens due re-run changing insert_buffer
         insert_keys = list(self.__insert_buffer.keys())
         for table in insert_keys:
-            # get empty in case the key isnt valid anymore (due fallback option)
+            # get empty in case the key isn't valid anymore (due fallback option)
             queries = list(map(lambda query: query.to_query(), self.__insert_buffer.get(table, [])))
             item_count = len(queries)
             if(item_count == 0):
                 continue
 
-            # stop time for send progess
+            # stop time for send progress
             if(not fallback):
                 batch_size = self.__query_max_batch_size
             else:
@@ -740,7 +740,7 @@ class InfluxClient:
 
                 if(match and int(match.group(1)) < batch_size):
                     # beyond 10.000 everything will be lost, below still written
-                    # ignore this case, its unavoidable and doesnt change anything
+                    # ignore this case, its unavoidable and doesn't change anything
                     pass
                 elif(re.match(r".*partial write: unable to parse .*", error.content)): # type: ignore
                     # some messages are lost, other written
@@ -768,7 +768,7 @@ class InfluxClient:
                 ExceptionUtils.error_message("Trying to send influx buffer again with fallback options")
                 self.flush_insert_buffer(fallback=True)
 
-            # None to avoid key erro if table is popped on fallback
+            # None to avoid key error if table is popped on fallback
             self.__insert_buffer.pop(table, None)
 
             # add metrics for the next sending process.
@@ -912,11 +912,11 @@ class InfluxClient:
         if(query.table_or_query in self.__insert_buffer):
             self.flush_insert_buffer()
 
-        # Convert querys to strings
+        # Convert queries to strings
         query_str = query.to_query()
 
         start_time = time.perf_counter()
-        # Send querys
+        # Send queries
         try:
             result = self.__client.query( # type: ignore
                 query=query_str, epoch='s', database=self.database.name)

@@ -134,7 +134,7 @@ class SPPCheck:
         Does NOT return.
 
         Keyword Arguments:
-            error {int} -- Errorcode if a error occured. (default: {0})
+            error {int} -- Errorcode if a error occurred. (default: {0})
         """
 
         # error with the command line arguments
@@ -156,13 +156,13 @@ class SPPCheck:
                 self.__influx_client.disconnect()
 
         except ValueError as error:
-            ExceptionUtils.exception_info(error=error, extra_message="Error occured while exiting SPPCheck")
+            ExceptionUtils.exception_info(error=error, extra_message="Error occurred while exiting SPPCheck")
             error_code = ERROR_CODE
 
         SppUtils.remove_pid_file(self.pid_file_path, ARGS)
 
-        # Both error-clauses are actually the same, but for possiblility of an split between error cases
-        # always last due beeing true for any number != 0
+        # Both error-clauses are actually the same, but for possibility of an split between error cases
+        # always last due being true for any number != 0
         if(error_code == ERROR_CODE or error_code):
             ExceptionUtils.error_message("Error occurred while executing SPPCheck")
         elif ExceptionUtils.stored_errors:
@@ -223,11 +223,11 @@ class SPPCheck:
             self.exit(ERROR_CODE_CMD_ARGS)
 
         if ARGS.latestData and not (ARGS.predictYears or ARGS.pdfReport or ARGS.genFakeData):
-            ExceptionUtils.error_message("Warning: the --latestData flag only works in conunction with --predictYears, --pdfReport or --genFakeData. Aborting")
+            ExceptionUtils.error_message("Warning: the --latestData flag only works in conjunction with --predictYears, --pdfReport or --genFakeData. Aborting")
             self.exit(ERROR_CODE_CMD_ARGS)
 
         if ARGS.fakeData and not (ARGS.predictYears or ARGS.pdfReport):
-            ExceptionUtils.error_message("Warning: the --fakeData flag only works in conunction with --predictYears or --pdfReport. Aborting")
+            ExceptionUtils.error_message("Warning: the --fakeData flag only works in conjunction with --predictYears or --pdfReport. Aborting")
             self.exit(ERROR_CODE_CMD_ARGS)
 
         # ### Trigger init of components ###
