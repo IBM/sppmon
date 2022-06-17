@@ -197,7 +197,7 @@ class ProtectionMethods:
         time_query = SelectionQuery(
             keyword=Keyword.SELECT,
             table_or_query=vms_table,
-            fields=['time', 'committed'],
+            fields=['time', 'commited'],
             limit=1,
             order_direction="DESC"
         )
