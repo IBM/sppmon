@@ -317,7 +317,7 @@ class SPPCheck:
                     self.__select_rp, self.__rp_timestamp,
                     self.__predict_years)
                 prediction_rp = predictor_controller.report_rp
-                #predictor_controller.predict_all_data()
+                predictor_controller.predict_all_data()
             except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
