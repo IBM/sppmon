@@ -82,6 +82,8 @@ Author:
  08/31/2021 version 1.0.2  Changed VADP table definition to prevent drop of false duplicates
  09/09/2021 version 1.1.0  Increase logging for REST-API errors, add ssh-client skip option for cfg file.
  02/22/2021 version 1.1.1  Only ssh-calls the vSnap-api if it is available
+ 06/17/2022 version 1.2.0  Change of logfile location, bug and documentation fixes.
+
 """
 from __future__ import annotations
 
@@ -109,7 +111,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "1.1.1  (2021/02/22)"
+VERSION = "1.2.0  (2022/06/17)"
 
 
 # ----------------------------------------------------------------------------

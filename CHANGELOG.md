@@ -9,8 +9,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-* sizingTool function and internal structure
-  * DataGenerator for generating fake testing data.
+* SPPCheck function and internal structure
+  * Unfinished yet, though first results are available.
+* Added Grafana Dashboard for SPPCheck
+
+### Changed
+
+### Fixed
+
+### Known Issues
+
+## [1.2.1] - 2022-06-17
+
+### Added
+
 * Adds FullLogs and LoadedSystem information to the Grafana SPPMon Runtime Duration panel.
 * Adds clarification that all timestamps are changed into second precision on insert.
 * Adds support for batch insert to insert into a different retention policy
@@ -18,6 +30,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * CreateRP-Method in the influxClient to allow creating non-lasting retention policies
 * Adds pandas-stubs, openpyxl and pyxlsb to requirements file
 * Prints total count of errors during the execution if there are any - instead of "script finished" output
+* Added type spelling dictionary to the settings file
+* Added linting settings to the settings file
 
 ### Changed
 
@@ -38,11 +52,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 * Fixed typo in exception_utils.py file, renaming it and all references on it.
-* Lots of Typos in the inline documentation
+* Lots of typos in the inline documentation
 * SelectionQuery and associated methods: Introduces Optional annotation to fix linter error
 
 ### Known Issues
 
+* In newer Grafana versions the dashboard import might corrupt the datasource name. A fix is unavailable yet, though the error is only visual.
 
 ## [1.1.1] - 2022-02-22
 
