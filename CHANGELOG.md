@@ -63,6 +63,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Known Issues
 
 * In newer Grafana versions the dashboard import might corrupt the datasource name. A fix is unavailable yet, though the error is only visual.
+* Some typos in the table definitions (commited / uncommited) cannot be fixed. This would not be backward-compatible and break the database.
 
 ## [1.1.1] - 2022-02-22
 
