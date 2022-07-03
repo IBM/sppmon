@@ -71,6 +71,7 @@ class SpRestClient:
     spqueries.json.
 
     Methods:
+        discover_spoke_servers - Get list which includes hub server and all attached spoke servers
         get_url - Builds endpoint to communicate with hub or spoke servers.
         query_url - Sends provided query to a specified OC server as POST data and retrieves the response.
         get_objects - Gets all possible pages of records from a specified server for a specified query.
@@ -107,6 +108,30 @@ class SpRestClient:
 
         self.server_params = server_params
         self.page_size: int = starting_page_size
+
+    def discover_spoke_servers(self) -> List[str]:
+        """Queries hub server for all attached spoke servers. Appends results to a list, which
+        includes the hub servers, which is returned.
+
+        Returns:
+            {List[str]} - List containing names of spoke servers and "None", representing hub server
+
+        """
+        query: str = "SELECT SERVER_NAME FROM SERVERS"
+        query_results: SpRestResponsePage
+
+        query_results, _ = self.query_url(
+            query_id="DISCOVERY",
+            target_server=None,
+            query=query
+        )
+
+        target_servers = []
+        for record in query_results.items:
+            for _, server_name in record.items():
+                target_servers.append(server_name)
+        target_servers.append(None)
+        return target_servers
 
     def get_url(self,
                 target_server: str = None) -> str:
@@ -233,7 +258,7 @@ class SpRestClient:
 
             result_list.append(page)
 
-        LOGGER.info(f"[SpRestClient] [get_objects] Retrieved {len(result_list)} pages from server: {responding_server}")
+        LOGGER.info(f"Retrieved {len(result_list)} pages from server: {responding_server}")
 
         return result_list
 
@@ -304,7 +329,7 @@ class SpRestIterator:
             {Tuple[SpRestResponsePage, float]} - Returns a page of records from the target server and response time.
         """
         responding_server = self.target_server if self.target_server else self.rest_client.server_params.srv_address
-        LOGGER.info(f"Attempting to retrieve record from {responding_server}. "
+        LOGGER.info(f"Attempting to retrieve records from {responding_server}. "
                     + f"Current Record: {self.current_record}. "
                     + f"Page Size: {self.rest_client.page_size}")
 
@@ -317,6 +342,10 @@ class SpRestIterator:
         except ValueError as empty_response_error:
             LOGGER.info(f"Exiting. Received response from "
                         + f"{responding_server}: {empty_response_error}")
+            raise StopIteration
+
+        if len(response_dataclass.items) < self.rest_client.page_size:
+            LOGGER.info(f"Exiting. Received all available records from {responding_server}")
             raise StopIteration
 
         self.current_record += self.rest_client.page_size

@@ -87,6 +87,9 @@ class SpMon:
             - Implement critical missing methods (such as exit)
     """
 
+    enable_server_discovery: bool = True
+    """Override user-defined target_servers in spqueries.json. Instead, query all connected servers."""
+
     starting_page_size: int = 5000
     """Page size of paginated response from the REST API endpoint"""
 
@@ -225,6 +228,11 @@ class SpMon:
                 param_dict=query_params
             )
             query_dataclass.query_id = query_id
+
+            # Replace target servers with discovered servers if setting is enabled
+            if self.enable_server_discovery:
+                query_dataclass.target_servers = self.rest_client.discover_spoke_servers()
+
             query_definitions.append(query_dataclass)
 
             # Load table definition
