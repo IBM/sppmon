@@ -258,7 +258,7 @@ class SpRestClient:
 
             result_list.append(page)
 
-        LOGGER.info(f"Retrieved {len(result_list)} pages from server: {responding_server}")
+        LOGGER.info(f"Retrieved {len(result_list)} total page(s) server: {responding_server}")
 
         return result_list
 
@@ -329,6 +329,12 @@ class SpRestIterator:
             {Tuple[SpRestResponsePage, float]} - Returns a page of records from the target server and response time.
         """
         responding_server = self.target_server if self.target_server else self.rest_client.server_params.srv_address
+
+        # Do not continue if last page was not full
+        if self.rest_client.page_size % self.current_record != 0:
+            LOGGER.info(f"Exiting iterator. Recieved all available records from {responding_server}.")
+            raise StopIteration
+
         LOGGER.info(f"Attempting to retrieve records from {responding_server}. "
                     + f"Current Record: {self.current_record}. "
                     + f"Page Size: {self.rest_client.page_size}")
@@ -340,16 +346,13 @@ class SpRestIterator:
                 target_server=self.target_server
             )
         except ValueError as empty_response_error:
-            LOGGER.info(f"Exiting. Received response from "
+            LOGGER.info(f"Exiting iterator. Received response from "
                         + f"{responding_server}: {empty_response_error}")
             raise StopIteration
 
-        if len(response_dataclass.items) < self.rest_client.page_size:
-            LOGGER.info(f"Exiting. Received all available records from {responding_server}")
-            raise StopIteration
-
-        self.current_record += self.rest_client.page_size
+        # self.current_record += self.rest_client.page_size
+        self.current_record = len(response_dataclass.items) + 1
         self._update_base_statement()
 
-        LOGGER.info(f"Retrieved record from {responding_server}")
+        LOGGER.info(f"Retrieved {self.current_record - 1} record(s) from {responding_server}")
         return response_dataclass, send_time
