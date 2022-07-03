@@ -1,0 +1,18 @@
+{
+    "query_id" : {
+        "query" : "SELECT COLUMN1, COLUMN2 FROM TABLE",
+        "measurement" : "INFLUX_TABLE_NAME",
+        "datetime" : "DATE",
+        "tags" : [
+            "HOST"
+        ],
+        "fields" : [
+            "COLUMN1",
+            "COLUMN2"
+        ],
+        "target_servers": [
+            "SPOKE_SERVER_1",
+            "SPOKE_SERVER_2"
+        ]
+    }
+}
