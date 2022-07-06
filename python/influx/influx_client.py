@@ -798,6 +798,9 @@ class InfluxClient:
         if(list(filter(lambda arg: arg is None, [keyword, table_or_query, duration_s, item_count]))):
             raise ValueError("One of the insert metrics to influx args is None. This is not supported")
 
+        # The tablename is shown in the metrics table.
+        # Using this clause it is possible to see whether it was an inner query.
+        # the data is not used for any querying purposes.
         if isinstance(table_or_query, SelectionQuery):
             table_name = f"InnerQuery to {table_or_query.table_or_query}"
         else:

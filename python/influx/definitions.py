@@ -1290,16 +1290,16 @@ class Definitions:
 
         if basename(__main__.__file__) == "sppcheck.py":
 
-            import sppCheck.excel.excel_reader as er
-            import sppCheck.predictor.predictor_influx_connector as p_i_c
+            from sppCheck.excel.excel_reader import ExcelReader
+            from sppCheck.predictor.predictor_influx_connector import PredictorInfluxConnector
 
             cls.add_predef_table(
-                name=p_i_c.PredictorInfluxConnector.sppcheck_table_name,
+                name=PredictorInfluxConnector.sppcheck_table_name,
                 fields={
-                    p_i_c.PredictorInfluxConnector.sppcheck_value_name:                    Datatype.INT,
+                    PredictorInfluxConnector.sppcheck_value_name:                    Datatype.INT,
                 },
                 tags=[
-                    p_i_c.PredictorInfluxConnector.sppcheck_tag_name,
+                    PredictorInfluxConnector.sppcheck_tag_name,
                     "site",
                     "siteName"
 
@@ -1312,14 +1312,14 @@ class Definitions:
             )
 
             cls.add_predef_table(
-                name=er.ExcelReader.sppcheck_excel_table_name,
+                name=ExcelReader.sppcheck_excel_table_name,
                 fields={
-                    er.ExcelReader.sppcheck_excel_value_name:                    Datatype.INT,
+                    ExcelReader.sppcheck_excel_value_name:                    Datatype.INT,
                 },
                 tags=[
-                    er.ExcelReader.sppcheck_excel_tag_name,
+                    ExcelReader.sppcheck_excel_tag_name,
                 ],
-                # this rp is unused, but in here for safety. Overwritten by excel-RP
+                # this rp is unused, but redundancy in case of an error. Overwritten by excel-RP
                 retention_policy=cls.RP_INF(),
                 # No continuous queries
                 # timekey unset -> default key
