@@ -334,12 +334,12 @@ class SppMon:
         self.api_queries: Optional[ApiQueries] = None
         """module containing predefined calls to the SPP rest API, set in setup_optional_configs."""
 
-        self.log_path = SppUtils.mk_logger_file(ARGS.configFile, ".log")
+        self.log_path = SppUtils.mk_logger_file(ARGS.configFile, "sppmonLogs",  ".log")
         SppUtils.set_logger(self.log_path, LOGGER_NAME, ARGS.debug)
 
         LOGGER.info("Starting SPPMon")
 
-        self.pid_file_path = SppUtils.mk_logger_file(ARGS.configFile, ".pid_file")
+        self.pid_file_path = SppUtils.mk_logger_file(ARGS.configFile, "sppmonLogs", ".pid_file")
         if(not SppUtils.check_pid_file(self.pid_file_path, ARGS)):
             ExceptionUtils.error_message("Another instance of sppmon with the same args is running")
             self.exit(ERROR_CODE_START_ERROR)
@@ -551,7 +551,7 @@ class SppMon:
         self.spp_catalog: bool = ARGS.sppcatalog or constant
 
     def store_script_metrics(self) -> None:
-        """Stores script metrics into influxb. To be called before exit.
+        """Stores script metrics into influxdb. To be called before exit.
 
         Does not raise any exceptions, skips if influxdb is missing.
         """

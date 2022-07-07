@@ -1326,6 +1326,31 @@ class Definitions:
 
             )
 
+            cls.add_predef_table(
+                name='sppcheck_metrics',
+                fields={
+                    'duration':         Datatype.INT,
+                    'errorCount':       Datatype.INT,
+                    'errorMessages':    Datatype.STRING
+                },
+                tags=[
+                    "configFile",
+                    'influxdb_version',
+                    'sppcheck_version',
+                    'sheetPath',
+                    'sizerVersion',
+                    'startDate',
+                    'genFakeData',
+                    'predictYears',
+                    'pdfReport',
+                    'latestData',
+                    'fakeData'
+                ],
+                retention_policy=cls.RP_INF(),
+                # No continuous queries
+                # timekey unset -> default key
+            )
+
 
 
 

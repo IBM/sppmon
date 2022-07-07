@@ -10,13 +10,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 * SPPCheck function and internal structure
-  * Unfinished yet, though first results are available.
 * Added Grafana Dashboard for SPPCheck
 
 ### Changed
 
-* Upgraded CodeQL to v2
-
+* Upgraded CodeQL to v
+* Extended `SppUtils.mk_logger_file` method by an logger_dir argument to allow different log files for SPPMon and SPPCheck
+  * Added "sppcheckLogs" to the gitignore file.
+* Moved all cSpell settings from the workspace file to the settings file
 ### Fixed
 
 * Code scanning alert #2 and #3: Printing passwords into logger due to an faulty if-expression.
@@ -36,6 +37,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Prints total count of errors during the execution if there are any - instead of "script finished" output
 * Added type spelling dictionary to the settings file
 * Added linting settings to the settings file
+* Added two new tables to the definitions.py file which are only executed if SPPCheck is executed.
 
 ### Changed
 

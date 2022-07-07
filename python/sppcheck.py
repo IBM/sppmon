@@ -31,7 +31,7 @@ import sys
 import time
 from argparse import ArgumentError, ArgumentParser
 from datetime import datetime
-from typing import NoReturn
+from typing import Dict, NoReturn, Union
 
 
 from influx.database_tables import RetentionPolicy
@@ -66,7 +66,6 @@ parser.add_argument("--sheet", dest="sheetPath", help="Path to filled sizing she
 parser.add_argument("--sizerVersion", dest="sizerVersion", help="Specify the version of the vSnap sizer sheet, e.g v1.0 or v2.1.1")
 parser.add_argument("--startDate", dest="startDate", help="Date of start of the system in format \"YYYY-MM-DD\", e.g. startDate=01-01-2019")
 
-
 # generation
 parser.add_argument("--genFakeData", dest="genFakeData", action="store_true", help="generate fake data. Automatically uses the fake data.")
 parser.add_argument("--predictYears", dest="predictYears", type=int, help="Predict the development for the next x years.")
@@ -78,9 +77,6 @@ parser.add_argument("--fakeData", dest="fakeData", action="store_true", help="us
 
 # general purpose options
 parser.add_argument("-v", '--version', action='version', version="TODO " + VERSION)
-parser.add_argument("--verbose", dest="verbose", action="store_true", help="print to stdout")
-parser.add_argument("--debug", dest="debug", action="store_true", help="save debug messages")
-parser.add_argument("--test", dest="test", action="store_true", help="tests connection to all components")
 
 
 print = functools.partial(print, flush=True)
@@ -123,56 +119,9 @@ class SPPCheck:
     """
 
     # set class variables
-    MethodUtils.verbose = ARGS.verbose
-    SppUtils.verbose = ARGS.verbose
-
-    def exit(self, error_code: int = SUCCESS_CODE) -> NoReturn:
-        """Executes finishing tasks and exits of SPPCheck. To be called every time.
-
-        Executes finishing tasks and displays error messages.
-        Specify only error message if something did went wrong.
-        Use Error codes specified at top of module.
-        Does NOT return.
-
-        Keyword Arguments:
-            error {int} -- Errorcode if a error occurred. (default: {0})
-        """
-
-        # error with the command line arguments
-        # dont store runtime here
-        if(error_code == ERROR_CODE_CMD_ARGS):
-            parser.print_help()
-            sys.exit(ERROR_CODE_CMD_ARGS)  # unreachable?
-        if(error_code == ERROR_CODE_START_ERROR):
-            ExceptionUtils.error_message("Error when starting SPPCheck. Please review the errors above")
-            sys.exit(ERROR_CODE_START_ERROR)
-
-        script_end_time = SppUtils.get_actual_time_sec()
-        LOGGER.debug("Script end time: %d", script_end_time)
-
-        try:
-            # self.store_script_metrics()
-
-            if(self.__influx_client):
-                self.__influx_client.disconnect()
-
-        except ValueError as error:
-            ExceptionUtils.exception_info(error=error, extra_message="Error occurred while exiting SPPCheck")
-            error_code = ERROR_CODE
-
-        SppUtils.remove_pid_file(self.pid_file_path, ARGS)
-
-        # Both error-clauses are actually the same, but for possibility of an split between error cases
-        # always last due being true for any number != 0
-        if(error_code == ERROR_CODE or error_code):
-            ExceptionUtils.error_message("Error occurred while executing SPPCheck")
-        elif ExceptionUtils.stored_errors:
-            print(f"Total of {len(ExceptionUtils.stored_errors)} errors occurred during the execution. Check Messages above.")
-        else:
-            LOGGER.info("\n\n!!! script completed without any errors !!!\n")
-
-        print(f"check log for details: grep \"PID {os.getpid()}\" {self.log_path} > sppcheck.log.{os.getpid()}")
-        sys.exit(error_code)
+    # not necessary in sppcheck, but done to avoid any later programming errors.
+    MethodUtils.verbose = True
+    SppUtils.verbose = True
 
     def __init__(self):
         self.log_path: str = ""
@@ -181,12 +130,12 @@ class SPPCheck:
         """path to pid_file, set in check_pid_file."""
 
         try:
-            self.log_path = SppUtils.mk_logger_file(ARGS.configFile, ".log")
+            self.log_path = SppUtils.mk_logger_file(ARGS.configFile, "sppcheckLogs", ".log")
             SppUtils.set_logger(self.log_path, LOGGER_NAME, ARGS.debug)
 
-            LOGGER.info("Starting the Sizing tool")
+            LOGGER.info("Starting SPPCheck")
 
-            self.pid_file_path = SppUtils.mk_logger_file(ARGS.configFile, ".pid_file")
+            self.pid_file_path = SppUtils.mk_logger_file(ARGS.configFile, "sppcheckLogs", ".pid_file")
             if(not SppUtils.check_pid_file(self.pid_file_path, ARGS)):
                 ExceptionUtils.error_message("Another instance of SPPCheck with the same args is running")
                 self.exit(ERROR_CODE_START_ERROR)
@@ -223,8 +172,8 @@ class SPPCheck:
             ExceptionUtils.error_message("> Using --sizerVersion without associated --sheetPath or --startDate arg. Aborting.")
             self.exit(ERROR_CODE_CMD_ARGS)
 
-        if ARGS.latestData and not (ARGS.predictYears or ARGS.pdfReport or ARGS.genFakeData):
-            ExceptionUtils.error_message("Warning: the --latestData flag only works in conjunction with --predictYears, --pdfReport or --genFakeData. Aborting")
+        if ARGS.latestData and not (ARGS.predictYears or  ARGS.genFakeData):
+            ExceptionUtils.error_message("Warning: the --latestData flag only works in conjunction with --predictYears or --genFakeData. Aborting")
             self.exit(ERROR_CODE_CMD_ARGS)
 
         if ARGS.fakeData and not (ARGS.predictYears or ARGS.pdfReport):
@@ -280,6 +229,109 @@ class SPPCheck:
             self.__select_rp = RetentionPolicy(self.__fakedata_rp_name, self.__influx_client.database, "INF")
             self.__rp_timestamp = "fake_" + self.__rp_timestamp
 
+    def store_script_metrics(self) -> None:
+        """Stores script metrics into influxdb. To be called before exit.
+
+        Does not raise any exceptions, skips if influxdb is missing.
+        """
+        LOGGER.info("Storing script metrics")
+        try:
+            if(not self.__influx_client):
+                raise ValueError("no influxClient set up")
+            insert_dict: Dict[str, Union[str, int, float, bool]] = {}
+
+            # add version nr, api calls are needed
+            insert_dict["sppcheck_version"] = VERSION
+            insert_dict["influxdb_version"] = self.__influx_client.version
+
+            # end total sppcheck runtime
+            end_counter = time.perf_counter()
+            insert_dict['duration'] = int((end_counter - self.start_counter) * 1000)
+
+            # add arguments of sppcheck
+            for (key, value) in vars(ARGS).items():
+                # Value is either string, int, true or false/None
+                if(value is not None):
+                    insert_dict[key] = value
+
+            # save occurred errors
+            error_count = len(ExceptionUtils.stored_errors)
+            if(error_count > 0):
+                ExceptionUtils.error_message(f"total of {error_count} exception/s occurred")
+            insert_dict['errorCount'] = error_count
+            # save list as str if not empty
+            if(ExceptionUtils.stored_errors):
+                insert_dict['errorMessages'] = str(ExceptionUtils.stored_errors)
+
+            # get end timestamp
+            (time_key, time_val) = SppUtils.get_capture_timestamp_sec()
+            insert_dict[time_key] = time_val
+
+            # save the metrics
+            self.__influx_client.insert_dicts_to_buffer(
+                table_name="sppcheck_metrics",
+                list_with_dicts=[insert_dict]
+            )
+            self.__influx_client.flush_insert_buffer()
+            LOGGER.info("Stored script metrics successfully")
+            # + 1 due the "total of x exception/s occurred"
+            if(error_count + 1 < len(ExceptionUtils.stored_errors)):
+                ExceptionUtils.error_message(
+                    "A non-critical error occurred while storing script metrics. \n\
+                    This error can't be saved into the DB, it's only displayed within the logs.")
+        except ValueError as error:
+            ExceptionUtils.exception_info(
+                error=error,
+                extra_message="Error when storing sppcheck metrics, skipping this step. Possible insert-buffer data loss")
+
+    def exit(self, error_code: int = SUCCESS_CODE) -> NoReturn:
+        """Executes finishing tasks and exits of SPPCheck. To be called every time.
+
+        Executes finishing tasks and displays error messages.
+        Specify only error message if something did went wrong.
+        Use Error codes specified at top of module.
+        Does NOT return.
+
+        Keyword Arguments:
+            error {int} -- Error code if a error occurred. (default: {0})
+        """
+
+        # error with the command line arguments
+        # dont store runtime here
+        if(error_code == ERROR_CODE_CMD_ARGS):
+            parser.print_help()
+            sys.exit(ERROR_CODE_CMD_ARGS)  # unreachable?
+        if(error_code == ERROR_CODE_START_ERROR):
+            ExceptionUtils.error_message("Error when starting SPPCheck. Please review the errors above")
+            sys.exit(ERROR_CODE_START_ERROR)
+
+        script_end_time = SppUtils.get_actual_time_sec()
+        LOGGER.debug("Script end time: %d", script_end_time)
+
+        try:
+            self.store_script_metrics()
+
+            if(self.__influx_client):
+                self.__influx_client.disconnect()
+
+        except ValueError as error:
+            ExceptionUtils.exception_info(error=error, extra_message="Error occurred while exiting SPPCheck")
+            error_code = ERROR_CODE
+
+        SppUtils.remove_pid_file(self.pid_file_path, ARGS)
+
+        # Both error-clauses are actually the same, but for possibility of an split between error cases
+        # always last due being true for any number != 0
+        if(error_code == ERROR_CODE or error_code):
+            ExceptionUtils.error_message("Error occurred while executing SPPCheck")
+        elif ExceptionUtils.stored_errors:
+            LOGGER.info(f"Total of {len(ExceptionUtils.stored_errors)} errors occurred during the execution. Check Messages above.")
+        else:
+            LOGGER.info("\n\n!!! script completed without any errors !!!\n")
+
+        print(f"check log for details: grep \"PID {os.getpid()}\" {self.log_path} > sppcheck.log.{os.getpid()}")
+        sys.exit(error_code)
+
     def main(self):
         LOGGER.info("Starting argument execution")
 
@@ -296,7 +348,7 @@ class SPPCheck:
             except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
-                    extra_message="Top-level-error when reading and inserting the sheet")
+                    extra_message="Top-level-error when reading and inserting the excel sheet data")
 
         if ARGS.genFakeData:
             try:

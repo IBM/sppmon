@@ -30,6 +30,10 @@
         "sppcheck",
         "truncnorm",
         "vadp",
-        "vsnap"
+        "vsnap",
+        "downsampled",
+        "Hotfixing",
+        "joblogs",
+        "Grafana"
     ]
 }

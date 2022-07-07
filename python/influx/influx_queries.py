@@ -344,7 +344,7 @@ class SelectionQuery:
         elif(self.keyword == Keyword.DELETE):
             table_str = f"FROM {self.table_or_query.name}"
         elif(self.alt_rp):
-            # this includes the database
+            # the retention policy includes an optionally changed database
             table_str = f"FROM {self.alt_rp}.{self.table_or_query.name}"
         else:
             table_str = f"FROM {self.table_or_query}"

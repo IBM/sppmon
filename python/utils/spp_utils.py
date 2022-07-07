@@ -170,14 +170,14 @@ class SppUtils:
             ExceptionUtils.exception_info(error, "Error when removing pid_file")
 
     @staticmethod
-    def mk_logger_file(conf_file_path: str, fileending: str) -> str:
-        """returns a filepath to spectrum-protect-sppmon/sppmonLogs/FILE out of the config file + a new fileending.
+    def mk_logger_file(conf_file_path: str, log_dir_name: str,  file_ending: str) -> str:
+        """returns a filepath to spectrum-protect-sppmon/sppmonLogs/FILE out of the config file + a new file ending.
 
         Creates both parent dirs and log file.
 
         Args:
-            conf_file (str): name of the configfile incl. path
-            fileending (str): the new fileending
+            conf_file (str): name of the config file incl. path
+            file_ending (str): the new file ending
 
         Returns:
             str: full path to the file
@@ -193,12 +193,12 @@ class SppUtils:
             try:
                 config_name = config_name.split('.')[-2]
             except IndexError as error:
-                ExceptionUtils.exception_info(error, "The config-file seems to not have a correct fileending")
+                ExceptionUtils.exception_info(error, "The config-file seems to not have a correct file ending")
                 raise ValueError("Unable to read the config file due a error within the specified path.")
 
-            logger_file_name = config_name + fileending
+            logger_file_name = config_name + file_ending
         else:
-            logger_file_name = "no_config_file" + fileending
+            logger_file_name = "no_config_file" + file_ending
 
         # gets location of defined function -> it is defined here, dummy function
         sppmon_path = getsourcefile(lambda: 0)
@@ -208,7 +208,7 @@ class SppUtils:
         sppmon_path = join(sppmon_path, "..", "..", "..")
         sppmon_path = abspath(sppmon_path)
 
-        logger_dir_path = join(sppmon_path, "sppmonLogs")
+        logger_dir_path = join(sppmon_path, log_dir_name)
         logger_dir_path = abspath(logger_dir_path)
         # create if not existent
         Path(logger_dir_path).mkdir(parents=True, exist_ok=True)
