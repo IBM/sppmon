@@ -11,9 +11,17 @@ updates:
     directory: "/python/" # Location of the requirements file, relative to the root of the repository.
     schedule:
       interval: "weekly"
+    ignore:
+      # ignore patch level updates for any dependency
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
     # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions" # See documentation for possible values
     directory: "/" # For GitHub Actions, set the directory to / to check for workflow files in .github/workflows.
     schedule:
       interval: "weekly"
+    ignore:
+      # ignore patch level updates for any dependency
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
