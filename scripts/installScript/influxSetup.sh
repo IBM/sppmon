@@ -255,6 +255,9 @@ EOF
     # [http] https-enabled = false
     checkReturn sudo sed -ri '"/\[http\]/,/https-enabled\s*=.*/ s|\#*\s*https-enabled\s*=.*| https-enabled = false|"' "${config_file}"
 
+    # [tsl] min-version = "tls1.2"
+    checkReturn sudo sed -ri '"/\[tls\]/,/min-version\s*=.*/ s|\#*\s*min-version\s*=.*| min-version = \"tls1.2\"|"' "${config_file}"
+
     checkReturn sudo systemctl enable influxdb
     restartInflux
 
