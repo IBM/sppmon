@@ -45,7 +45,7 @@ six==1.16.0
     #   influxdb
     #   pynacl
     #   python-dateutil
-urllib3==1.26.7
+urllib3==1.26.10
     # via requests
 wcwidth==0.2.5
     # via prettytable
