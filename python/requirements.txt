@@ -4,7 +4,7 @@
 #
 #    pip-compile --allow-unsafe ./python/requirements.txt
 #
-bcrypt==3.2.0
+bcrypt==3.2.2
     # via paramiko
 certifi==2021.5.30
     # via requests
