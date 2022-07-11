@@ -44,12 +44,6 @@ LOGGER = logging.getLogger(LOGGER_NAME)
 
 class StatsmodelEtsPredictor(PredictorInterface):
 
-    # __prediction_key = "predict"
-
-    # @property
-    # def prediction_key(self) -> str:
-    #     return self.__prediction_key
-
     def data_preparation(self, predict_data: Dict[int, Union[int, float]], dp_freq_hour: int) -> Series:
 
         LOGGER.debug(f"Received {len(predict_data)} datapoints for forecasting")
