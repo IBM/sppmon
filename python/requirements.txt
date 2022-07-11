@@ -21,7 +21,7 @@ idna==3.3
     # via requests
 influxdb==5.3.1
     # via -r ./python/requirements.txt
-msgpack==1.0.2
+msgpack==1.0.4
     # via influxdb
 paramiko==2.11.0
     # via -r ./python/requirements.txt
