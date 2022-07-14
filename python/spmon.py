@@ -44,8 +44,9 @@ from enum import Enum, unique, auto
 from spConnection.sp_rest_client import SpRestClient
 from spInflux.sp_influx_client import SpInfluxClient
 from spmonMethods.sp_dataclasses import \
-    SpServerParams, SpInfluxParams, SpRestQuery, SpInfluxTableDefinition, SpRestResponsePage
-from typing import Any, Dict, List, NoReturn, Optional, Union
+    SpServerParams, SpInfluxParams
+from spmonMethods.sp_ingest import SpIngestMethods
+from typing import Any, Dict, NoReturn, Optional
 from utils.exception_utils import ExceptionUtils
 from utils.sp_utils import SpUtils
 from utils.spp_utils import SppUtils
@@ -151,11 +152,25 @@ class SpMon:
         self.rest_client = SpRestClient(
             server_params=self.sp_server_params,
             starting_page_size=self.starting_page_size,
+            discover_target_servers=self.enable_server_discovery
         )
 
         self.influx_client = SpInfluxClient(
             sp_influx_server_params=self.sp_influx_server_params
-    )
+        )
+
+        # Initialize SpMon methods
+        self.ingest_methods = SpIngestMethods(
+            influx_client=self.influx_client,
+            rest_client=self.rest_client
+        )
+
+        self.ingest_methods.load_definitions(
+            queries_file=self.queries_file
+        )
+
+        # TODO: Move to setup critical configs
+        self.influx_client.connect()
 
     def read_required_file(self, file_type: RequiredFile) -> Dict[str, Any]:
         """Reads mandatory configuration files and returns values as a dict. It is a
@@ -202,78 +217,25 @@ class SpMon:
         """Method stub. Should cleanly close running processes before exiting the tool.
 
         Args:
-            error_code:
+            error_code: TODO - Add description
 
         TODO:
             - Refactor code from SppMon and emulate behavior.
         """
+        self.influx_client.disconnect()
         sys.exit(error_code)
 
     def main(self) -> None:
         """Main method for the SpMon code path.
 
         TODO:
-            - Extract logic from main method. Distribute into utility modules.
+            - Add error handling for processes
         """
         LOGGER.info("Entering SPMon main method.")
 
-        # Load query definitions and influx table definitions into lists
-        query_definitions: List[SpRestQuery] = []
-        influx_table_definitions: Dict[str, SpInfluxTableDefinition] = {}
-
-        for query_id, query_params in self.queries_file.items():
-            # Load query definitions
-            query_dataclass: SpRestQuery = SpUtils.build_dataclass_from_dict(
-                dataclass=SpRestQuery,
-                param_dict=query_params
-            )
-            query_dataclass.query_id = query_id
-
-            # Replace target servers with discovered servers if setting is enabled
-            if self.enable_server_discovery:
-                query_dataclass.target_servers = self.rest_client.discover_spoke_servers()
-
-            query_definitions.append(query_dataclass)
-
-            # Load table definition
-            table_dataclass: SpInfluxTableDefinition = SpUtils.build_dataclass_from_dict(
-                dataclass=SpInfluxTableDefinition,
-                param_dict=query_params
-            )
-            # table_dataclass.query_id = query_id
-            influx_table_definitions[query_id] = table_dataclass
-
-        # Get list of all responses
-        # List is normally List[List[all_pages_one_server]]
-        # We're combining all non-empty responses into one list
-        rest_response: List[SpRestResponsePage] = []
-        for query_definition in query_definitions:
-            for target_server in query_definition.target_servers:
-                response: List[SpRestResponsePage] = self.rest_client.get_objects(
-                    target_server=target_server,
-                    query_id=query_definition.query_id,
-                    query=query_definition.query
-                )
-                if response:
-                    rest_response.extend(response)
-
-            if len(query_definition.target_servers) == 0:
-                response: List[SpRestResponsePage] = self.rest_client.get_objects(
-                    query_id=query_definition.query_id,
-                    query=query_definition.query
-                )
-                if response:
-                    rest_response.extend(response)
-
-        # Insert records into influxdb
-        self.influx_client.connect()
-        for page in rest_response:
-            table_definition = influx_table_definitions.get(page.query_id)
-            self.influx_client.insert_dicts_to_buffer(
-                table_definition=table_definition,
-                paginated_records=page
-            )
+        # Process user defined queries: Get response from OC & ingest to InfluxDB
+        self.ingest_methods.cache_user_queries()
         self.influx_client.flush_insert_buffer()
-        self.influx_client.disconnect()
 
+        self.exit()
         LOGGER.info("Exiting SPMon main method.")

@@ -75,7 +75,7 @@ class SpInfluxClient:
 
     def __init__(self,
                  sp_influx_server_params: SpInfluxParams,
-                 verbose: bool = True):
+                 verbose: bool = False):
         """Initializes SpInfluxClient. Connect should be used to initialize InfluxDBClient
         before any other methods are called.
 
@@ -84,9 +84,11 @@ class SpInfluxClient:
             verbose {bool}: Whether log output should be detailed.
         """
         self.sp_influx_server_params: SpInfluxParams = sp_influx_server_params
-        self.__client: InfluxDBClient | None = None
-        self.__version: str | None = None
         self.verbose: bool = verbose
+
+        self.__client: InfluxDBClient | None = None
+        self.__current_buffer_size: int = 0
+        self.__version: str | None = None
 
     def get_url(self) -> str:
         """Builds InfluxDB URL.
@@ -175,12 +177,13 @@ class SpInfluxClient:
         table_buffer = self.__insert_buffer.get(table_definition, list())
         table_buffer.extend(record_buffer)
         self.__insert_buffer[table_definition] = table_buffer
+        self.__current_buffer_size += len(record_buffer)
         LOGGER.info(f"Appended {len(record_buffer)} items to the insert buffer")
 
         # Flush insert buffer if length exceeds safe limit
-        if (num_records := len(table_buffer)) >= (safe_limit := 2 * self.__query_max_batch_size):
-            LOGGER.info(f"Record buffer ({num_records}) has exceeded or met the safe limit of {safe_limit} entries. "
-                        + "Flushing buffer.")
+        if self.__current_buffer_size >= (safe_limit := 2 * self.__query_max_batch_size):
+            LOGGER.info(f"Record buffer ({self.__current_buffer_size}) has exceeded or met the safe limit of "
+                        f"{safe_limit} entries. Flushing buffer.")
             self.flush_insert_buffer()
 
     def flush_insert_buffer(self) -> None:
@@ -217,7 +220,8 @@ class SpInfluxClient:
                         bucket=self.sp_influx_server_params.bucket,
                         record=record_list,
                     )
-                self.__insert_buffer.pop(table_definition, None)
+                inserted_points: List[Point] = self.__insert_buffer.pop(table_definition, None)
+                self.__current_buffer_size -= len(inserted_points)
             except InfluxDBError as error:
                 ExceptionUtils.exception_info(
                     error=error,

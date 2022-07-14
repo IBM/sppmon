@@ -37,9 +37,9 @@ Classes:
 import logging
 
 from io import StringIO
-from typing import Tuple, Dict, Any
+from typing import Tuple, Dict, Any, List, Optional
 
-from spmonMethods.sp_dataclasses import SpRestResponsePage
+from spmonMethods.sp_dataclasses import SpRestResponsePage, SpRestQuery
 from utils.sp_utils import SpUtils
 
 LOGGER = logging.getLogger("spmon")
@@ -73,6 +73,26 @@ class SpRestClientUtils:
         response_dataclass.query_id = query_id
         response_dataclass.host = target_server
         return response_dataclass
+
+    @classmethod
+    def build_query_dataclass(cls,
+                              query_params: Dict[str, Any],
+                              query_id: str,
+                              override_server_list: Optional[List[str]] = None) -> SpRestQuery:
+        query_dataclass: SpRestQuery = SpUtils.build_dataclass_from_dict(
+            dataclass=SpRestQuery,
+            param_dict=query_params
+        )
+        query_dataclass.query_id = query_id
+
+        # Replace target servers with discovered servers if setting is enabled
+        if override_server_list:
+            query_dataclass.target_servers = override_server_list
+        else: # Append none to empty lists (with no override). Hub server is queried.
+            if len(query_dataclass.target_servers) == 0:
+                query_dataclass.target_servers.append(None)
+
+        return query_dataclass
 
 
 class SpIteratorUtils:

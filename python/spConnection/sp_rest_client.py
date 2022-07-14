@@ -40,9 +40,11 @@ import json
 
 from enum import Enum, unique
 from io import StringIO
+
+import requests.exceptions
 from requests import post
 from spmonMethods.sp_dataclasses import SpServerParams, SpRestResponsePage
-from typing import Dict, Any, Tuple, List
+from typing import Dict, Any, Tuple, List, Optional
 from utils.connection_utils import ConnectionUtils
 from utils.sp_connection_utils import SpRestClientUtils, SpIteratorUtils
 from utils.sp_utils import SpUtils
@@ -97,7 +99,8 @@ class SpRestClient:
 
     def __init__(self,
                  server_params: SpServerParams,
-                 starting_page_size: int):
+                 starting_page_size: int,
+                 discover_target_servers: bool):
         """Initializes SpRestClient. Login/disconnect not necessary.
         
         Args:
@@ -106,8 +109,14 @@ class SpRestClient:
         """
         LOGGER.info("Initializing SpRestClient")
 
-        self.server_params = server_params
+        self.server_params: SpServerParams = server_params
         self.page_size: int = starting_page_size
+        self.discover_target_servers: bool = discover_target_servers
+        self.override_server_list: Optional[List[str]] = None
+
+        if discover_target_servers:
+            self.override_server_list = self.discover_spoke_servers()
+
 
     def discover_spoke_servers(self) -> List[str]:
         """Queries hub server for all attached spoke servers. Appends results to a list, which
@@ -117,6 +126,7 @@ class SpRestClient:
             {List[str]} - List containing names of spoke servers and "None", representing hub server
 
         """
+        LOGGER.info("Querying hub server for spoke servers.")
         query: str = "SELECT SERVER_NAME FROM SERVERS"
         query_results: SpRestResponsePage
 
@@ -131,6 +141,7 @@ class SpRestClient:
             for _, server_name in record.items():
                 target_servers.append(server_name)
         target_servers.append(None)
+        LOGGER.info(f"Discovered servers: {target_servers}")
         return target_servers
 
     def get_url(self,
@@ -175,17 +186,26 @@ class SpRestClient:
         """
         url: str = self.get_url(target_server)
 
-        LOGGER.info(f"Retrieving records from: {url}")
+        LOGGER.info(f"[{query_id}] Retrieving records from: {url}")
 
-        response_query = post(
-            url=url,
-            data=query,
-            headers=self.POST_HEADERS,
-            auth=(self.server_params.username, self.server_params.password),
-            verify=False
-        )
-        send_time = response_query.elapsed.total_seconds()
-        LOGGER.info(f"Received response in {send_time} seconds.")
+        # TODO: Set timeout as user defined value
+        try:
+            response_query = post(
+                url=url,
+                data=query,
+                headers=self.POST_HEADERS,
+                auth=(self.server_params.username, self.server_params.password),
+                verify=False,
+                timeout=120
+            )
+            send_time = response_query.elapsed.total_seconds()
+            LOGGER.info(f"[{query_id}] Received response in {send_time} seconds.")
+        except requests.exceptions.Timeout as error:
+            raise ConnectionUtils.rest_response_error(
+                response_query,
+                "Timeout has occurred.",
+                url
+            )
 
         if not response_query.ok:
             raise ConnectionUtils.rest_response_error(
@@ -197,7 +217,7 @@ class SpRestClient:
         try:
             response_json: List[List[Dict[str, Any]]] = response_query.json()
         except (json.decoder.JSONDecodeError, ValueError) as error:
-            raise ValueError(f"Failed to parse response from {target_server}", response_query)
+            raise ValueError(f"[{query_id}] Failed to parse response from {target_server}", response_query)
 
         try:
             response_json: Dict[str, Any] = SpUtils.get_top_level_dict(response_json)
@@ -248,7 +268,7 @@ class SpRestClient:
             target_server=target_server
         )
 
-        LOGGER.info(f"Getting all objects from server: {responding_server}.")
+        LOGGER.info(f"[{query_id}] Getting all objects from server: {responding_server}.")
 
         for page, send_time in query_iterator:
             if add_time_stamp:
@@ -258,7 +278,7 @@ class SpRestClient:
 
             result_list.append(page)
 
-        LOGGER.info(f"Retrieved {len(result_list)} total page(s) server: {responding_server}")
+        LOGGER.info(f"[{query_id}] Retrieved {len(result_list)} total page(s) server: {responding_server}")
 
         return result_list
 
@@ -331,11 +351,11 @@ class SpRestIterator:
         responding_server = self.target_server if self.target_server else self.rest_client.server_params.srv_address
 
         # Do not continue if last page was not full
-        if self.rest_client.page_size % self.current_record != 0:
-            LOGGER.info(f"Exiting iterator. Recieved all available records from {responding_server}.")
+        if self.current_record != 1 and (self.current_record - 1) % self.rest_client.page_size != 0:
+            LOGGER.info(f"[{self.query_id}] Exiting iterator. Received all available records from {responding_server}.")
             raise StopIteration
 
-        LOGGER.info(f"Attempting to retrieve records from {responding_server}. "
+        LOGGER.info(f"[{self.query_id}] Attempting to retrieve records from {responding_server}. "
                     + f"Current Record: {self.current_record}. "
                     + f"Page Size: {self.rest_client.page_size}")
 
@@ -346,13 +366,13 @@ class SpRestIterator:
                 target_server=self.target_server
             )
         except ValueError as empty_response_error:
-            LOGGER.info(f"Exiting iterator. Received response from "
+            LOGGER.info(f"[{self.query_id}] Exiting iterator. Received response from "
                         + f"{responding_server}: {empty_response_error}")
             raise StopIteration
 
         # self.current_record += self.rest_client.page_size
-        self.current_record = len(response_dataclass.items) + 1
+        self.current_record += len(response_dataclass.items)
         self._update_base_statement()
 
-        LOGGER.info(f"Retrieved {self.current_record - 1} record(s) from {responding_server}")
+        LOGGER.info(f"[{self.query_id}] Retrieved {len(response_dataclass.items)} record(s) from {responding_server}")
         return response_dataclass, send_time

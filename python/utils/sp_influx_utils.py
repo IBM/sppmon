@@ -37,9 +37,8 @@ Classes:
 import logging
 
 from enum import Enum
-from influxdb_client import Point, WritePrecision
-from typing import Dict, Any
 from dateutil.parser import parse, ParserError
+from typing import Dict, Any
 
 LOGGER = logging.getLogger("spmon")
 
@@ -61,7 +60,8 @@ class SpInfluxUtils:
     """
 
     @staticmethod
-    def format_db2_time_key(record: Dict[str, Any], time_key: str) -> None:
+    def format_db2_time_key(record: Dict[str, Any],
+                            time_key: str) -> None:
         """Takes and formats the OC's response for a given time key. Takes the entry
         of interest within a dictionary and assigns it as the new value to a given time
         key. The time key is what the user assigns to be the primary key when inserting
@@ -83,12 +83,14 @@ class SpInfluxUtils:
             return
 
         # A date is converted to epoch seconds and assigned as the value of time_key
+        # InfluxDBClient can take care of this. Leaving logic here in case necessary to enforce
+        # nanosecond precision in the future.
         if time_entry.get(date := TimeKeyValue.DATE.value):
             try:
                 record[time_key] = time_entry.get(date)
                 record_date_time_value = parse(record.get(time_key))
                 epoch_seconds_value = str(record_date_time_value.timestamp()).split(".")[0]
-                record[time_key] = epoch_seconds_value
+                record[time_key] = int(epoch_seconds_value)
             except (ValueError, ParserError) as dateutil_parsing_error:
                 raise ValueError("Unsupported date value. Cannot parse.")
         # If already in epoch seconds, assign as the value of time_key without modification

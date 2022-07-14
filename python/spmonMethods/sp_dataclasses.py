@@ -77,7 +77,7 @@ class SpRestQuery:
     """Holds query, identifier and servers to issue against."""
     query: str = ""
     query_id: str = ""
-    target_servers: list[str] = field(default_factory=list)
+    target_servers: list[Optional[str]] = field(default_factory=list)
 
 
 @dataclass
