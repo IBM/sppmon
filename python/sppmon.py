@@ -214,10 +214,6 @@ class SppMon:
 
     """
 
-    # set class variables
-    MethodUtils.verbose = ARGS.verbose
-    SppUtils.verbose = ARGS.verbose
-
     # ###### API-REST page settings  ###### #
     # ## IMPORTANT NOTES ## #
     # please read the documentation before adjusting values.
@@ -333,6 +329,10 @@ class SppMon:
         """client used to connect to the SPP rest API, set in setup_optional_configs."""
         self.api_queries: Optional[ApiQueries] = None
         """module containing predefined calls to the SPP rest API, set in setup_optional_configs."""
+
+        # set class variables
+        MethodUtils.verbose = ARGS.verbose
+        SppUtils.verbose = ARGS.verbose
 
         self.log_path = SppUtils.mk_logger_file(ARGS.configFile, "sppmonLogs",  ".log")
         SppUtils.set_logger(self.log_path, LOGGER_NAME, ARGS.debug)
@@ -584,8 +584,7 @@ class SppMon:
 
             # save occurred errors
             error_count = len(ExceptionUtils.stored_errors)
-            if(error_count > 0):
-                ExceptionUtils.error_message(f"total of {error_count} exception/s occurred")
+
             insert_dict['errorCount'] = error_count
             # save list as str if not empty
             if(ExceptionUtils.stored_errors):
@@ -602,8 +601,8 @@ class SppMon:
             )
             self.influx_client.flush_insert_buffer()
             LOGGER.info("Stored script metrics successfully")
-            # + 1 due the "total of x exception/s occurred"
-            if(error_count + 1 < len(ExceptionUtils.stored_errors)):
+
+            if(error_count < len(ExceptionUtils.stored_errors)):
                 ExceptionUtils.error_message(
                     "A non-critical error occurred while storing script metrics. \n\
                     This error can't be saved into the DB, it's only displayed within the logs.")

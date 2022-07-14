@@ -88,7 +88,6 @@ class StatsmodelEtsPredictor(PredictorInterface):
 
         forecast_dp_count = round((forecast_years * 365 * 24) / dp_freq_hour)
 
-
          # discard prediction data without new data
         hours_last_data = (datetime.now() - data_series.index.max()).total_seconds() / (60 * 60)
 
@@ -116,7 +115,7 @@ class StatsmodelEtsPredictor(PredictorInterface):
             trend="mul",
             initialization_method="estimated", # no real documentation here
             missing="skip" # drop missing values, like nan -> doesnt work due to freq not being detected even if set
-            ).fit(optimized=True, disp=False) # type: ignore
+            ).fit(disp=False) # type: ignore
         prediction: Series = ets_fit.forecast(forecast_dp_count)
 
         # if it is not monotonic, the values are swapping between positive and negative, highly increasing

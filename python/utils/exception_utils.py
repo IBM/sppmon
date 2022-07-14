@@ -30,7 +30,7 @@ import logging
 import sys
 import os
 
-from typing import List
+from typing import List, Optional
 
 LOGGER = logging.getLogger("sppmon")
 
@@ -61,7 +61,7 @@ class ExceptionUtils:
         cls.stored_errors.append(message)
 
     @classmethod
-    def exception_info(cls, error: Exception, extra_message: str = None) -> None:
+    def exception_info(cls, error: Exception, extra_message: Optional[str] = None) -> None:
         """saves and debugs errors, printing a customized exception instead of the whole trace.
 
         Specify a extra message if you want to also print something instead of only logging the exception.

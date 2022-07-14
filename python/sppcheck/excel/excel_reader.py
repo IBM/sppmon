@@ -58,7 +58,7 @@ class ExcelReader:
 
     sppcheck_excel_table_name: ClassVar[str] = "sppcheck_excel_data"
     sppcheck_excel_value_name: ClassVar[str] = "data"
-    sppcheck_excel_tag_name: ClassVar[str] = "data_type"
+    sppcheck_excel_tag_name: ClassVar[str] = "metric_name"
 
     def __init__(self, sheet_path: str, sizer_version: str,
                  influx_client: ic.InfluxClient, start_date: datetime,
@@ -136,9 +136,8 @@ class ExcelReader:
                     unit_multiplier = SppUtils.get_unit_multiplier(unit)
                     projection: Series = projection.map(lambda x: x * unit_multiplier) # type: ignore
 
-                # save the type of the count if it is a count
-
-                replacement_tags = {self.sppcheck_excel_tag_name: excel_key}
+                # save the id for the metric
+                insert_tags = {self.sppcheck_excel_tag_name: excel_key}
 
                 projection.index = date_index.copy(deep=True)
                 # mean is required to align the timestamps, other functions like fill with na didn't work
@@ -154,7 +153,7 @@ class ExcelReader:
                         prediction_result=interpolated_projection,
                         table_name=self.sppcheck_excel_table_name,
                         value_key=self.sppcheck_excel_value_name,
-                        replacement_tags=replacement_tags)
+                        insert_tags=insert_tags)
 
                 except KeyError as error:
                     ExceptionUtils.exception_info(error)

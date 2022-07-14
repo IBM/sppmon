@@ -118,20 +118,21 @@ class SPPCheck:
 
     """
 
-    # set class variables
-    # not necessary in sppcheck, but done to avoid any later programming errors.
-    MethodUtils.verbose = True
-    SppUtils.verbose = True
-
     def __init__(self):
         self.log_path: str = ""
         """path to logger, set in set_logger."""
         self.pid_file_path: str = ""
         """path to pid_file, set in check_pid_file."""
 
+        # set class variables
+        # Methods: not necessary in sppcheck, but done to avoid any later programming errors.
+        MethodUtils.verbose = True
+        SppUtils.verbose = True
+
         try:
             self.log_path = SppUtils.mk_logger_file(ARGS.configFile, "sppcheckLogs", ".log")
-            SppUtils.set_logger(self.log_path, LOGGER_NAME, ARGS.debug)
+            # always save all debug information into the log, they are not printed
+            SppUtils.set_logger(self.log_path, LOGGER_NAME, debug=True)
 
             LOGGER.info("Starting SPPCheck")
 
@@ -256,8 +257,6 @@ class SPPCheck:
 
             # save occurred errors
             error_count = len(ExceptionUtils.stored_errors)
-            if(error_count > 0):
-                ExceptionUtils.error_message(f"total of {error_count} exception/s occurred")
             insert_dict['errorCount'] = error_count
             # save list as str if not empty
             if(ExceptionUtils.stored_errors):
@@ -274,8 +273,8 @@ class SPPCheck:
             )
             self.__influx_client.flush_insert_buffer()
             LOGGER.info("Stored script metrics successfully")
-            # + 1 due the "total of x exception/s occurred"
-            if(error_count + 1 < len(ExceptionUtils.stored_errors)):
+
+            if(error_count < len(ExceptionUtils.stored_errors)):
                 ExceptionUtils.error_message(
                     "A non-critical error occurred while storing script metrics. \n\
                     This error can't be saved into the DB, it's only displayed within the logs.")
@@ -373,7 +372,7 @@ class SPPCheck:
             except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
-                    extra_message="Top-level-error when creating Grafana report")
+                    extra_message="Top-level-error when creating predicting Data")
 
         if ARGS.pdfReport:
             try:

@@ -18,9 +18,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Extended `SppUtils.mk_logger_file` method by an logger_dir argument to allow different log files for SPPMon and SPPCheck
   * Added "sppcheckLogs" to the gitignore file.
 * Moved all cSpell settings from the workspace file to the settings file
+* Removed/Moved total count of exceptions during execution
+* Moved verbose setting of sub-modules into init method to avoid issues and clarify program structure
 ### Fixed
 
 * Code scanning alert #2 and #3: Printing passwords into logger due to an faulty if-expression.
+* CheckPID file now uses the class-verbose setting and no longer ARGS-Verbose, making it independent of actual args.
 
 ### Known Issues
 

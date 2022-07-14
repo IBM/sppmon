@@ -78,9 +78,9 @@ class PredictorController:
             value_or_count_key="used",
             description="Storage data",
             group_tag="storageId",
+            metric_name="physical_capacity_wr",
 
             ##
-            data_type=None,
             use_count_query=False,
             no_grouped_total=False
         )
@@ -91,7 +91,7 @@ class PredictorController:
             value_or_count_key="storageId",
             description="vSnap count",
             group_tag="site, siteName",
-            data_type="vsnap_count",
+            metric_name="vsnap_count",
             use_count_query=True,
 
             ##
@@ -101,10 +101,10 @@ class PredictorController:
     def __predict_total_vadp_quantity(self) -> None:
         self.__predictor_influx_connector.predict_data(
             table_name="vadps",
-            value_or_count_key=f"count AS {PredictorInfluxConnector.sppcheck_value_name}", # unused
+            value_or_count_key=f"count", # unused
             description="total VADP count",
             group_tag="site, siteName",
-            data_type="vadp_total_count",
+            metric_name="vadp_total_count",
             use_count_query=False,
 
             #
@@ -116,10 +116,10 @@ class PredictorController:
             table_name="cpuram",
             value_or_count_key="memorySize",
             description="total server memory",
+            metric_name="total_server_memory",
 
             #
             group_tag=None,
-            data_type=None,
             use_count_query=False,
             no_grouped_total=False
         )
@@ -127,9 +127,9 @@ class PredictorController:
     def __predict_used_server_memory(self) -> None:
         self.__predictor_influx_connector.predict_data(
             table_name="cpuram",
-            value_or_count_key=f"memorySize * memoryUtil as {PredictorInfluxConnector.sppcheck_value_name}",
+            value_or_count_key=f"memorySize * memoryUtil",
             description="used server memory",
-            data_type="server_used_memory",
+            metric_name="server_used_memory",
 
             #
             group_tag=None,
@@ -144,8 +144,8 @@ class PredictorController:
             description="server catalogs",
             group_tag="\"name\"",
             no_grouped_total=True,
+            metric_name="server_catalogs",
 
             #
-            data_type=None,
             use_count_query=False,
         )

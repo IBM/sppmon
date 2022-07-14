@@ -48,7 +48,7 @@ class PredictorInfluxConnector:
 
     sppcheck_table_name: ClassVar[str] = "sppcheck_data"
     sppcheck_value_name: ClassVar[str] = "data"
-    sppcheck_tag_name: ClassVar[str] = "data_type"
+    sppcheck_tag_name: ClassVar[str] = "metric_name"
 
     @property
     def report_rp(self) -> RetentionPolicy:
@@ -72,7 +72,7 @@ class PredictorInfluxConnector:
 
         table = self.__influx_client.database[table_name]
 
-        fields = [value_key]
+        fields = [f"{value_key} AS {self.sppcheck_value_name}"]
         # tags for re-insert information of the predicted data
         fields.extend(map('\"{}\"'.format, table.tags))
 
@@ -115,19 +115,15 @@ class PredictorInfluxConnector:
             group_list=group_list
             )
 
-
     def predict_data(
         self,
         table_name: str,
         value_or_count_key: str,
         description: str,
+        metric_name: str,
         group_tag: Optional[str] = None,
-        data_type: Optional[str] = None,
         use_count_query: bool = False,
         no_grouped_total: bool = False) -> None:
-
-        if use_count_query and not data_type:
-            raise ValueError("using count query without saving into a new table is not allowed")
 
         #### Generate the query ###
         if use_count_query:
@@ -153,102 +149,158 @@ class PredictorInfluxConnector:
         if not tag_tuples:
             raise ValueError(f"No {description} is available within the InfluxDB.")
 
-        #### Iterate over the results / single result ####
-
-        # prepare variables for re-insert
-        # if data_type is used, insert the data in a special SPPCheck table
-        if data_type:
-            insert_value_key = self.sppcheck_value_name
-            replacement_tags = {self.sppcheck_tag_name:data_type}
-            insert_table_name = self.sppcheck_table_name
-        else:
-            insert_value_key = value_or_count_key
-            replacement_tags = {}
-            insert_table_name = table_name
-
-        # single result
+        #### single result (no grouping) ####
         if not group_tag:
+            self.__predict_single_data(
+                data=tag_tuples[0][1],
+                metric_name=metric_name)
+
+        #### Iterate over the results grouped by a tag ####
+
+        else:
+            self.__predict_grouped_data(
+                tag_tuples=tag_tuples,
+                description=description,
+                metric_name=metric_name,
+                group_tag=group_tag,
+                no_grouped_total=no_grouped_total,
+                use_count_query=use_count_query
+            )
+
+        # make sure to flush
+        self.__influx_client.flush_insert_buffer()
+
+
+
+    def __predict_single_data(self,
+                              data: Generator[Dict[str, Any], None, None],
+                              metric_name: str):
             # get the values out of the generator
-            historic_values: Dict[int, Union[int, float]] = {x["time"]: x[insert_value_key] for x in tag_tuples[0][1]}
+            result_list = list(data)
+
+            # prepare the metadata
+            insert_tags = {self.sppcheck_tag_name: metric_name}
+            insert_tags["site"] = result_list[0].get("site", None)
+            insert_tags["siteName"] = result_list[0].get("siteName", None)
+
+            # extract the values used for prediction
+            historic_values: Dict[int, Union[int, float]] = {x["time"]: x[self.sppcheck_value_name] for x in result_list}
             data_series = self.__predictorI.data_preparation(historic_values, self.__dp_interval_hour)
 
             prediction_result = self.__predictorI.predict_data(data_series, self.__forecast_years)
 
             SizingUtils.insert_series(
                 self.__influx_client,
-                self.__report_rp,
-                prediction_result,
-                insert_table_name,
-                insert_value_key,
-                replacement_tags)
+                report_rp=self.__report_rp,
+                prediction_result=prediction_result,
+                table_name=self.sppcheck_table_name,
+                value_key=self.sppcheck_value_name,
+                insert_tags=insert_tags)
 
-        else: # grouped result
 
-            total_historic_series: Series = Series(dtype=float64)
-            for ((_, tag_dict), data) in tag_tuples:
+    def __predict_grouped_data(self,
+                               tag_tuples: List[Tuple[
+                                                Tuple[str, Optional[Dict[str, str]]], # tablename, dict of grouping tags (empty if not grouped)
+                                                Generator[Dict[str, Any], None, None] # result of the selection query
+                               ]],
+                               description: str,
+                               metric_name: str,
+                               group_tag: str,
+                               no_grouped_total: bool,
+                               use_count_query: bool):
+
+
+        total_historic_series: Series = Series(dtype=float64)
+        for ((_, tag_dict), data) in tag_tuples:
+            try:
+                result_list = list(data)
+
+                if not result_list:
+                    raise ValueError(f"Error: the result list is empty for {description}")
+
+                if not tag_dict:
+                    raise ValueError(f"Error: There is no tag_dict available for {description} with example data {result_list[0]}")
+
+                # get tags for the sppcheck_data table
+                insert_tags: Dict[str, Optional[str]] = {self.sppcheck_tag_name: metric_name}
+
+                # if there is site in, dont save the grouping tag but the site metadata.
+                if "site" in group_tag: # this does also include "siteName" due to the "site"
+                    # tag_dict has the value "site" and "siteName" and is therefore good for extension
+                    insert_tags = insert_tags | tag_dict # python3.9 feature: extend dicts
+
+                else: # gain site info from data
+
+                    # issue: reserved identifiers like "name" require escapes in influx, but the result isn't anymore
+                    # therefore just take the value and avoid an access by tag_dict[group_tag], there should only be one
+                    insert_tags["grouping_tag"] = list(tag_dict.values())[0]
+                    insert_tags["site"] = result_list[0].get("site", None)
+                    insert_tags["siteName"] = result_list[0].get("siteName", None)
+
+                #### extract the data for the prediction  ####
+
                 try:
-                    result_list = list(data)
+                    historic_values: Dict[int, Union[int, float]] = {x["time"]: x[self.sppcheck_value_name] for x in result_list}
+                except KeyError as error:
+                    ExceptionUtils.exception_info(error)
+                    raise ValueError(f"Missing value key {self.sppcheck_value_name} in requested data from the InfluxDB. Is a \"AS\"-Clause missing in the query?")
+                # prepare the data and set the frequency
+                data_series = self.__predictorI.data_preparation(historic_values, self.__dp_interval_hour)
 
-                    # retain tags for re-insertion into insert-table, only take them if they are tags
-                    instance_tags = {k:v for (k,v) in result_list[0].items() if k in self.__influx_client.database[insert_table_name].tags}
-                    # in count clause the grouped tag is not always included -> add it
-                    if tag_dict:
-                        instance_tags.update(tag_dict)
+                # sum the individual results for a final total value
+                if not no_grouped_total:
+                    # fill required for initial setup -> or everything is NaN
+                    total_historic_series = total_historic_series.add(data_series, fill_value=0)
 
-                    try:
-                        historic_values: Dict[int, Union[int, float]] = {x["time"]: x[insert_value_key] for x in result_list}
-                    except KeyError as error:
-                        ExceptionUtils.exception_info(error)
-                        raise ValueError(f"Missing value key {insert_value_key} in requested data from the InfluxDB. Is a \"AS\"-Clause missing in the query?")
-                    data_series = self.__predictorI.data_preparation(historic_values, self.__dp_interval_hour)
-
-                    if not no_grouped_total:
-                        # fill required for initial setup -> or everything is NaN
-                        total_historic_series = total_historic_series.add(data_series, fill_value=0)
-
-                    # if it is a count, save the old values to have the aggregated values
-                    # only count: Other values are directly available
-                    if use_count_query and data_type:
-                        SizingUtils.insert_series(
-                            self.__influx_client,
-                            self.__report_rp,
-                            data_series,
-                            insert_table_name,
-                            insert_value_key,
-                            instance_tags | replacement_tags)
-
-                    # predict next x years
-                    prediction_result = self.__predictorI.predict_data(data_series, self.__forecast_years)
+                # Count: The DB does not have historic data, since it is aggregated on query -> save it.
+                # Datatype required: need to insert into new table with clear identification, not old one.
+                if use_count_query:
                     SizingUtils.insert_series(
                         self.__influx_client,
-                        self.__report_rp,
-                        prediction_result,
-                        insert_table_name,
-                        insert_value_key,
-                        instance_tags | replacement_tags) # python 3.9 feature: merge of two dicts
+                        report_rp=self.__report_rp,
+                        prediction_result=data_series,
+                        table_name=self.sppcheck_table_name,
+                        value_key=self.sppcheck_value_name,
+                        insert_tags=insert_tags)
 
-                except ValueError as error:
-                    ExceptionUtils.exception_info(error, f"Skipping {description} group with {group_tag}={tag_dict}.")
+                #### predict data for the next x years ####
 
-            if not no_grouped_total:
-                # insert summed historical data first
+                prediction_result = self.__predictorI.predict_data(data_series, self.__forecast_years)
+                # save the prediction with the new meta data
                 SizingUtils.insert_series(
                     self.__influx_client,
-                    self.__report_rp,
-                    total_historic_series,
-                    insert_table_name,
-                    insert_value_key,
-                    replacement_tags)
+                    report_rp=self.__report_rp,
+                    prediction_result=prediction_result,
+                    table_name=self.sppcheck_table_name,
+                    value_key=self.sppcheck_value_name,
+                    insert_tags=insert_tags)
 
-                # insert total data prediction
-                prediction_result = self.__predictorI.predict_data(total_historic_series, self.__forecast_years)
-                SizingUtils.insert_series(
-                    self.__influx_client,
-                    self.__report_rp,
-                    prediction_result,
-                    insert_table_name,
-                    insert_value_key,
-                    replacement_tags)
+            except ValueError as error:
+                ExceptionUtils.exception_info(error, f"Skipping {description} group with {group_tag}={tag_dict}.")
 
+        if not no_grouped_total:
 
-        self.__influx_client.flush_insert_buffer()
+            insert_tags = {
+                self.sppcheck_tag_name: metric_name,
+                "grouping_tag": "Total",
+                "site": "Total",
+                "siteName": "Total"}
+
+            # insert summed historical data first
+            SizingUtils.insert_series(
+                self.__influx_client,
+                report_rp=self.__report_rp,
+                prediction_result=total_historic_series,
+                table_name=self.sppcheck_table_name,
+                value_key=self.sppcheck_value_name,
+                insert_tags=insert_tags)
+
+            # insert total data prediction
+            prediction_result = self.__predictorI.predict_data(total_historic_series, self.__forecast_years)
+            SizingUtils.insert_series(
+                self.__influx_client,
+                report_rp=self.__report_rp,
+                prediction_result=prediction_result,
+                table_name=self.sppcheck_table_name,
+                value_key=self.sppcheck_value_name,
+                insert_tags=insert_tags)

@@ -1300,9 +1300,9 @@ class Definitions:
                 },
                 tags=[
                     PredictorInfluxConnector.sppcheck_tag_name,
+                    "grouping_tag",
                     "site",
                     "siteName"
-
                 ],
                 # this rp is unused, but in here for safety. Overwritten by prediction-RP
                 retention_policy=cls.RP_INF(),

@@ -107,9 +107,9 @@ class SppUtils:
         logger.addHandler(file_handler)
         logger.addHandler(stream_handler)
 
-    @staticmethod
-    def check_pid_file(pid_file_path: str, ARGS: Namespace) -> bool:
-        if(ARGS.verbose):
+    @classmethod
+    def check_pid_file(cls, pid_file_path: str, ARGS: Namespace) -> bool:
+        if(cls.verbose):
             LOGGER.info("Checking for other running instances with same arguments")
         LOGGER.debug(f"PID-File path: {pid_file_path}")
         try:
