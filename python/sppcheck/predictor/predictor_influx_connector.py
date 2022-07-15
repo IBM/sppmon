@@ -215,13 +215,11 @@ class PredictorInfluxConnector:
         total_historic_series: Series = Series(dtype=float64)
         for (tag_dict, data) in tag_data_tuple:
             try:
-                result_list = list(data)
-
-                if not result_list:
+                if not data:
                     raise ValueError(f"Error: the result list is empty for {description}")
 
                 if not tag_dict:
-                    raise ValueError(f"Error: There is no tag_dict available for {description} with example data {result_list[0]}")
+                    raise ValueError(f"Error: There is no tag_dict available for {description} with example data {data[0]}")
 
                 # get tags for the sppcheck_data table
                 insert_tags: Dict[str, Optional[str]] = {self.sppcheck_tag_name: metric_name}
@@ -236,13 +234,13 @@ class PredictorInfluxConnector:
                     # issue: reserved identifiers like "name" require escapes in influx, but the result isn't anymore
                     # therefore just take the value and avoid an access by tag_dict[group_tag], there should only be one
                     insert_tags["grouping_tag"] = list(tag_dict.values())[0]
-                    insert_tags["site"] = result_list[0].get("site", None)
-                    insert_tags["siteName"] = result_list[0].get("siteName", None)
+                    insert_tags["site"] = data[0].get("site", None)
+                    insert_tags["siteName"] = data[0].get("siteName", None)
 
                 #### extract the data for the prediction  ####
 
                 try:
-                    historic_values: Dict[int, Union[int, float]] = {x["time"]: x[self.sppcheck_value_name] for x in result_list}
+                    historic_values: Dict[int, Union[int, float]] = {x["time"]: x[self.sppcheck_value_name] for x in data}
                 except KeyError as error:
                     ExceptionUtils.exception_info(error)
                     raise ValueError(f"Missing value key {self.sppcheck_value_name} in requested data from the InfluxDB. Is a \"AS\"-Clause missing in the query?")

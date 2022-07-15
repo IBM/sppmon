@@ -78,7 +78,7 @@ class PredictorController:
             value_or_count_key="used",
             description="Storage data",
             group_tag="storageId",
-            metric_name="physical_capacity_wr",
+            metric_name="physical_capacity",
 
             ##
             use_count_query=False,
@@ -127,7 +127,7 @@ class PredictorController:
     def __predict_used_server_memory(self) -> None:
         self.__predictor_influx_connector.predict_data(
             table_name="cpuram",
-            value_or_count_key=f"memorySize * memoryUtil",
+            value_or_count_key="memorySize * memoryUtil",
             description="used server memory",
             metric_name="server_used_memory",
 
