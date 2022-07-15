@@ -28,6 +28,7 @@ Classes:
 """
 
 from __future__ import annotations
+from email import generator
 
 from typing import Any, ClassVar, Dict, Generator, List, Optional, Tuple, Union
 
@@ -141,25 +142,28 @@ class PredictorInfluxConnector:
         #### Send the query #####
 
         result = self.__influx_client.send_selection_query(history_query)
-        tag_tuples: List[Tuple[
+        result_list: List[Tuple[ # list: different tag groups
             Tuple[str, Optional[Dict[str, str]]], # tablename, dict of grouping tags (empty if not grouped)
             Generator[Dict[str, Any], None, None] # result of the selection query
         ]] = result.items() # type: ignore
 
-        if not tag_tuples:
+        #                                # optional tag-dict    # list with dicts: values
+        tag_data_tuple = list(map(lambda tuple: (tuple[0][1] , list(tuple[1])), result_list))
+
+        if not tag_data_tuple:
             raise ValueError(f"No {description} is available within the InfluxDB.")
 
         #### single result (no grouping) ####
         if not group_tag:
             self.__predict_single_data(
-                data=tag_tuples[0][1],
+                data=tag_data_tuple[0][1], # there is only one element in the list, no need for the grouping tags (none)
                 metric_name=metric_name)
 
         #### Iterate over the results grouped by a tag ####
 
         else:
             self.__predict_grouped_data(
-                tag_tuples=tag_tuples,
+                tag_data_tuple=tag_data_tuple,
                 description=description,
                 metric_name=metric_name,
                 group_tag=group_tag,
@@ -173,18 +177,16 @@ class PredictorInfluxConnector:
 
 
     def __predict_single_data(self,
-                              data: Generator[Dict[str, Any], None, None],
+                              data: List[Dict[str, Any]],
                               metric_name: str):
-            # get the values out of the generator
-            result_list = list(data)
 
             # prepare the metadata
             insert_tags = {self.sppcheck_tag_name: metric_name}
-            insert_tags["site"] = result_list[0].get("site", None)
-            insert_tags["siteName"] = result_list[0].get("siteName", None)
+            insert_tags["site"] = data[0].get("site", None)
+            insert_tags["siteName"] = data[0].get("siteName", None)
 
             # extract the values used for prediction
-            historic_values: Dict[int, Union[int, float]] = {x["time"]: x[self.sppcheck_value_name] for x in result_list}
+            historic_values: Dict[int, Union[int, float]] = {x["time"]: x[self.sppcheck_value_name] for x in data}
             data_series = self.__predictorI.data_preparation(historic_values, self.__dp_interval_hour)
 
             prediction_result = self.__predictorI.predict_data(data_series, self.__forecast_years)
@@ -199,9 +201,9 @@ class PredictorInfluxConnector:
 
 
     def __predict_grouped_data(self,
-                               tag_tuples: List[Tuple[
-                                                Tuple[str, Optional[Dict[str, str]]], # tablename, dict of grouping tags (empty if not grouped)
-                                                Generator[Dict[str, Any], None, None] # result of the selection query
+                               tag_data_tuple: List[Tuple[
+                                                Optional[Dict[str, str]], # dict of grouping tags
+                                                List[Dict[str, Any]] # result of the selection query
                                ]],
                                description: str,
                                metric_name: str,
@@ -211,7 +213,7 @@ class PredictorInfluxConnector:
 
 
         total_historic_series: Series = Series(dtype=float64)
-        for ((_, tag_dict), data) in tag_tuples:
+        for (tag_dict, data) in tag_data_tuple:
             try:
                 result_list = list(data)
 

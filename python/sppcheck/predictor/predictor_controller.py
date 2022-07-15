@@ -58,7 +58,7 @@ class PredictorController:
     def predict_all_data(self):
 
         function_list = [
-            self.__predict_physical_capacity_wr,
+            self.__predict_physical_capacity,
             self.__predict_vsnap_quantity,
             self.__predict_total_vadp_quantity,
             self.__predict_total_server_memory,
@@ -72,7 +72,7 @@ class PredictorController:
             except ValueError as error:
                 ExceptionUtils.exception_info(error, f"Error when predicting {function.__name__}, skipping it.")
 
-    def __predict_physical_capacity_wr(self) -> None:
+    def __predict_physical_capacity(self) -> None:
         self.__predictor_influx_connector.predict_data(
             table_name="storages",
             value_or_count_key="used",
