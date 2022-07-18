@@ -28,8 +28,6 @@ Classes:
 """
 
 from __future__ import annotations
-from email import generator
-
 from typing import Any, ClassVar, Dict, Generator, List, Optional, Tuple, Union
 
 
@@ -68,6 +66,58 @@ class PredictorInfluxConnector:
         self.__forecast_years = forecast_years
 
         self.__report_rp = SizingUtils.create_unique_rp(self.__influx_client,"prediction", rp_timestamp)
+
+    def predict_data(
+        self,
+        table_name: str,
+        value_or_count_key: str,
+        description: str,
+        metric_name: str,
+        re_save_historic: bool,
+        group_tag: Optional[str] = None,
+        use_count_query: bool = False
+        ) -> None:
+
+        #### Generate the query ###
+        if use_count_query:
+            history_query = self.__generate_count_query(
+                table_name=table_name,
+                group_tag=group_tag,
+                count_key=value_or_count_key
+            )
+        else:
+            history_query = self.__generate_query(
+                table_name=table_name,
+                value_key=value_or_count_key,
+                group_tag=group_tag)
+
+        #### Send the query #####
+
+        result = self.__influx_client.send_selection_query(history_query)
+        result_list: List[Tuple[ # list: different tag groups
+            Tuple[str, Optional[Dict[str, str]]], # tablename, dict of grouping tags (empty if not grouped)
+            Generator[Dict[str, Any], None, None] # result of the selection query
+        ]] = result.items() # type: ignore
+
+        #                                # optional tag-dict    # list with dicts: values
+        tag_data_tuple = list(map(lambda tuple: (tuple[0][1] , list(tuple[1])), result_list))
+
+        if not tag_data_tuple:
+            raise ValueError(f"No {description} is available within the InfluxDB.")
+
+        #### Iterate over the results ####
+
+        else:
+            self.__prepare_predict_insert_iterate(
+                tag_data_tuple=tag_data_tuple,
+                description=description,
+                metric_name=metric_name,
+                group_tag=group_tag,
+                re_save_historic=re_save_historic
+            )
+
+        # make sure to flush
+        self.__influx_client.flush_insert_buffer()
 
     def __generate_query(self, table_name: str, value_key: str, group_tag: Optional[str]) -> SelectionQuery:
 
@@ -116,126 +166,50 @@ class PredictorInfluxConnector:
             group_list=group_list
             )
 
-    def predict_data(
-        self,
-        table_name: str,
-        value_or_count_key: str,
-        description: str,
-        metric_name: str,
-        group_tag: Optional[str] = None,
-        use_count_query: bool = False,
-        no_grouped_total: bool = False) -> None:
 
-        #### Generate the query ###
-        if use_count_query:
-            history_query = self.__generate_count_query(
-                table_name=table_name,
-                group_tag=group_tag,
-                count_key=value_or_count_key
-            )
-        else:
-            history_query = self.__generate_query(
-                table_name=table_name,
-                value_key=value_or_count_key,
-                group_tag=group_tag)
-
-        #### Send the query #####
-
-        result = self.__influx_client.send_selection_query(history_query)
-        result_list: List[Tuple[ # list: different tag groups
-            Tuple[str, Optional[Dict[str, str]]], # tablename, dict of grouping tags (empty if not grouped)
-            Generator[Dict[str, Any], None, None] # result of the selection query
-        ]] = result.items() # type: ignore
-
-        #                                # optional tag-dict    # list with dicts: values
-        tag_data_tuple = list(map(lambda tuple: (tuple[0][1] , list(tuple[1])), result_list))
-
-        if not tag_data_tuple:
-            raise ValueError(f"No {description} is available within the InfluxDB.")
-
-        #### single result (no grouping) ####
-        if not group_tag:
-            self.__predict_single_data(
-                data=tag_data_tuple[0][1], # there is only one element in the list, no need for the grouping tags (none)
-                metric_name=metric_name)
-
-        #### Iterate over the results grouped by a tag ####
-
-        else:
-            self.__predict_grouped_data(
-                tag_data_tuple=tag_data_tuple,
-                description=description,
-                metric_name=metric_name,
-                group_tag=group_tag,
-                no_grouped_total=no_grouped_total,
-                use_count_query=use_count_query
-            )
-
-        # make sure to flush
-        self.__influx_client.flush_insert_buffer()
-
-
-
-    def __predict_single_data(self,
-                              data: List[Dict[str, Any]],
-                              metric_name: str):
-
-            # prepare the metadata
-            insert_tags = {self.sppcheck_tag_name: metric_name}
-            insert_tags["site"] = data[0].get("site", None)
-            insert_tags["siteName"] = data[0].get("siteName", None)
-
-            # extract the values used for prediction
-            historic_values: Dict[int, Union[int, float]] = {x["time"]: x[self.sppcheck_value_name] for x in data}
-            data_series = self.__predictorI.data_preparation(historic_values, self.__dp_interval_hour)
-
-            prediction_result = self.__predictorI.predict_data(data_series, self.__forecast_years)
-
-            SizingUtils.insert_series(
-                self.__influx_client,
-                report_rp=self.__report_rp,
-                prediction_result=prediction_result,
-                table_name=self.sppcheck_table_name,
-                value_key=self.sppcheck_value_name,
-                insert_tags=insert_tags)
-
-
-    def __predict_grouped_data(self,
+    def __prepare_predict_insert_iterate(self,
                                tag_data_tuple: List[Tuple[
                                                 Optional[Dict[str, str]], # dict of grouping tags
                                                 List[Dict[str, Any]] # result of the selection query
                                ]],
                                description: str,
                                metric_name: str,
-                               group_tag: str,
-                               no_grouped_total: bool,
-                               use_count_query: bool):
+                               group_tag: Optional[str],
+                               re_save_historic: bool):
 
 
         total_historic_series: Series = Series(dtype=float64)
         for (tag_dict, data) in tag_data_tuple:
             try:
+
                 if not data:
                     raise ValueError(f"Error: the result list is empty for {description}")
 
-                if not tag_dict:
-                    raise ValueError(f"Error: There is no tag_dict available for {description} with example data {data[0]}")
+                # if grouped, the tag_dict 1. exists 2. contains tag_name: tag_value
+                if group_tag and not tag_dict:
+                    raise ValueError(f"Error: There is no grouping information available for {description} with example data {data[0]}")
 
+                #### collect meta information for the re-insertion ####
                 # get tags for the sppcheck_data table
-                insert_tags: Dict[str, Optional[str]] = {self.sppcheck_tag_name: metric_name}
+                insert_tags: Dict[str, Optional[str]] = {
+                    self.sppcheck_tag_name: metric_name,
+                    "site": data[0].get("site", None),
+                    "siteName": data[0].get("siteName", None)
+                }
 
-                # if there is site in, dont save the grouping tag but the site metadata.
-                if "site" in group_tag: # this does also include "siteName" due to the "site"
-                    # tag_dict has the value "site" and "siteName" and is therefore good for extension
-                    insert_tags = insert_tags | tag_dict # python3.9 feature: extend dicts
+                # add grouping and update site information
+                if group_tag and tag_dict:
+                    # if there is site in, dont save the grouping tag but the site metadata.
+                    if "site" in group_tag: # this does also include "siteName" due to the "site"
+                        # overwrites values from tag_dict
+                        insert_tags.update(tag_dict)
+                    else:
 
-                else: # gain site info from data
-
-                    # issue: reserved identifiers like "name" require escapes in influx, but the result isn't anymore
-                    # therefore just take the value and avoid an access by tag_dict[group_tag], there should only be one
-                    insert_tags["grouping_tag"] = list(tag_dict.values())[0]
-                    insert_tags["site"] = data[0].get("site", None)
-                    insert_tags["siteName"] = data[0].get("siteName", None)
+                        # issue: reserved identifiers like "name" require escapes in influx, but the result isn't escaped anymore
+                        # therefore just take the value and avoid an access by tag_dict[group_tag], there should only be one
+                        insert_tags["grouping_tag"] = list(tag_dict.values())[0]
+                        # only one grouping tag is allowed, therefore [0]
+                        # if multiple (countable) are allowed, add copies of the row below.
 
                 #### extract the data for the prediction  ####
 
@@ -248,13 +222,12 @@ class PredictorInfluxConnector:
                 data_series = self.__predictorI.data_preparation(historic_values, self.__dp_interval_hour)
 
                 # sum the individual results for a final total value
-                if not no_grouped_total:
+                # Count: The DB does not have historic data, since it is aggregated on query -> save it.
+                # insert into new table with clear identification, not old one.
+                if re_save_historic:
                     # fill required for initial setup -> or everything is NaN
                     total_historic_series = total_historic_series.add(data_series, fill_value=0)
 
-                # Count: The DB does not have historic data, since it is aggregated on query -> save it.
-                # Datatype required: need to insert into new table with clear identification, not old one.
-                if use_count_query:
                     SizingUtils.insert_series(
                         self.__influx_client,
                         report_rp=self.__report_rp,
@@ -278,7 +251,8 @@ class PredictorInfluxConnector:
             except ValueError as error:
                 ExceptionUtils.exception_info(error, f"Skipping {description} group with {group_tag}={tag_dict}.")
 
-        if not no_grouped_total:
+        # only save if grouped, since then there are multiple series summed up
+        if group_tag and re_save_historic:
 
             insert_tags = {
                 self.sppcheck_tag_name: metric_name,

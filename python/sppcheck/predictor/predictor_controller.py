@@ -82,7 +82,7 @@ class PredictorController:
 
             ##
             use_count_query=False,
-            no_grouped_total=False
+            re_save_historic=False
         )
 
     def __predict_vsnap_quantity(self):
@@ -93,9 +93,7 @@ class PredictorController:
             group_tag="site, siteName",
             metric_name="vsnap_count",
             use_count_query=True,
-
-            ##
-            no_grouped_total=False
+            re_save_historic=True
         )
 
     def __predict_total_vadp_quantity(self) -> None:
@@ -105,10 +103,11 @@ class PredictorController:
             description="total VADP count",
             group_tag="site, siteName",
             metric_name="vadp_total_count",
-            use_count_query=False,
 
             #
-            no_grouped_total=False
+
+            use_count_query=False,
+            re_save_historic=True
         )
 
     def __predict_total_server_memory(self) -> None:
@@ -121,7 +120,7 @@ class PredictorController:
             #
             group_tag=None,
             use_count_query=False,
-            no_grouped_total=False
+            re_save_historic=False
         )
 
     def __predict_used_server_memory(self) -> None:
@@ -130,11 +129,11 @@ class PredictorController:
             value_or_count_key="memorySize * memoryUtil",
             description="used server memory",
             metric_name="server_used_memory",
+            re_save_historic=True
 
             #
             group_tag=None,
             use_count_query=False,
-            no_grouped_total=False
         )
 
     def __predict_server_catalogs(self) -> None:
@@ -143,9 +142,9 @@ class PredictorController:
             value_or_count_key="usedSize",
             description="server catalogs",
             group_tag="\"name\"",
-            no_grouped_total=True,
             metric_name="server_catalogs",
 
             #
             use_count_query=False,
+            re_save_historic=False,
         )
