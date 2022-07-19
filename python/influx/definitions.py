@@ -1299,8 +1299,9 @@ class Definitions:
                     PredictorInfluxConnector.sppcheck_value_name:                    Datatype.INT,
                 },
                 tags=[
-                    PredictorInfluxConnector.sppcheck_tag_name,
-                    "grouping_tag",
+                    PredictorInfluxConnector.sppcheck_metric_tag,
+                    PredictorInfluxConnector.sppcheck_group_tag,
+                    PredictorInfluxConnector.sppcheck_group_tag_name,
                     "site",
                     "siteName"
                 ],
@@ -1317,7 +1318,7 @@ class Definitions:
                     ExcelReader.sppcheck_excel_value_name:                    Datatype.INT,
                 },
                 tags=[
-                    ExcelReader.sppcheck_excel_tag_name,
+                    ExcelReader.sppcheck_excel_metric_tag,
                 ],
                 # this rp is unused, but redundancy in case of an error. Overwritten by excel-RP
                 retention_policy=cls.RP_INF(),

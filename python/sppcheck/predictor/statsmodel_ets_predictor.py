@@ -118,12 +118,14 @@ class StatsmodelEtsPredictor(PredictorInterface):
             ).fit(disp=False) # type: ignore
         prediction: Series = ets_fit.forecast(forecast_dp_count)
 
+
+        # ! Pandas is_monotonic == is_monotonic_increasing, not if it is generally monotonic...!
         # if it is not monotonic, the values are swapping between positive and negative, highly increasing
         # e.g. +1000, -1000, +10.000, -10.000 ...
-        if not prediction.is_monotonic:
-            ExceptionUtils.error_message("The result is highly likely corrupted, it is not monotonic.")
+        if not (prediction.is_monotonic_increasing or prediction.is_monotonic_decreasing):
+            raise ValueError("The result is corrupted, it is not monotonic.")
 
-        # definition in Series: a series of same values (eg 2,2,2,2) is all monotonic, increasing and decreasing
+        # definition in Series: a series of same values (eg 2,2,2,2) is both increasing and decreasing
         # a decreasing prediction does not align with the purpose of SPPCheck, which assumes only exponential increasing values
         if prediction.is_monotonic_decreasing and not prediction.is_monotonic_increasing:
             ExceptionUtils.error_message("The result is highly likely corrupted, it is monotonic decreasing")

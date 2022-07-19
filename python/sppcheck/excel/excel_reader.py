@@ -58,7 +58,7 @@ class ExcelReader:
 
     sppcheck_excel_table_name: ClassVar[str] = "sppcheck_excel_data"
     sppcheck_excel_value_name: ClassVar[str] = "data"
-    sppcheck_excel_tag_name: ClassVar[str] = "metric_name"
+    sppcheck_excel_metric_tag: ClassVar[str] = "metric_name"
 
     def __init__(self, sheet_path: str, sizer_version: str,
                  influx_client: ic.InfluxClient, start_date: datetime,
@@ -137,7 +137,7 @@ class ExcelReader:
                     projection: Series = projection.map(lambda x: x * unit_multiplier) # type: ignore
 
                 # save the id for the metric
-                insert_tags = {self.sppcheck_excel_tag_name: excel_key}
+                insert_tags = {self.sppcheck_excel_metric_tag: excel_key}
 
                 projection.index = date_index.copy(deep=True)
                 # mean is required to align the timestamps, other functions like fill with na didn't work

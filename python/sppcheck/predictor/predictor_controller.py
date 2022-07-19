@@ -77,8 +77,9 @@ class PredictorController:
             table_name="storages",
             value_or_count_key="used",
             description="Storage data",
-            group_tag="storageId",
+            group_tag="storageId, hostAddress",
             metric_name="physical_capacity",
+            save_total=True,
 
             ##
             use_count_query=False,
@@ -93,7 +94,8 @@ class PredictorController:
             group_tag="site, siteName",
             metric_name="vsnap_count",
             use_count_query=True,
-            re_save_historic=True
+            re_save_historic=True,
+            save_total=True,
         )
 
     def __predict_total_vadp_quantity(self) -> None:
@@ -103,11 +105,13 @@ class PredictorController:
             description="total VADP count",
             group_tag="site, siteName",
             metric_name="vadp_total_count",
+            re_save_historic=True,
+            save_total=True,
 
             #
 
             use_count_query=False,
-            re_save_historic=True
+
         )
 
     def __predict_total_server_memory(self) -> None:
@@ -120,7 +124,8 @@ class PredictorController:
             #
             group_tag=None,
             use_count_query=False,
-            re_save_historic=False
+            re_save_historic=False,
+            save_total=False
         )
 
     def __predict_used_server_memory(self) -> None:
@@ -129,11 +134,12 @@ class PredictorController:
             value_or_count_key="memorySize * memoryUtil",
             description="used server memory",
             metric_name="server_used_memory",
-            re_save_historic=True
+            re_save_historic=True,
 
             #
             group_tag=None,
             use_count_query=False,
+            save_total=False
         )
 
     def __predict_server_catalogs(self) -> None:
@@ -143,6 +149,7 @@ class PredictorController:
             description="server catalogs",
             group_tag="\"name\"",
             metric_name="server_catalogs",
+            save_total=True,
 
             #
             use_count_query=False,

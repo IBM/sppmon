@@ -47,7 +47,9 @@ class PredictorInfluxConnector:
 
     sppcheck_table_name: ClassVar[str] = "sppcheck_data"
     sppcheck_value_name: ClassVar[str] = "data"
-    sppcheck_tag_name: ClassVar[str] = "metric_name"
+    sppcheck_metric_tag: ClassVar[str] = "metric_name"
+    sppcheck_group_tag: ClassVar[str] = "grouping_tag"
+    sppcheck_group_tag_name: ClassVar[str] = "grouping_tag_name"
 
     @property
     def report_rp(self) -> RetentionPolicy:
@@ -74,6 +76,7 @@ class PredictorInfluxConnector:
         description: str,
         metric_name: str,
         re_save_historic: bool,
+        save_total: bool,
         group_tag: Optional[str] = None,
         use_count_query: bool = False
         ) -> None:
@@ -107,14 +110,14 @@ class PredictorInfluxConnector:
 
         #### Iterate over the results ####
 
-        else:
-            self.__prepare_predict_insert_iterate(
-                tag_data_tuple=tag_data_tuple,
-                description=description,
-                metric_name=metric_name,
-                group_tag=group_tag,
-                re_save_historic=re_save_historic
-            )
+        self.__prepare_predict_insert_iterate(
+            tag_data_tuple=tag_data_tuple,
+            description=description,
+            metric_name=metric_name,
+            group_tag=group_tag,
+            re_save_historic=re_save_historic,
+            save_total=save_total
+        )
 
         # make sure to flush
         self.__influx_client.flush_insert_buffer()
@@ -175,7 +178,8 @@ class PredictorInfluxConnector:
                                description: str,
                                metric_name: str,
                                group_tag: Optional[str],
-                               re_save_historic: bool):
+                               re_save_historic: bool,
+                               save_total: bool):
 
 
         total_historic_series: Series = Series(dtype=float64)
@@ -192,7 +196,7 @@ class PredictorInfluxConnector:
                 #### collect meta information for the re-insertion ####
                 # get tags for the sppcheck_data table
                 insert_tags: Dict[str, Optional[str]] = {
-                    self.sppcheck_tag_name: metric_name,
+                    self.sppcheck_metric_tag: metric_name,
                     "site": data[0].get("site", None),
                     "siteName": data[0].get("siteName", None)
                 }
@@ -207,8 +211,11 @@ class PredictorInfluxConnector:
 
                         # issue: reserved identifiers like "name" require escapes in influx, but the result isn't escaped anymore
                         # therefore just take the value and avoid an access by tag_dict[group_tag], there should only be one
-                        insert_tags["grouping_tag"] = list(tag_dict.values())[0]
-                        # only one grouping tag is allowed, therefore [0]
+                        insert_tags[self.sppcheck_group_tag] = list(tag_dict.values())[0]
+                        if len(tag_dict) > 1:
+                            insert_tags[self.sppcheck_group_tag_name] = list(tag_dict.values())[1]
+                        # must be grouped ID first, then name
+
                         # if multiple (countable) are allowed, add copies of the row below.
 
                 #### extract the data for the prediction  ####
@@ -222,12 +229,13 @@ class PredictorInfluxConnector:
                 data_series = self.__predictorI.data_preparation(historic_values, self.__dp_interval_hour)
 
                 # sum the individual results for a final total value
-                # Count: The DB does not have historic data, since it is aggregated on query -> save it.
-                # insert into new table with clear identification, not old one.
-                if re_save_historic:
+                if save_total:
                     # fill required for initial setup -> or everything is NaN
                     total_historic_series = total_historic_series.add(data_series, fill_value=0)
 
+                # Count: The DB does not have historic data, since it is aggregated on query -> save it.
+                # insert into new table with clear identification, not old one.
+                if re_save_historic:
                     SizingUtils.insert_series(
                         self.__influx_client,
                         report_rp=self.__report_rp,
@@ -252,11 +260,12 @@ class PredictorInfluxConnector:
                 ExceptionUtils.exception_info(error, f"Skipping {description} group with {group_tag}={tag_dict}.")
 
         # only save if grouped, since then there are multiple series summed up
-        if group_tag and re_save_historic:
+        if group_tag and save_total:
 
             insert_tags = {
-                self.sppcheck_tag_name: metric_name,
-                "grouping_tag": "Total",
+                self.sppcheck_metric_tag: metric_name,
+                self.sppcheck_group_tag: "Total",
+                self.sppcheck_group_tag_name: "Total",
                 "site": "Total",
                 "siteName": "Total"}
 
