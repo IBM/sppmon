@@ -134,21 +134,18 @@ class SPPCheck:
             # always save all debug information into the log, they are not printed
             SppUtils.set_logger(self.log_path, LOGGER_NAME, debug=True)
 
+            self.start_counter = time.perf_counter()
+            LOGGER.debug("\n\n NEW SPPCHECK EXECUTION \n")
+            LOGGER.debug(f"running script version: {VERSION}")
+            LOGGER.debug(f"cmdline options: {ARGS}")
+            LOGGER.debug("\n")
+
             LOGGER.info("Starting SPPCheck")
 
             self.pid_file_path = SppUtils.mk_logger_file(ARGS.configFile, "sppcheckLogs", ".pid_file")
             if(not SppUtils.check_pid_file(self.pid_file_path, ARGS)):
                 ExceptionUtils.error_message("Another instance of SPPCheck with the same args is running")
                 self.exit(ERROR_CODE_START_ERROR)
-
-            time_stamp_name, time_stamp = SppUtils.get_capture_timestamp_sec()
-            self.start_counter = time.perf_counter()
-            LOGGER.debug("\n\n")
-            LOGGER.debug(f"running script version: {VERSION}")
-            LOGGER.debug(f"cmdline options: {ARGS}")
-            LOGGER.debug(f"{time_stamp_name}: {time_stamp}")
-            LOGGER.debug("")
-
 
             LOGGER.info("Setting up configurations")
             self.setup_args()

@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Code scanning alert #2 and #3: Printing passwords into logger due to an faulty if-expression.
 * CheckPID file now uses the class-verbose setting and no longer ARGS-Verbose, making it independent of actual args.
+* Fixed PID file checks under windows
+* Fixed PID file entries not being deleted.
 
 ### Known Issues
 
