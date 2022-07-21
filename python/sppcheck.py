@@ -325,14 +325,14 @@ class SPPCheck:
 
         # Both error-clauses are actually the same, but for possibility of an split between error cases
         # always last due being true for any number != 0
-        if(error_code == ERROR_CODE or error_code):
-            ExceptionUtils.error_message("Error occurred while executing SPPCheck")
+        if error_code == ERROR_CODE or error_code:
+            ExceptionUtils.error_message("\n\n!!! Error occurred while executing SPPCheck, aborting the functionality. !!!\n")
         elif ExceptionUtils.stored_errors:
-            LOGGER.info(f"Total of {len(ExceptionUtils.stored_errors)} errors occurred during the execution. Check Messages above.")
+            print(f"\n\n!!! Script completed. Total of {len(ExceptionUtils.stored_errors)} errors occurred during the execution. Check Messages above. !!!\n")
         else:
-            LOGGER.info("\n\n!!! script completed without any errors !!!\n")
+            LOGGER.info("\n\n!!! Script completed without any errors !!!\n")
 
-        print(f"check log for details: grep \"PID {os.getpid()}\" {self.log_path} > sppcheck.log.{os.getpid()}")
+        print(f"Check log for details: grep \"PID {os.getpid()}\" {self.log_path} > sppcheck.log.{os.getpid()}")
         sys.exit(error_code)
 
     def main(self):
