@@ -68,7 +68,7 @@ class StatsmodelEtsPredictor(PredictorInterface):
 
             remaining_nan_count = len(data_series) - data_series.count()
             if remaining_nan_count:
-                LOGGER.info(f"Could not interpolate {remaining_nan_count} values.")
+                LOGGER.warning(f"Could not interpolate {remaining_nan_count} values.")
 
         return data_series
 
@@ -106,7 +106,7 @@ class StatsmodelEtsPredictor(PredictorInterface):
         # this is a last resort interpolate, split to allow previous summary between the preparation and forecast to work on nan values
         nan_count = len(data_series) - data_series.count()
         if nan_count:
-            LOGGER.info(f"{nan_count} values are nan when predicting, forcing an interpolation")
+            LOGGER.warning(f"{nan_count} values are nan when predicting, forcing an interpolation")
             data_series = data_series.interpolate()  # fill missing values
 
         ets_fit: ETSResults = ETSModel(

@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Moved all cSpell settings from the workspace file to the settings file
 * Removed/Moved total count of exceptions during execution
 * Moved verbose setting of sub-modules into init method to avoid issues and clarify program structure
+* Error-Messages now have the prefix "ERROR: "
+
 ### Fixed
 
 * Code scanning alert #2 and #3: Printing passwords into logger due to an faulty if-expression.

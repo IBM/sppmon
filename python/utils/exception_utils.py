@@ -57,7 +57,7 @@ class ExceptionUtils:
             message {str} -- message to be displayed and saved.
         """
         #LOGGER.info(message)
-        LOGGER.error(message)
+        LOGGER.error("ERROR: " + message)
         cls.stored_errors.append(message)
 
     @classmethod
@@ -92,5 +92,5 @@ class ExceptionUtils:
 
         if(extra_message):
             #LOGGER.info(extra_message)
-            LOGGER.error(extra_message)
+            LOGGER.error("ERROR: " + extra_message)
             cls.stored_errors.append(extra_message)

@@ -46,7 +46,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "0.5  (2022/06/01)"
+VERSION = "0.6  (2022/07/21)"
 
 
 # ----------------------------------------------------------------------------
@@ -60,20 +60,20 @@ parser = ArgumentParser(
 
 # required options
 parser.add_argument("--cfg", dest="configFile", required=True, help="REQUIRED: Specify the JSON configuration file for influxDB login purposes")
+parser.add_argument("--startDate", dest="startDate", required=True, help="REQUIRED: Start date of the system in format \"YYYY-MM-DD\", e.g. startDate=2019-01-29")
 
 # sheet options
 parser.add_argument("--sheet", dest="sheetPath", help="Path to filled sizing sheet, parsing the contents into the influxDB. Requires args: --sizerVersion, --startDate")
 parser.add_argument("--sizerVersion", dest="sizerVersion", help="Specify the version of the vSnap sizer sheet, e.g v1.0 or v2.1.1")
-parser.add_argument("--startDate", dest="startDate", help="Date of start of the system in format \"YYYY-MM-DD\", e.g. startDate=01-01-2019")
 
 # generation
-parser.add_argument("--genFakeData", dest="genFakeData", action="store_true", help="generate fake data. Automatically uses the fake data.")
+parser.add_argument("--genFakeData", dest="genFakeData", action="store_true", help="Generate fake data. Automatically uses the fake data.")
 parser.add_argument("--predictYears", dest="predictYears", type=int, help="Predict the development for the next x years.")
-parser.add_argument("--pdfReport", dest="pdfReport", action="store_true", help="create a new PDF report based on the prediction.")
+parser.add_argument("--pdfReport", dest="pdfReport", action="store_true", help="Create a new PDF report based on the prediction.")
 
 # generation options
-parser.add_argument("--latestData", dest="latestData", action="store_true", help="create reports (and fakedata) using only the latest 90 day data, but at a higher frequency(<6h).")
-parser.add_argument("--fakeData", dest="fakeData", action="store_true", help="use existing Fakedata to create any reports.")
+parser.add_argument("--latestData", dest="latestData", action="store_true", help="Create predictions, reports, and fake data using only the latest 90 day data, but at a higher frequency(<6h).")
+parser.add_argument("--fakeData", dest="fakeData", action="store_true", help="Use existing fake data to create any reports.")
 
 # general purpose options
 parser.add_argument("-v", '--version', action='version', version="TODO " + VERSION)
@@ -215,20 +215,24 @@ class SPPCheck:
         self.__rp_timestamp = f"{date}".replace("-", "_").replace(":","_")
 
         if ARGS.latestData:
+            LOGGER.info("> LatestData argument detected: Using only the data of the latest 90 days.")
             self.__dp_interval_hour = 6
-            self.__datagen_range_days = 90
+            self.__datagen_range_days = min(90, (datetime.today() - self.start_date).days)
             self.__select_rp = Definitions.RP_DAYS_90()
             self.__rp_timestamp = "latest_" + self.__rp_timestamp
         else:
             self.__dp_interval_hour = 168
-            self.__datagen_range_days = 2 * 365
+            self.__datagen_range_days = (datetime.today() - self.start_date).days
             self.__select_rp = Definitions.RP_INF()
 
         # overwrite select RP if fakedata should be used
         self.__fakedata_rp_name = "fakeData"
         if ARGS.fakeData or ARGS.genFakeData:
+            LOGGER.info("> FakeData argument detected: Preparing the generation of fake data.")
             self.__select_rp = RetentionPolicy(self.__fakedata_rp_name, self.__influx_client.database, "INF")
             self.__rp_timestamp = "fake_" + self.__rp_timestamp
+
+        LOGGER.info(f"> Using the retention policy timestamp {self.__rp_timestamp}")
 
     def store_script_metrics(self) -> None:
         """Stores script metrics into influxdb. To be called before exit.
@@ -336,6 +340,7 @@ class SPPCheck:
 
         excel_rp = None
         if bool(ARGS.sheetPath):
+            LOGGER.info("Starting the Excel Reader module")
             try:
                 excel_reader = ExcelReader(
                     ARGS.sheetPath, ARGS.sizerVersion,
@@ -347,9 +352,10 @@ class SPPCheck:
             except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
-                    extra_message="Top-level-error when reading and inserting the excel sheet data")
+                    extra_message="CRITICAL: Top-level-error when reading and inserting the excel sheet data.")
 
         if ARGS.genFakeData:
+            LOGGER.info("Starting the FakeData module")
             try:
                 fakedata_controller = FakeDataController(
                     self.__influx_client, self.__dp_interval_hour,
@@ -358,23 +364,25 @@ class SPPCheck:
             except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
-                    extra_message="Top-level-error when reading the generating storage data")
+                    extra_message="CRITICAL: Top-level-error when reading the generating storage data.")
 
         prediction_rp = None
         if self.__predict_years:
+            LOGGER.info(f"Starting the Prediction module to predict the next {self.__predict_years} years.")
             try:
                 predictor_controller = PredictorController(
                     self.__influx_client, self.__dp_interval_hour,
                     self.__select_rp, self.__rp_timestamp,
-                    self.__predict_years)
+                    self.__predict_years, self.start_date)
                 prediction_rp = predictor_controller.report_rp
                 predictor_controller.predict_all_data()
             except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
-                    extra_message="Top-level-error when creating predicting Data")
+                    extra_message="CRITICAL: Top-level-error when creating predicting Data")
 
         if ARGS.pdfReport:
+            LOGGER.info("Starting the PDF-Report module")
             try:
                 report_controller = ReportController(
                     self.__influx_client,
@@ -391,10 +399,10 @@ class SPPCheck:
             except Exception as error:
                 ExceptionUtils.exception_info(
                     error=error,
-                    extra_message="Top-level-error when creating PDF report")
+                    extra_message="CRITICAL: Top-level-error when creating PDF report")
 
 
-
+        LOGGER.info("Finished all argument executions, starting to exit the program.")
 
         self.exit()
 

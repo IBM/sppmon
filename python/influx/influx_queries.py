@@ -85,7 +85,7 @@ class InsertQuery:
         """Instance of table to be inserted into."""
         return self.__table
 
-    def __init__(self, table: Structures.Table, fields: Dict[str, Any], tags: Dict[str, Any] = None,
+    def __init__(self, table: Structures.Table, fields: Dict[str, Any], tags: Optional[Dict[str, Any]] = None,
                  time_stamp: Union[int, str, None] = None):
         if(not table):
             raise ValueError("need table to create query")

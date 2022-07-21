@@ -28,6 +28,9 @@ Classes:
 """
 
 from __future__ import annotations
+from datetime import datetime
+import logging
+from tokenize import group
 from typing import Any, ClassVar, Dict, Generator, List, Optional, Tuple, Union
 
 
@@ -41,6 +44,9 @@ from sppCheck.predictor.statsmodel_ets_predictor import \
     StatsmodelEtsPredictor
 from utils.sppcheck_utils import SizingUtils
 from utils.exception_utils import ExceptionUtils
+
+LOGGER_NAME = 'sppmon'
+LOGGER = logging.getLogger(LOGGER_NAME)
 
 
 class PredictorInfluxConnector:
@@ -57,7 +63,7 @@ class PredictorInfluxConnector:
 
     def __init__(self, influx_client: InfluxClient, dp_interval_hour: int,
                  select_rp: RetentionPolicy, rp_timestamp: str,
-                 forecast_years: float) -> None:
+                 forecast_years: float, start_date: datetime) -> None:
         if not influx_client:
             raise ValueError("PredictorController is not available, missing the influx_client")
         self.__influx_client: InfluxClient = influx_client
@@ -66,8 +72,16 @@ class PredictorInfluxConnector:
         self.__dp_interval_hour = dp_interval_hour
         self.__select_rp = select_rp
         self.__forecast_years = forecast_years
+        self.__start_date_timestamp = round(start_date.timestamp())
+
+        LOGGER.debug(f"> dp_interval_hour: {dp_interval_hour}, select_rp: {select_rp}, forecast_years: {forecast_years}")
+        LOGGER.debug(f"> start_date_timestamp: {self.__start_date_timestamp}, dp_interval_hour: {dp_interval_hour}")
 
         self.__report_rp = SizingUtils.create_unique_rp(self.__influx_client,"prediction", rp_timestamp)
+
+        LOGGER.debug(f"> Using report RP {self.__report_rp}")
+
+
 
     def predict_data(
         self,
@@ -77,22 +91,36 @@ class PredictorInfluxConnector:
         metric_name: str,
         re_save_historic: bool,
         save_total: bool,
-        group_tag: Optional[str] = None,
-        use_count_query: bool = False
+        group_tags: Optional[List[str]] = None,
+        use_count_query: bool = False,
         ) -> None:
+
+        LOGGER.info(f">> Starting prediction of the {description}.")
+        LOGGER.debug(f">> table_name: {table_name}, value_count_key: {value_or_count_key}, metric_name: {metric_name}")
+        LOGGER.debug(f">> re_save_historic: {re_save_historic}, save_total: {save_total}, group_tags: {group_tags}, use_count_query: {use_count_query}")
 
         #### Generate the query ###
         if use_count_query:
             history_query = self.__generate_count_query(
                 table_name=table_name,
-                group_tag=group_tag,
+                group_tags=group_tags,
                 count_key=value_or_count_key
             )
         else:
             history_query = self.__generate_query(
                 table_name=table_name,
                 value_key=value_or_count_key,
-                group_tag=group_tag)
+                group_tags=group_tags)
+
+        LOGGER.debug(f">> Generated query: {history_query}")
+
+        LOGGER.debug(f">> group_tags before extracting spaces: {group_tags}")
+        # issue: reserved identifiers like "name" require escapes in influx, but the result isn't escaped anymore
+        if group_tags:
+            for i in range(len(group_tags)):
+                group_tags[i] = group_tags[i].replace("\"", "")
+        LOGGER.debug(f">> group_tags after extracting spaces: {group_tags}")
+        LOGGER.debug(f">> Generated query after extracting spaces: {history_query}")
 
         #### Send the query #####
 
@@ -106,23 +134,29 @@ class PredictorInfluxConnector:
         tag_data_tuple = list(map(lambda tuple: (tuple[0][1] , list(tuple[1])), result_list))
 
         if not tag_data_tuple:
-            raise ValueError(f"No {description} is available within the InfluxDB.")
+            raise ValueError(f"No {description} data is available within the InfluxDB. Aborting prediction.")
 
         #### Iterate over the results ####
+
+        LOGGER.info(f">> Successfully requested data for the {description}, starting prediction progress.")
 
         self.__prepare_predict_insert_iterate(
             tag_data_tuple=tag_data_tuple,
             description=description,
             metric_name=metric_name,
-            group_tag=group_tag,
+            group_tags=group_tags,
             re_save_historic=re_save_historic,
             save_total=save_total
         )
 
+        LOGGER.info(f">> Finished the prediction for the {description}, flushing the data a last time.")
+
         # make sure to flush
         self.__influx_client.flush_insert_buffer()
 
-    def __generate_query(self, table_name: str, value_key: str, group_tag: Optional[str]) -> SelectionQuery:
+    def __generate_query(self, table_name: str, value_key: str, group_tags: Optional[List[str]]) -> SelectionQuery:
+
+        LOGGER.debug(f">> Generating regular query for table {table_name}, value_key {value_key}, group_tags {group_tags}.")
 
         table = self.__influx_client.database[table_name]
 
@@ -130,10 +164,10 @@ class PredictorInfluxConnector:
         # tags for re-insert information of the predicted data
         fields.extend(map('\"{}\"'.format, table.tags))
 
-        if group_tag:
-            group_list = [group_tag]
-        else:
-            group_list = None
+        # copy required to avoid side effects on the data.
+        group_list = None
+        if group_tags:
+            group_list = group_tags.copy()
 
         return SelectionQuery(
             Keyword.SELECT,
@@ -141,17 +175,20 @@ class PredictorInfluxConnector:
             alt_rp=self.__select_rp,
             fields=fields,
             order_direction="ASC",
-            group_list=group_list
+            group_list=group_list,
+            where_str=f"time > {self.__start_date_timestamp}s" # s for second precision
             )
 
 
-    def __generate_count_query(self, table_name: str, group_tag: Optional[str], count_key: str) -> SelectionQuery:
+    def __generate_count_query(self, table_name: str, count_key: str, group_tags: Optional[List[str]]) -> SelectionQuery:
+
+        LOGGER.debug(f">> Generating count query for table {table_name}, count_key {count_key}, group_tags {group_tags}.")
 
         query_table = self.__influx_client.database[table_name]
 
         group_list = [f"time({self.__dp_interval_hour}h)"]
-        if group_tag:
-            group_list.append(group_tag)
+        if group_tags:
+            group_list.extend(group_tags)
 
         inner_query = SelectionQuery(
             Keyword.SELECT,
@@ -159,6 +196,7 @@ class PredictorInfluxConnector:
             alt_rp=self.__select_rp,
             fields=["*"],
             order_direction="ASC",
+            where_str=f"time > {self.__start_date_timestamp}s"  # s for second precision
             )
 
         return SelectionQuery(
@@ -166,7 +204,8 @@ class PredictorInfluxConnector:
             table_or_query=inner_query,
             fields=[f"COUNT(DISTINCT({count_key})) AS {self.sppcheck_value_name}"],
             order_direction="ASC",
-            group_list=group_list
+            group_list=group_list,
+            where_str=f"time > {self.__start_date_timestamp}s"  # s for second precision
             )
 
 
@@ -177,21 +216,27 @@ class PredictorInfluxConnector:
                                ]],
                                description: str,
                                metric_name: str,
-                               group_tag: Optional[str],
+                               group_tags: Optional[List[str]],
                                re_save_historic: bool,
                                save_total: bool):
 
+        LOGGER.debug(f">> len of tag_data_tuple: {len(tag_data_tuple)}")
 
         total_historic_series: Series = Series(dtype=float64)
         for (tag_dict, data) in tag_data_tuple:
             try:
 
+                LOGGER.debug(f">>> Tags: {tag_dict}")
+                LOGGER.debug(f">>> Len of data: {len(data)}")
+
                 if not data:
                     raise ValueError(f"Error: the result list is empty for {description}")
 
                 # if grouped, the tag_dict 1. exists 2. contains tag_name: tag_value
-                if group_tag and not tag_dict:
+                if group_tags and not tag_dict:
                     raise ValueError(f"Error: There is no grouping information available for {description} with example data {data[0]}")
+
+                LOGGER.debug(f">>> Example [0] of data: {data[0]}")
 
                 #### collect meta information for the re-insertion ####
                 # get tags for the sppcheck_data table
@@ -202,21 +247,21 @@ class PredictorInfluxConnector:
                 }
 
                 # add grouping and update site information
-                if group_tag and tag_dict:
+                if group_tags and tag_dict:
                     # if there is site in, dont save the grouping tag but the site metadata.
-                    if "site" in group_tag: # this does also include "siteName" due to the "site"
+                    if "site" in group_tags: # this does also include "siteName" due to the "site"
                         # overwrites values from tag_dict
                         insert_tags.update(tag_dict)
                     else:
 
-                        # issue: reserved identifiers like "name" require escapes in influx, but the result isn't escaped anymore
-                        # therefore just take the value and avoid an access by tag_dict[group_tag], there should only be one
-                        insert_tags[self.sppcheck_group_tag] = list(tag_dict.values())[0]
-                        if len(tag_dict) > 1:
-                            insert_tags[self.sppcheck_group_tag_name] = list(tag_dict.values())[1]
+                        insert_tags[self.sppcheck_group_tag] = tag_dict[group_tags[0]]
+                        if len(group_tags) > 1:
+                            insert_tags[self.sppcheck_group_tag_name] = tag_dict[group_tags[1]]
                         # must be grouped ID first, then name
 
                         # if multiple (countable) are allowed, add copies of the row below.
+
+                LOGGER.debug(f">>> Insert_tags: {insert_tags}")
 
                 #### extract the data for the prediction  ####
 
@@ -226,6 +271,12 @@ class PredictorInfluxConnector:
                     ExceptionUtils.exception_info(error)
                     raise ValueError(f"Missing value key {self.sppcheck_value_name} in requested data from the InfluxDB. Is a \"AS\"-Clause missing in the query?")
                 # prepare the data and set the frequency
+
+                if group_tags and tag_dict:
+                    LOGGER.info(f">>> {description}: Preparing the data in group {group_tags[0]}={tag_dict[group_tags[0]]} for prediction.")
+                else:
+                    LOGGER.info(f">>> {description}: Preparing the data for prediction.")
+
                 data_series = self.__predictorI.data_preparation(historic_values, self.__dp_interval_hour)
 
                 # sum the individual results for a final total value
@@ -236,6 +287,12 @@ class PredictorInfluxConnector:
                 # Count: The DB does not have historic data, since it is aggregated on query -> save it.
                 # insert into new table with clear identification, not old one.
                 if re_save_historic:
+
+                    if group_tags and tag_dict:
+                        LOGGER.info(f">>> {description}: Saving historic data of the group {group_tags[0]}={tag_dict[group_tags[0]]}.")
+                    else:
+                        LOGGER.info(f">>> {description}: Saving historic data.")
+
                     SizingUtils.insert_series(
                         self.__influx_client,
                         report_rp=self.__report_rp,
@@ -246,7 +303,14 @@ class PredictorInfluxConnector:
 
                 #### predict data for the next x years ####
 
+                if group_tags and tag_dict:
+                    LOGGER.info(f">>> Predicting the data for {description} in group {group_tags[0]}={tag_dict[group_tags[0]]}.")
+                else:
+                    LOGGER.info(f">>> Predicting the data for {description}.")
+
                 prediction_result = self.__predictorI.predict_data(data_series, self.__forecast_years)
+
+                LOGGER.info(f">>> Finished the prediction, continuing to insert the data into the InfluxDB.")
                 # save the prediction with the new meta data
                 SizingUtils.insert_series(
                     self.__influx_client,
@@ -257,10 +321,10 @@ class PredictorInfluxConnector:
                     insert_tags=insert_tags)
 
             except ValueError as error:
-                ExceptionUtils.exception_info(error, f"Skipping {description} group with {group_tag}={tag_dict}.")
+                ExceptionUtils.exception_info(error, f"Skipping {description} group with {group_tags}={tag_dict}.")
 
         # only save if grouped, since then there are multiple series summed up
-        if group_tag and save_total:
+        if group_tags and save_total:
 
             insert_tags = {
                 self.sppcheck_metric_tag: metric_name,
@@ -268,6 +332,8 @@ class PredictorInfluxConnector:
                 self.sppcheck_group_tag_name: "Total",
                 "site": "Total",
                 "siteName": "Total"}
+
+            LOGGER.info(f">> Saving summarized historic values.")
 
             # insert summed historical data first
             SizingUtils.insert_series(
@@ -278,8 +344,13 @@ class PredictorInfluxConnector:
                 value_key=self.sppcheck_value_name,
                 insert_tags=insert_tags)
 
+            LOGGER.info(f">> Predicting the summarized data of the {description}.")
+
             # insert total data prediction
             prediction_result = self.__predictorI.predict_data(total_historic_series, self.__forecast_years)
+
+            LOGGER.info(f">> Finished the prediction, continuing to insert the data into the InfluxDB.")
+
             SizingUtils.insert_series(
                 self.__influx_client,
                 report_rp=self.__report_rp,

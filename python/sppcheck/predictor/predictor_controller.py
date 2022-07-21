@@ -27,12 +27,16 @@ Classes:
     TODO
 """
 
+from datetime import datetime
+import logging
 from influx.database_tables import RetentionPolicy
 from influx.influx_client import InfluxClient
 from sppCheck.predictor.predictor_influx_connector import \
     PredictorInfluxConnector
 from utils.exception_utils import ExceptionUtils
 
+LOGGER_NAME = 'sppmon'
+LOGGER = logging.getLogger(LOGGER_NAME)
 
 class PredictorController:
 
@@ -42,7 +46,7 @@ class PredictorController:
 
     def __init__(self, influx_client: InfluxClient, dp_interval_hour: int,
                  select_rp: RetentionPolicy, rp_timestamp: str,
-                 forecast_years: float) -> None:
+                 forecast_years: float, start_date: datetime) -> None:
         if not influx_client:
             raise ValueError("PredictorController is not available, missing the influx_client")
 
@@ -51,14 +55,18 @@ class PredictorController:
             dp_interval_hour,
             select_rp,
             rp_timestamp,
-            forecast_years
+            forecast_years,
+            start_date
         )
         self.__report_rp = self.__predictor_influx_connector.report_rp
 
     def predict_all_data(self):
 
+        LOGGER.info("> Starting the prediction of all metrics.")
+
         function_list = [
             self.__predict_physical_capacity,
+            self.__predict_physical_pool_size,
             self.__predict_vsnap_quantity,
             self.__predict_total_vadp_quantity,
             self.__predict_total_server_memory,
@@ -70,15 +78,31 @@ class PredictorController:
             try:
                 function()
             except ValueError as error:
-                ExceptionUtils.exception_info(error, f"Error when predicting {function.__name__}, skipping it.")
+                ExceptionUtils.exception_info(error, f"IMPORTANT: Error when predicting {function.__name__}, skipping it.")
+
+        LOGGER.info("Completed the prediction of all metrics.")
 
     def __predict_physical_capacity(self) -> None:
         self.__predictor_influx_connector.predict_data(
             table_name="storages",
             value_or_count_key="used",
-            description="Storage data",
-            group_tag="storageId, hostAddress",
+            description="Storage used capacity",
+            group_tags=["storageId", "hostAddress"],
             metric_name="physical_capacity",
+            save_total=True,
+
+            ##
+            use_count_query=False,
+            re_save_historic=False
+        )
+
+    def __predict_physical_pool_size(self) -> None:
+        self.__predictor_influx_connector.predict_data(
+            table_name="storages",
+            value_or_count_key="total",
+            description="Storage pool size",
+            group_tags=["storageId", "hostAddress"],
+            metric_name="physical_pool_size",
             save_total=True,
 
             ##
@@ -91,7 +115,7 @@ class PredictorController:
             table_name="storages",
             value_or_count_key="storageId",
             description="vSnap count",
-            group_tag="site, siteName",
+            group_tags=["site", "siteName"],
             metric_name="vsnap_count",
             use_count_query=True,
             re_save_historic=True,
@@ -103,7 +127,7 @@ class PredictorController:
             table_name="vadps",
             value_or_count_key=f"count", # unused
             description="total VADP count",
-            group_tag="site, siteName",
+            group_tags=["site", "siteName"],
             metric_name="vadp_total_count",
             re_save_historic=True,
             save_total=True,
@@ -122,7 +146,7 @@ class PredictorController:
             metric_name="total_server_memory",
 
             #
-            group_tag=None,
+            group_tags=None,
             use_count_query=False,
             re_save_historic=False,
             save_total=False
@@ -137,7 +161,7 @@ class PredictorController:
             re_save_historic=True,
 
             #
-            group_tag=None,
+            group_tags=None,
             use_count_query=False,
             save_total=False
         )
@@ -147,7 +171,7 @@ class PredictorController:
             table_name="sppcatalog",
             value_or_count_key="usedSize",
             description="server catalogs",
-            group_tag="\"name\"",
+            group_tags=["\"name\""],
             metric_name="server_catalogs",
             save_total=True,
 
