@@ -1290,7 +1290,7 @@ class Definitions:
 
         if basename(__main__.__file__) == "sppcheck.py":
 
-            from sppCheck.excel.excel_reader import ExcelReader
+            from sppCheck.excel.excel_controller import ExcelController
             from sppCheck.predictor.predictor_influx_connector import PredictorInfluxConnector
 
             cls.add_predef_table(
@@ -1313,12 +1313,12 @@ class Definitions:
             )
 
             cls.add_predef_table(
-                name=ExcelReader.sppcheck_excel_table_name,
+                name=ExcelController.sppcheck_excel_table_name,
                 fields={
-                    ExcelReader.sppcheck_excel_value_name:                    Datatype.INT,
+                    ExcelController.sppcheck_excel_value_name:                    Datatype.INT,
                 },
                 tags=[
-                    ExcelReader.sppcheck_excel_metric_tag,
+                    ExcelController.sppcheck_excel_metric_tag,
                 ],
                 # this rp is unused, but redundancy in case of an error. Overwritten by excel-RP
                 retention_policy=cls.RP_INF(),

@@ -37,7 +37,7 @@ from typing import Dict, NoReturn, Union
 from influx.database_tables import RetentionPolicy
 from influx.definitions import Definitions
 from influx.influx_client import InfluxClient
-from sppCheck.excel.excel_reader import ExcelReader
+from sppCheck.excel.excel_controller import ExcelController
 from sppCheck.generator.fakedata_controller import FakeDataController
 from sppCheck.predictor.predictor_controller import PredictorController
 from sppCheck.report.report_controller import ReportController
@@ -339,7 +339,7 @@ class SPPCheck:
         if bool(ARGS.sheetPath):
             LOGGER.info("Starting the Excel Reader module")
             try:
-                excel_reader = ExcelReader(
+                excel_reader = ExcelController(
                     ARGS.sheetPath, ARGS.sizerVersion,
                     self.__influx_client, self.start_date,
                     self.__dp_interval_hour,

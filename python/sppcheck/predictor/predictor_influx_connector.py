@@ -30,7 +30,6 @@ Classes:
 from __future__ import annotations
 from datetime import datetime
 import logging
-from tokenize import group
 from typing import Any, ClassVar, Dict, Generator, List, Optional, Tuple, Union
 
 
@@ -280,7 +279,7 @@ class PredictorInfluxConnector:
                 data_series = self.__predictorI.data_preparation(historic_values, self.__dp_interval_hour)
 
                 # sum the individual results for a final total value
-                if save_total:
+                if group_tags and save_total:
                     # fill required for initial setup -> or everything is NaN
                     total_historic_series = total_historic_series.add(data_series, fill_value=0)
 
