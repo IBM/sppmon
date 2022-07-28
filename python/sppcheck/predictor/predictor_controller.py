@@ -71,7 +71,8 @@ class PredictorController:
             self.__predict_total_vadp_quantity,
             self.__predict_total_server_memory,
             self.__predict_used_server_memory,
-            self.__predict_server_catalogs,
+            self.__predict_used_server_catalogs,
+            self.__predict_total_server_catalogs
         ]
 
         for function in function_list:
@@ -93,7 +94,8 @@ class PredictorController:
 
             ##
             use_count_query=False,
-            re_save_historic=False
+            re_save_historic=False,
+            repeat_last=False
         )
 
     def __predict_physical_pool_size(self) -> None:
@@ -104,6 +106,7 @@ class PredictorController:
             group_tags=["storageId", "hostAddress"],
             metric_name="physical_pool_size",
             save_total=True,
+            repeat_last=True,
 
             ##
             use_count_query=False,
@@ -120,6 +123,7 @@ class PredictorController:
             use_count_query=True,
             re_save_historic=True,
             save_total=True,
+            repeat_last=True
         )
 
     def __predict_total_vadp_quantity(self) -> None:
@@ -131,6 +135,7 @@ class PredictorController:
             metric_name="vadp_total_count",
             re_save_historic=True,
             save_total=True,
+            repeat_last=True,
 
             #
 
@@ -144,6 +149,7 @@ class PredictorController:
             value_or_count_key="memorySize",
             description="total server memory",
             metric_name="total_server_memory",
+            repeat_last=True,
 
             #
             group_tags=None,
@@ -157,7 +163,7 @@ class PredictorController:
             table_name="cpuram",
             value_or_count_key="memorySize * memoryUtil",
             description="used server memory",
-            metric_name="server_used_memory",
+            metric_name="used_server_memory",
             re_save_historic=True,
 
             #
@@ -166,14 +172,29 @@ class PredictorController:
             save_total=False
         )
 
-    def __predict_server_catalogs(self) -> None:
+    def __predict_used_server_catalogs(self) -> None:
         self.__predictor_influx_connector.predict_data(
             table_name="sppcatalog",
             value_or_count_key="usedSize",
-            description="server catalogs",
+            description="used server catalogs",
             group_tags=["\"name\""],
-            metric_name="server_catalogs",
-            save_total=True,
+            metric_name="used_server_catalogs",
+            save_total=False,
+
+            #
+            use_count_query=False,
+            re_save_historic=False,
+        )
+
+    def __predict_total_server_catalogs(self) -> None:
+        self.__predictor_influx_connector.predict_data(
+            table_name="sppcatalog",
+            value_or_count_key="totalSize",
+            description="total server catalogs",
+            group_tags=["\"name\""],
+            metric_name="total_server_catalogs",
+            save_total=False,
+            repeat_last=True,
 
             #
             use_count_query=False,

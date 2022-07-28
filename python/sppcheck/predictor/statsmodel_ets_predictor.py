@@ -96,7 +96,7 @@ class StatsmodelEtsPredictor(PredictorInterface):
         if hours_last_data > 24 * 7 and hours_last_data > dp_freq_hour * 3:
             raise ValueError("This set of data is too old to be used")
 
-        LOGGER.debug(f"forecasting using {len(data_series)} datapoints")
+        LOGGER.debug(f"forecasting using {len(data_series)} data points")
 
         # without enough values the forecast wont work
         if len(data_series) < 15:

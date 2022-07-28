@@ -105,7 +105,7 @@ class ExcelController:
 
         # Transform the sheet into pre-defined dictionary with variable-name to years projection
 
-        mapping =  self.__extract_sheet(sizing_results)
+        mapping =  self.__traverse_sheet(sizing_results)
 
         # insert the data into the influxDB with correct tags and interpolate into correct frequency
 
@@ -166,7 +166,7 @@ class ExcelController:
             except ValueError as error:
                 ExceptionUtils.exception_info(error, f"Skipping the key {excel_key} due to an error.")
 
-    def __extract_sheet(self, results: DataFrame) -> Dict[str, Tuple[Optional[str], Series]]:
+    def __traverse_sheet(self, results: DataFrame) -> Dict[str, Tuple[Optional[str], Series]]:
 
         # columns: name - alt_unit - unit - 1...8
 
