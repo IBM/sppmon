@@ -186,6 +186,6 @@ python.sln
 .VSCodeCounter
 
 # sppcheck pictures
-sppcheck/report/pictures/*
-!sppcheck/report/pictures/.gitkeep
-!sppcheck/report/pictures/SpectrumProtectPlus-dark.svg
+sppcheck/report/temp_files/*
+!sppcheck/report/temp_files/.gitkeep
+!sppcheck/report/temp_files/SpectrumProtectPlus-dark.svg

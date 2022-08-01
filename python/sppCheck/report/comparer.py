@@ -27,20 +27,18 @@ Classes:
     TODO
 """
 
-from calendar import month
+import logging
 from datetime import datetime, timedelta
 from enum import Enum, auto, unique
-import logging
-from multiprocessing.sharedctypes import Value
-from typing import Dict, Any, Generator, List, Optional, Tuple, Type, Union
+from typing import Any, Dict, Generator, List, Optional, Tuple
 
-from influx.database_tables import Datatype, RetentionPolicy
 from dateutil.relativedelta import relativedelta
-
+from influx.database_tables import RetentionPolicy
 from influx.influx_client import InfluxClient
 from influx.influx_queries import Keyword, SelectionQuery
 from sppCheck.excel.excel_controller import ExcelController
-from sppCheck.predictor.predictor_influx_connector import PredictorInfluxConnector
+from sppCheck.predictor.predictor_influx_connector import \
+    PredictorInfluxConnector
 from utils.exception_utils import ExceptionUtils
 
 LOGGER_NAME = 'sppmon'
@@ -69,14 +67,15 @@ class Comparer:
         start_date: datetime,
         config_file: Dict[str, Any],
         predict_years: int,
-        prediction_rp: Optional[RetentionPolicy],
-        excel_rp: Optional[RetentionPolicy]) -> None:
+        prediction_rp: RetentionPolicy,
+        excel_rp: RetentionPolicy) -> None:
         if not influx_client:
             raise ValueError("Logic Tool is not available, missing the influx_client")
 
         self.__influx_client: InfluxClient = influx_client
 
         self.__prediction_table = influx_client.database[PredictorInfluxConnector.sppcheck_table_name]
+        self.__excel_table = influx_client.database[ExcelController.sppcheck_excel_table_name]
 
 
         self.__historic_rp = select_rp
@@ -114,8 +113,10 @@ class Comparer:
 
 
     def compare_metrics(self,
-                   base_metric_name: str, base_table: ComparisonSource, base_group_tag: Optional[str],
-                   comp_metric_name: str, comp_table: ComparisonSource, comp_group_tag: Optional[str]):
+                   base_metric_name: str, base_table: ComparisonSource,
+                   comp_metric_name: str, comp_table: ComparisonSource,
+                   base_group_tag: Optional[str] = None,
+                   comp_group_tag: Optional[str] = None):
 
         LOGGER.info(f">> Start of comparison of metric {base_metric_name} with metric {comp_metric_name}.")
 
@@ -127,7 +128,7 @@ class Comparer:
             comp_metric_name, comp_table, comp_group_tag
         )
 
-        result_dict: Dict[ComparisonPoints, Optional[Tuple[int, int|float, int]]] = {}
+        result_dict: Dict[ComparisonPoints, Optional[Tuple[int, int, int|float, int]]] = {}
         for time_point in ComparisonPoints:
             try:
                 LOGGER.debug(f"Comparing time point {time_point}")
@@ -155,15 +156,15 @@ class Comparer:
                 # epoch is seconds since 1970, therefore this diff is the difference between both points which can asap be used
                 # we use seconds precision
                 LOGGER.debug(f"base_timestamp: {base_timestamp}, comp_timestamp: {comp_timestamp}")
-                diff_timestamp = base_timestamp - comp_timestamp
-                diff_value = base_value - comp_value
+                diff_timestamp = comp_timestamp - base_timestamp
+                diff_value = comp_value - base_value
                 LOGGER.debug(f"diff_timestamp: {diff_timestamp}, diff_value: {diff_value}")
                 # precision of int is enough
                 # how much % of the base value is the comp value -> comp 75, base 90 -> diff 83%
                 diff_percent = round((comp_value / base_value) * 100)
                 LOGGER.debug(f"diff_percent: {diff_percent}")
 
-                result_dict[time_point] = (diff_timestamp, diff_value, diff_percent)
+                result_dict[time_point] = (base_timestamp, diff_timestamp, diff_value, diff_percent)
             except ValueError as error:
                 ExceptionUtils.exception_info(error, f"Failed to compare metric for time point {time_point.name}")
                 result_dict[time_point] = None
@@ -198,18 +199,21 @@ class Comparer:
 
         if table_source is ComparisonSource.PREDICTION:
             alt_rp = self.__prediction_rp
+            table = self.__prediction_table
             where_str += f"AND {PredictorInfluxConnector.sppcheck_metric_tag} = '{metric_name}' "
             if group_tag:
                 where_str += f"AND {PredictorInfluxConnector.sppcheck_group_tag} = '{group_tag}' "
+
         elif table_source is ComparisonSource.EXCEL:
             alt_rp = self.__excel_rp
+            table = self.__excel_table
             where_str += f"AND {ExcelController.sppcheck_excel_metric_tag} = '{metric_name}' "
         ### historic not implemented yet ###
 
         LOGGER.debug(f"where_str: {where_str}")
         selection_query = SelectionQuery(
             keyword=Keyword.SELECT,
-            table_or_query=self.__prediction_table,
+            table_or_query=table,
             alt_rp=alt_rp,
             fields=[PredictorInfluxConnector.sppcheck_value_name],
             where_str=where_str

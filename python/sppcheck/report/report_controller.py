@@ -27,10 +27,7 @@ Classes:
     TODO
 """
 
-from ast import Compare
 from datetime import datetime
-from pathlib import Path
-from os.path import exists, isfile
 from typing import Dict, Any, Optional
 
 from influx.database_tables import RetentionPolicy
@@ -55,6 +52,10 @@ class ReportController:
         excel_rp: Optional[RetentionPolicy]) -> None:
         if not influx_client:
             raise ValueError("Logic Tool is not available, missing the influx_client")
+
+        if not prediction_rp or not excel_rp:
+            raise ValueError("Automatic selection of the latest prediction or excel retention policy not supported yet. \n" +\
+                             "Please only generate the Report in conjunction with the other SPPCheck functionalities")
 
         self.__influx_client: InfluxClient = influx_client
 
@@ -82,29 +83,47 @@ class ReportController:
         pass
 
     def __create_individual_reports(self):
+        self.__create_storage_report()
+        pass
 
-        result = self.__comparer.compare_metrics(
-            base_metric_name="physical_capacity",
+    def __create_storage_report(self):
+        # compare used vs available space
+        available_vs_used_result = self.__comparer.compare_metrics(
+            base_metric_name="physical_pool_size",
             base_table=ComparisonSource.PREDICTION,
-            base_group_tag= PredictorInfluxConnector.sppcheck_total_group_value,
+            base_group_tag=PredictorInfluxConnector.sppcheck_total_group_value,
+
+            comp_metric_name="physical_capacity",
+            comp_table=ComparisonSource.PREDICTION,
+            comp_group_tag= PredictorInfluxConnector.sppcheck_total_group_value,
+        )
+        # download full scale view
+        available_vs_used_storage_full = self.__picture_generator.download_picture(
+            210, 1000, 500,
+            "available_vs_used_storage_full")
+        # download small scale view
+        available_vs_used_storage_one_year = self.__picture_generator.download_picture(
+            210, 1000, 500,
+            "available_vs_used_storage_one_year",
+            relative_from_years=1,
+           relative_to_years=1)
+
+        excel_vs_available_result = self.__comparer.compare_metrics(
+            base_metric_name="primary_vsnap_size_est_w_reserve",
+            base_table=ComparisonSource.EXCEL,
 
             comp_metric_name="physical_pool_size",
             comp_table=ComparisonSource.PREDICTION,
-            comp_group_tag=PredictorInfluxConnector.sppcheck_total_group_value
+            comp_group_tag= PredictorInfluxConnector.sppcheck_total_group_value,
         )
-        used_vs_available_storage = self.__picture_generator.download_picture(210, 1000, 500, "used_vs_available_storage")
+        # download full scale view
+        excel_vs_available_storage_full = self.__picture_generator.download_picture(
+            226, 1000, 500,
+            "excel_vs_available_storage_full")
 
-        #    Comparer.START,
-        #    "physical_capacity",
-        #    "vsnap_size_est_physical_subtotal",
-        #    "Total"
-        #    )
+
         pass
 
-
-
-        # download total storage prediction
-        #total_storage = self.__picture_generator.download_picture(183, 1000, 500, "total_storage")
 
 
     def __gen_pdf_file(self):
