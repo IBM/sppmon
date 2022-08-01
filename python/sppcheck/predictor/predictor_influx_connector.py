@@ -60,6 +60,7 @@ class PredictorInfluxConnector:
     sppcheck_metric_tag: ClassVar[str] = "metric_name"
     sppcheck_group_tag: ClassVar[str] = "grouping_tag"
     sppcheck_group_tag_name: ClassVar[str] = "grouping_tag_name"
+    sppcheck_total_group_value: ClassVar[str] = "Total"
 
     @property
     def report_rp(self) -> RetentionPolicy:
@@ -338,10 +339,10 @@ class PredictorInfluxConnector:
 
             insert_tags = {
                 self.sppcheck_metric_tag: metric_name,
-                self.sppcheck_group_tag: "Total",
-                self.sppcheck_group_tag_name: "Total",
-                "site": "Total",
-                "siteName": "Total"}
+                self.sppcheck_group_tag: self.sppcheck_total_group_value,
+                self.sppcheck_group_tag_name: self.sppcheck_total_group_value,
+                "site": self.sppcheck_total_group_value,
+                "siteName": self.sppcheck_total_group_value}
 
             LOGGER.info(f">> Saving summarized historic values.")
 

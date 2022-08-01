@@ -188,3 +188,4 @@ python.sln
 # sppcheck pictures
 sppcheck/report/pictures/*
 !sppcheck/report/pictures/.gitkeep
+!sppcheck/report/pictures/SpectrumProtectPlus-dark.svg

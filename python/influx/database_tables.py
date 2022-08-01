@@ -33,7 +33,7 @@ from __future__ import annotations
 from enum import Enum, unique
 import re
 import json
-from typing import Any, Dict, List, Set, Tuple, Union
+from typing import Any, Dict, List, Set, Tuple, Type, Union
 
 import influx.influx_queries as Queries
 from utils.exception_utils import ExceptionUtils

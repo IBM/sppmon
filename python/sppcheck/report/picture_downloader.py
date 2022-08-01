@@ -58,11 +58,14 @@ class PictureDownloader:
         prediction_rp: Optional[RetentionPolicy],
         excel_rp: Optional[RetentionPolicy]) -> None:
 
+        LOGGER.debug("Setting up the PictureDownloader")
+
         self.__influx_client: InfluxClient = influx_client
 
         self.__pictures_path = Path("sppcheck", "report", "pictures")
         if not isdir(self.__pictures_path):
             raise ValueError(f"The pdf-picture folder does not exits: {self.__pictures_path}")
+        LOGGER.debug(f"Pictures Path set to {self.__pictures_path}")
 
         try:
             grafana_conf: Dict[str, Any] = config_file["grafana"]
@@ -76,11 +79,13 @@ class PictureDownloader:
             srv_address = grafana_conf["srv_address"]
 
             # optional
-            datasource_name = grafana_conf.get("datasource_name", self.__influx_client.database.name)
+            datasource_name_untreated = grafana_conf.get("datasource_name", self.__influx_client.database.name)
             orgId = grafana_conf.get("orgId", 1)
         except KeyError as error:
             ExceptionUtils.exception_info(error)
             raise ValueError("No Grafana configuration available in the config file! Aborting")
+
+        datasource_name = datasource_name_untreated.replace(" ", "+")
 
         if ssl:
             self.__srv_url += "https://"
@@ -89,8 +94,9 @@ class PictureDownloader:
             # disable the verify to avoid bugs
             self.__verify_ssl = False
         self.__srv_url += f"{srv_address}:{srv_port}"
+        LOGGER.debug(f"Server url set to {self.__srv_url}")
 
-        # get from and to timestamps, adjust precision
+        # get from and to timestamps, adjust precision from seconds to ms
         time_future = int((datetime.now() + relativedelta(years=predict_years)).timestamp()) * 1000
         time_past = int(start_date.timestamp()) * 1000
 
@@ -102,6 +108,7 @@ class PictureDownloader:
             self.__panel_prefix_url += f"&var-prediction={prediction_rp.name}"
         if excel_rp:
             self.__panel_prefix_url += f"&var-excel={excel_rp.name}"
+        LOGGER.debug(f"Full panel prefix set to {self.__panel_prefix_url}")
 
         self.__http_auth: HTTPBasicAuth = HTTPBasicAuth(username, password)
 
@@ -124,8 +131,12 @@ class PictureDownloader:
             raise ValueError("Failed to connect to Grafana, please check the configs")
 
     def download_picture(self, panelId: int, width: int, height: int, name: str) -> Path:
+        LOGGER.info(f">> Starting to download Grafana Panel {panelId}")
+
         save_path = Path(self.__pictures_path, name + ".png")
+        LOGGER.debug(f"save_path: {save_path}")
         request_url = f"{self.__panel_prefix_url}&panelId={panelId}&width={width}&height={height}"
+        LOGGER.debug(f"request_url: {request_url}")
         try:
             response = get(url=request_url, auth=self.__http_auth, verify=self.__verify_ssl, stream=True)
 
@@ -137,6 +148,8 @@ class PictureDownloader:
                 raise ValueError(f"Failed to query image from Grafana, code: {response.status_code}, {response.reason}")
         except (ReadTimeout, RequestException) as error:
             ExceptionUtils.exception_info(error)
-            raise ValueError("Failed to query image from Grafana")
+            raise ValueError("Failed to query image from Grafana due to a Timeout or Server error.")
+
+        LOGGER.info(f">> Successfully downloaded Grafana Panel {panelId}")
 
         return save_path

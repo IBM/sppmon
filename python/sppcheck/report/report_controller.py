@@ -27,6 +27,7 @@ Classes:
     TODO
 """
 
+from ast import Compare
 from datetime import datetime
 from pathlib import Path
 from os.path import exists, isfile
@@ -35,7 +36,9 @@ from typing import Dict, Any, Optional
 from influx.database_tables import RetentionPolicy
 
 from influx.influx_client import InfluxClient
+from sppCheck.predictor.predictor_influx_connector import PredictorInfluxConnector
 from sppCheck.report.picture_downloader import PictureDownloader
+from sppCheck.report.comparer import Comparer, ComparisonSource
 
 class ReportController:
 
@@ -58,16 +61,59 @@ class ReportController:
         self.__picture_generator = PictureDownloader(
             influx_client,
             select_rp, start_date,
-            config_file, predict_years,
+            config_file,
+            5,#predict_years,
             prediction_rp, excel_rp)
 
-        self.__template_pdf = Path("sppcheck", "report", "SPPCheck Template.pdf")
-        if not exists(self.__template_pdf) and isfile(self.__template_pdf):
-            raise ValueError("Template PDF does not exists or is not a file.")
+        self.__comparer = Comparer(
+            influx_client,
+            dp_interval_hour,
+            select_rp,
+            rp_timestamp,
+            start_date,
+            config_file,
+            predict_years,
+            prediction_rp,
+            excel_rp
+        )
 
 
+    def __create_overview_table(self):
+        pass
+
+    def __create_individual_reports(self):
+
+        result = self.__comparer.compare_metrics(
+            base_metric_name="physical_capacity",
+            base_table=ComparisonSource.PREDICTION,
+            base_group_tag= PredictorInfluxConnector.sppcheck_total_group_value,
+
+            comp_metric_name="physical_pool_size",
+            comp_table=ComparisonSource.PREDICTION,
+            comp_group_tag=PredictorInfluxConnector.sppcheck_total_group_value
+        )
+        used_vs_available_storage = self.__picture_generator.download_picture(210, 1000, 500, "used_vs_available_storage")
+
+        #    Comparer.START,
+        #    "physical_capacity",
+        #    "vsnap_size_est_physical_subtotal",
+        #    "Total"
+        #    )
+        pass
+
+
+
+        # download total storage prediction
+        #total_storage = self.__picture_generator.download_picture(183, 1000, 500, "total_storage")
+
+
+    def __gen_pdf_file(self):
+        pass
 
     def createPdfReport(self):
 
-        # download total storage prediction
-        total_storage = self.__picture_generator.download_picture(183, 1000, 500, "total_storage")
+        individual_reports = self.__create_individual_reports()
+
+        overview_table = self.__create_overview_table()
+
+        self.__gen_pdf_file()
