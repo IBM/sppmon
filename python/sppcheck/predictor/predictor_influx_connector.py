@@ -46,7 +46,7 @@ from pandas import Series, Timestamp
 from sppCheck.predictor.predictor_interface import PredictorInterface
 from sppCheck.predictor.statsmodel_ets_predictor import \
     StatsmodelEtsPredictor
-from utils.sppcheck_utils import SizingUtils
+from utils.sppcheck_utils import SppcheckUtils
 from utils.exception_utils import ExceptionUtils
 
 LOGGER_NAME = 'sppmon'
@@ -62,15 +62,10 @@ class PredictorInfluxConnector:
     sppcheck_group_tag_name: ClassVar[str] = "grouping_tag_name"
     sppcheck_total_group_value: ClassVar[str] = "Total"
 
-    @property
-    def report_rp(self) -> RetentionPolicy:
-        return self.__report_rp
-
     def __init__(self, influx_client: InfluxClient, dp_interval_hour: int,
-                 select_rp: RetentionPolicy, rp_timestamp: str,
+                 select_rp: RetentionPolicy, report_rp: RetentionPolicy,
                  forecast_years: float, start_date: datetime) -> None:
-        if not influx_client:
-            raise ValueError("PredictorController is not available, missing the influx_client")
+
         self.__influx_client: InfluxClient = influx_client
 
         self.__predictorI: PredictorInterface = StatsmodelEtsPredictor()
@@ -78,13 +73,11 @@ class PredictorInfluxConnector:
         self.__select_rp = select_rp
         self.__forecast_years = forecast_years
         self.__start_date_timestamp = round(start_date.timestamp())
+        self.__report_rp = report_rp
 
         LOGGER.debug(f"> dp_interval_hour: {dp_interval_hour}, select_rp: {select_rp}, forecast_years: {forecast_years}")
         LOGGER.debug(f"> start_date_timestamp: {self.__start_date_timestamp}, dp_interval_hour: {dp_interval_hour}")
-
-        self.__report_rp = SizingUtils.create_unique_rp(self.__influx_client,"prediction", rp_timestamp)
-
-        LOGGER.debug(f"> Using report RP {self.__report_rp}")
+        LOGGER.debug(f"> report_rp: {report_rp}")
 
 
 
@@ -301,7 +294,7 @@ class PredictorInfluxConnector:
                     else:
                         LOGGER.info(f">>> {description}: Saving historic data.")
 
-                    SizingUtils.insert_series(
+                    SppcheckUtils.insert_series(
                         self.__influx_client,
                         report_rp=self.__report_rp,
                         prediction_result=data_series,
@@ -323,7 +316,7 @@ class PredictorInfluxConnector:
 
                 LOGGER.info(f">>> Finished the prediction, continuing to insert the data into the InfluxDB.")
                 # save the prediction with the new meta data
-                SizingUtils.insert_series(
+                SppcheckUtils.insert_series(
                     self.__influx_client,
                     report_rp=self.__report_rp,
                     prediction_result=prediction_result,
@@ -347,7 +340,7 @@ class PredictorInfluxConnector:
             LOGGER.info(f">> Saving summarized historic values.")
 
             # insert summed historical data first
-            SizingUtils.insert_series(
+            SppcheckUtils.insert_series(
                 self.__influx_client,
                 report_rp=self.__report_rp,
                 prediction_result=total_historic_series,
@@ -365,7 +358,7 @@ class PredictorInfluxConnector:
 
             LOGGER.info(f">> Finished the prediction, continuing to insert the data into the InfluxDB.")
 
-            SizingUtils.insert_series(
+            SppcheckUtils.insert_series(
                 self.__influx_client,
                 report_rp=self.__report_rp,
                 prediction_result=prediction_result,

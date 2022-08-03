@@ -269,6 +269,14 @@ class InfluxClient:
                 database=database_name
             )
 
+    def get_list_rp(self, database_name: str) -> Dict[str, Dict[str, Any]]:
+            results: List[Dict[str, Any]] = self.__client.get_list_retention_policies(database_name)
+
+            rp_dict: Dict[str, Dict[str, Any]] = {}
+            for result in results:
+                rp_dict[result['name']] = result
+
+            return rp_dict
 
     def check_create_rp(self, database_name: str) -> None:
         """Checks if any retention policy needs to be altered or added
@@ -278,11 +286,8 @@ class InfluxClient:
             ValueError: Check failed due Database error
         """
         try:
-            results: List[Dict[str, Any]] = self.__client.get_list_retention_policies(database_name)
 
-            rp_dict: Dict[str, Dict[str, Any]] = {}
-            for result in results:
-                rp_dict[result['name']] = result
+            rp_dict = self.get_list_rp(database_name)
 
             add_rp_list: List[RetentionPolicy] = []
             alter_rp_list: List[RetentionPolicy] = []

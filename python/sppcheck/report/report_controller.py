@@ -31,14 +31,20 @@ import inspect
 import logging
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from dateutil.relativedelta import relativedelta
 from influx.database_tables import RetentionPolicy
 from influx.influx_client import InfluxClient
-from sppCheck.report.comparer import Comparer, ComparisonPoints
+from sppCheck.excel.excel_controller import ExcelController
+from sppCheck.predictor.predictor_controller import PredictorController
+from sppCheck.predictor.predictor_influx_connector import \
+    PredictorInfluxConnector
+from sppCheck.report.comparer import Comparer
 from sppCheck.report.individual_reports import IndividualReports
+from sppCheck.report.overview_table import OverviewTable
 from sppCheck.report.picture_downloader import PictureDownloader
+from utils.sppcheck_utils import SppcheckUtils
 
 LOGGER_NAME = 'sppmon'
 LOGGER = logging.getLogger(LOGGER_NAME)
@@ -57,16 +63,26 @@ class ReportController:
         if not influx_client:
             raise ValueError("Logic Tool is not available, missing the influx_client")
 
-        if not prediction_rp or not excel_rp or predict_years is None:
-            raise ValueError("Automatic selection of the latest prediction or excel retention policy not supported yet. \n" +\
-                             "Please only generate the Report in conjunction with the other SPPCheck functionalities")
+        self.__system_name = influx_client.database.name
 
-        self.__influx_client: InfluxClient = influx_client
-        self.__temp_file_path = Path("sppcheck", "report", "temp_files", "report.html")
+        if not prediction_rp:
+            prediction_rp = SppcheckUtils.choose_latest_rp(influx_client, PredictorController.rp_prefix)
+
+        if not excel_rp:
+            excel_rp = SppcheckUtils.choose_latest_rp(influx_client, ExcelController.rp_prefix)
+
+        if predict_years is None:
+            self.__end_date = SppcheckUtils.choose_latest_data(influx_client, PredictorInfluxConnector.sppcheck_table_name, prediction_rp)
+        else:
+            self.__end_date = datetime.now() + relativedelta(years=predict_years)
+        LOGGER.debug(f"end_date: {self.__end_date}")
 
         self.__start_date = start_date
-        self.__end_date = datetime.now() + relativedelta(years=predict_years)
 
+        self.__temp_file_path = Path("sppcheck", "report", "temp_files", "report.html")
+        LOGGER.debug(f"relative temp file path: {self.__temp_file_path}")
+        self.__rel_spp_icon_path = Path("..", "SpectrumProtectPlus-dark.svg")
+        LOGGER.debug(f"relative spp icon file path: {self.__rel_spp_icon_path}")
 
         picture_downloader = PictureDownloader(
             influx_client,
@@ -91,71 +107,46 @@ class ReportController:
             self.__end_date
         )
 
+        self.__overview_table = OverviewTable(
+            start_date,
+            self.__end_date
+        )
+
 
     def __create_overview_table(self):
 
         LOGGER.info("> Starting to create an overview table")
 
-        metrics_list = self.__individual_reports.overview_table_data
+        used_metrics_list = self.__individual_reports.overview_used_data
+        setup_metrics_list = self.__individual_reports.overview_setup_data
 
-        table_rows_lst: List[str] = []
-        for (metric_name, positive_interpretation, data_dict) in metrics_list:
-            row_data_lst: List[str] = []
-            for time_point in ComparisonPoints:
-                data_tuple = data_dict[time_point]
-                if not data_tuple:
-                    # no data available
-                    percent_str = "NA"
-                    color = "orange"
-                else:
-                    # other values unused
-                    (timestamp, time_diff, value_diff, percent_value) = data_tuple
-
-                    percent_str = f"{percent_value}%"
-
-                    # decide coloring according to value and mapping
-                    if percent_value < 100:
-                        if positive_interpretation:
-                            color = "green"
-                        else:
-                            color = "red"
-                    else:
-                        if positive_interpretation:
-                            color = "red"
-                        else:
-                            color = "green"
-                # append each column to the row list
-                row_data_lst.append(f"""<td style="color:{color};"> {percent_str} </td>""")
-
-            # convert each column to a row string, append to the total row list.
-            row_data_str="\n".join(row_data_lst)
-            table_rows_lst.append(f"""
-    <tr>
-        <td> {metric_name} </td>
-        {row_data_str}
-    </tr>
-"""         )
-        # End of the metric iteration
-
-        # now compute the whole table
-        table_rows_str = "\n".join(table_rows_lst)
+        used_table_caption = """
+<caption>
+    This table shows the overview of all supported metrics displaying usage statistics. <br/>
+    The values show, based on the scale of 0-100+% how the system is performing with each metric. <br/>
+    <br/>
+    A value <span style="color:green">below 100%</span> means that the currently available space <span style="color:green">is sufficient</span> for the time period of the column. <br/>
+    A value <span style="color:red">above 100%</span> means that the currently available space is not sufficient, <span style="color:red">requiring an upgrade</span>. <br/>
+    These distinctions are supported by the color code: <span style="color:green">green</span> for sufficient and <span style="color:red">red</span> if an upgrade is required. <br/>
+    Each metric is explained in detail in the lower sections.
+</caption>
+"""
+        setup_table_caption = """
+<caption>
+    This table shows the overview of all supported metrics displaying setup-check statistics. <br/>
+    The values show, based on the scale of 0-100+% how the system is set up compared to the Blueprint vSnap sizer Sheet recommendations. <br/>
+    <br/>
+    A value <span style="color:green">above 100%</span> means that the currently available space <span style="color:green">is higher</span> than required. <br/>
+    A value <span style="color:red">below 100%</span> means that the currently available space is not sufficient compared to the recommendation, <span style="color:red">requiring an upgrade</span>. <br/>
+    These distinctions are supported by the color code: <span style="color:green">green</span> for sufficient and <span style="color:red">red</span> if an upgrade is required. <br/>
+    Each metric is explained in detail in the lower sections.
+</caption>
+"""
         table_report = f"""
-<table>
-    <caption>
-        This table shows the overview of all supported metrics. <br/>
-        The values show, based on the scale of 0-100+% how the system is performing with each metric. <br/>
-        The color code shows whether the value is good or negative, depending on the context of the metric. <br/>
-        Each metric is explained in detail in the lower sections.
-    </caption>
-    <tr>
-        <th> Metric Name </th>
-        <th> {ComparisonPoints.START.value} ({self.__start_date.date().isoformat()}) </th>
-        <th> {ComparisonPoints.NOW.value} ({date.today().isoformat()}) </th>
-        <th> {ComparisonPoints.ONE_YEAR.value} ({(date.today() + relativedelta(years=1)).isoformat()}) </th>
-        <th> {ComparisonPoints.END.value} ({self.__end_date.date().isoformat()}) </th>
-    </tr>
-    {table_rows_str}
-</table>
+<h3> Usage Statistics </h3>
+{self.__overview_table.create_table(used_table_caption, used_metrics_list)}
+<h3> Set up Check </h3>
+{self.__overview_table.create_table(setup_table_caption, setup_metrics_list)}
 """
 
         LOGGER.info("> Finished creating an overview table")
@@ -182,27 +173,27 @@ class ReportController:
 
         return full_individual_report_str
 
-
-
-
-
     def __gen_pdf_file(self, individual_reports: str, overview_table: str):
 
-        LOGGER.info("> Starting to generate a temporary file for pdf creation process.")
+        LOGGER.info("> Starting to generate the temporary HTML-File.")
 
         total_report = f"""
 <!DOCTYPE html>
 <html>
 <body>
 
-<h1><img width="40" height="40" src="SpectrumProtectPlus-dark.svg"/> SPPCheck Report for SPP-System "{self.__influx_client.database.name}"</h1>
-<h4>Created on {date.today().isoformat()}</h4>
-
-<h2> Overview Table </h2>
-{overview_table}
-
-<h2> Individual Reports </h2>
-{individual_reports}
+<div>
+    <h1><img width="40" height="40" src="{self.__rel_spp_icon_path}"/> SPPCheck Report for SPP-System "{self.__system_name}"</h1>
+    <p>Created on {date.today().isoformat()}</p>
+</div>
+<div style="page-break-after: always;">
+    <h2> Overview over all Metrics </h2>
+    {overview_table}
+</div>
+<div>
+    <h2> Individual Reports </h2>
+    {individual_reports}
+</div>
 
 </body>
 </html>
@@ -211,7 +202,7 @@ class ReportController:
         with open(self.__temp_file_path, 'wt') as file:
             file.write(total_report)
 
-        LOGGER.info("> Finished generating the temporary file.")
+        LOGGER.info("> Finished generating the temporary HTML file.")
         pass
 
     def createPdfReport(self):

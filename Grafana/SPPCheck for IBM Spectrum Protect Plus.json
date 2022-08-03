@@ -27,7 +27,7 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 82,
-  "iteration": 1659392037144,
+  "iteration": 1659482585366,
   "links": [
     {
       "asDropdown": false,
@@ -264,7 +264,7 @@
           },
           "expression": "$Available - $Used\n",
           "hide": false,
-          "refId": "Available Storage",
+          "refId": "Free Storage",
           "type": "math"
         },
         {
@@ -279,7 +279,7 @@
           "type": "math"
         }
       ],
-      "title": "vSnap used Storage Prediction",
+      "title": "vSnap Storage Prediction",
       "transformations": [
         {
           "id": "filterFieldsByName",
@@ -288,8 +288,8 @@
               "names": [
                 "time",
                 "Time",
-                "Available Storage",
-                "Used %"
+                "Used %",
+                "Free Storage"
               ]
             }
           }
@@ -756,7 +756,7 @@
           },
           "expression": "$Available - $Used",
           "hide": false,
-          "refId": "Available Memory",
+          "refId": "Free Memory",
           "type": "math"
         },
         {
@@ -780,9 +780,8 @@
               "names": [
                 "time",
                 "Time",
-                "Available Memory",
-                "Setup Check",
-                "Used %"
+                "Used %",
+                "Free Memory"
               ]
             }
           }
@@ -1045,7 +1044,7 @@
       "pluginVersion": "9.0.3",
       "targets": [
         {
-          "alias": "Used",
+          "alias": "Existing",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -1054,7 +1053,7 @@
           "measurement": "sppcheck_data",
           "orderByTime": "ASC",
           "policy": "$prediction",
-          "refId": "Used",
+          "refId": "Existing",
           "resultFormat": "time_series",
           "select": [
             [
@@ -1128,9 +1127,9 @@
             "type": "__expr__",
             "uid": "__expr__"
           },
-          "expression": "$Used - $Reduce_Excel",
+          "expression": "$Existing- $Reduce_Excel",
           "hide": false,
-          "refId": "Setup Check",
+          "refId": "Setup Check Difference",
           "type": "math"
         }
       ],
@@ -1142,9 +1141,9 @@
             "include": {
               "names": [
                 "time",
-                "Used",
                 "Time",
-                "Setup Check"
+                "Setup Check Difference",
+                "Existing"
               ]
             }
           }
@@ -1241,7 +1240,7 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "textMode": "value_and_name"
       },
       "pluginVersion": "9.0.3",
       "targets": [
@@ -1361,7 +1360,7 @@
           },
           "expression": "$Available - $Used",
           "hide": false,
-          "refId": "Available Space",
+          "refId": "Free Space",
           "type": "math"
         },
         {
@@ -1376,12 +1375,12 @@
           "type": "math"
         }
       ],
-      "title": "Server Catalog Configuration Prediction",
+      "title": "Server Configuration Catalog Prediction",
       "transformations": [
         {
           "id": "filterByRefId",
           "options": {
-            "include": "Available Space|Setup Check|Used %"
+            "include": "Free Space"
           }
         }
       ],
@@ -1609,7 +1608,7 @@
           "type": "math"
         }
       ],
-      "title": "Server Catalog Configuration Prediction",
+      "title": "Server Configuration Catalog Prediction",
       "transformations": [
         {
           "id": "filterByRefId",
@@ -1926,7 +1925,7 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "textMode": "value_and_name"
       },
       "pluginVersion": "9.0.3",
       "targets": [
@@ -2012,7 +2011,7 @@
           },
           "expression": "$Available - $Used",
           "hide": false,
-          "refId": "Available Space",
+          "refId": "Free Space",
           "type": "math"
         },
         {
@@ -2036,8 +2035,7 @@
               "names": [
                 "time",
                 "Time",
-                "Available Space",
-                "Used %"
+                "Free Space"
               ]
             }
           }
@@ -2377,7 +2375,7 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "textMode": "value_and_name"
       },
       "pluginVersion": "9.0.3",
       "targets": [
@@ -2545,7 +2543,7 @@
       "pluginVersion": "9.0.3",
       "targets": [
         {
-          "alias": "Used",
+          "alias": "Existing",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -2554,7 +2552,7 @@
           "measurement": "sppcheck_data",
           "orderByTime": "ASC",
           "policy": "$prediction",
-          "refId": "Used",
+          "refId": "Existing",
           "resultFormat": "time_series",
           "select": [
             [
@@ -2570,7 +2568,7 @@
             {
               "key": "metric_name",
               "operator": "=",
-              "value": "vadp_total_count"
+              "value": "vadp_count_total"
             },
             {
               "condition": "AND",
@@ -2628,9 +2626,9 @@
             "type": "__expr__",
             "uid": "__expr__"
           },
-          "expression": "$Used - $Reduce_Excel",
+          "expression": "$Existing - $Reduce_Excel",
           "hide": false,
-          "refId": "Setup Check",
+          "refId": "Setup Check Difference",
           "type": "math"
         }
       ],
@@ -2642,9 +2640,9 @@
             "include": {
               "names": [
                 "time",
-                "Used",
+                "Existing",
                 "Time",
-                "Setup Check"
+                "Setup Check Difference"
               ]
             }
           }
@@ -2873,7 +2871,7 @@
           },
           "expression": "$Available -$Used",
           "hide": false,
-          "refId": "Available Space",
+          "refId": "Free Space",
           "type": "math"
         },
         {
@@ -2908,8 +2906,7 @@
               "names": [
                 "time",
                 "Time",
-                "Available Space",
-                "Used %"
+                "Free Space"
               ]
             }
           }
@@ -3401,7 +3398,7 @@
           },
           "expression": "$Available -$Used",
           "hide": false,
-          "refId": "Available Space",
+          "refId": "Free Space",
           "type": "math"
         },
         {
@@ -3436,8 +3433,7 @@
               "names": [
                 "time",
                 "Time",
-                "Available Space",
-                "Used %"
+                "Free Space"
               ]
             }
           }
@@ -3765,7 +3761,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -4126,7 +4123,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -4391,7 +4389,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -4676,7 +4675,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -4890,7 +4890,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -5098,7 +5099,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -5445,7 +5447,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -5792,7 +5795,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -6110,7 +6114,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -6457,7 +6462,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -6817,7 +6823,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -6998,7 +7005,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -7090,7 +7098,7 @@
             {
               "key": "metric_name",
               "operator": "=",
-              "value": "vadp_total_count"
+              "value": "vadp_count_total"
             },
             {
               "condition": "AND",
@@ -7598,6 +7606,6 @@
   "timezone": "",
   "title": "SPPCheck for IBM Spectrum Protect Plus",
   "uid": "sppcheck",
-  "version": 1,
+  "version": 15,
   "weekStart": ""
 }

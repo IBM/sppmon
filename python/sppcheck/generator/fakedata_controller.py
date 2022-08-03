@@ -37,7 +37,7 @@ from influx.influx_client import InfluxClient
 from sppCheck.generator.fakedata_generator import FakeDataGenerator
 from sppCheck.generator.generator_interface import GeneratorInterface
 from utils.influx_utils import InfluxUtils
-from utils.sppcheck_utils import SizingUtils
+from utils.sppcheck_utils import SppcheckUtils
 from utils.exception_utils import ExceptionUtils
 
 LOGGER_NAME = 'sppmon'
@@ -59,7 +59,7 @@ class FakeDataController:
         LOGGER.debug(f"> dp_interval_hour: {dp_interval_hour}, datagen_range_days: {datagen_range_days}, fakedata_rp_name: {fakedata_rp_name}")
 
         self.__influx_client.drop_rp(fakedata_rp_name)
-        self.__fakedata_rp = SizingUtils.create_unique_rp(self.__influx_client, fakedata_rp_name)
+        self.__fakedata_rp = SppcheckUtils.create_unique_rp(self.__influx_client, fakedata_rp_name)
 
         LOGGER.debug(f"> Fakedata RP: {self.__fakedata_rp}")
 

@@ -40,11 +40,45 @@ from sppCheck.report.picture_downloader import PictureDownloader
 LOGGER_NAME = 'sppmon'
 LOGGER = logging.getLogger(LOGGER_NAME)
 
+OverviewDataStruct = List[
+        Tuple[
+            str, # description of the metric
+            bool, # True = positive values are good, False = positive values are bad
+            Dict[ # data of the metric
+                ComparisonPoints, # different time points to compare, columns of the table
+                Optional[   # if the collection failed, it is none
+                    Tuple[
+                        int,        # timestamp
+                        int,        # time diff between both timestamps in seconds
+                        int|float,  # value difference between the points
+                        int         # percent of metric one to metric two (90 to 75 -> 78%)
+                        ]]]
+        ]
+    ]
+"""
+Tuple[
+    str: description of the metric,
+    bool: True = positive values are good, False = positive values are bad,
+    Dict:  data of the metric
+        ComparisonPoints: different time points to compare, columns of the table
+        Optional: if the collection failed, it is none
+            Tuple
+                int: timestamp
+                int: time diff between both timestamps in seconds
+                int|float: value difference between the points
+                int: percent of metric one to metric two (90 to 75 -> 78%)
+]]]]]
+"""
+
 class IndividualReports:
 
     @property
-    def overview_table_data(self):
-        return self.__overview_table_data
+    def overview_used_data(self):
+        return self.__overview_used_data
+
+    @property
+    def overview_setup_data(self):
+        return self.__overview_setup_data
 
     def __init__(
         self,
@@ -59,21 +93,10 @@ class IndividualReports:
         self.__picture_downloader = picture_downloader
 
         # filled during the individual reports, to be used for overview table
-        self.__overview_table_data: List[
-            Tuple[
-                str, # description of the metric
-                bool, # True = positive values are good, False = positive values are bad
-                Dict[ # data of the metric
-                    ComparisonPoints, # different time points to compare, columns of the table
-                    Optional[   # if the collection failed, it is none
-                        Tuple[
-                            int,        # timestamp
-                            int,        # time diff between both timestamps in seconds
-                            int|float,  # value difference between the points
-                            int         # percent of metric one to metric two (90 to 75 -> 78%)
-                            ]]]
-            ]
-        ] = []
+        self.__overview_used_data: OverviewDataStruct = []
+
+        # filled during the individual reports, to be used for overview table
+        self.__overview_setup_data: OverviewDataStruct = []
 
 
 
@@ -89,7 +112,7 @@ class IndividualReports:
             comp_table=ComparisonSource.PREDICTION,
             comp_group_tag= PredictorInfluxConnector.sppcheck_total_group_value,
         )
-        self.overview_table_data.append( ("available vs used storage data", True, avail_vs_used_result))
+        self.overview_used_data.append( ("used storage space", True, avail_vs_used_result))
 
         # download full scale view with lines
         avail_vs_used_storage_lines_full_width = 1000
@@ -119,7 +142,7 @@ class IndividualReports:
             comp_table=ComparisonSource.PREDICTION,
             comp_group_tag=PredictorInfluxConnector.sppcheck_total_group_value,
         )
-        self.overview_table_data.append( ("required vs existing storage data", False, excel_vs_existing_result))
+        self.overview_setup_data.append( ("existing vs. required storage space", False, excel_vs_existing_result))
 
         # download full scale view
         excel_vs_existing_storage_full_width = 1000
@@ -132,47 +155,57 @@ class IndividualReports:
 
 
         return f"""
-<h3> Storage Report </h3>
-<img src="{avail_vs_used_storage_one_year}" alt="available_vs_used_storage_one_year" width="{avail_vs_used_storage_one_year_width}" height="{avail_vs_used_storage_one_year_height}">
-<h4> Panel description </h4>
-<p>
-    This report shows the expected free Storage space. <br />
-    The value is calculated of the prediction for one year. <br />
-    The Graphs display the range of now - 1 to now + 1 year. <br />
-</p>
-<h4> Value meaning </h4>
-<p>
-    A positive value means that free space is still available at the point of the prediction. <br />
-    A negative value displays the minimum anticipated value required of extension of the storage capacity. <br />
-    The percent values are displayed to allow an impression of the value to total ratio. <br />
-</p>
+<div style="page-break-after: always;">
+    <h3> Storage Report </h3>
+    <img src="{avail_vs_used_storage_one_year}" alt="available_vs_used_storage_one_year" width="{avail_vs_used_storage_one_year_width}" height="{avail_vs_used_storage_one_year_height}">
+    <h4> Panel description </h4>
+    <p>
+        This report shows the expected free Storage space. <br />
+        The value is calculated of the prediction for the next year. <br />
+        The Graphs display the range of now - 1 to now + 1 year. <br />
+    </p>
+    <h4> Value meaning </h4>
+    <p>
+        A <span style="color:green"> positive value </span> means that space is still <span style="color:green">free</span> at the point of the prediction. <br />
+        A <span style="color:red">negative value</span> indicates the expected minimum value by which the <span style="color:red">capacity must be upgraded</span>. <br />
+        The percent values are displayed to allow an impression of the value to total ratio. <br />
+    </p>
 
-<img src="{avail_vs_used_storage_lines_full}" alt="avail_vs_used_storage_lines_full" width="{avail_vs_used_storage_lines_full_width}" height="{avail_vs_used_storage_lines_full_height}">
-<h4> Panel description </h4>
-<p>
-    This report shows the development of the used (blue), available (purple) and expected Storage space with (red) and without reserve (yellow). <br />
-    A prediction function is used to forecast the values after the current date ({date.today().isoformat()}). <br/>
-    The Graphs display the full life cycle of {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}. <br />
-</p>
-<h4> Value meaning </h4>
-<p>
-    A positive value means that free space is still available at the point of the prediction. <br />
-    A negative value displays the minimum anticipated value required of extension of the storage capacity. <br />
-    The percent values are displayed to allow an impression of the value to total ratio. <br />
-</p>
+    <img src="{avail_vs_used_storage_lines_full}" alt="avail_vs_used_storage_lines_full" width="{avail_vs_used_storage_lines_full_width}" height="{avail_vs_used_storage_lines_full_height}">
+    <h4> Panel description </h4>
+    <p>
+        This report shows the development of the <span style="color:blue">used</span>, <span style="color:purple">available</span> and expected Storage space <span style="color:red">with</span> and <span style="color:orange">without reserve</span>. <br />
+        A prediction function is used to forecast the values after the current date ({date.today().isoformat()}). <br/>
+        The Graphs display the full life cycle of {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}. <br />
+    </p>
+    <h4> Value meaning </h4>
+    <p>
+        The <span style="color:purple">purple line</span> represents the currently available space, while the <span style="color:blue">blue line</span> represents the used space. <br />
+        Therefore, the point where the <span style="color:red">lines cross</span> is the date where the system will <span style="color:red">fail</span>. <br />
+        This assumes that the available space is not increased any further, since this is a manual interaction. <br />
+        The point of failure can be delayed by increasing the available space. <br />
+        However, if the lines never cross, the space can be reduced accordingly. <br />
+        <br />
+        The <span style="color:red">red line</span> represents the required space with reserve, with the <span style="color:orange">orange line</span> omits the reserve. <br />
+        This is the space required according to the Blueprint vSnap Sizer sheets for the system to last until this day. <br />
+        If the <span style="color:blue">blue line</span> is below these lines, the system is developing <span style="color:green">slower</span> than anticipated. <br />
+        If it is between these lines, it is developing just as expected. <br />
+        However, if the <span style="color:blue">blue line</span> is above the <span style="color:red">red line</span>, the system is developing <span style="color:red">quicker</span> than anticipated. <br />
+    </p>
 
-<img src="{excel_vs_existing_storage_full}" alt="excel_vs_existing_storage_full" width="{excel_vs_existing_storage_full_width}" height="{excel_vs_existing_storage_full_height}">
-<h4> Panel description </h4>
-<p>
-    This report shows the current total existing Storage space, compared to the required space according to the Blueprint vSnap Sizer sheets. <br />
-    The value is calculated of the prediction at the end of the expected lifetime. <br />
-    The Graphs display the full life cycle of {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}. <br />
-</p>
-<h4> Value meaning </h4>
-<p>
-    A positive value means the system was set up with more space then required by the Sizer sheet. <br />
-    A negative value displays the difference required to reach the anticipated size. <br />
-</p>
+    <img src="{excel_vs_existing_storage_full}" alt="excel_vs_existing_storage_full" width="{excel_vs_existing_storage_full_width}" height="{excel_vs_existing_storage_full_height}">
+    <h4> Panel description </h4>
+    <p>
+        This report shows the current total existing Storage space, compared to the required space according to the Blueprint vSnap Sizer sheets. <br />
+        The value is calculated of the prediction at the end of the expected lifetime. <br />
+        The Graphs display the full life cycle of {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}. <br />
+    </p>
+    <h4> Value meaning </h4>
+    <p>
+        A <span style="color:green">positive value</span> means the system was set up with <span style="color:green">more space than required</span> by the Sizer sheet. <br />
+        A <span style="color:red">negative value</span> indicates the <span style="color:red">difference required</span> to reach the required size of the Sizer sheets. <br />
+    </p>
+</div>
 """
 
     def create_server_memory_report(self):
@@ -185,7 +218,7 @@ class IndividualReports:
             comp_metric_name="used_server_memory",
             comp_table=ComparisonSource.PREDICTION,
         )
-        self.overview_table_data.append( ("available vs used server memory", True, avail_vs_used_result))
+        self.overview_used_data.append( ("used server memory", True, avail_vs_used_result))
 
         excel_vs_existing_result = self.__comparer.compare_metrics(
             base_metric_name="spp_memory",
@@ -194,7 +227,7 @@ class IndividualReports:
             comp_metric_name="total_server_memory",
             comp_table=ComparisonSource.PREDICTION,
         )
-        self.overview_table_data.append( ("required vs existing server memory", False, excel_vs_existing_result))
+        self.overview_setup_data.append( ("existing vs. required server memory", False, excel_vs_existing_result))
 
         return ""
 
@@ -209,7 +242,7 @@ class IndividualReports:
             comp_table=ComparisonSource.PREDICTION,
             comp_group_tag=PredictorInfluxConnector.sppcheck_total_group_value,
         )
-        self.overview_table_data.append( ("required vs existing vSnaps", False, excel_vs_avail_result))
+        self.overview_setup_data.append( ("existing vs. required vSnaps", False, excel_vs_avail_result))
 
         return ""
 
@@ -224,7 +257,7 @@ class IndividualReports:
             comp_table=ComparisonSource.PREDICTION,
             comp_group_tag=PredictorInfluxConnector.sppcheck_total_group_value,
         )
-        self.overview_table_data.append( ("required vs existing VADPs", False, excel_vs_avail_result))
+        self.overview_setup_data.append( ("existing vs. required VADPs", False, excel_vs_avail_result))
 
         return ""
 
@@ -240,7 +273,7 @@ class IndividualReports:
             comp_table=ComparisonSource.PREDICTION,
             comp_group_tag="Configuration",
         )
-        self.overview_table_data.append( ("available vs used server configuration catalog space", True, avail_vs_used_result))
+        self.overview_used_data.append( ("used server configuration catalog space", True, avail_vs_used_result))
 
         excel_vs_existing_result = self.__comparer.compare_metrics(
             base_metric_name="spp_config_catalog",
@@ -250,7 +283,7 @@ class IndividualReports:
             comp_table=ComparisonSource.PREDICTION,
             comp_group_tag="Configuration",
         )
-        self.overview_table_data.append( ("required vs existing server configuration catalog space", False, excel_vs_existing_result))
+        self.overview_setup_data.append( ("existing vs. required server configuration catalog space", False, excel_vs_existing_result))
 
         return ""
 
@@ -266,7 +299,7 @@ class IndividualReports:
             comp_table=ComparisonSource.PREDICTION,
             comp_group_tag="Recovery",
         )
-        self.overview_table_data.append( ("available vs used server recovery catalog space", True, avail_vs_used_result))
+        self.overview_used_data.append( ("used server recovery catalog space", True, avail_vs_used_result))
 
         excel_vs_existing_result = self.__comparer.compare_metrics(
             base_metric_name="spp_config_catalog",
@@ -276,7 +309,7 @@ class IndividualReports:
             comp_table=ComparisonSource.PREDICTION,
             comp_group_tag="Recovery",
         )
-        self.overview_table_data.append( ("required vs existing server recovery catalog space", False, excel_vs_existing_result))
+        self.overview_setup_data.append( ("existing vs. required server recovery catalog space", False, excel_vs_existing_result))
 
         return ""
 
@@ -292,7 +325,7 @@ class IndividualReports:
             comp_table=ComparisonSource.PREDICTION,
             comp_group_tag="System",
         )
-        self.overview_table_data.append( ("available vs used server system catalog space", True, avail_vs_used_result))
+        self.overview_used_data.append( ("used server system catalog space", True, avail_vs_used_result))
 
         return ""
 
@@ -308,6 +341,6 @@ class IndividualReports:
             comp_table=ComparisonSource.PREDICTION,
             comp_group_tag="File",
         )
-        self.overview_table_data.append( ("available vs used server file catalog space", True, avail_vs_used_result))
+        self.overview_used_data.append( ("used server file catalog space", True, avail_vs_used_result))
 
         return ""

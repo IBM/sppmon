@@ -33,7 +33,6 @@ from argparse import ArgumentError, ArgumentParser
 from datetime import datetime
 from typing import Dict, NoReturn, Union
 
-
 from influx.database_tables import RetentionPolicy
 from influx.definitions import Definitions
 from influx.influx_client import InfluxClient
@@ -46,7 +45,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "0.6  (2022/07/21)"
+VERSION = "0.7  (2022/08/03)"
 
 
 # ----------------------------------------------------------------------------

@@ -29,20 +29,25 @@ Classes:
 
 from datetime import datetime
 import logging
+from typing import ClassVar
 from influx.database_tables import RetentionPolicy
 from influx.influx_client import InfluxClient
 from sppCheck.predictor.predictor_influx_connector import \
     PredictorInfluxConnector
 from utils.exception_utils import ExceptionUtils
+from utils.sppcheck_utils import SppcheckUtils
 
 LOGGER_NAME = 'sppmon'
 LOGGER = logging.getLogger(LOGGER_NAME)
 
 class PredictorController:
 
+    rp_prefix: ClassVar[str] = "prediction"
+
     @property
     def report_rp(self):
         return self.__report_rp
+
 
     def __init__(self, influx_client: InfluxClient, dp_interval_hour: int,
                  select_rp: RetentionPolicy, rp_timestamp: str,
@@ -50,15 +55,18 @@ class PredictorController:
         if not influx_client:
             raise ValueError("PredictorController is not available, missing the influx_client")
 
+        self.__report_rp = SppcheckUtils.create_unique_rp(influx_client, self.rp_prefix, rp_timestamp)
+
+        LOGGER.debug(f"> Using report RP {self.__report_rp}")
+
         self.__predictor_influx_connector = PredictorInfluxConnector(
             influx_client,
             dp_interval_hour,
             select_rp,
-            rp_timestamp,
+            self.__report_rp,
             forecast_years,
-            start_date
+            start_date,
         )
-        self.__report_rp = self.__predictor_influx_connector.report_rp
 
     def predict_all_data(self):
 
@@ -94,7 +102,8 @@ class PredictorController:
 
             ##
             use_count_query=False,
-            re_save_historic=False,
+            #re_save_historic=False # Changed due to the report-generation accessing only one RP.
+            re_save_historic=True,
             repeat_last=False
         )
 
@@ -110,7 +119,8 @@ class PredictorController:
 
             ##
             use_count_query=False,
-            re_save_historic=False
+            #re_save_historic=False # Changed due to the report-generation accessing only one RP.
+            re_save_historic=True
         )
 
     def __predict_vsnap_quantity(self):
@@ -154,7 +164,8 @@ class PredictorController:
             #
             group_tags=None,
             use_count_query=False,
-            re_save_historic=False,
+            #re_save_historic=False # Changed due to the report-generation accessing only one RP.
+            re_save_historic=True,
             save_total=False
         )
 
@@ -183,7 +194,8 @@ class PredictorController:
 
             #
             use_count_query=False,
-            re_save_historic=False,
+            #re_save_historic=False # Changed due to the report-generation accessing only one RP.
+            re_save_historic=True
         )
 
     def __predict_total_server_catalogs(self) -> None:
@@ -198,5 +210,6 @@ class PredictorController:
 
             #
             use_count_query=False,
-            re_save_historic=False,
+            #re_save_historic=False # Changed due to the report-generation accessing only one RP.
+            re_save_historic=True
         )

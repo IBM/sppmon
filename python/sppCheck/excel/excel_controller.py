@@ -42,7 +42,7 @@ from pandas import (DataFrame, DateOffset, DatetimeIndex, ExcelFile, Series,
                     date_range, read_excel)
 from pandas.core.frame import DataFrame
 from sppCheck.excel.excel_sheet_traverser import ExcelSheetTraverser
-from utils.sppcheck_utils import SizingUtils
+from utils.sppcheck_utils import SppcheckUtils
 from utils.exception_utils import ExceptionUtils
 from utils.spp_utils import SppUtils
 
@@ -59,6 +59,7 @@ class ExcelController:
     sppcheck_excel_table_name: ClassVar[str] = "sppcheck_excel_data"
     sppcheck_excel_value_name: ClassVar[str] = "data"
     sppcheck_excel_metric_tag: ClassVar[str] = "metric_name"
+    rp_prefix: ClassVar[str] = "excel"
 
     def __init__(self, sheet_path: str, sizer_version: str,
                  influx_client: InfluxClient, start_date: datetime,
@@ -96,7 +97,7 @@ class ExcelController:
         self.__influx_client = influx_client
         self.__start_date = start_date
         self.__dp_freq_hour = dp_freq_hour
-        self.__report_rp = SizingUtils.create_unique_rp(self.__influx_client, "excel", rp_timestamp)
+        self.__report_rp = SppcheckUtils.create_unique_rp(self.__influx_client, self.rp_prefix, rp_timestamp)
 
     def parse_insert_sheet(self):
 
@@ -155,7 +156,7 @@ class ExcelController:
                 if not isinstance(interpolated_projection, Series):
                     raise ValueError(f"Failed to interpolate the projection for key {excel_key}")
 
-                SizingUtils.insert_series(
+                SppcheckUtils.insert_series(
                     influx_client=self.__influx_client,
                     report_rp=self.__report_rp,
                     prediction_result=interpolated_projection,

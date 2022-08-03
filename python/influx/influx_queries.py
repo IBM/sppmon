@@ -280,7 +280,7 @@ class SelectionQuery:
         if(s_limit is None):
             s_limit = 0
 
-        if(fields is not None and fields == []):
+        if(fields == []):
             fields = ['*']
         self.__fields = fields
 

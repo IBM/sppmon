@@ -14,13 +14,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-* Upgraded CodeQL to v
+* Upgraded CodeQL to v3
 * Extended `SppUtils.mk_logger_file` method by an logger_dir argument to allow different log files for SPPMon and SPPCheck
   * Added "sppcheckLogs" to the gitignore file.
 * Moved all cSpell settings from the workspace file to the settings file
 * Removed/Moved total count of exceptions during execution
 * Moved verbose setting of sub-modules into init method to avoid issues and clarify program structure
 * Error-Messages now have the prefix "ERROR: "
+* Added InfluxClient function "get_list_rp" to query all retention policies, moving it out of existing functionality
 
 ### Fixed
 
@@ -28,6 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * CheckPID file now uses the class-verbose setting and no longer ARGS-Verbose, making it independent of actual args.
 * Fixed PID file checks under windows
 * Fixed PID file entries not being deleted.
+* Removed unnecessary and confusing check when creating a SelectionQuery
 
 ### Known Issues
 
