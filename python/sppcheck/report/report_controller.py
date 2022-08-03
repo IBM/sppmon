@@ -27,106 +27,191 @@ Classes:
     TODO
 """
 
-from datetime import datetime
-from typing import Dict, Any, Optional
+import inspect
+import logging
+from datetime import date, datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
+from dateutil.relativedelta import relativedelta
 from influx.database_tables import RetentionPolicy
-
 from influx.influx_client import InfluxClient
-from sppCheck.predictor.predictor_influx_connector import PredictorInfluxConnector
+from sppCheck.report.comparer import Comparer, ComparisonPoints
+from sppCheck.report.individual_reports import IndividualReports
 from sppCheck.report.picture_downloader import PictureDownloader
-from sppCheck.report.comparer import Comparer, ComparisonSource
+
+LOGGER_NAME = 'sppmon'
+LOGGER = logging.getLogger(LOGGER_NAME)
 
 class ReportController:
 
     def __init__(
         self,
         influx_client: InfluxClient,
-        dp_interval_hour: int,
         select_rp: RetentionPolicy,
-        rp_timestamp: str,
         start_date: datetime,
         config_file: Dict[str, Any],
-        predict_years: int,
+        predict_years: Optional[int],
         prediction_rp: Optional[RetentionPolicy],
         excel_rp: Optional[RetentionPolicy]) -> None:
         if not influx_client:
             raise ValueError("Logic Tool is not available, missing the influx_client")
 
-        if not prediction_rp or not excel_rp:
+        if not prediction_rp or not excel_rp or predict_years is None:
             raise ValueError("Automatic selection of the latest prediction or excel retention policy not supported yet. \n" +\
                              "Please only generate the Report in conjunction with the other SPPCheck functionalities")
 
         self.__influx_client: InfluxClient = influx_client
+        self.__temp_file_path = Path("sppcheck", "report", "temp_files", "report.html")
 
-        self.__picture_generator = PictureDownloader(
+        self.__start_date = start_date
+        self.__end_date = datetime.now() + relativedelta(years=predict_years)
+
+
+        picture_downloader = PictureDownloader(
             influx_client,
             select_rp, start_date,
             config_file,
-            5,#predict_years,
+            self.__end_date,
             prediction_rp, excel_rp)
 
-        self.__comparer = Comparer(
+        comparer = Comparer(
             influx_client,
-            dp_interval_hour,
             select_rp,
-            rp_timestamp,
             start_date,
-            config_file,
-            predict_years,
+            self.__end_date,
             prediction_rp,
             excel_rp
         )
 
+        self.__individual_reports = IndividualReports(
+            comparer,
+            picture_downloader,
+            start_date,
+            self.__end_date
+        )
+
 
     def __create_overview_table(self):
-        pass
+
+        LOGGER.info("> Starting to create an overview table")
+
+        metrics_list = self.__individual_reports.overview_table_data
+
+        table_rows_lst: List[str] = []
+        for (metric_name, positive_interpretation, data_dict) in metrics_list:
+            row_data_lst: List[str] = []
+            for time_point in ComparisonPoints:
+                data_tuple = data_dict[time_point]
+                if not data_tuple:
+                    # no data available
+                    percent_str = "NA"
+                    color = "orange"
+                else:
+                    # other values unused
+                    (timestamp, time_diff, value_diff, percent_value) = data_tuple
+
+                    percent_str = f"{percent_value}%"
+
+                    # decide coloring according to value and mapping
+                    if percent_value < 100:
+                        if positive_interpretation:
+                            color = "green"
+                        else:
+                            color = "red"
+                    else:
+                        if positive_interpretation:
+                            color = "red"
+                        else:
+                            color = "green"
+                # append each column to the row list
+                row_data_lst.append(f"""<td style="color:{color};"> {percent_str} </td>""")
+
+            # convert each column to a row string, append to the total row list.
+            row_data_str="\n".join(row_data_lst)
+            table_rows_lst.append(f"""
+    <tr>
+        <td> {metric_name} </td>
+        {row_data_str}
+    </tr>
+"""         )
+        # End of the metric iteration
+
+        # now compute the whole table
+        table_rows_str = "\n".join(table_rows_lst)
+        table_report = f"""
+<table>
+    <caption>
+        This table shows the overview of all supported metrics. <br/>
+        The values show, based on the scale of 0-100+% how the system is performing with each metric. <br/>
+        The color code shows whether the value is good or negative, depending on the context of the metric. <br/>
+        Each metric is explained in detail in the lower sections.
+    </caption>
+    <tr>
+        <th> Metric Name </th>
+        <th> {ComparisonPoints.START.value} ({self.__start_date.date().isoformat()}) </th>
+        <th> {ComparisonPoints.NOW.value} ({date.today().isoformat()}) </th>
+        <th> {ComparisonPoints.ONE_YEAR.value} ({(date.today() + relativedelta(years=1)).isoformat()}) </th>
+        <th> {ComparisonPoints.END.value} ({self.__end_date.date().isoformat()}) </th>
+    </tr>
+    {table_rows_str}
+</table>
+"""
+
+        LOGGER.info("> Finished creating an overview table")
+        return table_report
 
     def __create_individual_reports(self):
-        self.__create_storage_report()
-        pass
 
-    def __create_storage_report(self):
-        # compare used vs available space
-        available_vs_used_result = self.__comparer.compare_metrics(
-            base_metric_name="physical_pool_size",
-            base_table=ComparisonSource.PREDICTION,
-            base_group_tag=PredictorInfluxConnector.sppcheck_total_group_value,
+        LOGGER.info("> Starting to create reports for each metric")
 
-            comp_metric_name="physical_capacity",
-            comp_table=ComparisonSource.PREDICTION,
-            comp_group_tag= PredictorInfluxConnector.sppcheck_total_group_value,
-        )
-        # download full scale view
-        available_vs_used_storage_full = self.__picture_generator.download_picture(
-            210, 1000, 500,
-            "available_vs_used_storage_full")
-        # download small scale view
-        available_vs_used_storage_one_year = self.__picture_generator.download_picture(
-            210, 1000, 500,
-            "available_vs_used_storage_one_year",
-            relative_from_years=1,
-           relative_to_years=1)
+        # this functionality is based that the module only contains create methods
+        # otherwise you can also filter by the prefix "create"
+        # originally: add all methods to a list to get executed -> annoying when forgetting to add
+        full_individual_report_str = ""
+        method_list_tuple = inspect.getmembers(self.__individual_reports, predicate=inspect.ismethod)
 
-        excel_vs_available_result = self.__comparer.compare_metrics(
-            base_metric_name="primary_vsnap_size_est_w_reserve",
-            base_table=ComparisonSource.EXCEL,
+        for (method_name, method) in method_list_tuple:
+            if(method_name == "__init__"):
+                continue
 
-            comp_metric_name="physical_pool_size",
-            comp_table=ComparisonSource.PREDICTION,
-            comp_group_tag= PredictorInfluxConnector.sppcheck_total_group_value,
-        )
-        # download full scale view
-        excel_vs_available_storage_full = self.__picture_generator.download_picture(
-            226, 1000, 500,
-            "excel_vs_available_storage_full")
+            LOGGER.debug(f">> executing function {method_name}")
+            full_individual_report_str += method()
 
+        LOGGER.info("> Finished creating reports for each metric")
 
-        pass
+        return full_individual_report_str
 
 
 
-    def __gen_pdf_file(self):
+
+
+    def __gen_pdf_file(self, individual_reports: str, overview_table: str):
+
+        LOGGER.info("> Starting to generate a temporary file for pdf creation process.")
+
+        total_report = f"""
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1><img width="40" height="40" src="SpectrumProtectPlus-dark.svg"/> SPPCheck Report for SPP-System "{self.__influx_client.database.name}"</h1>
+<h4>Created on {date.today().isoformat()}</h4>
+
+<h2> Overview Table </h2>
+{overview_table}
+
+<h2> Individual Reports </h2>
+{individual_reports}
+
+</body>
+</html>
+"""
+
+        with open(self.__temp_file_path, 'wt') as file:
+            file.write(total_report)
+
+        LOGGER.info("> Finished generating the temporary file.")
         pass
 
     def createPdfReport(self):
@@ -135,4 +220,4 @@ class ReportController:
 
         overview_table = self.__create_overview_table()
 
-        self.__gen_pdf_file()
+        self.__gen_pdf_file(individual_reports, overview_table)

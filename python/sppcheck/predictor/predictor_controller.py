@@ -132,7 +132,7 @@ class PredictorController:
             value_or_count_key=f"count", # unused
             description="total VADP count",
             group_tags=["site", "siteName"],
-            metric_name="vadp_total_count",
+            metric_name="vadp_count_total",
             re_save_historic=True,
             save_total=True,
             repeat_last=True,

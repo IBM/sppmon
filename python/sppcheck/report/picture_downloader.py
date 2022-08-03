@@ -52,7 +52,7 @@ class PictureDownloader:
         select_rp: RetentionPolicy,
         start_date: datetime,
         config_file: Dict[str, Any],
-        predict_years: int,
+        end_date: datetime,
         prediction_rp: RetentionPolicy,
         excel_rp: RetentionPolicy) -> None:
 
@@ -60,7 +60,7 @@ class PictureDownloader:
 
         #### Saving class variables ####
         self.__influx_client: InfluxClient = influx_client
-        self.__predict_years = predict_years
+        self.__end_date = end_date
         self.__start_date = start_date
 
         #### Preparing Path where the pictures should be saved ####
@@ -122,7 +122,7 @@ class PictureDownloader:
         #### Preparing panel download URL ####
         # spaces (replaced by "+") in the url dont matter. Works anyway
         self.__panel_prefix_url = f"{self.__srv_url}/render/d-solo/sppcheck/sppcheck-for-ibm-spectrum-protect-plus" + \
-                                        f"?orgId={orgId}&var-server={datasource_name}&var-rp={select_rp.name}"
+                                        f"?orgId={orgId}&var-server={datasource_name}&var-rp={select_rp.name}&theme=light"
 
         if prediction_rp:
             self.__panel_prefix_url += f"&var-prediction={prediction_rp.name}"
@@ -154,14 +154,15 @@ class PictureDownloader:
             Path: relative path to the generated picture, origin from the python folder.
         """
 
-        LOGGER.info(f">> Starting to download Grafana Panel {panelId}")
+        LOGGER.info(f">>> Downloading Grafana Panel {panelId}")
 
         if bool(relative_from_years) != bool(relative_to_years):
             LOGGER.debug(f"relative_from_yeas: {relative_from_years}, relative_to_years: {relative_to_years}")
             raise ValueError("If using either relative_from_yeas or relative_to_years, you must also use the other one.")
 
         ### create the save path of the downloaded picture ####
-        save_path = Path(self.__pictures_path, file_name + ".png")
+        full_file_name = Path(file_name + ".png")
+        save_path = Path(self.__pictures_path, full_file_name)
         LOGGER.debug(f"save_path: {save_path}")
 
 
@@ -174,7 +175,7 @@ class PictureDownloader:
         else:
             # use absolute range from start to the very end
             from_timestamp = int(self.__start_date.timestamp()) * 1000
-            to_timestamp = int((datetime.now() + relativedelta(years=self.__predict_years)).timestamp()) * 1000
+            to_timestamp = int(self.__end_date.timestamp()) * 1000
 
 
         ### compute the final URL ###
@@ -195,6 +196,6 @@ class PictureDownloader:
             ExceptionUtils.exception_info(error)
             raise ValueError("Failed to query image from Grafana due to a Timeout or Server error.")
 
-        LOGGER.info(f">> Successfully downloaded Grafana Panel {panelId}")
+        LOGGER.debug(f">>> Successfully downloaded Grafana Panel {panelId}")
 
-        return save_path
+        return full_file_name

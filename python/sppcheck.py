@@ -383,9 +383,7 @@ class SPPCheck:
             try:
                 report_controller = ReportController(
                     self.__influx_client,
-                    self.__dp_interval_hour,
                     self.__select_rp,
-                    self.__rp_timestamp,
                     self.start_date,
                     self.config_file,
                     self.__predict_years,

@@ -28,9 +28,9 @@ Classes:
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum, auto, unique
-from typing import Any, Dict, Generator, List, Optional, Tuple
+from typing import Dict, Generator, List, Optional, Tuple
 
 from dateutil.relativedelta import relativedelta
 from influx.database_tables import RetentionPolicy
@@ -51,22 +51,19 @@ class ComparisonSource(Enum):
 
 @unique
 class ComparisonPoints(Enum):
-    START = auto()
-    NOW = auto()
-    ONE_YEAR = auto()
-    END = auto()
+    START = "Start of the System"
+    NOW = "Today"
+    ONE_YEAR = "Prediction in one year"
+    END = "End of anticipated system lifetime"
 
 class Comparer:
 
     def __init__(
         self,
         influx_client: InfluxClient,
-        dp_interval_hour: int,
         select_rp: RetentionPolicy,
-        rp_timestamp: str,
         start_date: datetime,
-        config_file: Dict[str, Any],
-        predict_years: int,
+        end_date: datetime,
         prediction_rp: RetentionPolicy,
         excel_rp: RetentionPolicy) -> None:
         if not influx_client:
@@ -77,7 +74,7 @@ class Comparer:
         self.__prediction_table = influx_client.database[PredictorInfluxConnector.sppcheck_table_name]
         self.__excel_table = influx_client.database[ExcelController.sppcheck_excel_table_name]
 
-
+        # historic will be required once this feature is added
         self.__historic_rp = select_rp
         self.__prediction_rp = prediction_rp
         self.__excel_rp = excel_rp
@@ -90,10 +87,12 @@ class Comparer:
         start_base_date = start_date
         now_base_date = datetime.now()
         # IMPORTANT: timedelta day"s" is important -> relative
-        one_year_base_date = now_base_date + timedelta(days=365)
         # reduce it by 30 days to make sure if there is data, is is returned.
         # the minor reduce will not cause any harm
-        end_base_date = now_base_date + relativedelta(years=predict_years) - relativedelta(months=1)
+        end_base_date = end_date - relativedelta(months=1)
+
+        # maybe the end date is within the next year?
+        one_year_base_date = min(now_base_date + relativedelta(years=1), end_base_date)
 
 
         self.__time_clause_mapping = {
@@ -118,7 +117,7 @@ class Comparer:
                    base_group_tag: Optional[str] = None,
                    comp_group_tag: Optional[str] = None):
 
-        LOGGER.info(f">> Start of comparison of metric {base_metric_name} with metric {comp_metric_name}.")
+        LOGGER.info(f">>> Start of comparison of metric {base_metric_name} with metric {comp_metric_name}.")
 
         base_points = self.__query_comparison_points(
             base_metric_name, base_table, base_group_tag
@@ -169,7 +168,7 @@ class Comparer:
                 ExceptionUtils.exception_info(error, f"Failed to compare metric for time point {time_point.name}")
                 result_dict[time_point] = None
 
-        LOGGER.info(f">> Finished comparison.")
+        LOGGER.debug(f">>> Finished comparison.")
         return result_dict
 
 
