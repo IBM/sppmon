@@ -41,8 +41,8 @@ from sppCheck.predictor.predictor_controller import PredictorController
 from sppCheck.predictor.predictor_influx_connector import \
     PredictorInfluxConnector
 from sppCheck.report.comparer import Comparer
-from sppCheck.report.individual_reports import IndividualReports
-from sppCheck.report.overview_table import OverviewTable
+from sppCheck.report.individual_reports import IndividualReports, OverviewDataStruct
+from sppCheck.report.table_creator import TableCreator
 from sppCheck.report.picture_downloader import PictureDownloader
 from utils.sppcheck_utils import SppcheckUtils
 
@@ -107,7 +107,7 @@ class ReportController:
             self.__end_date
         )
 
-        self.__overview_table = OverviewTable(
+        self.__table_creator = TableCreator(
             start_date,
             self.__end_date
         )
@@ -117,37 +117,10 @@ class ReportController:
 
         LOGGER.info("> Starting to create an overview table")
 
-        used_metrics_list = self.__individual_reports.overview_used_data
-        setup_metrics_list = self.__individual_reports.overview_setup_data
-
-        used_table_caption = """
-<caption>
-    This table shows the overview of all supported metrics displaying usage statistics. <br/>
-    The values show, based on the scale of 0-100+% how the system is performing with each metric. <br/>
-    <br/>
-    A value <span style="color:green">below 100%</span> means that the currently available space <span style="color:green">is sufficient</span> for the time period of the column. <br/>
-    A value <span style="color:red">above 100%</span> means that the currently available space is not sufficient, <span style="color:red">requiring an upgrade</span>. <br/>
-    These distinctions are supported by the color code: <span style="color:green">green</span> for sufficient and <span style="color:red">red</span> if an upgrade is required. <br/>
-    Each metric is explained in detail in the lower sections.
-</caption>
-"""
-        setup_table_caption = """
-<caption>
-    This table shows the overview of all supported metrics displaying setup-check statistics. <br/>
-    The values show, based on the scale of 0-100+% how the system is set up compared to the Blueprint vSnap sizer Sheet recommendations. <br/>
-    <br/>
-    A value <span style="color:green">above 100%</span> means that the currently available space <span style="color:green">is higher</span> than required. <br/>
-    A value <span style="color:red">below 100%</span> means that the currently available space is not sufficient compared to the recommendation, <span style="color:red">requiring an upgrade</span>. <br/>
-    These distinctions are supported by the color code: <span style="color:green">green</span> for sufficient and <span style="color:red">red</span> if an upgrade is required. <br/>
-    Each metric is explained in detail in the lower sections.
-</caption>
-"""
-        table_report = f"""
-<h3> Usage Statistics </h3>
-{self.__overview_table.create_table(used_table_caption, used_metrics_list)}
-<h3> Set up Check </h3>
-{self.__overview_table.create_table(setup_table_caption, setup_metrics_list)}
-"""
+        table_report = self.__table_creator.create_overview_table(
+            self.__individual_reports.overview_used_data,
+            self.__individual_reports.overview_setup_data
+        )
 
         LOGGER.info("> Finished creating an overview table")
         return table_report
@@ -163,11 +136,18 @@ class ReportController:
         method_list_tuple = inspect.getmembers(self.__individual_reports, predicate=inspect.ismethod)
 
         for (method_name, method) in method_list_tuple:
-            if(method_name == "__init__"):
+            # skip out private methods and init method -> single underscore, not double
+            if method_name.startswith("_"):
                 continue
 
             LOGGER.debug(f">> executing function {method_name}")
-            full_individual_report_str += method()
+            individual_report = method()
+            if individual_report: # only add if there is actually content, otherwise empty pages are added.
+                full_individual_report_str += f"""
+<div style="page-break-after: always;">
+ {individual_report}
+</div>
+"""
 
         LOGGER.info("> Finished creating reports for each metric")
 
@@ -184,7 +164,7 @@ class ReportController:
 
 <div>
     <h1><img width="40" height="40" src="{self.__rel_spp_icon_path}"/> SPPCheck Report for SPP-System "{self.__system_name}"</h1>
-    <p>Created on {date.today().isoformat()}</p>
+    <p>Created on {datetime.now().isoformat(timespec="seconds")}</p>
 </div>
 <div style="page-break-after: always;">
     <h2> Overview over all Metrics </h2>

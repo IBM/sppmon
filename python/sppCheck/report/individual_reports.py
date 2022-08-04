@@ -29,6 +29,7 @@ Classes:
 
 import logging
 from datetime import date, datetime
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 from sppCheck.predictor.predictor_influx_connector import \
@@ -98,7 +99,103 @@ class IndividualReports:
         # filled during the individual reports, to be used for overview table
         self.__overview_setup_data: OverviewDataStruct = []
 
+    def __report_structure(self,
+                            report_name: str,
 
+                            full_graph_filename: Optional[Path] = None,
+                            full_graph_width: int = 0,
+                            full_graph_height: int = 0,
+                            full_graph_description: str = "",
+
+                            one_year_used_filename: Optional[Path] = None,
+                            one_year_used_width: int = 0,
+                            one_year_used_height: int = 0,
+                            one_year_used_with_reserve: bool = False,
+                            one_year_used_description: str = "",
+
+                            full_excel_filename: Optional[Path] = None,
+                            full_excel_width: int = 0,
+                            full_excel_height: int = 0,
+                            full_excel_description: str = ""):
+
+        # easier change if all needs to be changed
+        value_meaning_header = "<h5> Value meaning </h5>"
+        panel_description_header = "<h5> Panel description </h5>"
+
+        # different text for reserve in graph and missing it
+        value_description_graph_w_reserve = f"""
+The <span style="color:red">red line</span> represents the recommended space with reserve, with the <span style="color:orange">orange line</span> omits the reserve. <br />
+This is the space required according to the Blueprint vSnap Sizer sheets for the system to last until this day. <br />
+If the <span style="color:blue">blue line</span> is below these lines, the system is developing <span style="color:green">slower</span> than anticipated. <br />
+If it is between these lines, it is developing just as expected. <br />
+However, if the <span style="color:blue">blue line</span> is above the <span style="color:red">red line</span>, the system is developing <span style="color:red">quicker</span> than anticipated. <br />
+"""
+        value_description_graph = f"""
+The <span style="color:orange">orange line</span> represents the recommended space. <br />
+This is the space recommended according to the Blueprint vSnap Sizer sheets for the system to last until this day. <br />
+If the <span style="color:blue">blue line</span> is below this line, the system is developing <span style="color:green">slower</span> than anticipated. <br />
+However, if the <span style="color:blue">blue line</span> is above the <span style="color:orange">orange line</span>, the system is developing <span style="color:red">quicker</span> than anticipated. <br />
+"""
+
+        structure = f"""
+<h3> {report_name} </h3>
+"""
+        if full_graph_filename:
+            structure += f"""
+<h4> Full Life-Cycle Overview </h4>
+<img src="{full_graph_filename}" alt="{full_graph_filename}" width="{full_graph_width}" height="{full_graph_height}">
+{panel_description_header}
+<p>
+    {full_graph_description}
+</p>
+{value_meaning_header}
+<p>
+    The <span style="color:purple">purple line</span> represents the currently available space, while the <span style="color:blue">blue line</span> represents the used space. <br />
+    Therefore, the point where the <span style="color:red">lines cross</span> is the date where the system will <span style="color:red">fail</span>. <br />
+    This assumes that the available space is not increased any further, since this is a manual interaction. <br />
+    The point of failure can be delayed by increasing the available space. <br />
+    However, if the lines never cross, the space can be reduced accordingly. <br />
+    <br />
+    {value_description_graph_w_reserve if one_year_used_with_reserve else value_description_graph}
+</p>
+"""
+        if one_year_used_filename:
+            structure += f"""
+<h4> One-Year Summary </h4>
+<img src="{one_year_used_filename}" alt="{one_year_used_filename}" width="{one_year_used_width}" height="{one_year_used_height}">
+{panel_description_header}
+<p>
+    {one_year_used_description}
+</p>
+
+{value_meaning_header}
+<p>
+    A <span style="color:green"> positive value </span> means that space is still <span style="color:green">free</span> after one year. <br />
+    A <span style="color:red">negative value</span> indicates the expected minimum value by which the <span style="color:red">capacity must be upgraded</span>. <br />
+    The percent values are displayed to allow an impression of the value to total ratio. <br />
+</p>
+"""
+        if full_excel_filename:
+            structure += f"""
+<h4> Setup-Check </h4>
+<img src="{full_excel_filename}" alt="{full_excel_filename}" width="{full_excel_width}" height="{full_excel_height}">
+{panel_description_header}
+<p>
+    {full_excel_description}
+</p>
+
+{value_meaning_header}
+<p>
+    A <span style="color:green">positive value</span> means the system was set up with <span style="color:green">more space than recommended</span> by the Sizer sheet. <br />
+    A <span style="color:red">negative value</span> indicates the <span style="color:red">difference required</span> to reach the recommended size of the Sizer sheets. <br />
+    <br />
+    Even if this Panels shows a negative value, the system can run correctly - it is just designed smaller than initial anticipated. <br />
+    However, this also works the other way around:  <br />
+    A correct setup does not promise that the system will last the whole anticipated life-cycle.  <br />
+    Please check the used-data panels for such a forecast. <br />
+</p>
+"""
+        return structure
 
     def create_storage_report(self):
         LOGGER.info(">> Creating the storage report.")
@@ -153,60 +250,37 @@ class IndividualReports:
             height=excel_vs_existing_storage_full_height,
             file_name="excel_vs_existing_storage_full")
 
+        return self.__report_structure(
+            report_name="Storage Report",
+            full_graph_filename = avail_vs_used_storage_lines_full,
+            full_graph_width = avail_vs_used_storage_lines_full_width,
+            full_graph_height =avail_vs_used_storage_lines_full_height,
+            full_graph_description = f"""
+This report shows the development of the <span style="color:blue">used</span>, <span style="color:purple">available</span> and expected Storage space <span style="color:red">with</span> and <span style="color:orange">without reserve</span>. <br />
+A prediction function is used to forecast the values after the current date ({date.today().isoformat()}). <br/>
+The Graphs display the full life cycle of {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}. <br />
+""",
 
-        return f"""
-<div style="page-break-after: always;">
-    <h3> Storage Report </h3>
-    <img src="{avail_vs_used_storage_one_year}" alt="available_vs_used_storage_one_year" width="{avail_vs_used_storage_one_year_width}" height="{avail_vs_used_storage_one_year_height}">
-    <h4> Panel description </h4>
-    <p>
-        This report shows the expected free Storage space. <br />
-        The value is calculated of the prediction for the next year. <br />
-        The Graphs display the range of now - 1 to now + 1 year. <br />
-    </p>
-    <h4> Value meaning </h4>
-    <p>
-        A <span style="color:green"> positive value </span> means that space is still <span style="color:green">free</span> at the point of the prediction. <br />
-        A <span style="color:red">negative value</span> indicates the expected minimum value by which the <span style="color:red">capacity must be upgraded</span>. <br />
-        The percent values are displayed to allow an impression of the value to total ratio. <br />
-    </p>
+            one_year_used_filename = avail_vs_used_storage_one_year,
+            one_year_used_width = avail_vs_used_storage_one_year_width,
+            one_year_used_height = avail_vs_used_storage_one_year_height,
+            one_year_used_with_reserve=True,
+            one_year_used_description = f"""
+This report shows the expected free Storage space. <br />
+The value is calculated of the prediction for the next year. <br />
+The Graphs display the range of now - 1 to now + 1 year. <br />
+""",
 
-    <img src="{avail_vs_used_storage_lines_full}" alt="avail_vs_used_storage_lines_full" width="{avail_vs_used_storage_lines_full_width}" height="{avail_vs_used_storage_lines_full_height}">
-    <h4> Panel description </h4>
-    <p>
-        This report shows the development of the <span style="color:blue">used</span>, <span style="color:purple">available</span> and expected Storage space <span style="color:red">with</span> and <span style="color:orange">without reserve</span>. <br />
-        A prediction function is used to forecast the values after the current date ({date.today().isoformat()}). <br/>
-        The Graphs display the full life cycle of {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}. <br />
-    </p>
-    <h4> Value meaning </h4>
-    <p>
-        The <span style="color:purple">purple line</span> represents the currently available space, while the <span style="color:blue">blue line</span> represents the used space. <br />
-        Therefore, the point where the <span style="color:red">lines cross</span> is the date where the system will <span style="color:red">fail</span>. <br />
-        This assumes that the available space is not increased any further, since this is a manual interaction. <br />
-        The point of failure can be delayed by increasing the available space. <br />
-        However, if the lines never cross, the space can be reduced accordingly. <br />
-        <br />
-        The <span style="color:red">red line</span> represents the required space with reserve, with the <span style="color:orange">orange line</span> omits the reserve. <br />
-        This is the space required according to the Blueprint vSnap Sizer sheets for the system to last until this day. <br />
-        If the <span style="color:blue">blue line</span> is below these lines, the system is developing <span style="color:green">slower</span> than anticipated. <br />
-        If it is between these lines, it is developing just as expected. <br />
-        However, if the <span style="color:blue">blue line</span> is above the <span style="color:red">red line</span>, the system is developing <span style="color:red">quicker</span> than anticipated. <br />
-    </p>
-
-    <img src="{excel_vs_existing_storage_full}" alt="excel_vs_existing_storage_full" width="{excel_vs_existing_storage_full_width}" height="{excel_vs_existing_storage_full_height}">
-    <h4> Panel description </h4>
-    <p>
-        This report shows the current total existing Storage space, compared to the required space according to the Blueprint vSnap Sizer sheets. <br />
-        The value is calculated of the prediction at the end of the expected lifetime. <br />
-        The Graphs display the full life cycle of {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}. <br />
-    </p>
-    <h4> Value meaning </h4>
-    <p>
-        A <span style="color:green">positive value</span> means the system was set up with <span style="color:green">more space than required</span> by the Sizer sheet. <br />
-        A <span style="color:red">negative value</span> indicates the <span style="color:red">difference required</span> to reach the required size of the Sizer sheets. <br />
-    </p>
-</div>
+            full_excel_filename = excel_vs_existing_storage_full,
+            full_excel_width = excel_vs_existing_storage_full_width,
+            full_excel_height = excel_vs_existing_storage_full_height,
+            full_excel_description = f"""
+This report shows the current total existing Storage space, compared to the required space according to the Blueprint vSnap Sizer sheets. <br />
+The value is calculated of the prediction at the end of the expected lifetime. <br />
+The Graphs display the full life cycle of {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}. <br />
 """
+        )
+
 
     def create_server_memory_report(self):
         LOGGER.info(">> Creating the server memory report.")
