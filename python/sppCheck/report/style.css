@@ -1,0 +1,33 @@
+.bbackground {
+    background-color: #599ce7
+}
+
+.sectionA {
+    background-color: aqua;
+    padding: 2em;
+}
+
+.sectionB {
+    background-color: rgb(177, 40, 97);
+    padding: 2em;
+}
+
+.sectionC {
+    background-color: rgb(26, 196, 4);
+    padding: 1em;
+    margin-bottom: 1em;
+}
+
+.sectionD {
+    background-color: rgb(158, 156, 29);
+    padding: 1em;
+    margin-bottom: 1em;
+}
+
+.center {
+    margin: auto;
+    position: relative;
+    text-align: center;
+    top: 50%;
+    width: 20%;
+  }

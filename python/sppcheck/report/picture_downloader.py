@@ -30,7 +30,7 @@ Classes:
 import logging
 import shutil
 from datetime import datetime
-from os.path import isdir
+from os.path import isdir, exists
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -54,7 +54,8 @@ class PictureDownloader:
         config_file: Dict[str, Any],
         end_date: datetime,
         prediction_rp: RetentionPolicy,
-        excel_rp: RetentionPolicy) -> None:
+        excel_rp: RetentionPolicy,
+        temp_dir_path: Path) -> None:
 
         LOGGER.debug("Setting up the PictureDownloader")
 
@@ -64,10 +65,10 @@ class PictureDownloader:
         self.__start_date = start_date
 
         #### Preparing Path where the pictures should be saved ####
-        self.__pictures_path = Path("sppcheck", "report", "temp_files")
-        if not isdir(self.__pictures_path):
-            raise ValueError(f"The pdf-temp_files folder does not exist: {self.__pictures_path}")
-        LOGGER.debug(f"Pictures Path set to {self.__pictures_path}")
+        self.__temp_dir_path = temp_dir_path
+        if not isdir(self.__temp_dir_path):
+            raise ValueError(f"The pdf-temp_files folder does not exist: {self.__temp_dir_path}")
+        LOGGER.debug(f"Pictures Path set to {self.__temp_dir_path}")
 
         #### Reading config for grafana login ####
         try:
@@ -130,7 +131,7 @@ class PictureDownloader:
             self.__panel_prefix_url += f"&var-excel={excel_rp.name}"
         LOGGER.debug(f"Full panel prefix set to {self.__panel_prefix_url}")
 
-    def download_picture(self, panelId: int, width: int, height: int, file_name: str,
+    def download_picture(self, panel_id: int, width: int, height: int, file_name: str,
                          relative_from_years: Optional[int] = None,
                          relative_to_years: Optional[int] = None) -> Path:
         """Downloads the panel with the given ID from grafana.
@@ -154,7 +155,7 @@ class PictureDownloader:
             Path: relative path to the generated picture, origin from the python folder.
         """
 
-        LOGGER.info(f">>> Downloading Grafana Panel {panelId}")
+        LOGGER.info(f">>> Downloading Grafana Panel {panel_id}")
 
         if bool(relative_from_years) != bool(relative_to_years):
             LOGGER.debug(f"relative_from_yeas: {relative_from_years}, relative_to_years: {relative_to_years}")
@@ -162,9 +163,12 @@ class PictureDownloader:
 
         ### create the save path of the downloaded picture ####
         full_file_name = Path(file_name + ".png")
-        save_path = Path(self.__pictures_path, full_file_name)
+        save_path = Path(self.__temp_dir_path, full_file_name)
         LOGGER.debug(f"save_path: {save_path}")
 
+        # all old files are cleared before
+        if exists(save_path):
+            raise ValueError(f"Duplicate Path - a file already exists on path: {save_path}")
 
         # get from and to timestamps, adjust precision from seconds to ms
         # the args year"s" is important, making it relative instead of setting it to the val
@@ -179,7 +183,7 @@ class PictureDownloader:
 
 
         ### compute the final URL ###
-        request_url = f"{self.__panel_prefix_url}&panelId={panelId}&width={width}&height={height}" + \
+        request_url = f"{self.__panel_prefix_url}&panelId={panel_id}&width={width}&height={height}" + \
                             f"&from={from_timestamp}&to={to_timestamp}"
         LOGGER.debug(f"request_url: {request_url}")
 
@@ -196,6 +200,6 @@ class PictureDownloader:
             ExceptionUtils.exception_info(error)
             raise ValueError("Failed to query image from Grafana due to a Timeout or Server error.")
 
-        LOGGER.debug(f">>> Successfully downloaded Grafana Panel {panelId}")
+        LOGGER.debug(f">>> Successfully downloaded Grafana Panel {panel_id}")
 
         return full_file_name

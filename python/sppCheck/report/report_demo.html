@@ -1,0 +1,452 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>A Meaningful Page Title</title>
+    <!-- CSS only -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+<!-- JavaScript Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+<link href="..\style.css" rel="stylesheet">
+</head>
+<body class="bbackground">
+
+<div class="px-4 py-5 my-5 text-center">
+    <img class="d-block mx-auto mb-4" src="..\SpectrumProtectPlus-dark.svg" alt="" width="60" height="60">
+    <h1 class="display-5 fw-bold">SPPCheck Report for SPP-System "scaleVM10v2"</h1>
+    <p>Created on 2022-08-05 15:31:33</p>
+</div>
+<div class="sectionA" style="page-break-after: always;">
+    <h2> Overview over all Metrics </h2>
+
+    <div class="sectionC">
+<h3> Usage Statistics </h3>
+
+<table class="table table-light table-bordered">
+
+<caption>
+    This table shows the overview of all supported metrics displaying usage statistics. <br/>
+    The values show, based on the scale of 0-100+% how the system is performing with each metric. <br/>
+    <br/>
+    A value <span style="color:green">below 100%</span> means that the currently available space <span style="color:green">is sufficient</span> for the time period of the column. <br/>
+    A value <span style="color:red">above 100%</span> means that the currently available space is not sufficient, <span style="color:red">requiring an upgrade</span>. <br/>
+    If "NA" is displayed, no data is available for this date due to various reasons. <br/>
+    The distinctions are supported by the color code: <span style="color:green">green</span> for sufficient and <span style="color:red">red</span> if an upgrade is required. <br/>
+    Please refer to the sections below for a more detailed explanation and view. <br/>
+</caption>
+<thead>
+    <tr>
+        <th> Metric Name </th>
+        <th>
+            Start of the System <br/>
+            (2020-07-02)
+        </th>
+        <th>
+            Today <br/>
+            (2022-08-05)
+        </th>
+        <th>
+            Prediction in one year <br/>
+            (2023-08-05)
+        </th>
+        <th>
+            End of anticipated system lifetime <br/>
+            (2026-07-23)
+        </th>
+    </tr>
+</thead>
+    <tr>
+        <td> used server configuration catalog space </td>
+        <td style="color:green;"> 39% </td>
+<td style="color:green;"> 30% </td>
+<td style="color:green;"> 31% </td>
+<td style="color:green;"> 33% </td>
+    </tr>
+
+
+    <tr>
+        <td> used server file catalog space </td>
+        <td style="color:green;"> 0% </td>
+<td style="color:green;"> 6% </td>
+<td style="color:green;"> 5% </td>
+<td style="color:green;"> 4% </td>
+    </tr>
+
+
+    <tr>
+        <td><a href="#bla">used server memory</a> </td>
+        <td style="color:green;"> 88% </td>
+<td style="color:green;"> 76% </td>
+<td style="color:green;"> 85% </td>
+<td class="table-danger"> 118% </td>
+    </tr>
+
+
+    <tr>
+        <td> used server recovery catalog space </td>
+        <td style="color:green;"> 2% </td>
+<td style="color:green;"> 18% </td>
+<td style="color:green;"> 18% </td>
+<td style="color:green;"> 19% </td>
+    </tr>
+
+
+    <tr>
+        <td> used server system catalog space </td>
+        <td style="color:green;"> 23% </td>
+<td style="color:green;"> 19% </td>
+<td style="color:green;"> 19% </td>
+<td style="color:green;"> 18% </td>
+    </tr>
+
+
+    <tr>
+        <td> used storage space </td>
+        <td style="color:green;"> 17% </td>
+<td style="color:green;"> 75% </td>
+<td style="color:red;"> 138% </td>
+<td style="color:red;"> 796% </td>
+    </tr>
+
+</table>
+</div>
+<div class="sectionD">
+<h3> Set up Check </h3>
+
+<table>
+
+<caption>
+    This table shows the overview of all supported metrics displaying setup-check statistics. <br/>
+    The values show, based on the scale of 0-100+% how the system is set up compared to the Blueprint vSnap sizer Sheet recommendations. <br/>
+    <br/>
+    A value <span style="color:green">above 100%</span> means that the currently available space <span style="color:green">is higher</span> than required. <br/>
+    A value <span style="color:red">below 100%</span> means that the currently available space is not sufficient compared to the recommendation, <span style="color:red">requiring an upgrade</span>. <br/>
+    If "NA" is displayed, no data is available for this date due to various reasons. <br/>
+    The distinctions are supported by the color code: <span style="color:green">green</span> for sufficient and <span style="color:red">red</span> if an upgrade is recommended. <br/>
+    Please refer to the sections below for a more detailed explanation and view. <br/>
+    <br/>
+    Please be aware that even if a value below 100% is shown, the system can run correctly - it is just designed smaller than initial anticipated. <br />
+    However, this also works the other way around: A correct setup does not promise that the system will last the whole anticipated life-cycle.  <br />
+    Please check the used-data panels for such a forecast. <br />
+</caption>
+
+    <tr>
+        <th> Metric Name </th>
+        <th>
+            Start of the System <br/>
+            (2020-07-02)
+        </th>
+        <th>
+            Today <br/>
+            (2022-08-05)
+        </th>
+        <th>
+            Prediction in one year <br/>
+            (2023-08-05)
+        </th>
+        <th>
+            End of anticipated system lifetime <br/>
+            (2026-07-23)
+        </th>
+    </tr>
+
+    <tr>
+        <td> existing vs. required server configuration catalog space </td>
+        <td style="color:red;"> 32% </td>
+<td style="color:red;"> 74% </td>
+<td style="color:red;"> 74% </td>
+<td style="color:red;"> 74% </td>
+    </tr>
+
+
+    <tr>
+        <td> existing vs. required server memory </td>
+        <td style="color:red;"> 62% </td>
+<td style="color:red;"> 88% </td>
+<td style="color:red;"> 88% </td>
+<td style="color:red;"> 88% </td>
+    </tr>
+
+
+    <tr>
+        <td> existing vs. required server recovery catalog space </td>
+        <td style="color:red;"> 32% </td>
+<td style="color:red;"> 24% </td>
+<td style="color:red;"> 24% </td>
+<td style="color:red;"> 24% </td>
+    </tr>
+
+
+    <tr>
+        <td> existing vs. required storage space </td>
+        <td style="color:green;"> 134% </td>
+<td style="color:red;"> 44% </td>
+<td style="color:red;"> 40% </td>
+<td style="color:red;"> 31% </td>
+    </tr>
+
+
+    <tr>
+        <td> existing vs. required VADPs </td>
+        <td style="color:orange;"> NA </td>
+<td style="color:red;"> 60% </td>
+<td style="color:red;"> 55% </td>
+<td style="color:red;"> 43% </td>
+    </tr>
+
+
+    <tr>
+        <td> existing vs. required vSnaps </td>
+        <td style="color:red;"> 60% </td>
+<td style="color:green;"> 117% </td>
+<td style="color:green;"> 117% </td>
+<td style="color:red;"> 88% </td>
+    </tr>
+
+</table>
+
+</div>
+</div>
+<div class="sectionB">
+    <h2> Individual Reports </h2>
+
+<div class="sectionC" style="page-break-after: always;">
+
+<h3 id="bla"> Server Memory Report </h3>
+
+<h4> Full Life-Cycle Overview </h4>
+<img src="Server Memory Report_full_graph.png" alt="Server Memory Report_full_graph.png" width="1000" height="500">
+<h5> Panel description </h5>
+<p>
+
+This report shows the development of the <span style="color:blue">used</span>, <span style="color:purple">available</span> and <span style="color:orange">recommended</span> Server Memory. <br />
+The Graphs display the entire life cycle from 2020-07-02 to 2026-07-23.  <br />
+
+</p>
+<h5> Value meaning </h5>
+<p>
+    The <span style="color:purple">purple line</span> represents the <span style="color:purple">currently available</span> space, while the <span style="color:blue">blue line</span> represents the <span style="color:blue">used</span> space. <br />
+    Therefore, the point where the <span style="color:red">lines cross</span> is the date where the system will <span style="color:red">fail</span>. <br />
+    This assumes that the available space is not increased any further, since this requires a manual interaction. <br />
+    The point of failure can be delayed by increasing the available space. <br />
+    However, if the lines never cross, the space can be reduced accordingly. <br />
+    A prediction function is used to forecast the trend for the systems remaining life cycle after the current date (2022-08-05). <br/>
+    <br />
+
+The <span style="color:orange">orange line</span> represents the recommended space. <br />
+This is the space recommended according to the Blueprint vSnap Sizer sheets for the system to last until this day. <br />
+If the <span style="color:blue">blue line</span> is below this line, the system is developing <span style="color:green">slower</span> than anticipated. <br />
+However, if the <span style="color:blue">blue line</span> is above the <span style="color:orange">orange line</span>, the system is developing <span style="color:red">quicker</span> than anticipated. <br />
+
+</p>
+
+<h4> One-Year Summary </h4>
+<img src="Server Memory Report_one_year_used.png" alt="Server Memory Report_one_year_used.png" width="1000" height="500">
+<h5> Panel description </h5>
+<p>
+
+This report shows the anticipated free Server Memory and the expected usage percentage relative to the available memory. <br />
+All values are taken from the prediction graph, limited to the following year.  <br />
+The Graphs display the range from now - 1 to now + 1 year. <br />
+
+</p>
+
+<h5> Value meaning </h5>
+<p>
+    A <span style="color:green"> positive value </span> means that space is still <span style="color:green">free</span> after one year. <br />
+    A <span style="color:red">negative value</span> indicates the expected minimum value by which the <span style="color:red">capacity must be upgraded</span>. <br />
+    The percent values are displayed to allow an impression of the value to total ratio. <br />
+</p>
+
+<h4> Setup-Check </h4>
+<img src="Server Memory Report_full_excel.png" alt="Server Memory Report_full_excel.png" width="1000" height="500">
+<h5> Panel description </h5>
+<p>
+
+This report shows the currently existing Server Memory relative to the recommended Memory according to the Blueprint vSnap Sizer sheets at the end of the system lifetime. <br />
+All values are taken from the prediction graph of the system's entire life cycle. <br />
+The Graphs display the entire life cycle from 2020-07-02 to 2026-07-23.  <br />
+
+</p>
+
+<h5> Value meaning </h5>
+<p>
+    A <span style="color:green">positive value</span> means the system was set up with <span style="color:green">more space than recommended</span> by the Sizer sheet. <br />
+    A <span style="color:red">negative value</span> indicates the <span style="color:red">difference required</span> to reach the recommended size of the Sizer sheets. <br />
+    <br />
+    Even if this Panels shows a negative value, the system can run correctly - it is just designed smaller than initial anticipated. <br />
+    However, this also works the other way around:  <br />
+    A correct setup does not promise that the system will last the whole anticipated life-cycle.  <br />
+    Please check the used-data panels for such a forecast. <br />
+</p>
+
+</div>
+
+<div style="page-break-after: always;">
+
+<h3> Storage Report </h3>
+
+<h4> Full Life-Cycle Overview </h4>
+<img src="Storage Report_full_graph.png" alt="Storage Report_full_graph.png" width="1000" height="500">
+<h5> Panel description </h5>
+<p>
+
+This report shows the development of the <span style="color:blue">used</span>, <span style="color:purple">available</span> and recommended Storage space <span style="color:red">with</span> and <span style="color:orange">without reserve</span>. <br />
+For this prediction, the values of all individual vSnaps are summarized into a single statistic. <br/>
+The Graphs display the entire life cycle from 2020-07-02 to 2026-07-23.  <br />
+
+</p>
+<h5> Value meaning </h5>
+<p>
+    The <span style="color:purple">purple line</span> represents the <span style="color:purple">currently available</span> space, while the <span style="color:blue">blue line</span> represents the <span style="color:blue">used</span> space. <br />
+    Therefore, the point where the <span style="color:red">lines cross</span> is the date where the system will <span style="color:red">fail</span>. <br />
+    This assumes that the available space is not increased any further, since this requires a manual interaction. <br />
+    The point of failure can be delayed by increasing the available space. <br />
+    However, if the lines never cross, the space can be reduced accordingly. <br />
+    A prediction function is used to forecast the trend for the systems remaining life cycle after the current date (2022-08-05). <br/>
+    <br />
+
+The <span style="color:red">red line</span> represents the recommended space with reserve, with the <span style="color:orange">orange line</span> omits the reserve. <br />
+This is the space required according to the Blueprint vSnap Sizer sheets for the system to last until this day. <br />
+If the <span style="color:blue">blue line</span> is below these lines, the system is developing <span style="color:green">slower</span> than anticipated. <br />
+If it is between these lines, it is developing just as expected. <br />
+However, if the <span style="color:blue">blue line</span> is above the <span style="color:red">red line</span>, the system is developing <span style="color:red">quicker</span> than anticipated. <br />
+
+</p>
+
+<h4> One-Year Summary </h4>
+<img src="Storage Report_one_year_used.png" alt="Storage Report_one_year_used.png" width="1000" height="500">
+<h5> Panel description </h5>
+<p>
+
+This report shows the anticipated free Storage space and the expected usage percentage relative to the available space. <br />
+All values are taken from the prediction graph, limited to the following year.  <br />
+The Graphs display the range from now - 1 to now + 1 year. <br />
+
+</p>
+
+<h5> Value meaning </h5>
+<p>
+    A <span style="color:green"> positive value </span> means that space is still <span style="color:green">free</span> after one year. <br />
+    A <span style="color:red">negative value</span> indicates the expected minimum value by which the <span style="color:red">capacity must be upgraded</span>. <br />
+    The percent values are displayed to allow an impression of the value to total ratio. <br />
+</p>
+
+<h4> Setup-Check </h4>
+<img src="Storage Report_full_excel.png" alt="Storage Report_full_excel.png" width="1000" height="500">
+<h5> Panel description </h5>
+<p>
+
+This report shows the total currently existing Storage space relative to the recommended space according to the Blueprint vSnap Sizer sheets at the end of the system lifetime. <br />
+All values are taken from the prediction graph of the system's entire life cycle. <br />
+The Graphs display the entire life cycle from 2020-07-02 to 2026-07-23.  <br />
+
+</p>
+
+<h5> Value meaning </h5>
+<p>
+    A <span style="color:green">positive value</span> means the system was set up with <span style="color:green">more space than recommended</span> by the Sizer sheet. <br />
+    A <span style="color:red">negative value</span> indicates the <span style="color:red">difference required</span> to reach the recommended size of the Sizer sheets. <br />
+    <br />
+    Even if this Panels shows a negative value, the system can run correctly - it is just designed smaller than initial anticipated. <br />
+    However, this also works the other way around:  <br />
+    A correct setup does not promise that the system will last the whole anticipated life-cycle.  <br />
+    Please check the used-data panels for such a forecast. <br />
+</p>
+
+</div>
+
+<div style="page-break-after: always;">
+
+<h3> VADP Proxy Count Report </h3>
+
+<h4> Full Life-Cycle Overview </h4>
+<img src="VADP Proxy Count Report_full_graph.png" alt="VADP Proxy Count Report_full_graph.png" width="1000" height="500">
+<h5> Panel description </h5>
+<p>
+
+This report shows the development of the <span style="color:blue">existing</span> and <span style="color:orange">recommended</span> count of VADP Proxies. <br />
+The Graphs display the entire life cycle from 2020-07-02 to 2026-07-23.  <br />
+
+</p>
+<h5> Value meaning </h5>
+<p>
+    The <span style="color:blue">blue line</span> represents the <span style="color:blue">currently existing</span> systems.
+    The <span style="color:orange">orange line</span> represents the recommended count of systems. <br />
+    This is the count recommended according to the Blueprint vSnap Sizer sheets for the SPP-System to last until its end of life cycle. <br />
+    If the <span style="color:blue">blue line</span> is below this line, the system has <span style="color:red">too few Systems</span> set up than recommended. <br />
+    However, if the <span style="color:blue">blue line</span> is above the <span style="color:orange">orange line</span>, the system <span style="color:green">more Systems</span> set up than recommend. <br />
+    After the current date a static count of the currently existing Systems is assumed (2022-08-05). <br/>
+</p>
+
+<h4> One-Year Summary </h4>
+<img src="VADP Proxy Count Report_one_year_existing.png" alt="VADP Proxy Count Report_one_year_existing.png" width="1000" height="500">
+<h5> Panel description </h5>
+<p>
+
+This report shows the count of the currently existing VADP proxies associated with the SPP-System and difference to the recommended count by the Blueprint vSnap Sizer sheets. <br />
+All values are taken from the prediction graph, limited to the following year.  <br />
+The Graphs display the range from now - 1 to now + 1 year. <br />
+
+</p>
+
+<h5> Value meaning </h5>
+<p>
+    The "Existing" count is always green. <br/>
+    Colored distinctions are only made based on the "Setup Check Difference".
+    A <span style="color:green"> positive value </span> means that <span style="color:green">more Systems</span> than recommended are set up after one year. <br />
+    A <span style="color:red">negative value</span> indicates the recommend minimum value how many more Systems <span style="color:red">need to be added</span>. <br />
+    After the current date a static count of the currently existing Systems is assumed (2022-08-05). <br/>
+</p>
+
+</div>
+
+<div style="page-break-after: always;">
+
+<h3> vSnap Server Count Report </h3>
+
+<h4> Full Life-Cycle Overview </h4>
+<img src="vSnap Server Count Report_full_graph.png" alt="vSnap Server Count Report_full_graph.png" width="1000" height="500">
+<h5> Panel description </h5>
+<p>
+
+This report shows the development of the <span style="color:blue">existing</span> and <span style="color:orange">recommended</span> count of vSnap Servers. <br />
+The Graphs display the entire life cycle from 2020-07-02 to 2026-07-23.  <br />
+
+</p>
+<h5> Value meaning </h5>
+<p>
+    The <span style="color:blue">blue line</span> represents the <span style="color:blue">currently existing</span> systems.
+    The <span style="color:orange">orange line</span> represents the recommended count of systems. <br />
+    This is the count recommended according to the Blueprint vSnap Sizer sheets for the SPP-System to last until its end of life cycle. <br />
+    If the <span style="color:blue">blue line</span> is below this line, the system has <span style="color:red">too few Systems</span> set up than recommended. <br />
+    However, if the <span style="color:blue">blue line</span> is above the <span style="color:orange">orange line</span>, the system <span style="color:green">more Systems</span> set up than recommend. <br />
+    After the current date a static count of the currently existing Systems is assumed (2022-08-05). <br/>
+</p>
+
+<h4> One-Year Summary </h4>
+<img src="vSnap Server Count Report_one_year_existing.png" alt="vSnap Server Count Report_one_year_existing.png" width="1000" height="500">
+<h5> Panel description </h5>
+<p>
+
+This report shows the count of the currently existing vSnap systems associated with the SPP-System and difference to the recommended count by the Blueprint vSnap Sizer sheets. <br />
+All values are taken from the prediction graph, limited to the following year.  <br />
+The Graphs display the range from now - 1 to now + 1 year. <br />
+
+</p>
+
+<h5> Value meaning </h5>
+<p>
+    The "Existing" count is always green. <br/>
+    Colored distinctions are only made based on the "Setup Check Difference".
+    A <span style="color:green"> positive value </span> means that <span style="color:green">more Systems</span> than recommended are set up after one year. <br />
+    A <span style="color:red">negative value</span> indicates the recommend minimum value how many more Systems <span style="color:red">need to be added</span>. <br />
+    After the current date a static count of the currently existing Systems is assumed (2022-08-05). <br/>
+</p>
+
+</div>
+
+</div>
+
+</body>
+</html>

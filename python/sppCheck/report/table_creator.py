@@ -34,6 +34,7 @@ from typing import List
 from dateutil.relativedelta import relativedelta
 from sppCheck.report.comparer import ComparisonPoints
 from sppCheck.report.individual_reports import OverviewDataStruct
+from utils.exception_utils import ExceptionUtils
 
 LOGGER_NAME = 'sppmon'
 LOGGER = logging.getLogger(LOGGER_NAME)
@@ -45,6 +46,8 @@ class TableCreator:
         self.__end_date = end_date
 
     def create_overview_table(self, overview_used_data: OverviewDataStruct, overview_setup_data: OverviewDataStruct):
+
+        #### Prepare Table captions ####
 
         used_table_caption = """
 <caption>
@@ -74,11 +77,26 @@ class TableCreator:
     Please check the used-data panels for such a forecast. <br />
 </caption>
 """
+        #### Create both tables ####
+        try:
+            usage_table = self.__create_table(used_table_caption, overview_used_data)
+        except ValueError as error:
+            ExceptionUtils.exception_info(error, f"Failed to create the usage table, skipping it.")
+            usage_table = f"""<h4> <span style="color:red"> Failed to create the usage Table </span> </h4>"""
+
+        try:
+            setup_table = self.__create_table(setup_table_caption, overview_setup_data)
+        except ValueError as error:
+            ExceptionUtils.exception_info(error, f"Failed to create the set up table, skipping it.")
+            setup_table = f"""<h4> <span style="color:red"> Failed to create the set up Table </span> </h4>"""
+
+        #### Combine the tables to a Section
+
         table_report = f"""
 <h3> Usage Statistics </h3>
-{self.__create_table(used_table_caption, overview_used_data)}
+{usage_table}
 <h3> Set up Check </h3>
-{self.__create_table(setup_table_caption, overview_setup_data)}
+{setup_table}
 """
 
         return table_report

@@ -29,7 +29,6 @@ Classes:
 
 import logging
 from datetime import date, datetime
-from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 from sppCheck.predictor.predictor_influx_connector import \
@@ -99,24 +98,56 @@ class IndividualReports:
         # filled during the individual reports, to be used for overview table
         self.__overview_setup_data: OverviewDataStruct = []
 
-    def __report_structure(self,
+    def __report_structure_regular(self,
                             report_name: str,
 
-                            full_graph_filename: Optional[Path] = None,
+                            full_graph_panel_id: Optional[int] = None,
                             full_graph_width: int = 0,
                             full_graph_height: int = 0,
+                            full_graph_with_reserve: bool = False,
                             full_graph_description: str = "",
 
-                            one_year_used_filename: Optional[Path] = None,
+                            one_year_used_panel_id: Optional[int] = None,
                             one_year_used_width: int = 0,
                             one_year_used_height: int = 0,
-                            one_year_used_with_reserve: bool = False,
                             one_year_used_description: str = "",
 
-                            full_excel_filename: Optional[Path] = None,
+                            full_excel_panel_id: Optional[int] = None,
                             full_excel_width: int = 0,
                             full_excel_height: int = 0,
                             full_excel_description: str = ""):
+
+        #### prepare data: download pictures ####
+        if full_graph_panel_id:
+            full_graph_filename = self.__picture_downloader.download_picture(
+                panel_id=full_graph_panel_id,
+                width=full_graph_width,
+                height=full_graph_height,
+                file_name=report_name + "_full_graph")
+        else:
+            full_graph_filename = None
+
+        if one_year_used_panel_id:
+            one_year_used_filename = self.__picture_downloader.download_picture(
+                panel_id=one_year_used_panel_id,
+                width=one_year_used_width,
+                height=one_year_used_height,
+                relative_from_years=1,
+                relative_to_years=1,
+                file_name=report_name + "_one_year_used")
+        else:
+            one_year_used_filename = None
+
+        if full_excel_panel_id:
+            full_excel_filename = self.__picture_downloader.download_picture(
+                panel_id=full_excel_panel_id,
+                width=full_excel_width,
+                height=full_excel_height,
+                file_name=report_name + "_full_excel")
+        else:
+            full_excel_filename = None
+
+        #### Prepare template text ####
 
         # easier change if all needs to be changed
         value_meaning_header = "<h5> Value meaning </h5>"
@@ -137,6 +168,8 @@ If the <span style="color:blue">blue line</span> is below this line, the system 
 However, if the <span style="color:blue">blue line</span> is above the <span style="color:orange">orange line</span>, the system is developing <span style="color:red">quicker</span> than anticipated. <br />
 """
 
+        #### Build the structure ####
+
         structure = f"""
 <h3> {report_name} </h3>
 """
@@ -150,13 +183,14 @@ However, if the <span style="color:blue">blue line</span> is above the <span sty
 </p>
 {value_meaning_header}
 <p>
-    The <span style="color:purple">purple line</span> represents the currently available space, while the <span style="color:blue">blue line</span> represents the used space. <br />
+    The <span style="color:purple">purple line</span> represents the <span style="color:purple">currently available</span> space, while the <span style="color:blue">blue line</span> represents the <span style="color:blue">used</span> space. <br />
     Therefore, the point where the <span style="color:red">lines cross</span> is the date where the system will <span style="color:red">fail</span>. <br />
-    This assumes that the available space is not increased any further, since this is a manual interaction. <br />
+    This assumes that the available space is not increased any further, since this requires a manual interaction. <br />
     The point of failure can be delayed by increasing the available space. <br />
     However, if the lines never cross, the space can be reduced accordingly. <br />
+    A prediction function is used to forecast the trend for the systems remaining life cycle after the current date ({date.today().isoformat()}). <br/>
     <br />
-    {value_description_graph_w_reserve if one_year_used_with_reserve else value_description_graph}
+    {value_description_graph_w_reserve if full_graph_with_reserve else value_description_graph}
 </p>
 """
         if one_year_used_filename:
@@ -197,6 +231,91 @@ However, if the <span style="color:blue">blue line</span> is above the <span sty
 """
         return structure
 
+    def __report_structure_count(self,
+                            report_name: str,
+
+                            full_graph_panel_id: Optional[int] = None,
+                            full_graph_width: int = 0,
+                            full_graph_height: int = 0,
+                            full_graph_description: str = "",
+
+                            one_year_existing_panel_id: Optional[int] = None,
+                            one_year_existing_width: int = 0,
+                            one_year_existing_height: int = 0,
+                            one_year_existing_description: str = ""
+                            ):
+        # this method only takes two metrics with different texts
+
+        #### prepare data: download pictures ####
+        if full_graph_panel_id:
+            full_graph_filename = self.__picture_downloader.download_picture(
+                panel_id=full_graph_panel_id,
+                width=full_graph_width,
+                height=full_graph_height,
+                file_name=report_name + "_full_graph")
+        else:
+            full_graph_filename = None
+
+        if one_year_existing_panel_id:
+            one_year_existing_filename = self.__picture_downloader.download_picture(
+                panel_id=one_year_existing_panel_id,
+                width=one_year_existing_width,
+                height=one_year_existing_height,
+                relative_from_years=1,
+                relative_to_years=1,
+                file_name=report_name + "_one_year_existing")
+        else:
+            one_year_existing_filename = None
+
+        #### Prepare template text ####
+
+        # easier change if all needs to be changed
+        value_meaning_header = "<h5> Value meaning </h5>"
+        panel_description_header = "<h5> Panel description </h5>"
+
+        #### Build the structure ####
+
+        structure = f"""
+<h3> {report_name} </h3>
+"""
+        if full_graph_filename:
+            structure += f"""
+<h4> Full Life-Cycle Overview </h4>
+<img src="{full_graph_filename}" alt="{full_graph_filename}" width="{full_graph_width}" height="{full_graph_height}">
+{panel_description_header}
+<p>
+    {full_graph_description}
+</p>
+{value_meaning_header}
+<p>
+    The <span style="color:blue">blue line</span> represents the <span style="color:blue">currently existing</span> systems.
+    The <span style="color:orange">orange line</span> represents the recommended count of systems. <br />
+    This is the count recommended according to the Blueprint vSnap Sizer sheets for the SPP-System to last until its end of life cycle. <br />
+    If the <span style="color:blue">blue line</span> is below this line, the system has <span style="color:red">too few Systems</span> set up than recommended. <br />
+    However, if the <span style="color:blue">blue line</span> is above the <span style="color:orange">orange line</span>, the system <span style="color:green">more Systems</span> set up than recommend. <br />
+    After the current date a static count of the currently existing Systems is assumed ({date.today().isoformat()}). <br/>
+</p>
+"""
+        if one_year_existing_filename:
+            structure += f"""
+<h4> One-Year Summary </h4>
+<img src="{one_year_existing_filename}" alt="{one_year_existing_filename}" width="{one_year_existing_width}" height="{one_year_existing_height}">
+{panel_description_header}
+<p>
+    {one_year_existing_description}
+</p>
+
+{value_meaning_header}
+<p>
+    The "Existing" count is always green. <br/>
+    Colored distinctions are only made based on the "Setup Check Difference".
+    A <span style="color:green"> positive value </span> means that <span style="color:green">more Systems</span> than recommended are set up after one year. <br />
+    A <span style="color:red">negative value</span> indicates the recommend minimum value how many more Systems <span style="color:red">need to be added</span>. <br />
+    After the current date a static count of the currently existing Systems is assumed ({date.today().isoformat()}). <br/>
+</p>
+"""
+        return structure
+
     def create_storage_report(self):
         LOGGER.info(">> Creating the storage report.")
         # compare used vs available space
@@ -211,26 +330,6 @@ However, if the <span style="color:blue">blue line</span> is above the <span sty
         )
         self.overview_used_data.append( ("used storage space", True, avail_vs_used_result))
 
-        # download full scale view with lines
-        avail_vs_used_storage_lines_full_width = 1000
-        avail_vs_used_storage_lines_full_height = 500
-        avail_vs_used_storage_lines_full = self.__picture_downloader.download_picture(
-            panelId=220,
-            width=avail_vs_used_storage_lines_full_width,
-            height=avail_vs_used_storage_lines_full_height,
-            file_name="available_vs_used_storage_lines_full")
-
-        # download small scale view free and used %
-        avail_vs_used_storage_one_year_width = 1000
-        avail_vs_used_storage_one_year_height = 500
-        avail_vs_used_storage_one_year = self.__picture_downloader.download_picture(
-            panelId=210,
-            width=avail_vs_used_storage_one_year_width,
-            height=avail_vs_used_storage_one_year_height,
-            file_name="available_vs_used_storage_one_year",
-            relative_from_years=1,
-            relative_to_years=1)
-
         excel_vs_existing_result = self.__comparer.compare_metrics(
             base_metric_name="primary_vsnap_size_est_w_reserve",
             base_table=ComparisonSource.EXCEL,
@@ -241,43 +340,34 @@ However, if the <span style="color:blue">blue line</span> is above the <span sty
         )
         self.overview_setup_data.append( ("existing vs. required storage space", False, excel_vs_existing_result))
 
-        # download full scale view
-        excel_vs_existing_storage_full_width = 1000
-        excel_vs_existing_storage_full_height = 500
-        excel_vs_existing_storage_full = self.__picture_downloader.download_picture(
-            panelId=226,
-            width=excel_vs_existing_storage_full_width,
-            height=excel_vs_existing_storage_full_height,
-            file_name="excel_vs_existing_storage_full")
-
-        return self.__report_structure(
+        return self.__report_structure_regular(
             report_name="Storage Report",
-            full_graph_filename = avail_vs_used_storage_lines_full,
-            full_graph_width = avail_vs_used_storage_lines_full_width,
-            full_graph_height =avail_vs_used_storage_lines_full_height,
+            full_graph_panel_id=220,
+            full_graph_width=1000,
+            full_graph_height=500,
+            full_graph_with_reserve=True, # this is the only metric using a reserve-excel-metric
             full_graph_description = f"""
-This report shows the development of the <span style="color:blue">used</span>, <span style="color:purple">available</span> and expected Storage space <span style="color:red">with</span> and <span style="color:orange">without reserve</span>. <br />
-A prediction function is used to forecast the values after the current date ({date.today().isoformat()}). <br/>
-The Graphs display the full life cycle of {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}. <br />
+This report shows the development of the <span style="color:blue">used</span>, <span style="color:purple">available</span> and recommended Storage space <span style="color:red">with</span> and <span style="color:orange">without reserve</span>. <br />
+For this prediction, the values of all individual vSnaps are summarized into a single statistic. <br/>
+The Graphs display the entire life cycle from {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}.  <br />
 """,
 
-            one_year_used_filename = avail_vs_used_storage_one_year,
-            one_year_used_width = avail_vs_used_storage_one_year_width,
-            one_year_used_height = avail_vs_used_storage_one_year_height,
-            one_year_used_with_reserve=True,
+            one_year_used_panel_id=210,
+            one_year_used_width=1000,
+            one_year_used_height=500,
             one_year_used_description = f"""
-This report shows the expected free Storage space. <br />
-The value is calculated of the prediction for the next year. <br />
-The Graphs display the range of now - 1 to now + 1 year. <br />
+This report shows the anticipated free Storage space and the expected usage percentage relative to the available space. <br />
+All values are taken from the prediction graph, limited to the following year.  <br />
+The Graphs display the range from now - 1 to now + 1 year. <br />
 """,
 
-            full_excel_filename = excel_vs_existing_storage_full,
-            full_excel_width = excel_vs_existing_storage_full_width,
-            full_excel_height = excel_vs_existing_storage_full_height,
+            full_excel_panel_id=226,
+            full_excel_width=1000,
+            full_excel_height=500,
             full_excel_description = f"""
-This report shows the current total existing Storage space, compared to the required space according to the Blueprint vSnap Sizer sheets. <br />
-The value is calculated of the prediction at the end of the expected lifetime. <br />
-The Graphs display the full life cycle of {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}. <br />
+This report shows the total currently existing Storage space relative to the recommended space according to the Blueprint vSnap Sizer sheets at the end of the system lifetime. <br />
+All values are taken from the prediction graph of the system's entire life cycle. <br />
+The Graphs display the entire life cycle from {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}.  <br />
 """
         )
 
@@ -303,10 +393,38 @@ The Graphs display the full life cycle of {self.__start_date.date().isoformat()}
         )
         self.overview_setup_data.append( ("existing vs. required server memory", False, excel_vs_existing_result))
 
-        return ""
+        return self.__report_structure_regular(
+            report_name="Server Memory Report",
+            full_graph_panel_id=196,
+            full_graph_width=1000,
+            full_graph_height=500,
+            full_graph_with_reserve=False,
+            full_graph_description = f"""
+This report shows the development of the <span style="color:blue">used</span>, <span style="color:purple">available</span> and <span style="color:orange">recommended</span> Server Memory. <br />
+The Graphs display the entire life cycle from {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}.  <br />
+""",
+
+            one_year_used_panel_id=211,
+            one_year_used_width=1000,
+            one_year_used_height=500,
+            one_year_used_description = f"""
+This report shows the anticipated free Server Memory and the expected usage percentage relative to the available memory. <br />
+All values are taken from the prediction graph, limited to the following year.  <br />
+The Graphs display the range from now - 1 to now + 1 year. <br />
+""",
+
+            full_excel_panel_id=227,
+            full_excel_width=1000,
+            full_excel_height=500,
+            full_excel_description = f"""
+This report shows the currently existing Server Memory relative to the recommended Memory according to the Blueprint vSnap Sizer sheets at the end of the system lifetime. <br />
+All values are taken from the prediction graph of the system's entire life cycle. <br />
+The Graphs display the entire life cycle from {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}.  <br />
+"""
+        )
 
     def create_vsnap_count_report(self):
-        LOGGER.info(">> Creating the vSnap count report.")
+        LOGGER.info(">> Creating the vSnap Server Count report.")
 
         excel_vs_avail_result = self.__comparer.compare_metrics(
             base_metric_name="primary_vsnap_count",
@@ -318,10 +436,28 @@ The Graphs display the full life cycle of {self.__start_date.date().isoformat()}
         )
         self.overview_setup_data.append( ("existing vs. required vSnaps", False, excel_vs_avail_result))
 
-        return ""
+        return self.__report_structure_count(
+            report_name="vSnap Server Count Report",
+            full_graph_panel_id=185,
+            full_graph_width=1000,
+            full_graph_height=500,
+            full_graph_description = f"""
+This report shows the development of the <span style="color:blue">existing</span> and <span style="color:orange">recommended</span> count of vSnap Servers. <br />
+The Graphs display the entire life cycle from {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}.  <br />
+""",
+
+            one_year_existing_panel_id=232,
+            one_year_existing_width=1000,
+            one_year_existing_height=500,
+            one_year_existing_description = f"""
+This report shows the count of the currently existing vSnap systems associated with the SPP-System and difference to the recommended count by the Blueprint vSnap Sizer sheets. <br />
+All values are taken from the prediction graph, limited to the following year.  <br />
+The Graphs display the range from now - 1 to now + 1 year. <br />
+"""
+        )
 
     def create_vadp_count_report(self):
-        LOGGER.info(">> Creating the VADP count report.")
+        LOGGER.info(">> Creating the VADP Proxy count report.")
 
         excel_vs_avail_result = self.__comparer.compare_metrics(
             base_metric_name="primary_vadp_count_total",
@@ -333,7 +469,25 @@ The Graphs display the full life cycle of {self.__start_date.date().isoformat()}
         )
         self.overview_setup_data.append( ("existing vs. required VADPs", False, excel_vs_avail_result))
 
-        return ""
+        return self.__report_structure_count(
+            report_name="VADP Proxy Count Report",
+            full_graph_panel_id=218,
+            full_graph_width=1000,
+            full_graph_height=500,
+            full_graph_description = f"""
+This report shows the development of the <span style="color:blue">existing</span> and <span style="color:orange">recommended</span> count of VADP Proxies. <br />
+The Graphs display the entire life cycle from {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}.  <br />
+""",
+
+            one_year_existing_panel_id=233,
+            one_year_existing_width=1000,
+            one_year_existing_height=500,
+            one_year_existing_description = f"""
+This report shows the count of the currently existing VADP proxies associated with the SPP-System and difference to the recommended count by the Blueprint vSnap Sizer sheets. <br />
+All values are taken from the prediction graph, limited to the following year.  <br />
+The Graphs display the range from now - 1 to now + 1 year. <br />
+"""
+        )
 
     def create_server_catalog_config_report(self):
         LOGGER.info(">> Creating the server configuration catalog report.")

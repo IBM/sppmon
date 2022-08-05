@@ -185,6 +185,6 @@ python.sln
 # line counter
 .VSCodeCounter
 
-# sppcheck pictures
+# sppcheck temp files
+# created when executing SPPCheck
 sppcheck/report/temp_files/*
-!sppcheck/report/temp_files/.gitkeep
