@@ -102,14 +102,17 @@ class ExcelController:
     def parse_insert_sheet(self):
 
         # read and prepare the structure of the sheet
+        LOGGER.info("Starting to read the sheet.")
         sizing_results = self.__read_sheet()
 
         # Transform the sheet into pre-defined dictionary with variable-name to years projection
 
+        LOGGER.info("Parsing the content of the sheet.")
         mapping =  self.__traverse_sheet(sizing_results)
 
         # insert the data into the influxDB with correct tags and interpolate into correct frequency
 
+        LOGGER.info("Inserting the parsed data into the InfluxDB")
         self.__insert_sheet(mapping)
 
     def __read_sheet(self):

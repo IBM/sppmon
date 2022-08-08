@@ -40,6 +40,7 @@ from influx.influx_client import InfluxClient
 from requests import ReadTimeout, RequestException, get
 from requests.auth import HTTPBasicAuth
 from utils.exception_utils import ExceptionUtils
+from utils.sppcheck_utils import Themes
 
 LOGGER_NAME = 'sppmon'
 LOGGER = logging.getLogger(LOGGER_NAME)
@@ -55,7 +56,8 @@ class PictureDownloader:
         end_date: datetime,
         prediction_rp: RetentionPolicy,
         excel_rp: RetentionPolicy,
-        temp_dir_path: Path) -> None:
+        temp_dir_path: Path,
+        theme: Themes) -> None:
 
         LOGGER.debug("Setting up the PictureDownloader")
 
@@ -120,10 +122,17 @@ class PictureDownloader:
         else:
             raise ValueError("Failed to connect to Grafana, please check the configs")
 
+        #### Preparing theme ####
+
+        if theme in [Themes.LIGHT, Themes.DARK]:
+            theme_str = theme.value
+        else:
+            theme_str = Themes.LIGHT.value
+
         #### Preparing panel download URL ####
         # spaces (replaced by "+") in the url dont matter. Works anyway
         self.__panel_prefix_url = f"{self.__srv_url}/render/d-solo/sppcheck/sppcheck-for-ibm-spectrum-protect-plus" + \
-                                        f"?orgId={orgId}&var-server={datasource_name}&var-rp={select_rp.name}&theme=light"
+                                        f"?orgId={orgId}&var-server={datasource_name}&var-rp={select_rp.name}&theme={theme_str}"
 
         if prediction_rp:
             self.__panel_prefix_url += f"&var-prediction={prediction_rp.name}"

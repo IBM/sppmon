@@ -67,3 +67,15 @@ Individual:
 .my_caption {
     color: white;
 }
+
+.my_td, .my_table, .my_table_header {
+    border-color: black;
+}
+
+.my_table_header{
+    background-color: #8d8d8d !important; /*Gray 40*/
+}
+
+.my_table_metrics_name{
+    background-color: #c6c6c6 !important; /*Gray 30*/
+}

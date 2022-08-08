@@ -30,7 +30,6 @@ Classes:
 import inspect
 import logging
 from datetime import datetime
-from enum import Enum, unique
 from os import mkdir
 from os.path import exists, isdir
 from pathlib import Path
@@ -49,16 +48,10 @@ from sppCheck.report.individual_reports import IndividualReports
 from sppCheck.report.picture_downloader import PictureDownloader
 from sppCheck.report.table_creator import TableCreator
 from utils.exception_utils import ExceptionUtils
-from utils.sppcheck_utils import SppcheckUtils
+from utils.sppcheck_utils import SppcheckUtils, Themes
 
 LOGGER_NAME = 'sppmon'
 LOGGER = logging.getLogger(LOGGER_NAME)
-
-@unique
-class Themes(str, Enum):
-    LIGHT = "light"
-    DARK = "dark"
-    SPPCHECK = "sppcheck"
 
 class ReportController:
 
@@ -92,8 +85,8 @@ class ReportController:
         # also change the gitignore if you change this!
         self.__temp_dir_path = Path("sppcheck", "report", "temp_files")
         LOGGER.debug(f"temp dir path: {self.__temp_dir_path}")
-        self.__temp_file_path = Path(self.__temp_dir_path, "report.html")
-        LOGGER.debug(f"temp file path: {self.__temp_file_path}")
+        self.__html_file_path = Path(self.__temp_dir_path, "report.html")
+        LOGGER.debug(f"html file path: {self.__html_file_path}")
 
         #### Following are relative to the html report ####
 
@@ -137,7 +130,8 @@ class ReportController:
             config_file,
             self.__end_date,
             prediction_rp, excel_rp,
-            self.__temp_dir_path)
+            self.__temp_dir_path,
+            theme)
 
         comparer = Comparer(
             influx_client,
@@ -208,7 +202,7 @@ class ReportController:
 
         return full_individual_report_str
 
-    def __gen_pdf_file(self, individual_reports: str, overview_table: str):
+    def __gen_html_file(self, individual_reports: str, overview_table: str):
 
         LOGGER.info("> Starting to generate the temporary HTML-File.")
 
@@ -252,10 +246,27 @@ Author:
 
     <div class="header">
         <h1 class="header_left">
-            <img class="my_img" src="{self.__rel_ibm_icon_path}" alt="{self.__rel_ibm_icon_path}" width="40" height="40">
-            Spectrum Protect Plus Check</h1>
+            <img class="my_img" src="{self.__rel_ibm_icon_path}" alt="{self.__rel_ibm_icon_path}" width="auto" height="auto">
+            Spectrum Protect Plus Check
+        </h1>
+        <button class="btn btn-secondary print_button" onclick="window.print();return false;"> Print / Convert Report to PDF </button>
         <h1 class="header_right">System: {self.__system_name}</h1>
     </div>
+
+
+<table style="width: 100%;">
+    <thead>
+        <tr>
+            <td>
+                <!-- place holder for the fixed-position header-->
+                <div class="header_space"></div>
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <!--All content follows-->
 
 <div class="py-5 my-1 text-center title_center">
     <h1 class="display-5 fw-bold">
@@ -263,7 +274,7 @@ Author:
         SPPCheck Report for the SPP-System "{self.__system_name}"
     </h1>
     <h3>Created on: {datetime.now().isoformat(sep=" ", timespec="minutes")}</h3>
-    <button class="btn btn-secondary" onclick="window.print();return false;"> Print / Convert Report to PDF </button>
+    <h3><a href="https://github.com/IBM/spectrum-protect-sppmon">https://github.com/IBM/spectrum-protect-sppmon</a></h3>
 </div>
 <div class="overview_section">
     <h2> Table-Overview of all Metrics </h2>
@@ -273,16 +284,20 @@ Author:
     <h2> Individual Reports </h2>
     {individual_reports}
 </div>
+                <!-- close the table for the header -->
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
 </body>
 </html>
 """
 
-        with open(self.__temp_file_path, 'wt') as file:
+        with open(self.__html_file_path, 'wt') as file:
             file.write(total_report)
 
         LOGGER.info("> Finished generating the temporary HTML file.")
-        pass
 
     def createPdfReport(self):
 
@@ -290,4 +305,9 @@ Author:
 
         overview_table = self.__create_overview_table()
 
-        self.__gen_pdf_file(individual_reports, overview_table)
+        self.__gen_html_file(individual_reports, overview_table)
+
+        LOGGER.info("\n\n## Created the HTML file. ##")
+        LOGGER.info("Please open the file and inspect the contents")
+        LOGGER.info("To export to PDF and share it, you may use the button in the Header.")
+        LOGGER.info(f"\n{self.__html_file_path.absolute()}\n")

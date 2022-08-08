@@ -29,6 +29,7 @@ Classes:
 
 from __future__ import annotations
 from datetime import datetime
+from enum import Enum, unique
 import logging
 import re
 from sys import prefix
@@ -44,6 +45,12 @@ from utils.exception_utils import ExceptionUtils
 
 LOGGER_NAME = 'sppmon'
 LOGGER = logging.getLogger(LOGGER_NAME)
+
+@unique
+class Themes(str, Enum):
+    LIGHT = "light"
+    DARK = "dark"
+    SPPCHECK = "sppcheck"
 
 class SppcheckUtils:
 

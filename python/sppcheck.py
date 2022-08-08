@@ -39,10 +39,11 @@ from influx.influx_client import InfluxClient
 from sppCheck.excel.excel_controller import ExcelController
 from sppCheck.generator.fakedata_controller import FakeDataController
 from sppCheck.predictor.predictor_controller import PredictorController
-from sppCheck.report.report_controller import ReportController, Themes
+from sppCheck.report.report_controller import ReportController
 from utils.exception_utils import ExceptionUtils
 from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
+from utils.sppcheck_utils import Themes
 
 # Version:
 VERSION = "0.7  (2022/08/03)"
