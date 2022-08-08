@@ -30,12 +30,12 @@ Classes:
 import inspect
 import logging
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, Optional
-
-from os.path import exists, isdir
+from enum import Enum, unique
 from os import mkdir
+from os.path import exists, isdir
+from pathlib import Path
 from shutil import rmtree
+from typing import Any, Dict, Optional
 
 from dateutil.relativedelta import relativedelta
 from influx.database_tables import RetentionPolicy
@@ -46,13 +46,19 @@ from sppCheck.predictor.predictor_influx_connector import \
     PredictorInfluxConnector
 from sppCheck.report.comparer import Comparer
 from sppCheck.report.individual_reports import IndividualReports
-from sppCheck.report.table_creator import TableCreator
 from sppCheck.report.picture_downloader import PictureDownloader
+from sppCheck.report.table_creator import TableCreator
 from utils.exception_utils import ExceptionUtils
 from utils.sppcheck_utils import SppcheckUtils
 
 LOGGER_NAME = 'sppmon'
 LOGGER = logging.getLogger(LOGGER_NAME)
+
+@unique
+class Themes(str, Enum):
+    LIGHT = "light"
+    DARK = "dark"
+    SPPCHECK = "sppcheck"
 
 class ReportController:
 
@@ -64,7 +70,8 @@ class ReportController:
         config_file: Dict[str, Any],
         predict_years: Optional[int],
         prediction_rp: Optional[RetentionPolicy],
-        excel_rp: Optional[RetentionPolicy]) -> None:
+        excel_rp: Optional[RetentionPolicy],
+        theme: Themes) -> None:
         if not influx_client:
             raise ValueError("Logic Tool is not available, missing the influx_client")
 
@@ -82,16 +89,27 @@ class ReportController:
             self.__end_date = datetime.now() + relativedelta(years=predict_years)
         LOGGER.debug(f"end_date: {self.__end_date}")
 
-        self.__start_date = start_date
-
-        # also change gitignore if you change this!
+        # also change the gitignore if you change this!
         self.__temp_dir_path = Path("sppcheck", "report", "temp_files")
         LOGGER.debug(f"temp dir path: {self.__temp_dir_path}")
         self.__temp_file_path = Path(self.__temp_dir_path, "report.html")
         LOGGER.debug(f"temp file path: {self.__temp_file_path}")
-        # this one is relative from the html report
-        self.__rel_spp_icon_path = Path("..", "SpectrumProtectPlus-dark.svg")
+
+        #### Following are relative to the html report ####
+
+        media_dir_name = "media"
+
+        css_file_name: str = "theme_" + theme.value + ".css"
+        self.__rel_theme_css_path = Path("..",media_dir_name, css_file_name)
+        LOGGER.debug(f"relative theme css file path: {self.__rel_theme_css_path}")
+
+        self.__rel_general_css_path = Path("..",media_dir_name, "general_style.css")
+        LOGGER.debug(f"relative general css file path: {self.__rel_general_css_path}")
+
+        self.__rel_spp_icon_path = Path("..", media_dir_name, "SpectrumProtectPlus-dark.svg")
         LOGGER.debug(f"relative spp icon file path: {self.__rel_spp_icon_path}")
+        self.__rel_ibm_icon_path = Path("..", media_dir_name, "IBM_logo.png")
+        LOGGER.debug(f"relative IBM logo file path: {self.__rel_ibm_icon_path}")
 
         if exists(self.__temp_dir_path):
             LOGGER.info(f"> The temporary folder exists, removing it and purging its content: {self.__temp_dir_path}")
@@ -183,9 +201,7 @@ class ReportController:
 
             if individual_report: # only add if there is actually content, otherwise empty pages are added.
                 full_individual_report_str += f"""
-<div style="page-break-after: always;">
  {individual_report}
-</div>
 """
 
         LOGGER.info("> Finished creating reports for each metric")
@@ -198,26 +214,62 @@ class ReportController:
 
         total_report = f"""
 <!DOCTYPE html>
+<!--
+(c) Copyright IBM Corporation 2022. All Rights Reserved.
+
+ IBM Spectrum Protect Family Software
+
+ Licensed materials provided under the terms of the IBM International Program
+ License Agreement. See the Software licensing materials that came with the
+ IBM Program for terms and conditions.
+
+ U.S. Government Users Restricted Rights:  Use, duplication or disclosure
+ restricted by GSA ADP Schedule Contract with IBM Corp.
+
+SPDX-License-Identifier: Apache-2.0
+
+Repository:
+  https://github.com/IBM/spectrum-protect-sppmon
+
+Author:
+ Niels Korschinsky
+-->
+
 <html>
 <head>
-  <title>A Meaningful Page Title</title>
-    <!-- CSS only -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
-<!-- JavaScript Bundle with Popper -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
-<link href="{Path("..","style.css")}" rel="stylesheet">
-</head>
-<body>
+    <title>SPPCheck Report for SPP-System "{self.__system_name}" </title>
 
-<div>
-    <h1 class="test"><img width="40" height="40" src="{self.__rel_spp_icon_path}"/> SPPCheck Report for SPP-System "{self.__system_name}"</h1>
-    <p>Created on {datetime.now().isoformat(sep=" ", timespec="seconds")}</p>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+
+    <link href="{self.__rel_theme_css_path}" rel="stylesheet">
+    <link href="{self.__rel_general_css_path}" rel="stylesheet">
+</head>
+<body class="bbackground">
+
+    <div class="header">
+        <h1 class="header_left">
+            <img class="my_img" src="{self.__rel_ibm_icon_path}" alt="{self.__rel_ibm_icon_path}" width="40" height="40">
+            Spectrum Protect Plus Check</h1>
+        <h1 class="header_right">System: {self.__system_name}</h1>
+    </div>
+
+<div class="py-5 my-1 text-center title_center">
+    <h1 class="display-5 fw-bold">
+        <img class="my_img" src="{self.__rel_spp_icon_path}" alt="{self.__rel_spp_icon_path}" width="60" height="60">
+        SPPCheck Report for the SPP-System "{self.__system_name}"
+    </h1>
+    <h3>Created on: {datetime.now().isoformat(sep=" ", timespec="minutes")}</h3>
+    <button class="btn btn-secondary" onclick="window.print();return false;"> Print / Convert Report to PDF </button>
 </div>
-<div style="page-break-after: always;">
-    <h2> Overview over all Metrics </h2>
+<div class="overview_section">
+    <h2> Table-Overview of all Metrics </h2>
     {overview_table}
 </div>
-<div>
+<div class="individual_section">
     <h2> Individual Reports </h2>
     {individual_reports}
 </div>

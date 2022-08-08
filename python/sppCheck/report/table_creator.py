@@ -33,7 +33,7 @@ from typing import List
 
 from dateutil.relativedelta import relativedelta
 from sppCheck.report.comparer import ComparisonPoints
-from sppCheck.report.individual_reports import OverviewDataStruct
+from sppCheck.report.individual_reports import IndividualReports, OverviewDataStruct
 from utils.exception_utils import ExceptionUtils
 
 LOGGER_NAME = 'sppmon'
@@ -49,23 +49,34 @@ class TableCreator:
 
         #### Prepare Table captions ####
 
-        used_table_caption = """
-<caption>
+        used_table_caption = f"""
+<caption class="my_caption">
+    {IndividualReports.panel_description_header}
+    <p>
     This table shows the overview of all supported metrics displaying usage statistics. <br/>
     The values show, based on the scale of 0-100+% how the system is performing with each metric. <br/>
-    <br/>
+    </p>
+
+    {IndividualReports.value_meaning_header}
+    <p>
     A value <span style="color:green">below 100%</span> means that the currently available space <span style="color:green">is sufficient</span> for the time period of the column. <br/>
     A value <span style="color:red">above 100%</span> means that the currently available space is not sufficient, <span style="color:red">requiring an upgrade</span>. <br/>
     If "NA" is displayed, no data is available for this date due to various reasons. <br/>
     The distinctions are supported by the color code: <span style="color:green">green</span> for sufficient and <span style="color:red">red</span> if an upgrade is required. <br/>
     Please refer to the sections below for a more detailed explanation and view. <br/>
+    </p>
 </caption>
 """
-        setup_table_caption = """
-<caption>
+        setup_table_caption = f"""
+<caption class="my_caption">
+    {IndividualReports.panel_description_header}
+    <p>
     This table shows the overview of all supported metrics displaying setup-check statistics. <br/>
     The values show, based on the scale of 0-100+% how the system is set up compared to the Blueprint vSnap sizer Sheet recommendations. <br/>
-    <br/>
+    </p>
+
+    {IndividualReports.value_meaning_header}
+    <p>
     A value <span style="color:green">above 100%</span> means that the currently available space <span style="color:green">is higher</span> than required. <br/>
     A value <span style="color:red">below 100%</span> means that the currently available space is not sufficient compared to the recommendation, <span style="color:red">requiring an upgrade</span>. <br/>
     If "NA" is displayed, no data is available for this date due to various reasons. <br/>
@@ -75,6 +86,7 @@ class TableCreator:
     Please be aware that even if a value below 100% is shown, the system can run correctly - it is just designed smaller than initial anticipated. <br />
     However, this also works the other way around: A correct setup does not promise that the system will last the whole anticipated life-cycle.  <br />
     Please check the used-data panels for such a forecast. <br />
+    </p>
 </caption>
 """
         #### Create both tables ####
@@ -93,10 +105,15 @@ class TableCreator:
         #### Combine the tables to a Section
 
         table_report = f"""
-<h3> Usage Statistics </h3>
-{usage_table}
-<h3> Set up Check </h3>
-{setup_table}
+<div class="inner_section_inv_a">
+    <h3> Usage Statistics </h3>
+    {usage_table}
+</div>
+
+<div class="inner_section_inv_b">
+    <h3> Set up Check </h3>
+    {setup_table}
+</div>
 """
 
         return table_report
@@ -104,14 +121,14 @@ class TableCreator:
     def __create_table_rows(self, metrics_list: OverviewDataStruct):
 
         table_rows_lst: List[str] = []
-        for (metric_name, positive_interpretation, data_dict) in metrics_list:
+        for (metric_name, metric_description, positive_interpretation, data_dict) in metrics_list:
             row_data_lst: List[str] = []
             for time_point in ComparisonPoints:
                 data_tuple = data_dict[time_point]
                 if not data_tuple:
                     # no data available
                     percent_str = "NA"
-                    color = "orange"
+                    table_class = "table-warning my_na"
                 else:
                     # other values unused
                     #(timestamp, time_diff, value_diff, percent_value)
@@ -122,22 +139,22 @@ class TableCreator:
                     # decide coloring according to value and mapping
                     if percent_value < 100:
                         if positive_interpretation:
-                            color = "green"
+                            table_class = "table-success my_good"
                         else:
-                            color = "red"
+                            table_class = "table-danger my_bad"
                     else: # value above 100%
                         if positive_interpretation:
-                            color = "red"
+                            table_class = "table-danger my_bad"
                         else:
-                            color = "green"
+                            table_class = "table-success my_good"
                 # append each column to the row list
-                row_data_lst.append(f"""<td style="color:{color};"> {percent_str} </td>""")
+                row_data_lst.append(f"""<td class="my_td {table_class}">{percent_str}</td>""")
 
             # convert each column to a row string, append to the total row list.
             row_data_str="\n".join(row_data_lst)
             table_rows_lst.append(f"""
     <tr>
-        <td> {metric_name} </td>
+        <td class="my_td table-light my_table_metrics_name" > <a href="#{metric_name}"> {metric_description}</a> </td>
         {row_data_str}
     </tr>
 """         )
@@ -152,27 +169,29 @@ class TableCreator:
         rows_str = self.__create_table_rows(metrics_list)
 
         return f"""
-<table>
+<table class="my_table table table-light table-bordered caption-bottom">
     {caption}
-    <tr>
-        <th> Metric Name </th>
-        <th>
-            {ComparisonPoints.START.value} <br/>
-            ({self.__start_date.date().isoformat()})
-        </th>
-        <th>
-            {ComparisonPoints.NOW.value} <br/>
-            ({date.today().isoformat()})
-        </th>
-        <th>
-            {ComparisonPoints.ONE_YEAR.value} <br/>
-            ({(date.today() + relativedelta(years=1)).isoformat()})
-        </th>
-        <th>
-            {ComparisonPoints.END.value} <br/>
-            ({self.__end_date.date().isoformat()})
-        </th>
-    </tr>
+    <thead>
+        <tr class=" my_td">
+            <th class="my_table_header" > Metric Name </th>
+            <th class="my_table_header" >
+                {ComparisonPoints.START.value} <br/>
+                ({self.__start_date.date().isoformat()})
+            </th>
+            <th class="my_table_header" >
+                {ComparisonPoints.NOW.value} <br/>
+                ({date.today().isoformat()})
+            </th>
+            <th class="my_table_header" >
+                {ComparisonPoints.ONE_YEAR.value} <br/>
+                ({(date.today() + relativedelta(years=1)).isoformat()})
+            </th>
+            <th class="my_table_header" >
+                {ComparisonPoints.END.value} <br/>
+                ({self.__end_date.date().isoformat()})
+            </th>
+        </tr>
+    </thead>
     {rows_str}
 </table>
 """

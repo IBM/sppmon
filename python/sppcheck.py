@@ -39,7 +39,7 @@ from influx.influx_client import InfluxClient
 from sppCheck.excel.excel_controller import ExcelController
 from sppCheck.generator.fakedata_controller import FakeDataController
 from sppCheck.predictor.predictor_controller import PredictorController
-from sppCheck.report.report_controller import ReportController
+from sppCheck.report.report_controller import ReportController, Themes
 from utils.exception_utils import ExceptionUtils
 from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
@@ -73,6 +73,7 @@ parser.add_argument("--pdfReport", dest="pdfReport", action="store_true", help="
 # generation options
 parser.add_argument("--latestData", dest="latestData", action="store_true", help="Create predictions, reports, and fake data using only the latest 90 day data, but at a higher frequency(<6h).")
 parser.add_argument("--fakeData", dest="fakeData", action="store_true", help="Use existing fake data to create any reports.")
+parser.add_argument("--theme", dest="theme", type=str, help="Optional: Chose the theme of the PDF report. Options: 'light', 'dark', or 'sppcheck' (default).")
 
 # general purpose options
 parser.add_argument("-v", '--version', action='version', version="TODO " + VERSION)
@@ -177,6 +178,10 @@ class SPPCheck:
             ExceptionUtils.error_message("Warning: the --fakeData flag only works in conjunction with --predictYears or --pdfReport. Aborting")
             self.exit(ERROR_CODE_CMD_ARGS)
 
+        if ARGS.theme and not ARGS.pdfReport:
+            ExceptionUtils.error_message("Warning: the --theme flag only works in conjunction with --pdfReport. Aborting")
+            self.exit(ERROR_CODE_CMD_ARGS)
+
         # ### Trigger init of components ###
 
         if ARGS.startDate:
@@ -185,6 +190,15 @@ class SPPCheck:
             except Exception as ex:
                 ExceptionUtils.exception_info(ex, "Unable to parse the date from the --startDate argument")
                 self.exit(ERROR_CODE_CMD_ARGS)
+
+        if ARGS.theme:
+            try:
+                self.__theme = Themes(str(ARGS.theme).lower())
+            except Exception as ex:
+                ExceptionUtils.exception_info(ex, "Unable to parse the theme from the --theme argument. Is a valid argument chosen?")
+                self.exit(ERROR_CODE_CMD_ARGS)
+        else:
+            self.__theme = Themes.SPPCHECK
 
         if not ARGS.configFile:
             ExceptionUtils.error_message("missing config file, aborting")
@@ -387,7 +401,8 @@ class SPPCheck:
                     self.config_file,
                     self.__predict_years,
                     prediction_rp,
-                    excel_rp
+                    excel_rp,
+                    self.__theme
                     )
                 report_controller.createPdfReport()
             except Exception as error:

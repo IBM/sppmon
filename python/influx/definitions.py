@@ -1345,7 +1345,8 @@ class Definitions:
                     'predictYears',
                     'pdfReport',
                     'latestData',
-                    'fakeData'
+                    'fakeData',
+                    'theme'
                 ],
                 retention_policy=cls.RP_INF(),
                 # No continuous queries
