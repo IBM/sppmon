@@ -117,13 +117,13 @@ class IndividualReports:
                             full_graph_description: str = "",
 
                             one_year_used_panel_id: Optional[int] = None,
-                            one_year_used_width: int = 3000,
-                            one_year_used_height: int = 1500,
+                            one_year_used_width: int = 1000,
+                            one_year_used_height: int = 500,
                             one_year_used_description: str = "",
 
                             full_excel_panel_id: Optional[int] = None,
-                            full_excel_width: int = 3000,
-                            full_excel_height: int = 1500,
+                            full_excel_width: int = 1000,
+                            full_excel_height: int = 500,
                             full_excel_description: str = ""):
 
         #### prepare data: download pictures ####
@@ -241,6 +241,7 @@ However, if the <span style="color:blue">blue line</span> is above the <span sty
 
 {self.value_meaning_header}
 <p>
+    The values display the forecasted state in exactly one year. <br />
     A <span style="color:green"> positive value </span> means that space is still <span style="color:green">free</span> after one year. <br />
     A <span style="color:red">negative value</span> indicates the expected minimum value by which the <span style="color:red">capacity must be upgraded</span>. <br />
     The percent values are displayed to allow an impression of the value to total ratio. <br />
@@ -287,13 +288,13 @@ However, if the <span style="color:blue">blue line</span> is above the <span sty
                             report_name: str,
 
                             full_graph_panel_id: Optional[int] = None,
-                            full_graph_width: int = 3000,
-                            full_graph_height: int = 1500,
+                            full_graph_width: int = 1000,
+                            full_graph_height: int = 500,
                             full_graph_description: str = "",
 
                             one_year_existing_panel_id: Optional[int] = None,
-                            one_year_existing_width: int = 3000,
-                            one_year_existing_height: int = 1500,
+                            one_year_existing_width: int = 1000,
+                            one_year_existing_height: int = 500,
                             one_year_existing_description: str = ""
                             ):
         # this method only takes two metrics with different texts
@@ -388,10 +389,11 @@ However, if the <span style="color:blue">blue line</span> is above the <span sty
 
 {self.value_meaning_header}
 <p>
-    The "Existing" count is always green. <br/>
+    The values display the forecasted state in exactly one year. <br/>
     Colored distinctions are only made based on the "Setup Check Difference".
     A <span style="color:green"> positive value </span> means that <span style="color:green">more Systems</span> than recommended are set up after one year. <br />
     A <span style="color:red">negative value</span> indicates the recommend minimum value how many more Systems <span style="color:red">need to be added</span>. <br />
+    However, since the "Existing" count is static, it is always green. <br/>
     After the current date a static count of the currently existing Systems is assumed ({date.today().isoformat()}). <br/>
 </p>
 </div>

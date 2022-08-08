@@ -1,7 +1,4 @@
-html, body {
-    height: 100%;
-    width: 100%;
-}
+
 
 .header{
 	width:100%;
@@ -34,10 +31,8 @@ html, body {
     margin: 0em;
 }
 
-
 .overview_section {
     padding: 1em;
-    page-break-after: always;
     margin: 1em;
 }
 
@@ -49,21 +44,11 @@ html, body {
 .middle_section_a {
     padding: 1em;
     margin-bottom: 1em;
-    page-break-after: always;
 }
 
 .middle_section_b {
     padding: 1em;
     margin-bottom: 1em;
-    page-break-after: always;
-}
-
-.middle_section_a:last-child {
-    page-break-after: avoid;
-}
-
-.middle_section_b:last-child {
-    page-break-after: avoid;
 }
 
 .inner_section_a {
@@ -76,12 +61,12 @@ html, body {
     margin-bottom: 1em;
 }
 
-.inner_section_inv_a {
+.inner_section_table_a {
     padding: 1em;
     margin-bottom: 1em;
 }
 
-.inner_section_inv_b {
+.inner_section_table_b {
     padding: 1em;
     margin-bottom: 1em;
 }
@@ -115,8 +100,9 @@ h5 {
     background-color: #ff832b !important;
 }
 
-.my_td {
-    border-color: black;
+.my_td, .my_table, .my_table_header {
+    border-color: white;
+    border-width: 2px !important;
 }
 
 .my_table_header{
@@ -127,7 +113,32 @@ h5 {
     background-color: #c6c6c6 !important; /*Gray 30*/
 }
 
-.my_table{
-    border-color: black;
-    font-size: medium;
+
+@page {
+    size: A3;
+    margin: None;
+}
+
+@media print{
+
+    .title_center{
+        height: 10%;
+        padding: auto;
+        margin: auto;
+    }
+    .btn {
+        display: none;
+    }
+
+    body, .my_caption, .my_table_header, .my_table_metrics_name, .my_td {
+        font-size: 15pt;
+    }
+
+    .overview_section, .individual_section, .middle_section_a, .middle_section_b, .inner_section_a, .inner_section_b, .inner_section_table_a, .inner_section_table_b {
+        page-break-after: always;
+    }
+    .overview_section:last-child, .individual_section:last-child, .middle_section_a:last-child, .middle_section_b:last-child, .inner_section_a:last-child, .inner_section_b:last-child, .inner_section_table_a:last-child, .inner_section_table_b:last-child {
+        page-break-after: avoid;
+    }
+
 }

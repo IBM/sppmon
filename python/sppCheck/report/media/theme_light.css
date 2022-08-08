@@ -4,44 +4,15 @@
     color: black;
 }
 
-html, body {
-    height: 100%;
-    width: 100%;
-}
-
 .header{
-	width:100%;
-	height:60px;
 	background-color:#393939; /*Gray 80*/
-
 	color:#edf5ff; /*Blue 10*/
-	font-family:verdana;
-    margin:0em;
-	line-height:50px;
 }
 
-.header_left{
-
-    line-height:50px;
-    font-size:25px;
-	text-align:left;
-	float:left;
-	padding-left:9px;
-}
-
-.header_right{
-
-    line-height:50px;
-    font-size:25px;
-	text-align:right;
-	float:right;
-	padding-right:9px;
-}
 
 .title_center{
     background-color: #001141; /*Blue 100*/
     color: white;
-    margin: 0em;
 }
 
 /*
@@ -60,109 +31,38 @@ Individual:
 
 .overview_section {
     background-color: #f4f4f4; /*Gray 40*/
-    padding: 1em;
-    page-break-after: always;
-    margin: 1em;
 }
 
 .individual_section {
     background-color: #f4f4f4; /*Gray 50*/
-    padding: 1em;
-    margin: 1em;
 }
 
 .middle_section_a {
     background-color: #ffffff; /*Gray 40*/
-    padding: 1em;
-    margin-bottom: 1em;
-    page-break-after: always;
 }
 
 .middle_section_b {
     background-color:#ffffff; /* Gray 30 */
-    padding: 1em;
-    margin-bottom: 1em;
-    page-break-after: always;
 }
 
-.middle_section_a:last-child {
-    page-break-after: avoid;
-}
-
-.middle_section_b:last-child {
-    page-break-after: avoid;
-}
 
 .inner_section_a {
     background-color: #f4f4f4; /*Gray 20*/
-    padding: 1em;
-    margin-bottom: 1em;
 }
 
 .inner_section_b {
     background-color: #f4f4f4; /*Gray 10*/
-    padding: 1em;
-    margin-bottom: 1em;
 }
 
-.inner_section_inv_a {
+.inner_section_table_a {
     background-color: #ffffff; /*Gray 20*/
-    padding: 1em;
-    margin-bottom: 1em;
 }
 
-.inner_section_inv_b {
+.inner_section_table_b {
     background-color: #ffffff; /*Gray 10*/
-    padding: 1em;
-    margin-bottom: 1em;
 }
 
-.my_img {
-    object-fit: scale-down;
-}
-
-.individual_report_img {
-    max-width: 1000px;
-    width: 100%;
-    height: auto;
-}
 
 .my_caption {
     color: black;
-}
-
-h5 {
-    margin-top: 1em;
-}
-
-.my_good {
-    /*color: green;*/
-    background-color: #24a148 !important;
-}
-
-.my_bad {
-    /*color:red;*/
-    background-color: #da1e28 !important;
-}
-
-.my_na {
-    /*color: orange;*/
-    background-color: #ff832b !important;
-}
-
-.my_td {
-    border-color: black;
-}
-
-.my_table_header{
-    background-color: #a8a8a8 !important; /*Gray 40*/
-}
-
-.my_table_metrics_name{
-    background-color: #c6c6c6 !important; /*Gray 30*/
-}
-
-.my_table{
-    border-color: black;
-    font-size: medium;
 }

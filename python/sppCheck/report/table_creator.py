@@ -105,12 +105,12 @@ class TableCreator:
         #### Combine the tables to a Section
 
         table_report = f"""
-<div class="inner_section_inv_a">
+<div class="inner_section_table_a">
     <h3> Usage Statistics </h3>
     {usage_table}
 </div>
 
-<div class="inner_section_inv_b">
+<div class="inner_section_table_b">
     <h3> Set up Check </h3>
     {setup_table}
 </div>
