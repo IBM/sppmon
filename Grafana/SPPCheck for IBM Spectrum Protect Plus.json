@@ -27,7 +27,7 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 82,
-  "iteration": 1659482585366,
+  "iteration": 1660146678282,
   "links": [
     {
       "asDropdown": false,
@@ -3761,8 +3761,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -4123,8 +4122,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -4389,8 +4387,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -4675,8 +4672,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -4890,8 +4886,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -5099,8 +5094,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -5447,8 +5441,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -5795,8 +5788,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -6114,8 +6106,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -6462,8 +6453,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -6823,8 +6813,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -7005,8 +6994,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -7506,7 +7494,7 @@
   "style": "dark",
   "tags": [
     "spp_check",
-    "v0.1"
+    "v1.0"
   ],
   "templating": {
     "list": [
@@ -7606,6 +7594,6 @@
   "timezone": "",
   "title": "SPPCheck for IBM Spectrum Protect Plus",
   "uid": "sppcheck",
-  "version": 15,
+  "version": 20,
   "weekStart": ""
 }

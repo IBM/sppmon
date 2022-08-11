@@ -80,7 +80,8 @@ class PredictorController:
             self.__predict_total_server_memory,
             self.__predict_used_server_memory,
             self.__predict_used_server_catalogs,
-            self.__predict_total_server_catalogs
+            self.__predict_total_server_catalogs,
+            self.__predict_vm_count,
         ]
 
         for function in function_list:
@@ -139,16 +140,16 @@ class PredictorController:
     def __predict_total_vadp_quantity(self) -> None:
         self.__predictor_influx_connector.predict_data(
             table_name="vadps",
-            value_or_count_key=f"count", # unused
+            value_or_count_key=f"count",
             description="total VADP count",
             group_tags=["site", "siteName"],
             metric_name="vadp_count_total",
-            re_save_historic=True,
             save_total=True,
             repeat_last=True,
 
             #
-
+            #re_save_historic=False # Changed due to the report-generation accessing only one RP.
+            re_save_historic=True,
             use_count_query=False,
 
         )
@@ -212,4 +213,18 @@ class PredictorController:
             use_count_query=False,
             #re_save_historic=False # Changed due to the report-generation accessing only one RP.
             re_save_historic=True
+        )
+
+    def __predict_vm_count(self) -> None:
+        self.__predictor_influx_connector.predict_data(
+            table_name="vmStats",
+            value_or_count_key="vmCount",
+            description="vm count",
+            metric_name="vm_count",
+            re_save_historic=True,
+
+            #
+            group_tags=None,
+            use_count_query=False,
+            save_total=False
         )

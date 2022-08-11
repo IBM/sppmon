@@ -35,7 +35,7 @@ from sppCheck.predictor.predictor_influx_connector import \
     PredictorInfluxConnector
 from sppCheck.report.comparer import (Comparer, ComparisonPoints,
                                       ComparisonSource)
-from sppCheck.report.picture_downloader import PictureDownloader
+from sppCheck.report.grafana_panel_downloader import GrafanaPanelDownloader
 
 LOGGER_NAME = 'sppmon'
 LOGGER = logging.getLogger(LOGGER_NAME)
@@ -89,7 +89,7 @@ class IndividualReports:
     def __init__(
         self,
         comparer: Comparer,
-        picture_downloader: PictureDownloader,
+        picture_downloader: GrafanaPanelDownloader,
         start_date: datetime,
         end_date: datetime):
 
@@ -99,7 +99,7 @@ class IndividualReports:
         self.__start_date = start_date
         self.__end_date = end_date
         self.__comparer = comparer
-        self.__picture_downloader = picture_downloader
+        self.__panel_downloader = picture_downloader
 
         # filled during the individual reports, to be used for overview table
         self.__overview_used_data: OverviewDataStruct = []
@@ -128,7 +128,7 @@ class IndividualReports:
 
         #### prepare data: download pictures ####
         if full_graph_panel_id:
-            full_graph_filename = self.__picture_downloader.download_picture(
+            full_graph_filename = self.__panel_downloader.download_panel(
                 panel_id=full_graph_panel_id,
                 width=full_graph_width,
                 height=full_graph_height,
@@ -137,7 +137,7 @@ class IndividualReports:
             full_graph_filename = None
 
         if one_year_used_panel_id:
-            one_year_used_filename = self.__picture_downloader.download_picture(
+            one_year_used_filename = self.__panel_downloader.download_panel(
                 panel_id=one_year_used_panel_id,
                 width=one_year_used_width,
                 height=one_year_used_height,
@@ -148,7 +148,7 @@ class IndividualReports:
             one_year_used_filename = None
 
         if full_excel_panel_id:
-            full_excel_filename = self.__picture_downloader.download_picture(
+            full_excel_filename = self.__panel_downloader.download_panel(
                 panel_id=full_excel_panel_id,
                 width=full_excel_width,
                 height=full_excel_height,
@@ -301,7 +301,7 @@ However, if the <span style="color:blue">blue line</span> is above the <span sty
 
         #### prepare data: download pictures ####
         if full_graph_panel_id:
-            full_graph_filename = self.__picture_downloader.download_picture(
+            full_graph_filename = self.__panel_downloader.download_panel(
                 panel_id=full_graph_panel_id,
                 width=full_graph_width,
                 height=full_graph_height,
@@ -310,7 +310,7 @@ However, if the <span style="color:blue">blue line</span> is above the <span sty
             full_graph_filename = None
 
         if one_year_existing_panel_id:
-            one_year_existing_filename = self.__picture_downloader.download_picture(
+            one_year_existing_filename = self.__panel_downloader.download_panel(
                 panel_id=one_year_existing_panel_id,
                 width=one_year_existing_width,
                 height=one_year_existing_height,
@@ -663,3 +663,20 @@ The Graphs display the range from now - 1 to now + 1 year. <br />
         self.overview_used_data.append( (report_name, "used server file catalog space", True, avail_vs_used_result))
 
         return ""
+
+    # TODO(NK) this requires more changes to the value meanings etc, therefore omitted for now
+    # def create_vm_count_report(self):
+    #     report_name="VMware Count Report"
+
+    #     LOGGER.info(f">> Creating the {report_name}.")
+
+    #     excel_vs_avail_result = self.__comparer.compare_metrics(
+    #         base_metric_name="primary_count_vmware",
+    #         base_table=ComparisonSource.EXCEL,
+
+    #         comp_metric_name="vm_count",
+    #         comp_table=ComparisonSource.PREDICTION,
+    #     )
+    #     self.overview_setup_data.append( (report_name, "existing vs. expected VMware", True, excel_vs_avail_result))
+
+    #     return ""

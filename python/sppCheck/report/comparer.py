@@ -56,6 +56,14 @@ class ComparisonPoints(Enum):
     ONE_YEAR = "Prediction in one year"
     END = "End of anticipated system lifetime"
 
+    @staticmethod
+    def prepare_time_clauses(base_date: datetime):
+
+        timestamp_min = round(base_date.timestamp())
+        timestamp_max = round((base_date + relativedelta(months=3)).timestamp())
+        # take a big span to make sure there are results for user error, then take first
+        return f"time > {timestamp_min}s and time < {timestamp_max}s "
+
 class Comparer:
 
     def __init__(
@@ -66,8 +74,6 @@ class Comparer:
         end_date: datetime,
         prediction_rp: RetentionPolicy,
         excel_rp: RetentionPolicy) -> None:
-        if not influx_client:
-            raise ValueError("Logic Tool is not available, missing the influx_client")
 
         self.__influx_client: InfluxClient = influx_client
 
@@ -96,19 +102,13 @@ class Comparer:
 
 
         self.__time_clause_mapping = {
-            ComparisonPoints.START: Comparer.prepare_time_clauses(start_base_date),
-            ComparisonPoints.NOW: Comparer.prepare_time_clauses(now_base_date),
-            ComparisonPoints.ONE_YEAR: Comparer.prepare_time_clauses(one_year_base_date),
-            ComparisonPoints.END: Comparer.prepare_time_clauses(end_base_date)
+            ComparisonPoints.START: Comparer.__prepare_time_clauses(start_base_date),
+            ComparisonPoints.NOW: Comparer.__prepare_time_clauses(now_base_date),
+            ComparisonPoints.ONE_YEAR: Comparer.__prepare_time_clauses(one_year_base_date),
+            ComparisonPoints.END: Comparer.__prepare_time_clauses(end_base_date)
         }
 
-    @staticmethod
-    def prepare_time_clauses(base_date: datetime):
 
-        timestamp_min = round(base_date.timestamp())
-        timestamp_max = round((base_date + relativedelta(months=3)).timestamp())
-        # take a big span to make sure there are results for user error, then take first
-        return f"time > {timestamp_min}s and time < {timestamp_max}s "
 
 
     def compare_metrics(self,

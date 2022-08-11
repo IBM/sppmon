@@ -45,7 +45,7 @@ from sppCheck.predictor.predictor_influx_connector import \
     PredictorInfluxConnector
 from sppCheck.report.comparer import Comparer
 from sppCheck.report.individual_reports import IndividualReports
-from sppCheck.report.picture_downloader import PictureDownloader
+from sppCheck.report.grafana_panel_downloader import GrafanaPanelDownloader
 from sppCheck.report.table_creator import TableCreator
 from utils.exception_utils import ExceptionUtils
 from utils.sppcheck_utils import SppcheckUtils, Themes
@@ -65,8 +65,9 @@ class ReportController:
         prediction_rp: Optional[RetentionPolicy],
         excel_rp: Optional[RetentionPolicy],
         theme: Themes) -> None:
+
         if not influx_client:
-            raise ValueError("Logic Tool is not available, missing the influx_client")
+            raise ValueError("Report Module is not available since the influx_client is missing")
 
         self.__system_name = influx_client.database.name
 
@@ -124,7 +125,7 @@ class ReportController:
             ExceptionUtils.exception_info(error)
             raise ValueError("Failed to create the temporary folder.")
 
-        picture_downloader = PictureDownloader(
+        picture_downloader = GrafanaPanelDownloader(
             influx_client,
             select_rp, start_date,
             config_file,
@@ -249,7 +250,7 @@ Author:
             <img class="my_img" src="{self.__rel_ibm_icon_path}" alt="{self.__rel_ibm_icon_path}" width="auto" height="auto">
             Spectrum Protect Plus Check
         </h1>
-        <button class="btn btn-secondary print_button" onclick="window.print();return false;"> Print / Convert Report to PDF </button>
+        <button class="btn btn-primary print_button" onclick="window.print();return false;"> Print / Convert Report to PDF </button>
         <h1 class="header_right">System: {self.__system_name}</h1>
     </div>
 

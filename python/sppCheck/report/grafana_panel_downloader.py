@@ -45,7 +45,7 @@ from utils.sppcheck_utils import Themes
 LOGGER_NAME = 'sppmon'
 LOGGER = logging.getLogger(LOGGER_NAME)
 
-class PictureDownloader:
+class GrafanaPanelDownloader:
 
     def __init__(
         self,
@@ -140,7 +140,7 @@ class PictureDownloader:
             self.__panel_prefix_url += f"&var-excel={excel_rp.name}"
         LOGGER.debug(f"Full panel prefix set to {self.__panel_prefix_url}")
 
-    def download_picture(self, panel_id: int, width: int, height: int, file_name: str,
+    def download_panel(self, panel_id: int, width: int, height: int, file_name: str,
                          relative_from_years: Optional[int] = None,
                          relative_to_years: Optional[int] = None) -> Path:
         """Downloads the panel with the given ID from grafana.
