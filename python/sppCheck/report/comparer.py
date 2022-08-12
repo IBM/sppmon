@@ -102,10 +102,10 @@ class Comparer:
 
 
         self.__time_clause_mapping = {
-            ComparisonPoints.START: Comparer.__prepare_time_clauses(start_base_date),
-            ComparisonPoints.NOW: Comparer.__prepare_time_clauses(now_base_date),
-            ComparisonPoints.ONE_YEAR: Comparer.__prepare_time_clauses(one_year_base_date),
-            ComparisonPoints.END: Comparer.__prepare_time_clauses(end_base_date)
+            ComparisonPoints.START: ComparisonPoints.prepare_time_clauses(start_base_date),
+            ComparisonPoints.NOW: ComparisonPoints.prepare_time_clauses(now_base_date),
+            ComparisonPoints.ONE_YEAR: ComparisonPoints.prepare_time_clauses(one_year_base_date),
+            ComparisonPoints.END: ComparisonPoints.prepare_time_clauses(end_base_date)
         }
 
 
