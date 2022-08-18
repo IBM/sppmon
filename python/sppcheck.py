@@ -74,7 +74,7 @@ parser.add_argument("--pdfReport", dest="pdfReport", action="store_true", help="
 # generation options
 parser.add_argument("--latestData", dest="latestData", action="store_true", help="Create predictions, reports, and fake data using only the latest 90 day data, but at a higher frequency(<6h).")
 parser.add_argument("--fakeData", dest="fakeData", action="store_true", help="Use existing fake data to create any reports.")
-parser.add_argument("--theme", dest="theme", type=str, help="Optional: Chose the theme of the PDF report. Options: 'light', 'dark', or 'sppcheck' (default).")
+parser.add_argument("--theme", dest="theme", type=str, help="Optional: Chose the theme of the PDF report. Options: 'light' (default), 'dark', or 'sppcheck'.")
 
 # general purpose options
 parser.add_argument("-v", '--version', action='version', version="TODO " + VERSION)
@@ -199,7 +199,7 @@ class SPPCheck:
                 ExceptionUtils.exception_info(ex, "Unable to parse the theme from the --theme argument. Is a valid argument chosen?")
                 self.exit(ERROR_CODE_CMD_ARGS)
         else:
-            self.__theme = Themes.SPPCHECK
+            self.__theme = Themes.LIGHT
 
         if not ARGS.configFile:
             ExceptionUtils.error_message("missing config file, aborting")

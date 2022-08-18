@@ -59,10 +59,10 @@ class TableCreator:
 
     {IndividualReports.value_meaning_header}
     <p>
-    A value <span style="color:green">below 100%</span> means that the currently available space <span style="color:green">is sufficient</span> for the time period of the column. <br/>
-    A value <span style="color:red">above 100%</span> means that the currently available space is not sufficient, <span style="color:red">requiring an upgrade</span>. <br/>
-    If "NA" is displayed, no data is available for this date due to various reasons. <br/>
-    The distinctions are supported by the color code: <span style="color:green">green</span> for sufficient and <span style="color:red">red</span> if an upgrade is required. <br/>
+    A value <span class="my_text_positive_value">below 100%</span> means that the currently available space <span class="my_text_good">is sufficient</span> for the time period of the column. <br/>
+    A value <span class="my_text_negative_value">above 100%</span> means that the currently available space is not sufficient, <span class="my_text_bad">requiring an upgrade</span>. <br/>
+    If <span class="my_text_neutral_value">"NA"</span> is displayed, no data is available for this date due to various reasons. <br/>
+    The distinctions are supported by the color code: <span class="my_text_positive_value">green</span> for sufficient and <span class="my_text_negative_value">red</span> if an upgrade is required. <br/>
     Please refer to the sections below for a more detailed explanation and view. <br/>
     </p>
 </caption>
@@ -77,10 +77,10 @@ class TableCreator:
 
     {IndividualReports.value_meaning_header}
     <p>
-    A value <span style="color:green">above 100%</span> means that the currently available space <span style="color:green">is higher</span> than required. <br/>
-    A value <span style="color:red">below 100%</span> means that the currently available space is not sufficient compared to the recommendation, <span style="color:red">requiring an upgrade</span>. <br/>
-    If "NA" is displayed, no data is available for this date due to various reasons. <br/>
-    The distinctions are supported by the color code: <span style="color:green">green</span> for sufficient and <span style="color:red">red</span> if an upgrade is recommended. <br/>
+    A value <span class="my_text_positive_value">above 100%</span> means that the currently available space <span class="my_text_good">is higher</span> than required. <br/>
+    A value <span class="my_text_negative_value">below 100%</span> means that the currently available space is not sufficient compared to the recommendation, <span class="my_text_bad">requiring an upgrade</span>. <br/>
+    If <span class="my_text_neutral_value">"NA"</span> is displayed, no data is available for this date due to various reasons. <br/>
+    The distinctions are supported by the color code: <span class="my_text_positive_value">green</span> for sufficient and <span class="my_text_negative_value">red</span> if an upgrade is recommended. <br/>
     Please refer to the sections below for a more detailed explanation and view. <br/>
     <br/>
     Please be aware that even if a value below 100% is shown, the system can run correctly - it is just designed smaller than initial anticipated. <br />
@@ -128,7 +128,7 @@ class TableCreator:
                 if not data_tuple:
                     # no data available
                     percent_str = "NA"
-                    table_class = "table-warning my_na"
+                    table_class = "table-warning my_na_table"
                 else:
                     # other values unused
                     #(timestamp, time_diff, value_diff, percent_value)
@@ -139,14 +139,14 @@ class TableCreator:
                     # decide coloring according to value and mapping
                     if percent_value < 100:
                         if positive_interpretation:
-                            table_class = "table-success my_good"
+                            table_class = "table-success my_good_table"
                         else:
-                            table_class = "table-danger my_bad"
+                            table_class = "table-danger my_bad_table"
                     else: # value above 100%
                         if positive_interpretation:
-                            table_class = "table-danger my_bad"
+                            table_class = "table-danger my_bad_table"
                         else:
-                            table_class = "table-success my_good"
+                            table_class = "table-success my_good_table"
                 # append each column to the row list
                 row_data_lst.append(f"""<td class="my_td {table_class}">{percent_str}</td>""")
 

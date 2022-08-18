@@ -27,7 +27,7 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 82,
-  "iteration": 1660146678282,
+  "iteration": 1660849116286,
   "links": [
     {
       "asDropdown": false,
@@ -343,13 +343,13 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate"
+              "options": "Blueprint Sizer Estimation"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "yellow",
+                  "fixedColor": "orange",
                   "mode": "fixed"
                 }
               }
@@ -358,7 +358,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate Reserve"
+              "options": "Blueprint Sizer Estimation Reserve"
             },
             "properties": [
               {
@@ -411,7 +411,7 @@
       "pluginVersion": "9.0.3",
       "targets": [
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -442,7 +442,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate Reserve",
+          "alias": "Blueprint Sizer Estimation Reserve",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -1018,7 +1018,28 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Existing"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "blue",
+                      "value": null
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 6,
@@ -1767,7 +1788,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -2297,13 +2318,13 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate"
+              "options": "Blueprint Sizer Estimation"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "yellow",
+                  "fixedColor": "orange",
                   "mode": "fixed"
                 }
               }
@@ -2417,7 +2438,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -2517,7 +2538,28 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Existing"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "blue",
+                      "value": null
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 6,
@@ -2818,7 +2860,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -3080,7 +3122,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -3345,7 +3387,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -3607,7 +3649,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -3771,13 +3813,13 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate"
+              "options": "Blueprint Sizer Estimation"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "yellow",
+                  "fixedColor": "orange",
                   "mode": "fixed"
                 }
               }
@@ -3801,7 +3843,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate Reserve"
+              "options": "Blueprint Sizer Estimation Reserve"
             },
             "properties": [
               {
@@ -3879,7 +3921,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -3948,7 +3990,7 @@
           "tags": []
         },
         {
-          "alias": "Excel Estimate Reserve",
+          "alias": "Blueprint Sizer Estimation Reserve",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -4132,13 +4174,13 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate"
+              "options": "Blueprint Sizer Estimation"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "yellow",
+                  "fixedColor": "orange",
                   "mode": "fixed"
                 }
               }
@@ -4162,7 +4204,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate Reserve"
+              "options": "Blueprint Sizer Estimation Reserve"
             },
             "properties": [
               {
@@ -4240,7 +4282,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -4309,7 +4351,7 @@
           "tags": []
         },
         {
-          "alias": "Excel Estimate Reserve",
+          "alias": "Blueprint Sizer Estimation Reserve",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -4412,13 +4454,13 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate"
+              "options": "Blueprint Sizer Estimation"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "yellow",
+                  "fixedColor": "orange",
                   "mode": "fixed"
                 }
               }
@@ -4427,13 +4469,13 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate Reserve"
+              "options": "Blueprint Sizer Estimation Reserve"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "orange",
+                  "fixedColor": "dark-orange",
                   "mode": "fixed"
                 }
               }
@@ -4513,7 +4555,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -4544,7 +4586,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate Reserve",
+          "alias": "Blueprint Sizer Estimation Reserve",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -4682,13 +4724,13 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate"
+              "options": "Blueprint Sizer Estimation"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "yellow",
+                  "fixedColor": "orange",
                   "mode": "fixed"
                 }
               }
@@ -4777,7 +4819,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -4911,13 +4953,13 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate"
+              "options": "Blueprint Sizer Estimation"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "yellow",
+                  "fixedColor": "orange",
                   "mode": "fixed"
                 }
               }
@@ -4991,7 +5033,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -5119,7 +5161,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate"
+              "options": "Blueprint Sizer Estimation"
             },
             "properties": [
               {
@@ -5134,7 +5176,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate Reserve"
+              "options": "Blueprint Sizer Estimation Reserve"
             },
             "properties": [
               {
@@ -5155,7 +5197,7 @@
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "yellow",
+                  "fixedColor": "orange",
                   "mode": "fixed"
                 }
               }
@@ -5466,13 +5508,13 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate"
+              "options": "Blueprint Sizer Estimation"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "yellow",
+                  "fixedColor": "orange",
                   "mode": "fixed"
                 }
               }
@@ -5481,7 +5523,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate Reserve"
+              "options": "Blueprint Sizer Estimation Reserve"
             },
             "properties": [
               {
@@ -5597,7 +5639,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -5813,13 +5855,13 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate"
+              "options": "Blueprint Sizer Estimation"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "yellow",
+                  "fixedColor": "orange",
                   "mode": "fixed"
                 }
               }
@@ -5929,7 +5971,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -6131,13 +6173,13 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate"
+              "options": "Blueprint Sizer Estimation"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "yellow",
+                  "fixedColor": "orange",
                   "mode": "fixed"
                 }
               }
@@ -6146,7 +6188,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate Reserve"
+              "options": "Blueprint Sizer Estimation Reserve"
             },
             "properties": [
               {
@@ -6262,7 +6304,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -6478,13 +6520,13 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate"
+              "options": "Blueprint Sizer Estimation"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "yellow",
+                  "fixedColor": "orange",
                   "mode": "fixed"
                 }
               }
@@ -6493,7 +6535,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate Reserve"
+              "options": "Blueprint Sizer Estimation Reserve"
             },
             "properties": [
               {
@@ -6609,7 +6651,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -6823,13 +6865,13 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate"
+              "options": "Blueprint Sizer Estimation"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "yellow",
+                  "fixedColor": "orange",
                   "mode": "fixed"
                 }
               }
@@ -6916,7 +6958,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -7019,13 +7061,13 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Excel Estimate"
+              "options": "Blueprint Sizer Estimation"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "yellow",
+                  "fixedColor": "orange",
                   "mode": "fixed"
                 }
               }
@@ -7097,7 +7139,7 @@
           ]
         },
         {
-          "alias": "Excel Estimate",
+          "alias": "Blueprint Sizer Estimation",
           "datasource": {
             "type": "influxdb",
             "uid": "${server}"
@@ -7210,7 +7252,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Excel Estimate"
+                  "options": "Blueprint Sizer Estimation"
                 },
                 "properties": [
                   {
@@ -7225,7 +7267,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Excel Estimate Reserve"
+                  "options": "Blueprint Sizer Estimation Reserve"
                 },
                 "properties": [
                   {
@@ -7594,6 +7636,6 @@
   "timezone": "",
   "title": "SPPCheck for IBM Spectrum Protect Plus",
   "uid": "sppcheck",
-  "version": 20,
+  "version": 31,
   "weekStart": ""
 }

@@ -160,17 +160,17 @@ class IndividualReports:
 
         # different text for reserve in graph and missing it
         value_description_graph_w_reserve = f"""
-The <span style="color:red">red line</span> represents the recommended space with reserve, with the <span style="color:orange">orange line</span> omits the reserve. <br />
+The <span class="my_text_excel_reserve_line">red line</span> represents the recommended space with reserve, with the <span class="my_text_excel_line">orange line</span> omits the reserve. <br />
 This is the space recommended according to the Blueprint vSnap Sizer sheets for the system to last until this day. <br />
-If the <span style="color:blue">blue line</span> is below these lines, the system is developing <span style="color:green">slower</span> than anticipated. <br />
+If the <span class="my_text_used_line">blue line</span> is below these lines, the system is developing <span class="my_text_good">slower</span> than anticipated. <br />
 If it is between these lines, it is developing just as expected. <br />
-However, if the <span style="color:blue">blue line</span> is above the <span style="color:red">red line</span>, the system is developing <span style="color:red">quicker</span> than anticipated. <br />
+However, if the <span class="my_text_used_line">blue line</span> is above the <span class="my_text_excel_reserve_line">red line</span>, the system is developing <span class="my_text_bad">quicker</span> than anticipated. <br />
 """
         value_description_graph = f"""
-The <span style="color:orange">orange line</span> represents the recommended space. <br />
+The <span class="my_text_excel_line">orange line</span> represents the recommended space. <br />
 This is the space recommended according to the Blueprint vSnap Sizer sheets for the system to last until this day. <br />
-If the <span style="color:blue">blue line</span> is below this line, the system is developing <span style="color:green">slower</span> than anticipated. <br />
-However, if the <span style="color:blue">blue line</span> is above the <span style="color:orange">orange line</span>, the system is developing <span style="color:red">quicker</span> than anticipated. <br />
+If the <span class="my_text_used_line">blue line</span> is below this line, the system is developing <span class="my_text_good">slower</span> than anticipated. <br />
+However, if the <span class="my_text_used_line">blue line</span> is above the <span class="my_text_excel_line">orange line</span>, the system is developing <span class="my_text_bad">quicker</span> than anticipated. <br />
 """
 
         #### Prepare section swapping ####
@@ -210,8 +210,8 @@ However, if the <span style="color:blue">blue line</span> is above the <span sty
 </p>
 {self.value_meaning_header}
 <p>
-    The <span style="color:purple">purple line</span> represents the <span style="color:purple">currently available</span> space, while the <span style="color:blue">blue line</span> represents the <span style="color:blue">used</span> space. <br />
-    Therefore, the point where the <span style="color:red">lines cross</span> is the date where the system will <span style="color:red">fail</span>. <br />
+    The <span class="my_text_available_line">purple line</span> represents the <span class="my_text_available_line">currently available</span> space, while the <span class="my_text_used_line">blue line</span> represents the <span class="my_text_used_line">used</span> space. <br />
+    Therefore, the point where the <span class="my_text_bad">lines cross</span> is the date where the system will <span class="my_text_bad">fail</span>. <br />
     This assumes that the available space is not increased any further, since this requires a manual interaction. <br />
     The point of failure can be delayed by increasing the available space. <br />
     However, if the lines never cross, the space can be reduced accordingly. <br />
@@ -242,8 +242,8 @@ However, if the <span style="color:blue">blue line</span> is above the <span sty
 {self.value_meaning_header}
 <p>
     The values display the forecasted state in exactly one year. <br />
-    A <span style="color:green"> positive value </span> means that space is still <span style="color:green">free</span> after one year. <br />
-    A <span style="color:red">negative value</span> indicates the expected minimum value by which the <span style="color:red">capacity must be upgraded</span>. <br />
+    A <span class="my_text_positive_value"> positive value </span> means that space is still <span class="my_text_good">free</span> after one year. <br />
+    A <span class="my_text_negative_value">negative value</span> indicates the expected minimum value by which the <span class="my_text_bad">capacity must be upgraded</span>. <br />
     The percent values are displayed to allow an impression of the value to total ratio. <br />
 </p>
 </div>
@@ -268,8 +268,8 @@ However, if the <span style="color:blue">blue line</span> is above the <span sty
 
 {self.value_meaning_header}
 <p>
-    A <span style="color:green">positive value</span> means the system was set up with <span style="color:green">more space than recommended</span> by the Sizer sheet. <br />
-    A <span style="color:red">negative value</span> indicates the <span style="color:red">difference required</span> to reach the recommended size of the Sizer sheets. <br />
+    A <span class="my_text_positive_value">positive value</span> means the system was set up with <span class="my_text_good">more space than recommended</span> by the Sizer sheet. <br />
+    A <span class="my_text_negative_value">negative value</span> indicates the <span class="my_text_bad">difference required</span> to reach the recommended size of the Sizer sheets. <br />
     <br />
     Even if this Panels shows a negative value, the system can run correctly - it is just designed smaller than initial anticipated. <br />
     However, this also works the other way around:  <br />
@@ -360,11 +360,11 @@ However, if the <span style="color:blue">blue line</span> is above the <span sty
 </p>
 {self.value_meaning_header}
 <p>
-    The <span style="color:blue">blue line</span> represents the <span style="color:blue">currently existing</span> systems.
-    The <span style="color:orange">orange line</span> represents the recommended count of systems. <br />
+    The <span class="my_text_used_line">blue line</span> represents the <span class="my_text_used_line">currently existing</span> systems.
+    The <span class="my_text_excel_line">orange line</span> represents the <span class="my_text_excel_line">recommended count</span> of systems. <br />
     This is the count recommended according to the Blueprint vSnap Sizer sheets for the SPP-System to last until its end of life cycle. <br />
-    If the <span style="color:blue">blue line</span> is below this line, the system has <span style="color:red">too few Systems</span> set up than recommended. <br />
-    However, if the <span style="color:blue">blue line</span> is above the <span style="color:orange">orange line</span>, the system <span style="color:green">more Systems</span> set up than recommend. <br />
+    If the <span class="my_text_used_line">blue line</span> is below this line, the system has <span class="my_text_bad">too few Systems</span> set up than recommended. <br />
+    However, if the <span class="my_text_used_line">blue line</span> is above the <span class="my_text_excel_line">orange line</span>, the system <span class="my_text_good">more Systems</span> set up than recommend. <br />
     After the current date a static count of the currently existing Systems is assumed ({date.today().isoformat()}). <br/>
 </p>
 </div>
@@ -380,7 +380,7 @@ However, if the <span style="color:blue">blue line</span> is above the <span sty
 
             structure += f"""
 <div class="{current_subsection}">
-<h4> One-Year Summary </h4>
+<h4> Setup-Check </h4>
 <img class="my_img individual_report_img" src="{one_year_existing_filename}" alt="{one_year_existing_filename}">
 {self.panel_description_header}
 <p>
@@ -389,12 +389,12 @@ However, if the <span style="color:blue">blue line</span> is above the <span sty
 
 {self.value_meaning_header}
 <p>
-    The values display the forecasted state in exactly one year. <br/>
-    Colored distinctions are only made based on the "Setup Check Difference".
-    A <span style="color:green"> positive value </span> means that <span style="color:green">more Systems</span> than recommended are set up after one year. <br />
-    A <span style="color:red">negative value</span> indicates the recommend minimum value how many more Systems <span style="color:red">need to be added</span>. <br />
-    However, since the "Existing" count is static, it is always green. <br/>
-    After the current date a static count of the currently existing Systems is assumed ({date.today().isoformat()}). <br/>
+    The values display the forecasted state in at the end of the systems lifetime ({self.__end_date.isoformat()}). <br/>
+    Colored distinctions are made based on the "Setup Check Difference". <br/>
+    A <span class="my_text_positive_value"> positive value </span> means that <span class="my_text_good">more Systems</span> than recommended are set up. <br />
+    A <span class="my_text_negative_value">negative value</span> indicates the recommend minimum value how many more Systems <span class="my_text_bad">need to be added</span>. <br />
+    The "Existing" count is static, repeating the current count of existing values, as changing the count of systems requires a manual interaction. <br/>
+    Therefore, it is displayed in blue. <br/>
 </p>
 </div>
 """
@@ -437,7 +437,7 @@ However, if the <span style="color:blue">blue line</span> is above the <span sty
             full_graph_panel_id=220,
             full_graph_with_reserve=True, # this is the only metric using a reserve-excel-metric
             full_graph_description = f"""
-This report shows the development of the <span style="color:blue">used</span>, <span style="color:purple">available</span> and recommended Storage space <span style="color:red">with</span> and <span style="color:orange">without reserve</span>. <br />
+This report shows the development of the <span class="my_text_used_line">used</span>, <span class="my_text_available_line">available</span> and recommended Storage space <span class="my_text_excel_reserve_line">with</span> and <span class="my_text_excel_line">without reserve</span>. <br />
 For this prediction, the values of all individual vSnaps are summarized into a single statistic. <br/>
 The Graphs display the entire life cycle from {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}.  <br />
 """,
@@ -488,7 +488,7 @@ The Graphs display the entire life cycle from {self.__start_date.date().isoforma
 
             full_graph_with_reserve=False,
             full_graph_description = f"""
-This report shows the development of the <span style="color:blue">used</span>, <span style="color:purple">available</span> and <span style="color:orange">recommended</span> Server Memory. <br />
+This report shows the development of the <span class="my_text_used_line">used</span>, <span class="my_text_available_line">available</span> and <span class="my_text_excel_line">recommended</span> Server Memory. <br />
 The Graphs display the entire life cycle from {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}.  <br />
 """,
 
@@ -526,7 +526,7 @@ The Graphs display the entire life cycle from {self.__start_date.date().isoforma
             report_name=report_name,
             full_graph_panel_id=185,
             full_graph_description = f"""
-This report shows the development of the <span style="color:blue">existing</span> and <span style="color:orange">recommended</span> count of vSnap Servers. <br />
+This report shows the development of the <span class="my_text_used_line">existing</span> and <span class="my_text_excel_line">recommended</span> count of vSnap Servers. <br />
 The Graphs display the entire life cycle from {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}.  <br />
 """,
 
@@ -558,7 +558,7 @@ The Graphs display the range from now - 1 to now + 1 year. <br />
             report_name=report_name,
             full_graph_panel_id=218,
             full_graph_description = f"""
-This report shows the development of the <span style="color:blue">existing</span> and <span style="color:orange">recommended</span> count of VADP Proxies. <br />
+This report shows the development of the <span class="my_text_used_line">existing</span> and <span class="my_text_excel_line">recommended</span> count of VADP Proxies. <br />
 The Graphs display the entire life cycle from {self.__start_date.date().isoformat()} to {self.__end_date.date().isoformat()}.  <br />
 """,
 
