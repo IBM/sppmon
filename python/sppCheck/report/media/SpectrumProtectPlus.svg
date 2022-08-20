@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="f226e9cf-6556-490a-87e5-ccb99e6c6d50" x1="8" y1="24" x2="8" y2="8" gradientUnits="userSpaceOnUse">
+      <stop offset="0.1"/>
+      <stop offset="0.7" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="bfcf36ca-1026-4bc1-b67e-1b04b9e7981d" x1="-4784" y1="-6698" x2="-4784" y2="-6714" gradientTransform="translate(-4760 -6690) rotate(180)" xlink:href="#f226e9cf-6556-490a-87e5-ccb99e6c6d50"/>
+    <linearGradient id="ac9e2ecf-dc5b-4966-8c11-1474dfab03a8" x1="28" y1="28" x2="28" y2="10" gradientUnits="userSpaceOnUse">
+      <stop offset="0.05"/>
+      <stop offset="0.5" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="e37999c4-26c2-4589-9bf7-67e74aac070a" x1="-4804" y1="-6692" x2="-4804" y2="-6710" gradientTransform="translate(4808 6714)" xlink:href="#ac9e2ecf-dc5b-4966-8c11-1474dfab03a8"/>
+    <mask id="b3e30f15-d68b-4e8f-b3e3-1687113d9c16" x="0" y="0" width="32" height="32" maskUnits="userSpaceOnUse">
+      <path d="M16,31a1,1,0,0,1-.5-.136l-12-7A1,1,0,0,1,3,23V5H5V22.426l11,6.416,7-4.083V9h2V25.333a1,1,0,0,1-.5.864l-8,4.667A1,1,0,0,1,16,31Z" fill="#fff"/>
+      <path d="M29,27H27V9.574L16,3.158,9,7.241V23H7V6.667A1,1,0,0,1,7.5,5.8l8-4.667a1,1,0,0,1,1.008,0l12,7A1,1,0,0,1,29,9Z" fill="#fff"/>
+      <polygon points="10 8 6 8 6 22 7 23 10 24 10 8" fill="url(#f226e9cf-6556-490a-87e5-ccb99e6c6d50)"/>
+      <polygon points="22 24 26 24 26 10 25 9 22 8 22 24" fill="url(#bfcf36ca-1026-4bc1-b67e-1b04b9e7981d)"/>
+      <rect x="26" y="10" width="4" height="18" fill="url(#ac9e2ecf-dc5b-4966-8c11-1474dfab03a8)"/>
+      <rect x="2" y="4" width="4" height="18" transform="translate(8 26) rotate(180)" fill="url(#e37999c4-26c2-4589-9bf7-67e74aac070a)"/>
+    </mask>
+    <linearGradient id="f90a07c6-3b0e-44af-af5b-e1b7bb90c1a3" y1="32" x2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0.1" stop-color="#08bdba"/>
+      <stop offset="0.9" stop-color="#0f62fe"/>
+    </linearGradient>
+  </defs>
+  <g id="b96e8e82-21dd-4421-a127-8d18b5a4d648" data-name="Layer 2">
+    <g id="ac5b4abf-6412-419f-9bc6-c5864937503a" data-name="light theme">
+      <g>
+        <g mask="url(#b3e30f15-d68b-4e8f-b3e3-1687113d9c16)">
+          <rect width="32" height="32" fill="url(#f90a07c6-3b0e-44af-af5b-e1b7bb90c1a3)"/>
+        </g>
+        <polygon points="21 15 17 15 17 11 15 11 15 15 11 15 11 17 15 17 15 21 17 21 17 17 21 17 21 15" fill="#001d6c"/>
+      </g>
+    </g>
+  </g>
+</svg>

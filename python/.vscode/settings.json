@@ -15,21 +15,26 @@
     },
     "cSpell.words": [
         "autogen",
-        "joblog",
-        "vadps",
-        "sppmon",
-        "Hotfixing",
-        "joblogs",
-        "Wendler",
+        "downsampled",
         "Grafana",
+        "Hotfixing",
         "inplace",
+        "joblog",
+        "joblogs",
         "Korschinsky",
         "mktime",
         "Niels",
+        "relativedelta",
         "scipy",
         "sppcheck",
+        "sppmon",
+        "Statsmodel",
         "truncnorm",
         "vadp",
-        "vsnap"
-    ]
+        "vadps",
+        "vsnap",
+        "Wendler"
+    ],
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": true
 }

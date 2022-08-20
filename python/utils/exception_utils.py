@@ -30,7 +30,7 @@ import logging
 import sys
 import os
 
-from typing import List
+from typing import List, Optional
 
 LOGGER = logging.getLogger("sppmon")
 
@@ -57,11 +57,11 @@ class ExceptionUtils:
             message {str} -- message to be displayed and saved.
         """
         #LOGGER.info(message)
-        LOGGER.error(message)
+        LOGGER.error("ERROR: " + message)
         cls.stored_errors.append(message)
 
     @classmethod
-    def exception_info(cls, error: Exception, extra_message: str = None) -> None:
+    def exception_info(cls, error: Exception, extra_message: Optional[str] = None) -> None:
         """saves and debugs errors, printing a customized exception instead of the whole trace.
 
         Specify a extra message if you want to also print something instead of only logging the exception.
@@ -92,5 +92,5 @@ class ExceptionUtils:
 
         if(extra_message):
             #LOGGER.info(extra_message)
-            LOGGER.error(extra_message)
+            LOGGER.error("ERROR: " + extra_message)
             cls.stored_errors.append(extra_message)

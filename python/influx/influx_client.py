@@ -269,6 +269,14 @@ class InfluxClient:
                 database=database_name
             )
 
+    def get_list_rp(self, database_name: str) -> Dict[str, Dict[str, Any]]:
+            results: List[Dict[str, Any]] = self.__client.get_list_retention_policies(database_name)
+
+            rp_dict: Dict[str, Dict[str, Any]] = {}
+            for result in results:
+                rp_dict[result['name']] = result
+
+            return rp_dict
 
     def check_create_rp(self, database_name: str) -> None:
         """Checks if any retention policy needs to be altered or added
@@ -278,11 +286,8 @@ class InfluxClient:
             ValueError: Check failed due Database error
         """
         try:
-            results: List[Dict[str, Any]] = self.__client.get_list_retention_policies(database_name)
 
-            rp_dict: Dict[str, Dict[str, Any]] = {}
-            for result in results:
-                rp_dict[result['name']] = result
+            rp_dict = self.get_list_rp(database_name)
 
             add_rp_list: List[RetentionPolicy] = []
             alter_rp_list: List[RetentionPolicy] = []
@@ -798,6 +803,9 @@ class InfluxClient:
         if(list(filter(lambda arg: arg is None, [keyword, table_or_query, duration_s, item_count]))):
             raise ValueError("One of the insert metrics to influx args is None. This is not supported")
 
+        # The tablename is shown in the metrics table.
+        # Using this clause it is possible to see whether it was an inner query.
+        # the data is not used for any querying purposes.
         if isinstance(table_or_query, SelectionQuery):
             table_name = f"InnerQuery to {table_or_query.table_or_query}"
         else:

@@ -214,10 +214,6 @@ class SppMon:
 
     """
 
-    # set class variables
-    MethodUtils.verbose = ARGS.verbose
-    SppUtils.verbose = ARGS.verbose
-
     # ###### API-REST page settings  ###### #
     # ## IMPORTANT NOTES ## #
     # please read the documentation before adjusting values.
@@ -334,23 +330,27 @@ class SppMon:
         self.api_queries: Optional[ApiQueries] = None
         """module containing predefined calls to the SPP rest API, set in setup_optional_configs."""
 
-        self.log_path = SppUtils.mk_logger_file(ARGS.configFile, ".log")
+        # set class variables
+        MethodUtils.verbose = ARGS.verbose
+        SppUtils.verbose = ARGS.verbose
+
+        self.log_path = SppUtils.mk_logger_file(ARGS.configFile, "sppmonLogs",  ".log")
         SppUtils.set_logger(self.log_path, LOGGER_NAME, ARGS.debug)
-
-        LOGGER.info("Starting SPPMon")
-
-        self.pid_file_path = SppUtils.mk_logger_file(ARGS.configFile, ".pid_file")
-        if(not SppUtils.check_pid_file(self.pid_file_path, ARGS)):
-            ExceptionUtils.error_message("Another instance of sppmon with the same args is running")
-            self.exit(ERROR_CODE_START_ERROR)
 
         time_stamp_name, time_stamp = SppUtils.get_capture_timestamp_sec()
         self.start_counter = time.perf_counter()
-        LOGGER.debug("\n\n")
+        LOGGER.debug("\n\n NEW SPPMON EXECUTION \n")
         LOGGER.debug(f"running script version: {VERSION}")
         LOGGER.debug(f"cmdline options: {ARGS}")
         LOGGER.debug(f"{time_stamp_name}: {time_stamp}")
-        LOGGER.debug("")
+        LOGGER.debug("\n")
+
+        LOGGER.info("Starting SPPMon")
+
+        self.pid_file_path = SppUtils.mk_logger_file(ARGS.configFile, "sppmonLogs", ".pid_file")
+        if(not SppUtils.check_pid_file(self.pid_file_path, ARGS)):
+            ExceptionUtils.error_message("Another instance of sppmon with the same args is running")
+            self.exit(ERROR_CODE_START_ERROR)
 
         if(not ARGS.configFile):
             ExceptionUtils.error_message("missing config file, aborting")
@@ -551,7 +551,7 @@ class SppMon:
         self.spp_catalog: bool = ARGS.sppcatalog or constant
 
     def store_script_metrics(self) -> None:
-        """Stores script metrics into influxb. To be called before exit.
+        """Stores script metrics into influxdb. To be called before exit.
 
         Does not raise any exceptions, skips if influxdb is missing.
         """
@@ -584,8 +584,7 @@ class SppMon:
 
             # save occurred errors
             error_count = len(ExceptionUtils.stored_errors)
-            if(error_count > 0):
-                ExceptionUtils.error_message(f"total of {error_count} exception/s occurred")
+
             insert_dict['errorCount'] = error_count
             # save list as str if not empty
             if(ExceptionUtils.stored_errors):
@@ -602,8 +601,8 @@ class SppMon:
             )
             self.influx_client.flush_insert_buffer()
             LOGGER.info("Stored script metrics successfully")
-            # + 1 due the "total of x exception/s occurred"
-            if(error_count + 1 < len(ExceptionUtils.stored_errors)):
+
+            if(error_count < len(ExceptionUtils.stored_errors)):
                 ExceptionUtils.error_message(
                     "A non-critical error occurred while storing script metrics. \n\
                     This error can't be saved into the DB, it's only displayed within the logs.")
@@ -654,13 +653,13 @@ class SppMon:
         # Both error-clauses are actually the same, but for possibility of an split between error cases
         # always last due being true for any number != 0
         if error_code == ERROR_CODE or error_code:
-            ExceptionUtils.error_message("Error occurred while executing sppmon")
+            ExceptionUtils.error_message("\n\n!!! Error occurred while executing sppmon, aborting the functionality. !!!\n")
         elif ExceptionUtils.stored_errors:
-            print(f"Total of {len(ExceptionUtils.stored_errors)} errors occurred during the execution. Check Messages above.")
+            print(f"\n\n!!! Script completed. Total of {len(ExceptionUtils.stored_errors)} errors occurred during the execution. Check Messages above. !!!\n")
         elif not self.ignore_setup:
-            LOGGER.info("\n\n!!! script completed without any errors !!!\n")
+            LOGGER.info("\n\n!!! Script completed without any errors !!!\n")
 
-        print(f"check log for details: grep \"PID {os.getpid()}\" {self.log_path} > sppmon.log.{os.getpid()}")
+        print(f"Check log for details: grep \"PID {os.getpid()}\" {self.log_path} > sppmon.log.{os.getpid()}")
         sys.exit(error_code)
 
     def main(self):

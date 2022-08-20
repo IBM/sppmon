@@ -1,0 +1,81 @@
+.bbackground {
+    background-color: #262626; /*Grey 90*/
+    /*required only for the margins */
+    color: white;
+}
+
+.header{
+	background-color:#393939; /*Gray 80*/
+	color:#edf5ff; /*Blue 10*/
+}
+
+
+
+.title_center{
+    background-color: #001141; /*Blue 100*/
+    color: white;
+}
+
+/*
+Background:
+- Gray 90
+
+Overview:
+- Gray 80
+- Gray 70 inner Metrics
+
+Individual:
+- Gray 80
+- Gray 70 middle metrics
+- Gray 60 inner metrics
+
+*/
+
+.overview_section {
+    background-color: #393939; /*Gray 80*/
+}
+
+.individual_section {
+    background-color: #393939; /*Gray 80*/
+}
+
+.middle_section_a {
+    background-color: #525252; /*Gray 70*/
+}
+
+.middle_section_b {
+    background-color:#525252; /* Gray 80 */
+
+}
+
+.inner_section_a {
+    background-color: #6f6f6f; /*Gray 60*/
+}
+
+.inner_section_b {
+    background-color: #6f6f6f; /*Gray 60*/
+}
+
+.inner_section_table_a {
+    background-color: #525252; /*Gray 70*/
+}
+
+.inner_section_table_b {
+    background-color: #525252; /*Gray 70*/
+}
+
+.my_caption {
+    color: white;
+}
+
+.my_td, .my_table, .my_table_header {
+    border-color: black;
+}
+
+.my_table_header{
+    background-color: #8d8d8d !important; /*Gray 40*/
+}
+
+.my_table_metrics_name{
+    background-color: #c6c6c6 !important; /*Gray 30*/
+}

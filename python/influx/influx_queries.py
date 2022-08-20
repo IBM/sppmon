@@ -85,7 +85,7 @@ class InsertQuery:
         """Instance of table to be inserted into."""
         return self.__table
 
-    def __init__(self, table: Structures.Table, fields: Dict[str, Any], tags: Dict[str, Any] = None,
+    def __init__(self, table: Structures.Table, fields: Dict[str, Any], tags: Optional[Dict[str, Any]] = None,
                  time_stamp: Union[int, str, None] = None):
         if(not table):
             raise ValueError("need table to create query")
@@ -280,7 +280,7 @@ class SelectionQuery:
         if(s_limit is None):
             s_limit = 0
 
-        if(fields is not None and fields == []):
+        if(fields == []):
             fields = ['*']
         self.__fields = fields
 
@@ -344,7 +344,7 @@ class SelectionQuery:
         elif(self.keyword == Keyword.DELETE):
             table_str = f"FROM {self.table_or_query.name}"
         elif(self.alt_rp):
-            # this includes the database
+            # the retention policy includes an optionally changed database
             table_str = f"FROM {self.alt_rp}.{self.table_or_query.name}"
         else:
             table_str = f"FROM {self.table_or_query}"
