@@ -28,6 +28,7 @@
         "scipy",
         "sppcheck",
         "sppmon",
+        "Statsmodel",
         "truncnorm",
         "vadp",
         "vadps",

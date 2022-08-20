@@ -34,6 +34,9 @@ from influx.database_tables import RetentionPolicy
 from influx.influx_client import InfluxClient
 from sppCheck.predictor.predictor_influx_connector import \
     PredictorInfluxConnector
+from sppCheck.predictor.predictor_interface import PredictorInterface
+from sppCheck.predictor.static_predictor import StaticPredictor
+from sppCheck.predictor.statsmodel_ets_predictor import StatsmodelEtsPredictor
 from utils.exception_utils import ExceptionUtils
 from utils.sppcheck_utils import SppcheckUtils
 
@@ -56,6 +59,9 @@ class PredictorController:
             raise ValueError("PredictorController is not available, missing the influx_client")
 
         self.__report_rp = SppcheckUtils.create_unique_rp(influx_client, self.rp_prefix, rp_timestamp)
+
+        self.__statsmodel_predictor: PredictorInterface = StatsmodelEtsPredictor()
+        self.__static_predictor: PredictorInterface = StaticPredictor()
 
         LOGGER.debug(f"> Using report RP {self.__report_rp}")
 
@@ -105,7 +111,7 @@ class PredictorController:
             use_count_query=False,
             #re_save_historic=False # Changed due to the report-generation accessing only one RP.
             re_save_historic=True,
-            repeat_last=False
+            prediction_function=self.__statsmodel_predictor
         )
 
     def __predict_physical_pool_size(self) -> None:
@@ -116,7 +122,7 @@ class PredictorController:
             group_tags=["storageId", "hostAddress"],
             metric_name="physical_pool_size",
             save_total=True,
-            repeat_last=True,
+            prediction_function=self.__static_predictor,
 
             ##
             use_count_query=False,
@@ -134,7 +140,7 @@ class PredictorController:
             use_count_query=True,
             re_save_historic=True,
             save_total=True,
-            repeat_last=True
+            prediction_function=self.__static_predictor
         )
 
     def __predict_total_vadp_quantity(self) -> None:
@@ -145,7 +151,7 @@ class PredictorController:
             group_tags=["site", "siteName"],
             metric_name="vadp_count_total",
             save_total=True,
-            repeat_last=True,
+            prediction_function=self.__static_predictor,
 
             #
             #re_save_historic=False # Changed due to the report-generation accessing only one RP.
@@ -160,7 +166,7 @@ class PredictorController:
             value_or_count_key="memorySize",
             description="total server memory",
             metric_name="total_server_memory",
-            repeat_last=True,
+            prediction_function=self.__static_predictor,
 
             #
             group_tags=None,
@@ -181,7 +187,8 @@ class PredictorController:
             #
             group_tags=None,
             use_count_query=False,
-            save_total=False
+            save_total=False,
+            prediction_function=self.__statsmodel_predictor
         )
 
     def __predict_used_server_catalogs(self) -> None:
@@ -196,7 +203,8 @@ class PredictorController:
             #
             use_count_query=False,
             #re_save_historic=False # Changed due to the report-generation accessing only one RP.
-            re_save_historic=True
+            re_save_historic=True,
+            prediction_function=self.__statsmodel_predictor
         )
 
     def __predict_total_server_catalogs(self) -> None:
@@ -207,7 +215,7 @@ class PredictorController:
             group_tags=["\"name\""],
             metric_name="total_server_catalogs",
             save_total=False,
-            repeat_last=True,
+            prediction_function=self.__static_predictor,
 
             #
             use_count_query=False,
@@ -226,5 +234,6 @@ class PredictorController:
             #
             group_tags=None,
             use_count_query=False,
-            save_total=False
+            save_total=False,
+            prediction_function=self.__statsmodel_predictor
         )

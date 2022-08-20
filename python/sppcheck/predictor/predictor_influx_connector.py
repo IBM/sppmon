@@ -36,13 +36,11 @@ from typing import Any, ClassVar, Dict, Generator, List, Optional, Tuple, Union
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-import pandas as pd
-
 from influx.database_tables import RetentionPolicy
 from influx.influx_client import InfluxClient
 from influx.influx_queries import Keyword, SelectionQuery
 from numpy import float64
-from pandas import Series, Timestamp
+from pandas import Series
 from sppCheck.predictor.predictor_interface import PredictorInterface
 from sppCheck.predictor.statsmodel_ets_predictor import \
     StatsmodelEtsPredictor
@@ -68,7 +66,6 @@ class PredictorInfluxConnector:
 
         self.__influx_client: InfluxClient = influx_client
 
-        self.__predictorI: PredictorInterface = StatsmodelEtsPredictor()
         self.__dp_interval_hour = dp_interval_hour
         self.__select_rp = select_rp
         self.__forecast_years = forecast_years
@@ -91,7 +88,7 @@ class PredictorInfluxConnector:
         save_total: bool,
         group_tags: Optional[List[str]] = None,
         use_count_query: bool = False,
-        repeat_last: bool = False
+        prediction_function: PredictorInterface = StatsmodelEtsPredictor()
         ) -> None:
 
         LOGGER.info(f">> Starting prediction of the {description}.")
@@ -146,7 +143,7 @@ class PredictorInfluxConnector:
             group_tags=group_tags,
             re_save_historic=re_save_historic,
             save_total=save_total,
-            repeat_last=repeat_last
+            prediction_function=prediction_function
         )
 
         LOGGER.info(f">> Finished the prediction for the {description}, flushing the data a last time.")
@@ -219,7 +216,7 @@ class PredictorInfluxConnector:
                                group_tags: Optional[List[str]],
                                re_save_historic: bool,
                                save_total: bool,
-                               repeat_last: bool):
+                               prediction_function: PredictorInterface):
 
         LOGGER.debug(f">> len of tag_data_tuple: {len(tag_data_tuple)}")
 
@@ -278,7 +275,7 @@ class PredictorInfluxConnector:
                 else:
                     LOGGER.info(f">>> {description}: Preparing the data for prediction.")
 
-                data_series = self.__predictorI.data_preparation(historic_values, self.__dp_interval_hour)
+                data_series = prediction_function.data_preparation(historic_values, self.__dp_interval_hour)
 
                 # sum the individual results for a final total value
                 if group_tags and save_total:
@@ -309,10 +306,7 @@ class PredictorInfluxConnector:
                 else:
                     LOGGER.info(f">>> Predicting the data for {description}.")
 
-                if repeat_last:
-                    prediction_result = self.static_prediction(data_series, self.__forecast_years)
-                else:
-                    prediction_result = self.__predictorI.predict_data(data_series, self.__forecast_years)
+                prediction_result = prediction_function.predict_data(data_series, self.__forecast_years)
 
                 LOGGER.info(f">>> Finished the prediction, continuing to insert the data into the InfluxDB.")
                 # save the prediction with the new meta data
@@ -351,10 +345,7 @@ class PredictorInfluxConnector:
             LOGGER.info(f">> Predicting the summarized data of the {description}.")
 
             # insert total data prediction
-            if repeat_last:
-                    prediction_result = self.static_prediction(total_historic_series, self.__forecast_years)
-            else:
-                prediction_result = self.__predictorI.predict_data(total_historic_series, self.__forecast_years)
+            prediction_result = prediction_function.predict_data(total_historic_series, self.__forecast_years)
 
             LOGGER.info(f">> Finished the prediction, continuing to insert the data into the InfluxDB.")
 
@@ -365,43 +356,3 @@ class PredictorInfluxConnector:
                 table_name=self.sppcheck_table_name,
                 value_key=self.sppcheck_value_name,
                 insert_tags=insert_tags)
-
-    def static_prediction(self,
-                     data_series: Series,
-                     forecast_years: float) -> Series:
-
-        LOGGER.debug("Using a static prediction")
-
-        # read the frequency to calculate how many data points needs to be forecasted
-        try:
-            # convert to hour
-            dp_freq_hour: float = data_series.index.freq.nanos / 3600000000000 # type: ignore
-        except AttributeError as error:
-            ExceptionUtils.exception_info(error)
-            raise ValueError("The data series is corrupted, no frequency at the index available", data_series.index)
-
-        hours_last_data = (datetime.now() - data_series.index.max()).total_seconds() / (60 * 60)
-        # discard if the data is older than 7 days and 3 times the frequency
-        # May some data points fail, therefore this grace period
-        if hours_last_data > 24 * 7 and hours_last_data > dp_freq_hour * 3:
-            raise ValueError("This set of data is too old to be used")
-
-        LOGGER.debug(f"forecasting using {len(data_series)} data points")
-
-        last_timestamp = data_series.last_valid_index()
-        last_value = data_series.get(last_timestamp)
-
-        # this issues a warning if not ignored when importing
-        # prediction should start +1x freq from the last one.
-        start_timestamp: Timestamp = last_timestamp + last_timestamp.freq.delta
-
-        # get count of data points required
-        forecast_dp_count = round((forecast_years * 365 * 24) / dp_freq_hour)
-
-        # get a time range with all required indices
-        forecast_indices = pd.date_range(start=start_timestamp, periods=forecast_dp_count, freq=f"{dp_freq_hour}H") # type: ignore
-
-        # create a series with all the same value
-        prediction_series = Series([last_value]*forecast_dp_count, forecast_indices)
-
-        return prediction_series

@@ -101,7 +101,8 @@ h5 {
 }
 
 .my_text_neutral_value {
-    color: #ff832b
+    color: #ff832b;
+    font-weight: bolder;
 }
 
 /* Text content directly pointing to the used line of a Graph with the same color */
@@ -118,7 +119,7 @@ h5 {
 
 /* Text content directly pointing to the blueprint sizer estimation line of a Graph with the same color */
 .my_text_excel_line  {
-    color:orange;
+    color:darkorange;
     font-weight: bolder;
 }
 

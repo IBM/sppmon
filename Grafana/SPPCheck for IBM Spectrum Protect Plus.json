@@ -27,7 +27,7 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 82,
-  "iteration": 1660849116286,
+  "iteration": 1660912840517,
   "links": [
     {
       "asDropdown": false,
@@ -3803,7 +3803,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -3849,7 +3850,7 @@
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "orange",
+                  "fixedColor": "red",
                   "mode": "fixed"
                 }
               }
@@ -3971,7 +3972,7 @@
               "type": "tag"
             }
           ],
-          "hide": false,
+          "hide": true,
           "measurement": "storages",
           "orderByTime": "ASC",
           "policy": "$rp",
@@ -4164,7 +4165,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -4210,7 +4212,7 @@
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "orange",
+                  "fixedColor": "red",
                   "mode": "fixed"
                 }
               }
@@ -4332,7 +4334,7 @@
               "type": "tag"
             }
           ],
-          "hide": false,
+          "hide": true,
           "measurement": "storages",
           "orderByTime": "ASC",
           "policy": "$rp",
@@ -4429,7 +4431,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -4475,7 +4478,7 @@
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "dark-orange",
+                  "fixedColor": "red",
                   "mode": "fixed"
                 }
               }
@@ -4714,7 +4717,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -4856,7 +4860,7 @@
             "uid": "${server}"
           },
           "groupBy": [],
-          "hide": false,
+          "hide": true,
           "measurement": "cpuram",
           "orderByTime": "ASC",
           "policy": "$rp",
@@ -4882,6 +4886,7 @@
         }
       ],
       "title": "Used Server Memory",
+      "transformations": [],
       "type": "timeseries"
     },
     {
@@ -4928,7 +4933,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -5070,7 +5076,7 @@
             "uid": "${server}"
           },
           "groupBy": [],
-          "hide": false,
+          "hide": true,
           "measurement": "cpuram",
           "orderByTime": "ASC",
           "policy": "$rp",
@@ -5136,7 +5142,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -5309,7 +5316,7 @@
             "uid": "${server}"
           },
           "groupBy": [],
-          "hide": false,
+          "hide": true,
           "measurement": "cpuram",
           "orderByTime": "ASC",
           "policy": "$rp",
@@ -5340,7 +5347,7 @@
             "uid": "${server}"
           },
           "groupBy": [],
-          "hide": false,
+          "hide": true,
           "measurement": "cpuram",
           "orderByTime": "ASC",
           "policy": "$rp",
@@ -5483,7 +5490,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -5683,7 +5691,7 @@
               "type": "tag"
             }
           ],
-          "hide": false,
+          "hide": true,
           "measurement": "sppcatalog",
           "orderByTime": "ASC",
           "policy": "$rp",
@@ -5758,7 +5766,7 @@
               "type": "tag"
             }
           ],
-          "hide": false,
+          "hide": true,
           "measurement": "sppcatalog",
           "orderByTime": "ASC",
           "policy": "$rp",
@@ -5830,7 +5838,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -6008,7 +6017,7 @@
             "uid": "${server}"
           },
           "groupBy": [],
-          "hide": false,
+          "hide": true,
           "measurement": "sppcatalog",
           "orderByTime": "ASC",
           "policy": "$rp",
@@ -6076,7 +6085,7 @@
             "uid": "${server}"
           },
           "groupBy": [],
-          "hide": false,
+          "hide": true,
           "measurement": "sppcatalog",
           "orderByTime": "ASC",
           "policy": "$rp",
@@ -6148,7 +6157,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -6348,7 +6358,7 @@
               "type": "tag"
             }
           ],
-          "hide": false,
+          "hide": true,
           "measurement": "sppcatalog",
           "orderByTime": "ASC",
           "policy": "$rp",
@@ -6423,7 +6433,7 @@
               "type": "tag"
             }
           ],
-          "hide": false,
+          "hide": true,
           "measurement": "sppcatalog",
           "orderByTime": "ASC",
           "policy": "$rp",
@@ -6495,7 +6505,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -6695,7 +6706,7 @@
               "type": "tag"
             }
           ],
-          "hide": false,
+          "hide": true,
           "measurement": "sppcatalog",
           "orderByTime": "ASC",
           "policy": "$rp",
@@ -6770,7 +6781,7 @@
               "type": "tag"
             }
           ],
-          "hide": false,
+          "hide": true,
           "measurement": "sppcatalog",
           "orderByTime": "ASC",
           "policy": "$rp",
@@ -6855,7 +6866,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -7036,7 +7048,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -7227,243 +7240,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
-                  }
-                ]
-              },
-              "unit": "bytes"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Prediction Total"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "blue",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Blueprint Sizer Estimation"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "green",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Blueprint Sizer Estimation Reserve"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "red",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 86
-          },
-          "id": 192,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "table",
-              "placement": "bottom"
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "alias": "RP $tag_hostAddress",
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${server}"
-              },
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "hostAddress"
-                  ],
-                  "type": "tag"
-                },
-                {
-                  "params": [
-                    "none"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "hide": false,
-              "measurement": "storages",
-              "orderByTime": "ASC",
-              "policy": "$rp",
-              "refId": "C",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "used"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "hostAddress",
-                  "operator": "=~",
-                  "value": "/.*15.*/"
-                }
-              ]
-            },
-            {
-              "alias": "HW $tag_hostAddress",
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${server}"
-              },
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "hostAddress"
-                  ],
-                  "type": "tag"
-                },
-                {
-                  "params": [
-                    "none"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "hide": true,
-              "measurement": "storages",
-              "orderByTime": "ASC",
-              "policy": "$rp",
-              "refId": "A",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "used"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [
-                      "1400",
-                      "0"
-                    ],
-                    "type": "holt_winters_with_fit"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "hostAddress",
-                  "operator": "=~",
-                  "value": "/.*15.*/"
-                }
-              ]
-            }
-          ],
-          "title": "DUMMY",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${server}"
-          },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -7541,6 +7319,11 @@
   "templating": {
     "list": [
       {
+        "current": {
+          "selected": false,
+          "text": "scaleVM10v2",
+          "value": "scaleVM10v2"
+        },
         "hide": 0,
         "includeAll": false,
         "multi": false,
@@ -7554,6 +7337,11 @@
         "type": "datasource"
       },
       {
+        "current": {
+          "selected": false,
+          "text": "prediction_2022_08_09_02_22_25",
+          "value": "prediction_2022_08_09_02_22_25"
+        },
         "datasource": {
           "type": "influxdb",
           "uid": "${server}"
@@ -7572,6 +7360,11 @@
         "type": "query"
       },
       {
+        "current": {
+          "selected": false,
+          "text": "excel_2022_08_08_21_18_27",
+          "value": "excel_2022_08_08_21_18_27"
+        },
         "datasource": {
           "type": "influxdb",
           "uid": "${server}"
@@ -7636,6 +7429,6 @@
   "timezone": "",
   "title": "SPPCheck for IBM Spectrum Protect Plus",
   "uid": "sppcheck",
-  "version": 31,
+  "version": 36,
   "weekStart": ""
 }
