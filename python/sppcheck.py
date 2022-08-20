@@ -54,8 +54,11 @@ VERSION = "0.7  (2022/08/03)"
 # ----------------------------------------------------------------------------
 parser = ArgumentParser(
     # exit_on_error=False, TODO: Enable in python version 3.9
-    description="""TODO
-    """,
+    description="""
+SPPCheck is a system requirement verification and prediction tool aiming to enhance the existing functionality by verifying whether a system was set up correctly according to IBM's recommendations and predicting its future development.
+It focuses on the storage consumption of all associated vSnaps and the server's memory and catalog space and is open to future expansion of its capabilities.
+SPPCheck re-uses the existing components and integrates SPPMons core engine while offering a PDF report besides the typical Grafana Dashboard.
+""",
     epilog="For feature-requests or bug-reports please visit https://github.com/IBM/spectrum-protect-sppmon")
 
 # required options
@@ -63,21 +66,21 @@ parser.add_argument("--cfg", dest="configFile", required=True, help="REQUIRED: S
 parser.add_argument("--startDate", dest="startDate", required=True, help="REQUIRED: Start date of the system in format \"YYYY-MM-DD\", e.g. startDate=2019-01-29")
 
 # sheet options
-parser.add_argument("--sheet", dest="sheetPath", help="Path to filled sizing sheet, parsing the contents into the influxDB. Requires args: --sizerVersion, --startDate")
+parser.add_argument("--sheet", dest="sheetPath", help="Path to filled sizing sheet, parsing the contents into the InfluxDB. Requires args: --sizerVersion")
 parser.add_argument("--sizerVersion", dest="sizerVersion", help="Specify the version of the vSnap sizer sheet, e.g v1.0 or v2.1.1")
 
 # generation
-parser.add_argument("--genFakeData", dest="genFakeData", action="store_true", help="Generate fake data. Automatically uses the fake data.")
-parser.add_argument("--predictYears", dest="predictYears", type=int, help="Predict the development for the next x years.")
-parser.add_argument("--pdfReport", dest="pdfReport", action="store_true", help="Create a new PDF report based on the prediction.")
+parser.add_argument("--genFakeData", dest="genFakeData", action="store_true", help="Generate fake data. Automatically uses the fake data for all other arguments")
+parser.add_argument("--predictYears", dest="predictYears", type=int, help="Predict the development for the next x years")
+parser.add_argument("--pdfReport", dest="pdfReport", action="store_true", help="Create a new PDF report based on the prediction")
 
 # generation options
-parser.add_argument("--latestData", dest="latestData", action="store_true", help="Create predictions, reports, and fake data using only the latest 90 day data, but at a higher frequency(<6h).")
-parser.add_argument("--fakeData", dest="fakeData", action="store_true", help="Use existing fake data to create any reports.")
-parser.add_argument("--theme", dest="theme", type=str, help="Optional: Chose the theme of the PDF report. Options: 'light' (default), 'dark', or 'sppcheck'.")
+parser.add_argument("--latestData", dest="latestData", action="store_true", help="Create predictions, reports, and fake data using only the latest 90 day data, but at a higher frequency(<6h)")
+parser.add_argument("--fakeData", dest="fakeData", action="store_true", help="Use existing fake data to create any reports")
+parser.add_argument("--theme", dest="theme", type=str, help="Optional: Chose the theme of the PDF report. Options: 'light' (default), 'dark', or 'sppcheck'")
 
 # general purpose options
-parser.add_argument("-v", '--version', action='version', version="TODO " + VERSION)
+parser.add_argument("-v", '--version', action='version', version="Spectrum Protect Plus Check (SPPCheck) version " + VERSION)
 
 
 print = functools.partial(print, flush=True)

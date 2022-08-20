@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Known Issues
+
+## [1.3.0] - 2022-08-21
+
+### Added
+
 * SPPCheck function and internal structure
 * Added Grafana Dashboard for SPPCheck
 
@@ -32,6 +42,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Removed unnecessary and confusing check when creating a SelectionQuery
 
 ### Known Issues
+
+* SPPCheck lacks a lot of documentation, which is to be delivered on a later date.
 
 ## [1.2.0] - 2022-06-17
 
