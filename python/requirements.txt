@@ -4,6 +4,14 @@
 #
 #    pip-compile --allow-unsafe ./python/requirements.txt
 #
+
+#manual add
+pandas-stubs==1.2.0.58
+openpyxl==1.1.0
+pyxlsb==1.0.9
+
+##
+
 bcrypt==3.2.2
     # via paramiko
 certifi==2022.6.15

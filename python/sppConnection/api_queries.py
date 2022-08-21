@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -31,12 +31,13 @@ from typing import List, Dict, Any, Optional
 import json
 import urllib.parse
 
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 from utils.spp_utils import SppUtils
 from sppConnection.rest_client import RequestType, RestClient
 
 
-LOGGER = logging.getLogger("sppmon")
+LOGGER_NAME = 'sppmon'
+LOGGER = logging.getLogger(LOGGER_NAME)
 
 
 class ApiQueries:
@@ -87,7 +88,7 @@ class ApiQueries:
         return storages
 
     def get_vadps(self) -> List[Dict[str, Any]]:
-        """retrieves a list of all vadp proxys."""
+        """retrieves a list of all vadp proxies."""
         LOGGER.debug("retrieving list of vadps")
         endpoint = "/api/vadp"
         allow_list = ["id", "displayName", "ipAddr", "siteId", "state", "version"]
@@ -139,7 +140,7 @@ class ApiQueries:
         allow_list = ["name", "id"]
         array_name = "slapolicies"
 
-        sla_policty_list = self.__rest_client.get_objects(
+        sla_policy_list = self.__rest_client.get_objects(
             endpoint=endpoint,
             allow_list=allow_list,
             array_name=array_name,
@@ -147,13 +148,13 @@ class ApiQueries:
         )
 
         result_list: List[Dict[str, Any]] = []
-        for sla_policty in sla_policty_list:
+        for sla_policy in sla_policy_list:
             try:
-                sla_name: str = sla_policty["name"]
+                sla_name: str = sla_policy["name"]
             except KeyError as error:
                 ExceptionUtils.exception_info(error, extra_message="skipping one sla entry due missing name.")
                 continue
-            sla_id: Optional[str] = sla_policty.get("id", None)
+            sla_id: Optional[str] = sla_policy.get("id", None)
 
             result_dict: Dict[str, Any] = {}
 
@@ -226,7 +227,7 @@ class ApiQueries:
         """
 
         if(not job_id):
-            raise ValueError("no jobId is provived but required to query data")
+            raise ValueError("no jobId is provided but required to query data")
 
         endpoint = "/api/endeavour/jobsession/history/jobid/" + str(job_id)
         allow_list = [
@@ -237,7 +238,7 @@ class ApiQueries:
         array_name = "sessions"
 
         # endpoint /api/endeavour/jobsession/history/jobid/ supports no filter parameter
-        # so far --> request allways all jobs for jobId and filter in python code
+        # so far --> request always all jobs for jobId and filter in python code
 
         all_jobs_list = self.__rest_client.get_objects(
             endpoint=endpoint,

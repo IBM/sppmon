@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -21,7 +21,7 @@ Author:
  Niels Korschinsky
 
 Description:
-    This Module provides static/class execptions helper methods.
+    This Module provides static/class exceptions helper methods.
 
 Classes:
     ExceptionUtils
@@ -30,7 +30,7 @@ import logging
 import sys
 import os
 
-from typing import List
+from typing import List, Optional
 
 LOGGER = logging.getLogger("sppmon")
 
@@ -38,7 +38,7 @@ class ExceptionUtils:
     """Wrapper for static/class exception helper methods.
 
     Attributes:
-        stored_errors - List with all error messages occured
+        stored_errors - List with all error messages occurred
 
     Methods:
         error_message - Prints and saves a error message without raising anything.
@@ -47,7 +47,7 @@ class ExceptionUtils:
     """
 
     stored_errors: List[str] = []
-    """List with all error messages occured"""
+    """List with all error messages occurred"""
 
     @classmethod
     def error_message(cls, message: str):
@@ -57,11 +57,11 @@ class ExceptionUtils:
             message {str} -- message to be displayed and saved.
         """
         #LOGGER.info(message)
-        LOGGER.error(message)
+        LOGGER.error("ERROR: " + message)
         cls.stored_errors.append(message)
 
     @classmethod
-    def exception_info(cls, error: Exception, extra_message: str = None) -> None:
+    def exception_info(cls, error: Exception, extra_message: Optional[str] = None) -> None:
         """saves and debugs errors, printing a customized exception instead of the whole trace.
 
         Specify a extra message if you want to also print something instead of only logging the exception.
@@ -81,7 +81,7 @@ class ExceptionUtils:
             line_number = -1
 
         if(error != error_2):
-            LOGGER.error("two different error messages somehow, be aware some data migth be corrupt")
+            LOGGER.error("two different error messages somehow, be aware some data might be corrupt")
 
         cls.stored_errors.extend(error.args) # save error message
 
@@ -92,5 +92,5 @@ class ExceptionUtils:
 
         if(extra_message):
             #LOGGER.info(extra_message)
-            LOGGER.error(extra_message)
+            LOGGER.error("ERROR: " + extra_message)
             cls.stored_errors.append(extra_message)

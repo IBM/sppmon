@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -21,7 +21,7 @@ Author:
  Niels Korschinsky
 
 Description:
-    This Module provides all functionality arround protected apps and VM's.
+    This Module provides all functionality around protected apps and VM's.
     You may implement new protection methods in here.
 
 Classes:
@@ -37,7 +37,7 @@ from sppmonMethods.system import SystemMethods
 from sppConnection.api_queries import ApiQueries
 
 
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
@@ -49,9 +49,9 @@ class ProtectionMethods:
 
     Methods:
         vms_per_sla - Calculates the number of VM's per SLA.
-        sla_dumps - Captures and saves SLA subpolicys.
-        vadps - Requests and stores all VAPD proxys from the SPP-server.
-        storages - Saves all storages such as vsnaps.
+        sla_dumps - Captures and saves SLA subpolicies.
+        vadps - Requests and stores all VADP proxies from the SPP-server.
+        storages - Saves all storages such as vSnaps.
         store_vms - Stores all vms stats individually
         create_inventory_summary - Retrieves and calculate VM inventory summary by influx catalog data.
 
@@ -84,7 +84,7 @@ class ProtectionMethods:
             table_name="slaStats", list_with_dicts=result)
 
     def sla_dumps(self) -> None:
-        """Captures and saves SLA subpolicys."""
+        """Captures and saves SLA subpolicies."""
         # capture and display / store SLA dumps
         sla_dump_list = MethodUtils.query_something(
             name="slaDumps",
@@ -96,7 +96,7 @@ class ProtectionMethods:
             ]
         )
 
-        LOGGER.info(">> updating slaStat table with dump of SLA subpolicy")
+        LOGGER.info(">> updating slaStat table with dump of SLA subpolicies")
         table_name = "slaStats"
         for row in sla_dump_list:
             sla_dump = row['slaDump']
@@ -113,7 +113,7 @@ class ProtectionMethods:
             )
 
     def vadps(self) -> None:
-        """Requests and stores all VAPD proxys from the SPP-server."""
+        """Requests and stores all VADP proxies from the SPP-server."""
         table_name = 'vadps'
         result = MethodUtils.query_something(
             name=table_name,
@@ -133,7 +133,7 @@ class ProtectionMethods:
         self.__influx_client.insert_dicts_to_buffer(table_name=table_name, list_with_dicts=result)
 
     def storages(self) -> None:
-        """Saves all storages such as vsnaps."""
+        """Saves all storages such as vSnap."""
 
         table_name = 'storages'
 
@@ -144,7 +144,7 @@ class ProtectionMethods:
             deactivate_verbose=True
         )
 
-        # get calulated extra info
+        # get calculated extra info
         for row in result:
             row['siteName'] = self.__system_methods.site_name_by_id(row['site'])
             if('free' in row and row['free'] != None and
@@ -191,12 +191,12 @@ class ProtectionMethods:
             "> computing inventory information (not from catalog, means not only backup data is calculated)")
 
         # ########## Part 1: Check if something need to be computed #############
-        # query the timestamp of the last vm, commited as a field is always needed by influx rules.
+        # query the timestamp of the last vm, committed as a field is always needed by influx rules.
         vms_table = self.__influx_client.database["vms"]
 
         time_query = SelectionQuery(
             keyword=Keyword.SELECT,
-            tables=[vms_table],
+            table_or_query=vms_table,
             fields=['time', 'commited'],
             limit=1,
             order_direction="DESC"
@@ -216,7 +216,7 @@ class ProtectionMethods:
 
         vm_stats_query = SelectionQuery(
             keyword=Keyword.SELECT,
-            tables=[vm_stats_table],
+            table_or_query=vm_stats_table,
             fields=['*'],
             where_str=where_str,
             limit=1
@@ -243,7 +243,7 @@ class ProtectionMethods:
         ]
         query = SelectionQuery(
             keyword=Keyword.SELECT,
-            tables=[vms_table],
+            table_or_query=vms_table,
             fields=fields,
             where_str=where_str
         )

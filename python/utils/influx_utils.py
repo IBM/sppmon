@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -32,7 +32,7 @@ import logging
 from typing import Dict, Tuple, Union, Any, List
 
 from utils.spp_utils import SppUtils
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 
 LOGGER = logging.getLogger("sppmon")
 
@@ -45,7 +45,7 @@ class InfluxUtils:
 
     Methods:
         escape_chars - Escapes chars to a even number of escape signs. Only adds escape signs.
-        check_time_literal - Checks wheather the str is consistend as influxdb time literal
+        check_time_literal - Checks whether the str is consistent as influxdb time literal
         transform_time_literal - Transforms a time literal into hour/min/seconds literal.
         default_split - Splits the dict into tags/fields/timestamp according to the format of value.
     """
@@ -54,7 +54,7 @@ class InfluxUtils:
 
     @staticmethod
     def check_time_literal(value: str) -> bool:
-        """Checks wheather the str is consistend as influxdb time literal
+        """Checks whether the str is consistent as influxdb time literal
 
         Args:
             value (str): time literal to be checked
@@ -64,7 +64,7 @@ class InfluxUtils:
             ValueError: Not a string given
 
         Returns:
-            bool: true if it is consistend
+            bool: true if it is consistent
         """
         if(not value):
             raise ValueError("need value to verify time literal")
@@ -82,7 +82,7 @@ class InfluxUtils:
 
         Args:
             value (str): time literal to be transformed
-            single_vals (bool, optional): wheater the result should be a tuple. Defaults to False.
+            single_vals (bool, optional): whether the result should be a tuple. Defaults to False.
 
         Raises:
             ValueError: no value given
@@ -145,7 +145,7 @@ class InfluxUtils:
     @classmethod
     def default_split(cls, mydict: Dict[str, Any]) -> Tuple[
             Dict[str, str], Dict[str, Union[float, int, bool, str]], Union[str, int, None]]:
-        """Do not use this method on purpose! Pre-Defining a table is higly recommended.
+        """Do not use this method on purpose! Pre-Defining a table is highly recommended.
         Splits the dict into tags/fields/timestamp according to the format of value.
 
         Strings without spaces are tags
@@ -154,10 +154,10 @@ class InfluxUtils:
         if no field is found a dummy field is inserted with a warning and a debug message.
 
         Arguments:
-            mydict {dict} -- dict with colums as keys. None values are ignored
+            mydict {dict} -- dict with columns as keys. None values are ignored
 
         Raises:
-            ValueError: Dictonary is not provided or empty
+            ValueError: Dictionary is not provided or empty
 
         Returns:
             (dict, dict, int) -- Tuple of tags, fields and timestamp
@@ -190,7 +190,7 @@ class InfluxUtils:
 
             if(isinstance(value, (float, int, bool))):
                 fields[key] = value
-            # Make a string out of Lists/Dics
+            # Make a string out of Lists/Dicts
             if(not isinstance(value, str)):
                 value = '\"{}\"'.format(value)
 

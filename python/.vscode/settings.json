@@ -1,4 +1,40 @@
 {
     "python.analysis.completeFunctionParens": true,
-    "python.analysis.typeCheckingMode": "basic"
+    "python.analysis.typeCheckingMode": "strict",
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportMissingTypeStubs": "warning",
+
+        "reportUnknownMemberType": "warning",
+        "reportUnknownArgumentType": "warning",
+        "reportUnknownLambdaType": "warning",
+        "reportUnknownVariableType": "warning",
+        "reportUnknownParameterType": "warning",
+
+        "reportUnnecessaryIsInstance": "warning",
+
+    },
+    "cSpell.words": [
+        "autogen",
+        "downsampled",
+        "Grafana",
+        "Hotfixing",
+        "inplace",
+        "joblog",
+        "joblogs",
+        "Korschinsky",
+        "mktime",
+        "Niels",
+        "relativedelta",
+        "scipy",
+        "sppcheck",
+        "sppmon",
+        "Statsmodel",
+        "truncnorm",
+        "vadp",
+        "vadps",
+        "vsnap",
+        "Wendler"
+    ],
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": true
 }

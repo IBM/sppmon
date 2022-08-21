@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -33,10 +33,10 @@ from __future__ import annotations
 from enum import Enum, unique
 import re
 import json
-from typing import Any, Dict, List, Set, Tuple, Union
+from typing import Any, Dict, List, Set, Tuple, Type, Union
 
 import influx.influx_queries as Queries
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 from utils.influx_utils import InfluxUtils
 from utils.spp_utils import SppUtils
 
@@ -102,7 +102,7 @@ class Datatype(Enum):
 class RetentionPolicy:
     """Represents a influxdb retention policy.
 
-    By this policy it is declared afer which ammount of time a dataset is deleted from the DB.
+    By this policy it is declared after which amount of time a dataset is deleted from the DB.
 
     Attributes
         name - name of RP
@@ -290,12 +290,12 @@ class Table:
 
         None-Values and empty strings are ignored.
         If there are no fields declared, it will split by a default pattern.
-        Undeclared collums will produce a warning.
-        This function uses the tag/field and timestamp definiton declared within this table.
+        Undeclared column will produce a warning.
+        This function uses the tag/field and timestamp definition declared within this table.
 
         Arguments:
             self {Table} -- Table with predefined set of tags and fields
-            mydict {Dict[str, Any]} -- dict with colums as keys. None-Values are ignored
+            mydict {Dict[str, Any]} -- dict with columns as keys. None-Values are ignored
 
         Raises:
             ValueError: If no dict is given or not of type dict.
@@ -320,7 +320,7 @@ class Table:
         time_stamp_field = self.time_key
         # helper variable to only overwrite if it is not the time_stamp_field
         time_overwrite_allowed = True
-        # actualy timestamp saved
+        # actually timestamp saved
         time_stamp: Union[str, int, None] = None
 
 
@@ -404,10 +404,10 @@ class Database:
         return self.__name
 
     def __getitem__(self, table_name: str) -> Table:
-        """Aquire a instance of a predefined table, returns a empty table if it was not defined. []-Access.
+        """Acquire a instance of a predefined table, returns a empty table if it was not defined. []-Access.
 
         Arguments:
-            table_name {str} -- name of the table you want to aquire
+            table_name {str} -- name of the table you want to acquire
 
         Returns:
             Table -- Instance of a predefined table, otherwise new empty table

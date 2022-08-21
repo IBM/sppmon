@@ -5,6 +5,7 @@
         "donjayamanne.githistory",
         "davidanson.vscode-markdownlint",
         "streetsidesoftware.code-spell-checker",
-        "ms-python.python"
+        "ms-python.python",
+        "ecmel.vscode-html-css"
     ]
 }

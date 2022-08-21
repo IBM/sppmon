@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -21,7 +21,7 @@ Author:
  Niels Korschinsky
 
 Description:
-    Provides all query structues used for the influxdb.
+    Provides all query structures used for the influxdb.
 
 Classes:
     Keyword
@@ -52,9 +52,10 @@ class Keyword(Enum):
         return self.value
 
 class InsertQuery:
-    """Dataclass used to insert data into influxdb. Makes sure any data is in the right format.
+    """Dataclass used to insert data into influxdb, provides support for correct formatting.
 
     Use `toQuery` to compute into string. Do not create a instance outside of `influx_client`.
+    All timestamps are changed into second precision
 
     Attributes:
         keyword - Always `Keyword.INSERT`
@@ -81,10 +82,10 @@ class InsertQuery:
 
     @property
     def table(self) -> Structures.Table:
-        """Instance of table to be inserted."""
+        """Instance of table to be inserted into."""
         return self.__table
 
-    def __init__(self, table: Structures.Table, fields: Dict[str, Any], tags: Dict[str, Any] = None,
+    def __init__(self, table: Structures.Table, fields: Dict[str, Any], tags: Optional[Dict[str, Any]] = None,
                  time_stamp: Union[int, str, None] = None):
         if(not table):
             raise ValueError("need table to create query")
@@ -102,7 +103,7 @@ class InsertQuery:
         self.__time_stamp = SppUtils.to_epoch_secs(time_stamp)
         fields = self.format_fields(fields)
 
-        # make sure you have some fields if they are not privided
+        # make sure you have some fields if they are not provided
         if(not list(filter(lambda field_tup: field_tup[1] is not None, fields.items()))):
             # need default def to be able to do anything
             if(not table.fields):
@@ -126,7 +127,7 @@ class InsertQuery:
         return f"InsertQuery: {self.to_query()}"
 
     def to_query(self) -> str:
-        """Comutes the query into a string, returning it.
+        """Computes the query into a string, returning it.
 
         Returns:
             str -- a full functional insert query as string
@@ -225,8 +226,10 @@ class SelectionQuery:
     Use `to_query` to format data into a string. You may create instances outside of influx_client.
 
     Attributes:
-        tables - table instances which get queried
+        table - table instances which get queried
         keyword - type of query
+        into_table - table instance to be inserted into
+        alt_rp - alternative retention policy to query from
 
     Methods:
         to_query - computes query into string
@@ -234,9 +237,9 @@ class SelectionQuery:
     """
 
     @property
-    def tables(self) -> List[Structures.Table]:
-        """table instances which get queried"""
-        return self.__tables
+    def table_or_query(self) -> Union[Structures.Table, SelectionQuery]:
+        """table instance or inner query which get selected on"""
+        return self.__table_or_query
 
     @property
     def keyword(self) -> Keyword:
@@ -248,33 +251,50 @@ class SelectionQuery:
         """table instances which get inserted into"""
         return self.__into_table
 
-    def __init__(self, keyword: Keyword, tables: List[Structures.Table],
+    @property
+    def alt_rp(self) -> Optional[Structures.RetentionPolicy]:
+        """alternative retention policy to query from"""
+        return self.__alt_rp
+
+    def __init__(self, keyword: Keyword,
+                 table_or_query: Union[Structures.Table, SelectionQuery],
+                 alt_rp: Optional[Structures.RetentionPolicy] = None,
                  into_table: Optional[Structures.Table] = None,
-                 fields: List[str] = None, where_str: str = None,
-                 group_list: List[str] = None, order_direction: str = None,
-                 limit: int = 0, s_limit: int = 0):
+                 fields: Optional[List[str]] = None,
+                 where_str: Optional[str] = None,
+                 group_list: Optional[List[str]] = None,
+                 order_direction: Optional[str] = None,
+                 limit: int = 0, s_limit: int = 0
+                 ):
+
         if(keyword is None or not isinstance(keyword, Keyword)):
             raise ValueError("Supported keyword is needed to create query.")
         if(keyword is Keyword.DELETE and
            (into_table or fields or group_list or
             order_direction or limit or s_limit)):
             raise ValueError("Delete statement does not support additional fields")
-        if(not tables):
+        if(not table_or_query):
             raise ValueError("need a table to gather information from")
         if(limit is None):
             limit = 0
         if(s_limit is None):
             s_limit = 0
 
-        if(fields is not None and fields == []):
+        if(fields == []):
             fields = ['*']
         self.__fields = fields
 
+        # If group list is none, do not group.
         if(group_list is not None and group_list == []):
             group_list = ['*']
         self.__group_list = group_list
 
-        self.__tables = tables
+        if isinstance(table_or_query, SelectionQuery):
+            if keyword is not Keyword.SELECT:
+                raise ValueError("Inner Queries only work with Selection queries")
+        self.__table_or_query = table_or_query
+
+        self.__alt_rp = alt_rp
         self.__into_table = into_table
         self.__where_str = where_str
         self.__keyword = keyword
@@ -294,7 +314,7 @@ class SelectionQuery:
         return f"SelectionQuery: {self.to_query()}"
 
     def to_query(self) -> str:
-        """Comutes the query into a string, returning it.
+        """Computes the query into a string, returning it.
 
         Returns:
             str -- a full functional selection query as string
@@ -319,14 +339,15 @@ class SelectionQuery:
         # ##### FROM #######
         # not table.name used to allow retention policy to be included
         # DELETE does not allow RP to be included
-        if(self.keyword == Keyword.DELETE):
-            tables_str = 'FROM {tables}'.format(
-            tables=', '.join(
-                map(lambda table: f'{table.name}', self.tables)))
+        if isinstance(self.table_or_query, SelectionQuery):
+            table_str = f"FROM ({self.table_or_query.to_query()})"
+        elif(self.keyword == Keyword.DELETE):
+            table_str = f"FROM {self.table_or_query.name}"
+        elif(self.alt_rp):
+            # the retention policy includes an optionally changed database
+            table_str = f"FROM {self.alt_rp}.{self.table_or_query.name}"
         else:
-            tables_str = 'FROM {tables}'.format(
-                tables=', '.join(
-                    map(lambda table: f'{table}', self.tables)))
+            table_str = f"FROM {self.table_or_query}"
 
         # ##### WHERE ######
         if(self.__where_str is not None and self.__where_str):
@@ -370,7 +391,7 @@ class SelectionQuery:
             keyword=self.keyword,
             into=into_str,
             clause=fields_str,
-            tables=tables_str,
+            tables=table_str,
             where=where_str,
             group=group_str,
             order=order_str,
@@ -381,7 +402,7 @@ class SelectionQuery:
 class ContinuousQuery:
     """Structure for a Continuous Query with a SELECT-INTO-Query inside.
 
-    Use `to_query` to format data into a string. Do not create a instance outside of module `definitons.py`
+    Use `to_query` to format data into a string. Do not create a instance outside of module `definitions.py`
     __eq__ and __hash__ implemented for SET-use.
 
     Attributes:

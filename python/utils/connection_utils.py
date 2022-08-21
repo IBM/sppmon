@@ -11,7 +11,7 @@
  U.S. Government Users Restricted Rights:  Use, duplication or disclosure
  restricted by GSA ADP Schedule Contract with IBM Corp.
 
- ---------------------------------------------------------------------------------------------- 
+ ----------------------------------------------------------------------------------------------
 SPDX-License-Identifier: Apache-2.0
 
 Repository:
@@ -35,7 +35,7 @@ import urllib.parse as parse
 from requests.models import Response
 
 from utils.spp_utils import SppUtils
-from utils.execption_utils import ExceptionUtils
+from utils.exception_utils import ExceptionUtils
 
 
 LOGGER = logging.getLogger("sppmon")
@@ -276,7 +276,7 @@ class ConnectionUtils:
 
             new_result: Dict[str, Any] = {}
 
-            # Only aquire items wanted
+            # Only acquire items wanted
             if(allow_list):
 
                 for allow_key in allow_list:
@@ -288,11 +288,11 @@ class ConnectionUtils:
                 # warn if something is missing
                 if(len(new_result) != len(allow_list)):
                     ExceptionUtils.error_message(
-                        f"Result has not same lenght as allowlist, probably typing error: {result_list}")
+                        f"Result has not same length as allowlist, probably typing error: {result_list}")
 
-            # aquire all but few unwanted
+            # acquire all but few unwanted
             if(ignore_list is not None):
-                # add sub-dicts to dictonary itself, filtering inclusive
+                # add sub-dicts to dictionary itself, filtering inclusive
                 full_result = cls.get_with_sub_values(mydict=result, ignore_list=ignore_list)
                 new_result.update(full_result)
 
