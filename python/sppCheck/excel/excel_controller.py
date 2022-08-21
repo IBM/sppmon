@@ -88,7 +88,7 @@ class ExcelController:
         excel_structure_name = "excel_structure"
         excel_structure_path = json_structure_path.joinpath(f"{excel_structure_name}_{sizer_version}.json")
         if(not exists(excel_structure_path)):
-            raise ValueError(f"The excel structure file does not exits: {excel_structure_path}")
+            raise ValueError(f"The this version of the Blueprint Sizer sheet is not supported. Please try using another version.")
         self.__excel_structure_path = excel_structure_path
 
         if not influx_client:
