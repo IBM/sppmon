@@ -596,7 +596,7 @@ class Definitions:
                 #         count(distinct(host)) AS nrHosts\
                 #         INTO {cls.RP_DAYS_90()}.vmStats FROM {cls.RP_DAYS_14()}.vms GROUP BY \
                 #         time(1d)"
-                #         # TODO: Issue with vmCount per x, no solution found yet.
+                #         # Issue with vmCount per x, no solution found yet.
                 #         # see Issue #93
                 # )
             ]

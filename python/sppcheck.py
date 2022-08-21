@@ -53,7 +53,7 @@ VERSION = "1.0  (2022/08/21)"
 # command line parameter parsing
 # ----------------------------------------------------------------------------
 parser = ArgumentParser(
-    # exit_on_error=False, TODO: Enable in python version 3.9
+    exit_on_error=False,
     description="""
 SPPCheck is a system requirement verification and prediction tool aiming to enhance the existing functionality by verifying whether a system was set up correctly according to IBM's recommendations and predicting its future development.
 It focuses on the storage consumption of all associated vSnaps and the server's memory and catalog space and is open to future expansion of its capabilities.
@@ -97,15 +97,13 @@ try:
     ARGS = parser.parse_args()
 except SystemExit as exit_code:
     if(exit_code.code != SUCCESS_CODE):
-        # TODO
-        print("> Error when reading the Sizing tool arguments.", file=sys.stderr)
+        print("> Error when reading SPPCheck's arguments.", file=sys.stderr)
         print("> Please make sure to specify a config file and check the spelling of your arguments.", file=sys.stderr)
         print("> Use --help to display all argument options and requirements", file=sys.stderr)
     exit(exit_code)
 except ArgumentError as error:
     print(error.message)
-    # TODO
-    print("> Error when reading the Sizing tools arguments.", file=sys.stderr)
+    print("> Error when reading SPPCheck's arguments.", file=sys.stderr)
     print("> Please make sure to specify a config file and check the spelling of your arguments.", file=sys.stderr)
     print("> Use --help to display all argument options and requirements", file=sys.stderr)
     exit(ERROR_CODE_CMD_ARGS)

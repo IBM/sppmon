@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] - yyyy-mm-dd
+## SPPMon [Unreleased] - yyyy-mm-dd
 
 ### Added
 
@@ -15,12 +15,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Known Issues
 
-## [1.3.0] - 2022-08-21
+## SPPCheck [Unreleased] - yyyy-mm-dd
 
 ### Added
 
-* SPPCheck function and internal structure
-* Added Grafana Dashboard for SPPCheck
+### Changed
+
+### Fixed
+
+### Known Issues
+
+## [1.2.1] - 2022-08-21
+
+### Added
+
+* Release of SPPCheck v1.0.0
+  * Its changes will be logged within this file
+  * SPPCheck function and internal structure
+  * Added Grafana Dashboard for SPPCheck
 
 ### Changed
 
