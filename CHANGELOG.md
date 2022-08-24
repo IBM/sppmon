@@ -55,6 +55,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Known Issues
 
+* The Grafana Dashboards are missing the alerts. This is known and will be fixed within the next patch (see #115 )
 * SPPCheck lacks a lot of documentation, which is to be delivered on a later date.
 
 ## [1.2.0] - 2022-06-17
