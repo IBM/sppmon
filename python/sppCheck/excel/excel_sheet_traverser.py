@@ -41,7 +41,7 @@ LOGGER_NAME = 'sppmon'
 LOGGER = getLogger(LOGGER_NAME)
 
 
-class ExcelDictBuilder:
+class ExcelSheetTraverser:
 
     upper_name: ClassVar[str] = "upper"
     ignore_name: ClassVar[str] = "ignore"
@@ -69,7 +69,7 @@ class ExcelDictBuilder:
 
 
         self.result: Dict[str, Tuple[Optional[str], Series]] = {}
-        """Content: unique_key -> table, value_key, (unit, series)"""
+        """Content: unique_key -> (optional unit, series)"""
         self.missing_items: List[str] = []
         self.__prefix: str = self.__calc_prefix(self.rec_dict)
 

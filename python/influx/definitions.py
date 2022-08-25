@@ -596,7 +596,7 @@ class Definitions:
                 #         count(distinct(host)) AS nrHosts\
                 #         INTO {cls.RP_DAYS_90()}.vmStats FROM {cls.RP_DAYS_14()}.vms GROUP BY \
                 #         time(1d)"
-                #         # TODO: Issue with vmCount per x, no solution found yet.
+                #         # Issue with vmCount per x, no solution found yet.
                 #         # see Issue #93
                 # )
             ]
@@ -1290,19 +1290,20 @@ class Definitions:
 
         if basename(__main__.__file__) == "sppcheck.py":
 
-            import sppCheck.excel.excel_reader as er
-            import sppCheck.predictor.predictor_influx_connector as p_i_c
+            from sppCheck.excel.excel_controller import ExcelController
+            from sppCheck.predictor.predictor_influx_connector import PredictorInfluxConnector
 
             cls.add_predef_table(
-                name=p_i_c.PredictorInfluxConnector.sppcheck_table_name,
+                name=PredictorInfluxConnector.sppcheck_table_name,
                 fields={
-                    p_i_c.PredictorInfluxConnector.sppcheck_value_name:                    Datatype.INT,
+                    PredictorInfluxConnector.sppcheck_value_name:                    Datatype.INT,
                 },
                 tags=[
-                    p_i_c.PredictorInfluxConnector.sppcheck_tag_name,
+                    PredictorInfluxConnector.sppcheck_metric_tag,
+                    PredictorInfluxConnector.sppcheck_group_tag,
+                    PredictorInfluxConnector.sppcheck_group_tag_name,
                     "site",
                     "siteName"
-
                 ],
                 # this rp is unused, but in here for safety. Overwritten by prediction-RP
                 retention_policy=cls.RP_INF(),
@@ -1312,18 +1313,44 @@ class Definitions:
             )
 
             cls.add_predef_table(
-                name=er.ExcelReader.sppcheck_excel_table_name,
+                name=ExcelController.sppcheck_excel_table_name,
                 fields={
-                    er.ExcelReader.sppcheck_excel_value_name:                    Datatype.INT,
+                    ExcelController.sppcheck_excel_value_name:                    Datatype.INT,
                 },
                 tags=[
-                    er.ExcelReader.sppcheck_excel_tag_name,
+                    ExcelController.sppcheck_excel_metric_tag,
                 ],
-                # this rp is unused, but in here for safety. Overwritten by excel-RP
+                # this rp is unused, but redundancy in case of an error. Overwritten by excel-RP
                 retention_policy=cls.RP_INF(),
                 # No continuous queries
                 # timekey unset -> default key
 
+            )
+
+            cls.add_predef_table(
+                name='sppcheck_metrics',
+                fields={
+                    'duration':         Datatype.INT,
+                    'errorCount':       Datatype.INT,
+                    'errorMessages':    Datatype.STRING
+                },
+                tags=[
+                    "configFile",
+                    'influxdb_version',
+                    'sppcheck_version',
+                    'sheetPath',
+                    'sizerVersion',
+                    'startDate',
+                    'genFakeData',
+                    'predictYears',
+                    'pdfReport',
+                    'latestData',
+                    'fakeData',
+                    'theme'
+                ],
+                retention_policy=cls.RP_INF(),
+                # No continuous queries
+                # timekey unset -> default key
             )
 
 

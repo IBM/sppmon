@@ -1,0 +1,171 @@
+/*
+Printing settings are at the bottom of the file
+*/
+
+.header_space, .header {
+    height: 60px;
+}
+
+.header, .header_left ,.header_right{
+	line-height:50px;
+    font-size:25px;
+}
+
+.header{
+	width:100%;
+    position: fixed;
+    top: 0;
+
+	font-family:verdana;
+    margin:0em;
+}
+
+.header_left{
+	text-align:left;
+	float:left;
+	padding-left:1em;
+}
+
+.print_button {
+    padding-left: 1em;
+    margin-left: 1em;
+}
+
+.header_right{
+	text-align:right;
+	float:right;
+	padding-right:1em;
+}
+
+.title_center{
+    margin: 0
+}
+
+.overview_section, .individual_section, .middle_section_a, .middle_section_b, .inner_section_a, .inner_section_b, .inner_section_table_a , .inner_section_table_b {
+    padding: 1em;
+    margin: 1em;
+}
+
+.my_img {
+    object-fit: scale-down;
+}
+
+.individual_report_img {
+    max-width: 1000px;
+    width: 100%;
+    height: auto;
+}
+
+h5 {
+    margin-top: 1em;
+}
+
+/* Table content with a "good" value" */
+.my_good_table {
+    /*color: green;*/
+    background-color: #24a148 !important;
+}
+
+/* Table content with a "bad" value" */
+.my_bad_table {
+    /*color:red;*/
+    background-color: #da1e28 !important;
+}
+
+/* Table content with a "neutral" value" */
+.my_na_table {
+    /*color: orange;*/
+    background-color: #ff832b !important;
+}
+
+.my_td, .my_table, .my_table_header {
+    border-width: 2px !important;
+}
+
+/* Text content with a "good" meaning, but not directly pointing to a image/representation */
+/* Text content with a "bad" meaning, but not directly pointing to a image/representation */
+.my_text_good, .my_text_bad {
+    font-weight: bolder;
+}
+
+/* Text content directly pointing to a image/representation, having a positive value with the same color */
+.my_text_positive_value {
+    color: #24a148;
+    font-weight: bolder;
+}
+
+/* Text content directly pointing to a image/representation, having a negative value with the same color */
+.my_text_negative_value {
+    color: #da1e28;
+    font-weight: bolder;
+}
+
+.my_text_neutral_value {
+    color: #ff832b;
+    font-weight: bolder;
+}
+
+/* Text content directly pointing to the used line of a Graph with the same color */
+.my_text_used_line {
+    color:blue;
+    font-weight: bolder;
+}
+
+/* Text content directly pointing to the available line of a Graph with the same color */
+.my_text_available_line  {
+    color:purple;
+    font-weight: bolder;
+}
+
+/* Text content directly pointing to the blueprint sizer estimation line of a Graph with the same color */
+.my_text_excel_line  {
+    color:darkorange;
+    font-weight: bolder;
+}
+
+/* Text content directly pointing to the blueprint sizer estimation with reserve line of a Graph with the same color */
+.my_text_excel_reserve_line  {
+    color:red;
+    font-weight: bolder;
+}
+
+
+@page {
+    size: A3;
+    margin: 0;
+}
+
+@media print{
+
+    thead {
+        display: table-header-group;
+    }
+    body {
+        margin: 0;
+    }
+
+    .title_center{
+        height: 10%;
+        padding: auto;
+    }
+    .print_button {
+        display: none;
+    }
+
+    body, .my_caption, .my_table_header, .my_table_metrics_name, .my_td {
+        font-size: 15pt;
+    }
+
+    .overview_section, .individual_section, .middle_section_a, .middle_section_b, .inner_section_a, .inner_section_b, .inner_section_table_a, .inner_section_table_b {
+        page-break-after: always;
+    }
+
+    .overview_section:last-child, .individual_section:last-child, .middle_section_a:last-child, .middle_section_b:last-child, .inner_section_a:last-child, .inner_section_b:last-child, .inner_section_table_a:last-child, .inner_section_table_b:last-child {
+        page-break-after: avoid;
+    }
+
+    .inner_section_a, .inner_section_b, .inner_section_table_a, .inner_section_table_b {
+        page-break-inside: avoid;
+    }
+
+}

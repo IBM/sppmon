@@ -1,0 +1,80 @@
+.bbackground {
+    background-color: #ffffff; /* White */
+    /*required only for the margins */
+    color: black;
+}
+
+.header{
+	background-color:#393939; /*Gray 80*/
+	color:#edf5ff; /*Blue 10*/
+}
+
+
+.title_center{
+    background-color: #001141; /*Blue 100*/
+    color: white;
+}
+
+/*
+Background:
+- white
+
+Overview:
+- Gray 40
+- Gray 30/20 inner Metrics
+
+Individual:
+- Gray 50 with alternating 40/30 (middle)
+- Gray 20/10 inner metrics
+
+*/
+
+.overview_section {
+    background-color: #f4f4f4; /*Gray 40*/
+}
+
+.individual_section {
+    background-color: #f4f4f4; /*Gray 50*/
+}
+
+.middle_section_a {
+    background-color: #ffffff; /*Gray 40*/
+}
+
+.middle_section_b {
+    background-color:#ffffff; /* Gray 30 */
+}
+
+
+.inner_section_a {
+    background-color: #f4f4f4; /*Gray 20*/
+}
+
+.inner_section_b {
+    background-color: #f4f4f4; /*Gray 10*/
+}
+
+.inner_section_table_a {
+    background-color: #ffffff; /*Gray 20*/
+}
+
+.inner_section_table_b {
+    background-color: #ffffff; /*Gray 10*/
+}
+
+
+.my_caption {
+    color: black;
+}
+
+.my_td, .my_table, .my_table_header {
+    border-color: white;
+}
+
+.my_table_header{
+    background-color: #a8a8a8 !important; /*Gray 40*/
+}
+
+.my_table_metrics_name{
+    background-color: #c6c6c6 !important; /*Gray 30*/
+}

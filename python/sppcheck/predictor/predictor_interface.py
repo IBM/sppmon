@@ -35,12 +35,14 @@ from pandas import Series
 
 class PredictorInterface(ABC):
 
-  @abstractmethod
-  def data_preparation(self, predict_data: Dict[int, Union[int, float]], dp_freq_hour: int) -> Series:
-    raise NotImplementedError
+    @abstractmethod
+    def data_preparation(self,
+                         predict_data: Dict[int, Union[int, float]],
+                         dp_freq_hour: int) -> Series:
+        raise NotImplementedError
 
-  @abstractmethod
-  def predict_data(self,
-                  data_series: Series,
-                  forecast_years: float) -> Series:
-    raise NotImplementedError
+    @abstractmethod
+    def predict_data(self,
+                     data_series: Series,
+                     forecast_years: float) -> Series:
+        raise NotImplementedError

@@ -107,49 +107,81 @@ class SppUtils:
         logger.addHandler(file_handler)
         logger.addHandler(stream_handler)
 
-    @staticmethod
-    def check_pid_file(pid_file_path: str, ARGS: Namespace) -> bool:
-        if(ARGS.verbose):
+    @classmethod
+    def check_pid_file(cls, pid_file_path: str, ARGS: Namespace) -> bool:
+        if(cls.verbose):
             LOGGER.info("Checking for other running instances with same arguments")
         LOGGER.debug(f"PID-File path: {pid_file_path}")
-        try:
-            try:
+        try: # global try block
+
+
+            #### Check for existing PID's ####
+
+            try: # open file block
                 with open(pid_file_path, "rt", encoding="utf8") as file:
-                    match_list = re.findall(r"(\d+) " + str(ARGS), file.read())
-                deleted_processes: List[str] = []
-                for match in match_list:
-                    # add spaces to make clear the whole number is matched
-                    match = f' {match} '
-                    try:
-                        if(os.name == 'nt'):
-                            args = ['ps', '-W']
-                        else:
-                            args = ['ps', '-p', match]
-                        result = subprocess.run(args, check=True, capture_output=True)
-                        if(re.search(match, str(result.stdout))):
-                            return False
-                        # not in there -> delete entry
-                        deleted_processes.append(match)
-                    except CalledProcessError:
-                        deleted_processes.append(match)
-
-                # delete processes which did get killed, not often called
-                if(deleted_processes):
-                    with open(pid_file_path, "rt", encoding="utf8") as file:
-                        file_str = file.read()
-                    options = str(ARGS)
-                    for pid in deleted_processes:
-                        file_str = file_str.replace(f"{pid} {options}", "")
-                    # do not delete if empty since we will use it below
-                    with open(pid_file_path, "wt", encoding="utf8") as file:
-                        file.write(file_str.strip())
-
+                    file_content = file.read()
+                    LOGGER.debug(f"> Content of PID-File: {file_content}")
+                    match_list = re.findall(r"\s?(\d+)\s(Namespace\([^\)]+\))\s?", file_content)
             except FileNotFoundError:
                 pass  # no file created yet
+                match_list = []
+                # skip the next section
+
+            #### Delete existing, but already completed PID's ####
+            # If any instance is still running, check for same args
+
+            deleted_processes: List[str] = []
+            for match_pid, match_args in match_list:
+
+                if(os.name == 'nt'): # windows
+                    args = ['tasklist', '/FI', f"PID eq {match_pid}"]
+                else: # linux
+                    args = ['ps', '-p', str(match_pid)]
+                LOGGER.debug(f">> Running subprocess with following args: {args}")
+                try:
+                    result = subprocess.run(args, capture_output=True)
+                    result_stdout = result.stdout
+                    LOGGER.debug(f">> Output of subprocess: {result_stdout}")
+                    if result.stderr:
+                        ExceptionUtils.error_message(f"Subprocess has error output, probably another SPPMon version running: {result.stderr}")
+                    if(re.search(match_pid, str(result_stdout))):
+                        LOGGER.debug(f">> Found a still running process with PID {match_pid} and arguments: {match_args}")
+
+                        if match_args.strip() == str(ARGS).strip():
+                            LOGGER.debug(f">> Instance with PID {match_pid} has the same arguments as this execution: {match_args}")
+                            # ABORT - Another instance is running with the same args
+                            return False
+
+                    deleted_processes.append(match_pid)
+                except CalledProcessError as error:
+                    ExceptionUtils.exception_info(error,
+                    f"Error when checking for PID {match_pid} with own PID {os.getpid()}, please report to develop team. Used command: {args}")
+
+            # delete processes which did get killed, not often called
+            # initialize file_str
+            file_str: str = ""
+            if(deleted_processes):
+                LOGGER.debug(f"> Found {len(deleted_processes)} Ids to delete: {deleted_processes}")
+                # re-open in case of a newly started program during longer subprocess execution
+                # still possibility to overwrite, but smaller
+                with open(pid_file_path, "rt", encoding="utf8") as file:
+                    file_str = file.read()
+
+                # iterate over PIDs and delete the entries in the string
+                for pid in deleted_processes:
+                    file_str = re.sub(rf"\s?({pid})\s(Namespace\([^\)]+\))\s?", "", file_str)
+
+            #### Appending own PID to pid file ####
+            LOGGER.debug(f"> Appending own PID with args to PID-File.")
+            # new line at start to separate from previous entry. Otherwise removed with the strip.
+            file_str += f"\n{os.getpid()} {str(ARGS)}"
+            LOGGER.debug(f"> new content of PID file: {file_str}")
 
             # always write your own pid into it
-            with open(pid_file_path, "at", encoding="utf8") as file:
-                file.write(f"{os.getpid()} {str(ARGS)}")
+            LOGGER.debug("> Writing new PID-Lines into the PID file")
+            with open(pid_file_path, "wt", encoding="utf8") as file:
+                # Strip to avoid multiple white spaces at start or end of file.
+                file.write(file_str.strip())
             return True
         except Exception as error:
             ExceptionUtils.exception_info(error)
@@ -160,24 +192,30 @@ class SppUtils:
         try:
             with open(pid_file_path, "rt", encoding="utf8") as file:
                 file_str = file.read()
+                LOGGER.debug(f"> Current content of PID file: {file_str}")
+
+            # remove the pid entry of this execution
             new_file_str = file_str.replace(f"{os.getpid()} {str(ARGS)}", "").strip()
+            LOGGER.debug(f"> New content of PID file: {new_file_str}")
             if(not new_file_str.strip()):
+                LOGGER.debug(f"> Removing PID file")
                 os.remove(pid_file_path)
             else:
+                LOGGER.debug(f"> Overwriting PID file")
                 with open(pid_file_path, "wt", encoding="utf8") as file:
                     file.write(new_file_str)
         except Exception as error:
             ExceptionUtils.exception_info(error, "Error when removing pid_file")
 
     @staticmethod
-    def mk_logger_file(conf_file_path: str, fileending: str) -> str:
-        """returns a filepath to spectrum-protect-sppmon/sppmonLogs/FILE out of the config file + a new fileending.
+    def mk_logger_file(conf_file_path: str, log_dir_name: str,  file_ending: str) -> str:
+        """returns a filepath to spectrum-protect-sppmon/sppmonLogs/FILE out of the config file + a new file ending.
 
         Creates both parent dirs and log file.
 
         Args:
-            conf_file (str): name of the configfile incl. path
-            fileending (str): the new fileending
+            conf_file (str): name of the config file incl. path
+            file_ending (str): the new file ending
 
         Returns:
             str: full path to the file
@@ -189,16 +227,16 @@ class SppUtils:
             # get everything behind the last slash
             config_name = os.path.basename(real_path)
 
-            # get name without fileending by taking the second last item
+            # get name without file ending by taking the second last item
             try:
                 config_name = config_name.split('.')[-2]
             except IndexError as error:
-                ExceptionUtils.exception_info(error, "The config-file seems to not have a correct fileending")
+                ExceptionUtils.exception_info(error, "The config-file seems to not have a correct file ending")
                 raise ValueError("Unable to read the config file due a error within the specified path.")
 
-            logger_file_name = config_name + fileending
+            logger_file_name = config_name + file_ending
         else:
-            logger_file_name = "no_config_file" + fileending
+            logger_file_name = "no_config_file" + file_ending
 
         # gets location of defined function -> it is defined here, dummy function
         sppmon_path = getsourcefile(lambda: 0)
@@ -208,7 +246,7 @@ class SppUtils:
         sppmon_path = join(sppmon_path, "..", "..", "..")
         sppmon_path = abspath(sppmon_path)
 
-        logger_dir_path = join(sppmon_path, "sppmonLogs")
+        logger_dir_path = join(sppmon_path, log_dir_name)
         logger_dir_path = abspath(logger_dir_path)
         # create if not existent
         Path(logger_dir_path).mkdir(parents=True, exist_ok=True)
@@ -245,13 +283,11 @@ class SppUtils:
                     settings = json.load(config_file)
                 except json.decoder.JSONDecodeError as error:  # type: ignore
                     ExceptionUtils.exception_info(error=error)  # type: ignore
-                    raise ValueError("parameter file '{config_file}' not consistent"
-                                     .format(config_file=config_file_path)) from error
+                    raise ValueError(f"parameter file '{config_file_path}' not consistent") from error
 
         except FileNotFoundError as error:
             ExceptionUtils.exception_info(error)
-            raise ValueError("parameter file '{config_file}' not found"
-                             .format(config_file=config_file_path)) from error
+            raise ValueError(f"parameter file '{config_file_path}' not found") from error
 
         return settings
 

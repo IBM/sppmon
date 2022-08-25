@@ -7,7 +7,7 @@
 !.vscode/tasks.json
 #!.vscode/launch.json
 !.vscode/extensions.json
-*.code-workspace
+#*.code-workspace
 
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
@@ -185,6 +185,6 @@ python.sln
 # line counter
 .VSCodeCounter
 
-# sppcheck pictures
-sppcheck/report/pictures/*
-!sppcheck/report/pictures/.gitkeep
+# sppcheck temp files
+# created when executing SPPCheck
+sppcheck/report/temp_files/*

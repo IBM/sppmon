@@ -5,23 +5,58 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] - yyyy-mm-dd
+## SPPMon [Unreleased] - yyyy-mm-dd
 
 ### Added
 
-* SPPCheck function and internal structure
-  * Unfinished yet, though first results are available.
-* Added Grafana Dashboard for SPPCheck
+### Changed
+
+### Fixed
+
+### Known Issues
+
+## SPPCheck [Unreleased] - yyyy-mm-dd
+
+### Added
 
 ### Changed
 
-* Upgraded CodeQL to v2
+### Fixed
+
+### Known Issues
+
+## [1.2.1] - 2022-08-21
+
+### Added
+
+* Release of SPPCheck v1.0.0
+  * Its changes will be logged within this file
+  * SPPCheck function and internal structure
+  * Added Grafana Dashboard for SPPCheck
+
+### Changed
+
+* Upgraded CodeQL to v3
+* Extended `SppUtils.mk_logger_file` method by an logger_dir argument to allow different log files for SPPMon and SPPCheck
+  * Added "sppcheckLogs" to the gitignore file.
+* Moved all cSpell settings from the workspace file to the settings file
+* Removed/Moved total count of exceptions during execution
+* Moved verbose setting of sub-modules into init method to avoid issues and clarify program structure
+* Error-Messages now have the prefix "ERROR: "
+* Added InfluxClient function "get_list_rp" to query all retention policies, moving it out of existing functionality
 
 ### Fixed
 
 * Code scanning alert #2 and #3: Printing passwords into logger due to an faulty if-expression.
+* CheckPID file now uses the class-verbose setting and no longer ARGS-Verbose, making it independent of actual args.
+* Fixed PID file checks under windows
+* Fixed PID file entries not being deleted.
+* Removed unnecessary and confusing check when creating a SelectionQuery
 
 ### Known Issues
+
+* The Grafana Dashboards are missing the alerts. This is known and will be fixed within the next patch (see #115 )
+* SPPCheck lacks a lot of documentation, which is to be delivered on a later date.
 
 ## [1.2.0] - 2022-06-17
 
@@ -36,6 +71,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Prints total count of errors during the execution if there are any - instead of "script finished" output
 * Added type spelling dictionary to the settings file
 * Added linting settings to the settings file
+* Added two new tables to the definitions.py file which are only executed if SPPCheck is executed.
 
 ### Changed
 
@@ -63,6 +99,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Known Issues
 
 * In newer Grafana versions the dashboard import might corrupt the datasource name. A fix is unavailable yet, though the error is only visual.
+* Some typos in the table definitions (commited / uncommited) cannot be fixed. This would not be backward-compatible and break the database.
 
 ## [1.1.1] - 2022-02-22
 
