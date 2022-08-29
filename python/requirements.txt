@@ -6,7 +6,7 @@
 #
 
 #manual add
-pandas-stubs==1.2.0.58
+pandas-stubs==1.4.3.220829
 openpyxl==2.4.2
 pyxlsb==1.0.9
 
