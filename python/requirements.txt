@@ -50,11 +50,11 @@ pandas==1.4.3
     #   statsmodels
 pandas-stubs==1.4.3.220829
     # via -r ./python/requirements.txt
-paramiko==2.7.2
+paramiko==2.11.0
     # via -r ./python/requirements.txt
 patsy==0.5.2
     # via statsmodels
-prettytable==2.2.0
+prettytable==3.4.0
     # via -r ./python/requirements.txt
 pycparser==2.21
     # via cffi
@@ -73,7 +73,7 @@ pytz==2022.2.1
     #   pandas
 pyxlsb==1.0.9
     # via -r ./python/requirements.txt
-requests==2.26.0
+requests==2.28.1
     # via
     #   -r ./python/requirements.txt
     #   influxdb
