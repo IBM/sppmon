@@ -84,6 +84,7 @@ Author:
  02/22/2021 version 1.1.1  Only ssh-calls the vSnap-api if it is available
  06/17/2022 version 1.2.0  Change of logfile location, bug and documentation fixes. Removes deprecated functions.
  08/21/2022 version 1.2.1  Bugfixes and changes from SPPCheck
+ 08/21/2022 version 1.2.2  Upgrade of the requirements file, removal of Python10 features
 
 """
 from __future__ import annotations
@@ -112,7 +113,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "1.2.1  (2022/08/21)"
+VERSION = "1.2.2  (2022/08/30)"
 
 
 # ----------------------------------------------------------------------------
