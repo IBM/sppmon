@@ -5,55 +5,94 @@
 #    pip-compile --allow-unsafe ./python/requirements.txt
 #
 
-#manual add
-pandas-stubs==1.2.0.58
-openpyxl==2.4.2
-pyxlsb==1.0.9
+# manually added
+# pandas-stubs
+# openpyxl
+# pyxlsb
 
-##
+###
 
-bcrypt==3.2.2
+
+bcrypt==4.0.0
     # via paramiko
 certifi==2022.6.15
     # via requests
 cffi==1.15.1
     # via
-    #   bcrypt
     #   cryptography
     #   pynacl
-charset-normalizer==2.1.0
+charset-normalizer==2.0.12
     # via requests
 cryptography==37.0.4
     # via paramiko
+et-xmlfile==1.1.0
+    # via openpyxl
 idna==3.3
     # via requests
 influxdb==5.3.1
     # via -r ./python/requirements.txt
 msgpack==1.0.4
     # via influxdb
-paramiko==2.11.0
+numpy==1.23.2
+    # via
+    #   -r ./python/requirements.txt
+    #   pandas
+    #   patsy
+    #   scipy
+    #   statsmodels
+openpyxl==3.0.10
     # via -r ./python/requirements.txt
-prettytable==3.3.0
+packaging==21.3
+    # via statsmodels
+pandas==1.4.3
+    # via
+    #   -r ./python/requirements.txt
+    #   statsmodels
+pandas-stubs==1.4.3.220829
+    # via -r ./python/requirements.txt
+paramiko==2.7.2
+    # via -r ./python/requirements.txt
+patsy==0.5.2
+    # via statsmodels
+prettytable==2.2.0
     # via -r ./python/requirements.txt
 pycparser==2.21
     # via cffi
 pynacl==1.5.0
     # via paramiko
+pyparsing==3.0.9
+    # via packaging
 python-dateutil==2.8.2
-    # via influxdb
-pytz==2022.2.1
-    # via influxdb
-requests==2.28.1
     # via
     #   -r ./python/requirements.txt
     #   influxdb
+    #   pandas
+pytz==2022.2.1
+    # via
+    #   influxdb
+    #   pandas
+pyxlsb==1.0.9
+    # via -r ./python/requirements.txt
+requests==2.26.0
+    # via
+    #   -r ./python/requirements.txt
+    #   influxdb
+scipy==1.9.1
+    # via
+    #   -r ./python/requirements.txt
+    #   statsmodels
 six==1.16.0
     # via
-    #   bcrypt
     #   influxdb
-    #   pynacl
+    #   patsy
     #   python-dateutil
+statsmodels==0.13.2
+    # via -r ./python/requirements.txt
+types-pytz==2022.2.1.0
+    # via pandas-stubs
 urllib3==1.26.7
-    # via requests
+    # via
+    #   -r ./python/requirements.txt
+    #   requests
 wcwidth==0.2.5
     # via prettytable
