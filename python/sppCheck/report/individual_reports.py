@@ -29,7 +29,7 @@ Classes:
 
 import logging
 from datetime import date, datetime
-from typing import ClassVar, Dict, List, Optional, Tuple
+from typing import ClassVar, Dict, List, Optional, Tuple, Union
 
 from sppCheck.predictor.predictor_influx_connector import \
     PredictorInfluxConnector
@@ -51,7 +51,7 @@ OverviewDataStruct = List[
                     Tuple[
                         int,        # timestamp
                         int,        # time diff between both timestamps in seconds
-                        int|float,  # value difference between the points
+                        Union[int,float],  # value difference between the points
                         int         # percent of metric one to metric two (90 to 75 -> 78%)
                         ]]]
         ]
@@ -67,7 +67,7 @@ Tuple[
             Tuple
                 int: timestamp
                 int: time diff between both timestamps in seconds
-                int|float: value difference between the points
+                Union[int,float]: value difference between the points
                 int: percent of metric one to metric two (90 to 75 -> 78%)
 ]]]]]
 """

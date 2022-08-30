@@ -286,9 +286,9 @@ class SppMon:
     initial_connection_timeout: float = 6.05
     """Time spend waiting for the initial connection, slightly larger than 3 multiple"""
 
-    request_timeout: int | None = 60
+    request_timeout: Union[int, None] = 60
     """timeout for api-requests, none deactivates timeout"""
-    loaded_request_timeout: int | None = 180
+    loaded_request_timeout: Union[int, None] = 180
     """timeout on loaded systems, none deactivates timeout"""
 
     max_send_retries: int = 3
