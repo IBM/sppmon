@@ -54,7 +54,7 @@ paramiko==2.7.2
     # via -r ./python/requirements.txt
 patsy==0.5.2
     # via statsmodels
-prettytable==2.2.0
+prettytable==3.4.0
     # via -r ./python/requirements.txt
 pycparser==2.21
     # via cffi
