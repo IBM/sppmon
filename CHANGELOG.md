@@ -37,13 +37,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Removed Python 10 features, allowing compatibility with python 8.
 
 ## SPPCheck [1.0.1] - 2022-08-30
+
 ### Fixed
 
 * Split up folder between `sppcheck` and `sppCheck` which was not shown on a windows development system
 * Included pandas and numpy in the requirements file
 * Removed Python 10 features, allowing compatibility with python 8.
-
-### Known Issues
+* Fix of the default config file, removing an unwanted comma, causing both SPPMon and SPPCheck to fail.
 
 ## [1.2.1] - 2022-08-21
 
