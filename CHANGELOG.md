@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+* Upgraded Dockerfile python version from 3.8 to 3.10
+
 ### Fixed
 
 ### Known Issues
@@ -22,6 +24,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 ### Fixed
+
+* Removed another feature to allow comparability with python3.8 instead of 3.9
 
 ### Known Issues
 

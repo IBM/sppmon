@@ -1,7 +1,7 @@
-FROM python:3.8
+FROM python:3.10
 
 # For a smaller container use the following instead
-#FROM python:3.8-slim
+#FROM python:3.10-slim
 
 WORKDIR /usr/src/app
 

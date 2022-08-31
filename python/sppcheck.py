@@ -53,7 +53,7 @@ VERSION = "1.0.1  (2022/08/30)"
 # command line parameter parsing
 # ----------------------------------------------------------------------------
 parser = ArgumentParser(
-    exit_on_error=False,
+    #exit_on_error=False,
     description="""
 SPPCheck is a system requirement verification and prediction tool aiming to enhance the existing functionality by verifying whether a system was set up correctly according to IBM's recommendations and predicting its future development.
 It focuses on the storage consumption of all associated vSnaps and the server's memory and catalog space and is open to future expansion of its capabilities.
