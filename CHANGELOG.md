@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Removed another feature to allow comparability with python3.8 instead of 3.9
 * Choosing the an automatic RP in report controller no longer debugs the keyword-content prefix, but the self defined variable rp_prefix
 * Excel Json structure path within the excel controller has now the correct `sppCheck` case, as windows is case-insensitive
+* Temporary directory path within the report controller has now the correct `sppCheck` case, as windows is case-insensitive
 
 ### Known Issues
 
