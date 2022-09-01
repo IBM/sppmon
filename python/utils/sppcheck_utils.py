@@ -99,7 +99,7 @@ class SppcheckUtils:
         latest_rp_name = None
 
         for rp_name in rp_dict_full.keys():
-            LOGGER.debug(f"Checking if RP {rp_name} matches the prefix {prefix}.")
+            LOGGER.debug(f"Checking if RP {rp_name} matches the prefix {rp_prefix}.")
 
             match = re.match(
                 # this does not include UTC offset
