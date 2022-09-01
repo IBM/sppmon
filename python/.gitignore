@@ -187,4 +187,4 @@ python.sln
 
 # sppcheck temp files
 # created when executing SPPCheck
-sppcheck/report/temp_files/*
+sppCheck/report/temp_files/*

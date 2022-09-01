@@ -83,7 +83,7 @@ class ExcelController:
         if not re.match(r"^v\d+(\.\d+)+$", sizer_version):
             raise ValueError("The version is not in the correct format of \"v1.0\".")
 
-        json_structure_path = Path("sppcheck","json_structures")
+        json_structure_path = Path("sppCheck","json_structures")
 
         excel_structure_name = "excel_structure"
         excel_structure_path = json_structure_path.joinpath(f"{excel_structure_name}_{sizer_version}.json")
