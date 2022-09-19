@@ -42,7 +42,7 @@ openpyxl==3.0.10
     # via -r ./python/requirements.txt
 packaging==21.3
     # via statsmodels
-pandas==1.4.3
+pandas==1.5.0
     # via
     #   -r ./python/requirements.txt
     #   statsmodels
