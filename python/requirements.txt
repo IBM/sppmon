@@ -25,7 +25,7 @@ cryptography==37.0.4
     # via paramiko
 et-xmlfile==1.1.0
     # via openpyxl
-idna==3.3
+idna==3.4
     # via requests
 influxdb==5.3.1
     # via -r ./python/requirements.txt
