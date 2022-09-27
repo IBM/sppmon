@@ -13,7 +13,7 @@
 
 bcrypt==4.0.0
     # via paramiko
-certifi==2022.6.15
+certifi==2022.9.24
     # via requests
 cffi==1.15.1
     # via
@@ -21,11 +21,11 @@ cffi==1.15.1
     #   pynacl
 charset-normalizer==2.1.1
     # via requests
-cryptography==37.0.4
+cryptography==38.0.1
     # via paramiko
 et-xmlfile==1.1.0
     # via openpyxl
-idna==3.3
+idna==3.4
     # via requests
 influxdb==5.3.1
     # via -r ./python/requirements.txt
@@ -42,11 +42,11 @@ openpyxl==3.0.10
     # via -r ./python/requirements.txt
 packaging==21.3
     # via statsmodels
-pandas==1.4.3
+pandas==1.5.0
     # via
     #   -r ./python/requirements.txt
     #   statsmodels
-pandas-stubs==1.4.3.220829
+pandas-stubs==1.5.0.220926
     # via -r ./python/requirements.txt
 paramiko==2.11.0
     # via -r ./python/requirements.txt
