@@ -36,10 +36,14 @@ Classes:
  SpMon
 """
 
+from __future__ import annotations
+
+import functools
 import logging
 import sys
 import time
 
+from argparse import ArgumentError, ArgumentParser
 from enum import Enum, unique, auto
 from spConnection.sp_rest_client import SpRestClient
 from spInflux.sp_influx_client import SpInfluxClient
@@ -50,6 +54,71 @@ from typing import Any, Dict, NoReturn, Optional
 from utils.exception_utils import ExceptionUtils
 from utils.sp_utils import SpUtils
 from utils.spp_utils import SppUtils
+
+# Version:
+SP_VERSION = "0.0.0 (2022/06/20)"
+# ----------------------------------------------------------------------------
+# command line parameter parsing
+# ----------------------------------------------------------------------------
+
+# Parse the remaining arguments
+parser = ArgumentParser(
+    # exit_on_error=False, TODO: Enable in python version 3.9
+    description=
+    """Monitoring and long-term reporting for IBM Spectrum Protect.
+ Provides a data bridge from SP/SPP to InfluxDB and provides visualization dashboards via Grafana.
+
+ This program provides functions to query IBM Spectrum Protect Servers, via REST API. This data is stored 
+ into a InfluxDB database.""",
+    epilog="For feature-requests or bug-reports please visit https://github.com/IBM/spectrum-protect-sppmon")
+
+# Applicable to both SP and SPP
+parser.add_argument("--cfg", required=True, dest="configFile", help="REQUIRED: specify the JSON configuration file")
+parser.add_argument("--verbose", dest="verbose", action="store_true", help="print to stdout")
+parser.add_argument("--debug", dest="debug", action="store_true", help="save debug messages")
+parser.add_argument("--test", dest="test", action="store_true", help="tests connection to all components")
+parser.add_argument("--ssh", dest="ssh", action="store_true", help="execute monitoring commands via ssh")
+parser.add_argument("--cpu", dest="cpu", action="store_true", help="capture SPP server CPU and RAM utilization")
+parser.add_argument("--storages", dest="storages", action="store_true", help="store storages (vsnap) statistics")
+parser.add_argument("--copy_database", dest="copy_database",
+                    help="Copy all data from .cfg database into a new database, specified by `copy_database=newName`. Delete old database with caution.")
+parser.add_argument("--constant", dest="constant", action="store_true",
+                    help="execute recommended constant functions: (ssh, cpu, sppCatalog)")
+parser.add_argument("--hourly", dest="hourly", action="store_true",
+                    help="execute recommended hourly functions: (constant + jobs, vadps, storages)")
+parser.add_argument("--daily", dest="daily", action="store_true",
+                    help="execute recommended daily functions: (hourly +  joblogs, vms, slaStats, vmStats)")
+parser.add_argument("--all", dest="all", action="store_true", help="execute all functions: (daily + sites)")
+
+# SP-specific arguments
+parser.add_argument("-v", '--version', action='version',
+                    version="Spectrum Protect Monitoring (SPMon) version " + SP_VERSION)
+parser.add_argument("--queries", required=True, dest="queryFile", help="REQUIRED: SP summary record queries file")
+
+print = functools.partial(print, flush=True)
+
+# Define error codes
+ERROR_CODE_START_ERROR: int = 3
+ERROR_CODE_CMD_ARGS: int = 2
+ERROR_CODE: int = 1
+SUCCESS_CODE: int = 0
+
+# Parse arguments
+try:
+    ARGS = parser.parse_args(sys.argv[1:])
+except SystemExit as exit_code:
+    if (exit_code.code != SUCCESS_CODE):
+        print("> Error when reading arguments.", file=sys.stderr)
+        print("> Please make sure to specify a config file and check the spelling of your arguments.", file=sys.stderr)
+        print("> Use --help to display all argument options and requirements", file=sys.stderr)
+    exit(exit_code)
+except ArgumentError as error:
+    print(error.message)
+    print("> Error when reading arguments.", file=sys.stderr)
+    print("> Please make sure to specify a config file and check the spelling of your arguments.", file=sys.stderr)
+    print("> Use --help to display all argument options and requirements", file=sys.stderr)
+    exit(ERROR_CODE_CMD_ARGS)
+
 
 # Using Global Logger from SPPMon
 LOGGER_NAME = "spmon"
@@ -104,7 +173,7 @@ class SpMon:
               - set_optional_configs
         """
         self.args = args
-        """Arguments passed from the parser in mon.py"""
+        """Arguments passed from the parser"""
         self.rest_client: Optional[SpRestClient] = None
         """Client used to connect to the OC Hub server."""
         self.influx_client: Optional[SpInfluxClient] = None
@@ -116,12 +185,12 @@ class SpMon:
         self.pid_file_path: str = ""
         """path to pid_file, set in check_pid_file."""
 
-        self.log_path = SppUtils.mk_logger_file(self.args.configFile, ".log")
+        self.log_path = SppUtils.mk_logger_file(self.args.configFile, "spmonLogs", ".log")
         SppUtils.set_logger(self.log_path, LOGGER_NAME, self.args.debug)
 
         LOGGER.info("Starting SPMon")
 
-        self.pid_file_path = SppUtils.mk_logger_file(self.args.configFile, ".pid_file")
+        self.pid_file_path = SppUtils.mk_logger_file(self.args.configFile, "spmonLogs", ".pid_file")
         if not SppUtils.check_pid_file(self.pid_file_path, self.args):
             ExceptionUtils.error_message("Another instance of spmon with the same args is running")
             self.exit(ERROR_CODE_START_ERROR)
@@ -206,8 +275,8 @@ class SpMon:
             self.exit(error_code=ERROR_CODE_CMD_ARGS)
         try:
             required_file = SppUtils.read_conf_file(config_file_path=file_path)
-        except ValueError as error:
-            ExceptionUtils.exception_info(error=error,
+        except ValueError as err:
+            ExceptionUtils.exception_info(error=err,
                                           extra_message=f"Error when trying to read {file_name} file, unable to read")
             self.exit(error_code=ERROR_CODE_START_ERROR)
 
@@ -239,3 +308,7 @@ class SpMon:
 
         self.exit()
         LOGGER.info("Exiting SPMon main method.")
+
+
+if __name__ == "__main__":
+    SpMon(ARGS).main()
