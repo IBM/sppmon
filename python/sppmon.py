@@ -81,6 +81,7 @@ Description:
  02/22/2021 version 1.1.1  Only ssh-calls the vSnap-api if it is available
  06/17/2022 version 1.2.0  Change of logfile location, bug and documentation fixes. Removes deprecated functions.
  08/21/2022 version 1.2.1  Bugfixes and changes from SPPCheck
+ 08/21/2022 version 1.2.2  Upgrade of the requirements file, removal of Python10 features
 
 Description:
  This program provides functions to query IBM Spectrum Protect Plus Servers,
@@ -116,7 +117,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "1.2.1  (2022/08/21)"
+VERSION = "1.2.2  (2022/08/30)"
 
 
 # ----------------------------------------------------------------------------
@@ -290,9 +291,9 @@ class SppMon:
     initial_connection_timeout: float = 6.05
     """Time spend waiting for the initial connection, slightly larger than 3 multiple"""
 
-    request_timeout: int | None = 60
+    request_timeout: Union[int, None] = 60
     """timeout for api-requests, none deactivates timeout"""
-    loaded_request_timeout: int | None = 180
+    loaded_request_timeout: Union[int, None] = 180
     """timeout on loaded systems, none deactivates timeout"""
 
     max_send_retries: int = 3

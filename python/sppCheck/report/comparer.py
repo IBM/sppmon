@@ -30,7 +30,7 @@ Classes:
 import logging
 from datetime import datetime
 from enum import Enum, auto, unique
-from typing import Dict, Generator, List, Optional, Tuple
+from typing import Dict, Generator, List, Optional, Tuple, Union
 
 from dateutil.relativedelta import relativedelta
 from influx.database_tables import RetentionPolicy
@@ -127,7 +127,7 @@ class Comparer:
             comp_metric_name, comp_table, comp_group_tag
         )
 
-        result_dict: Dict[ComparisonPoints, Optional[Tuple[int, int, int|float, int]]] = {}
+        result_dict: Dict[ComparisonPoints, Optional[Tuple[int, int, Union[int,float], int]]] = {}
         for time_point in ComparisonPoints:
             try:
                 LOGGER.debug(f"Comparing time point {time_point}")
@@ -177,7 +177,7 @@ class Comparer:
 
         LOGGER.debug(f"Querying comparison points for metric_name={metric_name}, table={table_source.name}, group_tag={group_tag}")
 
-        results: Dict[ComparisonPoints, Optional[Tuple[int, str|int|float]]] = {}
+        results: Dict[ComparisonPoints, Optional[Tuple[int, Union[str,int,float]]]] = {}
         for time_point in ComparisonPoints:
             LOGGER.debug(f"Querying comparison point for time_point = {time_point.name}")
             results[time_point] = self.__query_comparison_point(
@@ -222,7 +222,7 @@ class Comparer:
         result = self.__influx_client.send_selection_query(selection_query)
         result_list: List[Tuple[ # list: different tag groups
             Tuple[str, Optional[Dict[str, str]]], # tablename, dict of grouping tags (empty if not grouped)
-            Generator[Dict[str, str|int|float], None, None] # result of the selection query
+            Generator[Dict[str, Union[str,int,float]], None, None] # result of the selection query
         ]] = result.items() # type: ignore
 
         # Tablename is not required since it is static
