@@ -10,7 +10,7 @@ updates:
   - package-ecosystem: "pip" # See documentation for possible values
     directory: "/python/" # Location of the requirements file, relative to the root of the repository.
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     ignore:
       # ignore patch level updates for any dependency
       - dependency-name: "*"
@@ -20,7 +20,7 @@ updates:
   - package-ecosystem: "github-actions" # See documentation for possible values
     directory: "/" # For GitHub Actions, set the directory to / to check for workflow files in .github/workflows.
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     ignore:
       # ignore patch level updates for any dependency
       - dependency-name: "*"
