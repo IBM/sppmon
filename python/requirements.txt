@@ -97,5 +97,5 @@ wcwidth==0.2.5
     # via prettytable
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==22.2.2
+pip==22.3
     # via -r ./python/requirements.txt
