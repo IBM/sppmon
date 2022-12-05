@@ -5,9 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## SPPMon [Unreleased] - yyyy-mm-dd
-
-### Added
+## SPPMon [1.2.3] - 2022-12-05
 
 ### Changed
 
@@ -15,14 +13,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+* Upgraded requirements file
+
 ### Known Issues
 
-## SPPCheck [Unreleased] - yyyy-mm-dd
+* There might be an issue with the alerts saved within the dashboard, requires investigation.
+
+## SPPCheck [1.0.2] - 2022-12-05
 
 ### Added
 
 * Debug information for accessing the excel json structure
-### Changed
 
 ### Fixed
 
@@ -31,6 +32,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Excel Json structure path within the excel controller has now the correct `sppCheck` case, as windows is case-insensitive
 * Temporary directory path within the report controller has now the correct `sppCheck` case, as windows is case-insensitive
 * Crash of Grafana-Panel downloader when using https fixed
+* Upgraded requirements file
 
 ### Known Issues
 
