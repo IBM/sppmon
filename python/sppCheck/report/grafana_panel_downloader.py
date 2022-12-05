@@ -94,7 +94,7 @@ class GrafanaPanelDownloader:
 
         #### Preparing URL to server ####
         if ssl:
-            self.__srv_url += "https://"
+            self.__srv_url = "https://"
         else:
             self.__srv_url = "http://"
             # disable the verify to avoid bugs

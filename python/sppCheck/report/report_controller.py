@@ -84,7 +84,7 @@ class ReportController:
         LOGGER.debug(f"end_date: {self.__end_date}")
 
         # also change the gitignore if you change this!
-        self.__temp_dir_path = Path("sppcheck", "report", "temp_files")
+        self.__temp_dir_path = Path("sppCheck", "report", "temp_files")
         LOGGER.debug(f"temp dir path: {self.__temp_dir_path}")
         self.__html_file_path = Path(self.__temp_dir_path, "report.html")
         LOGGER.debug(f"html file path: {self.__html_file_path}")
