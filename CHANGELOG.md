@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## SPPMon [Unreleased] - yyyy-mm-dd
+
+### Added
+
+### Changed
+
+### Fixed
+
+### Known Issues
+
+## SPPCheck [Unreleased] - yyyy-mm-dd
+
+### Added
+
+### Changed
+
+### Fixed
+
+### Known Issues
+
 ## SPPMon [1.2.3] - 2022-12-05
 
 ### Changed
