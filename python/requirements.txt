@@ -65,7 +65,7 @@ python-dateutil==2.8.2
     #   -r ./requirements.txt
     #   influxdb
     #   pandas
-pytz==2022.6
+pytz==2022.7
     # via
     #   influxdb
     #   pandas
