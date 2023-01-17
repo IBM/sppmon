@@ -1,18 +1,243 @@
 {
-    "query_id" : {
-        "query" : "SELECT COLUMN1, COLUMN2 FROM TABLE",
-        "measurement" : "INFLUX_TABLE_NAME",
+    "DAILY_INGEST" : {
+        "query" : "SELECT TIMESTAMP(DATE(s.START_TIME)) AS DATE, (CAST(FLOAT(SUM(s.bytes_protected))/1024/1024 AS DECIMAL(12,2))) AS PROTECTED_MB, (CAST(FLOAT(SUM(s.bytes_written))/1024/1024 AS DECIMAL(12,2))) AS WRITTEN_MB, (CAST(FLOAT(SUM(s.dedup_savings))/1024/1024 AS DECIMAL(12,2))) AS DEDUPSAVINGS_MB, (CAST(FLOAT(SUM(s.comp_savings))/1024/1024 AS DECIMAL(12,2))) AS COMPSAVINGS_MB, (CAST(FLOAT(SUM(s.dedup_savings))/FLOAT(SUM(s.bytes_protected))*100 AS DECIMAL(5,2))) AS DEDUP_PCT, (CAST(FLOAT(SUM(s.bytes_protected) - SUM(s.bytes_written))/FLOAT(SUM(s.bytes_protected))*100 AS DECIMAL(5,2))) AS SAVINGS_PCT, SUM(BIGINT(timestampdiff(2, char(s.end_time - s.start_time)))) as TOTAL_TIME_SEC, CAST((FLOAT(SUM(s.bytes_protected))/1024/1024)/(SUM(BIGINT(timestampdiff(2, char(s.end_time - s.start_time))))) AS DECIMAL(12,2)) as AVG_FE_MBPS, CAST((FLOAT(SUM(s.bytes_written))/1024/1024)/(SUM(BIGINT(timestampdiff(2, char(s.end_time - s.start_time))))) AS DECIMAL(12,2)) as AVG_BE_MBPS from summary s WHERE activity in ('BACKUP','ARCHIVE', 'OBJECT CLIENT BACKUP') GROUP BY DATE(S.START_TIME)",
+        "measurement" : "DAILY_INGEST",
         "datetime" : "DATE",
         "tags" : [
             "HOST"
         ],
         "fields" : [
-            "COLUMN1",
-            "COLUMN2"
+            "PROTECTED_MB",
+            "WRITTEN_MB",
+            "DEDUPSAVINGS_MB",
+            "COMPSAVINGS_MB",
+            "DEDUP_PCT",
+            "SAVINGS_PCT",
+            "TOTAL_TIME_SEC",
+            "AVG_FE_MBPS",
+            "AVG_BE_MBPS"
+        ],
+        "target_servers": []
+    },
+    "PRESENTATION" : {
+        "query" : "SELECT TIMESTAMP(DATE(s.START_TIME)) AS DATE, (CAST(FLOAT(SUM(s.bytes_protected))/1024/1024 AS DECIMAL(12,2))) AS PROTECTED_MB, (CAST(FLOAT(SUM(s.bytes_written))/1024/1024 AS DECIMAL(12,2))) AS WRITTEN_MB, (CAST(FLOAT(SUM(s.dedup_savings))/1024/1024 AS DECIMAL(12,2))) AS DEDUPSAVINGS_MB, (CAST(FLOAT(SUM(s.comp_savings))/1024/1024 AS DECIMAL(12,2))) AS COMPSAVINGS_MB, (CAST(FLOAT(SUM(s.dedup_savings))/FLOAT(SUM(s.bytes_protected))*100 AS DECIMAL(5,2))) AS DEDUP_PCT, (CAST(FLOAT(SUM(s.bytes_protected) - SUM(s.bytes_written))/FLOAT(SUM(s.bytes_protected))*100 AS DECIMAL(5,2))) AS SAVINGS_PCT, SUM(BIGINT(timestampdiff(2, char(s.end_time - s.start_time)))) as TOTAL_TIME_SEC, CAST((FLOAT(SUM(s.bytes_protected))/1024/1024)/(SUM(BIGINT(timestampdiff(2, char(s.end_time - s.start_time))))) AS DECIMAL(12,2)) as AVG_FE_MBPS, CAST((FLOAT(SUM(s.bytes_written))/1024/1024)/(SUM(BIGINT(timestampdiff(2, char(s.end_time - s.start_time))))) AS DECIMAL(12,2)) as AVG_BE_MBPS, (((CAST(FLOAT(SUM(s.bytes_protected) - SUM(s.bytes_written))/FLOAT(SUM(s.bytes_protected))*100 AS DECIMAL(5,2))))) - ((CAST(FLOAT(SUM(s.dedup_savings))/FLOAT(SUM(s.bytes_protected))*100 AS DECIMAL(5,2)))) AS COMP_PCT from summary s WHERE activity in ('BACKUP','ARCHIVE', 'OBJECT CLIENT BACKUP') GROUP BY DATE(S.START_TIME)",
+        "measurement" : "PRESENTATION",
+        "datetime" : "DATE",
+        "tags" : [
+            "HOST"
+        ],
+        "fields" : [
+            "PROTECTED_MB",
+            "WRITTEN_MB",
+            "DEDUPSAVINGS_MB",
+            "COMPSAVINGS_MB",
+            "DEDUP_PCT",
+            "SAVINGS_PCT",
+            "TOTAL_TIME_SEC",
+            "AVG_FE_MBPS",
+            "AVG_BE_MBPS",
+            "COMP_PCT"
+        ],
+        "target_servers": []
+    },
+    "DAILY_INGEST_CLIENT" : {
+        "query" : "SELECT n.platform_name, DATE(s.START_TIME) AS Date, (CAST(FLOAT(SUM(s.bytes_protected))/1024/1024 AS DECIMAL(12,2))) AS PROTECTED_MB, (CAST(FLOAT(SUM(s.bytes_written))/1024/1024 AS DECIMAL(12,2))) AS WRITTEN_MB, (CAST(FLOAT(SUM(s.dedup_savings))/1024/1024 AS DECIMAL(12,2))) AS DEDUPSAVINGS_MB, (CAST(FLOAT(SUM(s.comp_savings))/1024/1024 AS DECIMAL(12,2))) AS COMPSAVINGS_MB, (CAST(FLOAT(SUM(s.dedup_savings))/FLOAT(SUM(s.bytes_protected))*100 AS DECIMAL(5,2))) AS DEDUP_PCT, (CAST(FLOAT(SUM(s.bytes_protected) - SUM(s.bytes_written))/FLOAT(SUM(s.bytes_protected))*100 AS DECIMAL(5,2))) AS SAVINGS_PCT from summary s inner join nodes n on s.entity = n.node_name where activity='BACKUP' or activity='ARCHIVE' GROUP BY n.platform_name, DATE(S.START_TIME) order by 1,2",
+        "measurement" : "DAILY_INGEST_CLIENT",
+        "datetime" : "DATE",
+        "tags" : [
+            "HOST",
+            "PLATFORM_NAME"
+        ],
+        "fields" : [
+            "PROTECTED_MB",
+            "WRITTEN_MB",
+            "DEDUPSAVINGS_MB",
+            "COMPSAVINGS_MB",
+            "DEDUP_PCT",
+            "SAVINGS_PCT"
+        ],
+        "target_servers": []
+    },
+    "OCCUPANCY_NODE_STGPOOL" : {
+        "query" : "select row_number() over () ROW_ID, current timestamp as DATE_TIME, NODE_NAME, STGPOOL_NAME, sum(REPORTING_MB/1024) as OCCUPANCY_GB, sum(cast(NUM_FILES as bigint)) as TOTAL_FILES, count(FILESPACE_NAME) as FILESPACE_COUNT from OCCUPANCY where NODE_NAME != '' and STGPOOL_NAME is not null group by NODE_NAME, STGPOOL_NAME order by OCCUPANCY_GB desc",
+        "measurement" : "OCCUPANCY_NODE_STGPOOL",
+        "datetime" : "DATE_TIME",
+        "tags" : [
+            "HOST",
+            "NODE_NAME",
+            "STGPOOL_NAME",
+            "ROW_ID"
+        ],
+        "fields" : [
+            "OCCUPANCY_GB",
+            "TOTAL_FILES",
+            "FILESPACE_COUNT"
+        ],
+        "target_servers": []
+    },
+    "OCCUPANCY_STGPOOL" : {
+        "query" : "select current timestamp as DATE_TIME, STGPOOL_NAME, sum(REPORTING_MB/1024) as OCCUPANCY_GB, sum(cast(NUM_FILES as bigint)) as TOTAL_FILES, count(FILESPACE_NAME) as FILESPACE_COUNT from OCCUPANCY group by STGPOOL_NAME",
+        "measurement" : "OCCUPANCY_STGPOOL",
+        "datetime" : "DATE_TIME",
+        "tags" : [
+            "HOST",
+            "STGPOOL_NAME"
+        ],
+        "fields" : [
+            "OCCUPANCY_GB",
+            "TOTAL_FILES",
+            "FILESPACE_COUNT"
+        ],
+        "target_servers": []
+    },
+    "OCC_NODE_T10_GB" : {
+        "query" : "select current timestamp as DATE_TIME, NODE_NAME, sum(REPORTING_MB/1024) as OCCUPANCY_GB, sum(cast(NUM_FILES as bigint)) as TOTAL_FILES, count(FILESPACE_NAME) as FILESPACE_COUNT from OCCUPANCY where NODE_NAME != '' group by NODE_NAME order by OCCUPANCY_GB desc limit 10",
+        "measurement" : "OCC_NODE_T10_GB",
+        "datetime" : "DATE_TIME",
+        "tags" : [
+            "HOST",
+            "NODE_NAME"
+        ],
+        "fields" : [
+            "OCCUPANCY_GB",
+            "TOTAL_FILES",
+            "FILESPACE_COUNT"
+        ],
+        "target_servers": []
+    },
+    "AVG_OBJ_SIZE_STGPOOL" : {
+        "query" : "select row_number() over () ROW_ID, current_timestamp as DATE_TIME, STGPOOL_NAME, cast((sum(REPORTING_MB*1024) / sum(cast(NUM_FILES as bigint))) as bigint) as AVG_OBJ_SIZE_KB from OCCUPANCY where STGPOOL_NAME is not null group by STGPOOL_NAME order by AVG_OBJ_SIZE_KB desc",
+        "measurement" : "AVG_OBJ_SIZE_STGPOOL",
+        "datetime" : "DATE_TIME",
+        "tags" : [
+            "HOST",
+            "STGPOOL_NAME",
+            "ROW_ID"
+        ],
+        "fields" : [
+            "AVG_OBJ_SIZE_KB"
+        ],
+        "target_servers": []
+    },
+    "TOTAL_MANAGED_DATA_TB" : {
+        "query" : "SELECT current timestamp as DATE_TIME, sum(REPORTING_MB)/1024/1024 AS TOTAL_MANAGED_TB from OCCUPANCY where STGPOOL_NAME in (select distinct STGPOOL_NAME FROM STGPOOLS where POOLTYPE='PRIMARY') and NODE_NAME !=''",
+        "measurement" : "TOTAL_MANAGED_DATA_TB",
+        "datetime" : "DATE_TIME",
+        "tags" : [
+            "HOST"
+        ],
+        "fields" : [
+            "TOTAL_MANAGED_TB"
+        ],
+        "target_servers": []
+    },
+    "BA_AR_TI_DURATION_BY_DAY" : {
+        "query" : "select entity as NODE_NAME, SCHEDULE_NAME as STGRULE_NAME, activity, sum(timestampdiff(2,char(END_TIME-START_TIME))) as TOTAL_DURATION_ON_DAY, date(START_TIME) as DATE from SUMMARY where ACTIVITY='BACKUP' or ACTIVITY='ARCHIVE' or ACTIVITY='TIER DATA' and END_TIME > START_TIME group by ENTITY, date(START_TIME), ACTIVITY, SCHEDULE_NAME",
+        "measurement" : "BA_AR_TI_DURATION_BY_DAY",
+        "datetime" : "DATE",
+        "tags" : [
+            "HOST",
+            "NODE_NAME",
+            "STGRULE_NAME",
+            "ACTIVITY"
+        ],
+        "fields" : [
+            "TOTAL_DURATION_ON_DAY"
+        ],
+        "target_servers": []
+    },
+    "BA_MI_PERFORMANCE" : {
+        "query" : "select activity, start_time,end_time,timestampdiff( 2, char(end_time - start_time)) as Elapsed_sec,(CAST(FLOAT(bytes)/1024/1024 AS DECIMAL(12,2))) AS TOTAL_MB,successful from summary where activity='MIGRATION' or activity='FULL_DBBACKUP'",
+        "measurement" : "BA_MI_PERFORMANCE",
+        "datetime" : "END_TIME",
+        "tags" : [
+            "HOST",
+            "SUCCESSFUL",
+            "ACTIVITY"
+        ],
+        "fields" : [
+            "TOTAL_MB",
+            "ELAPSED_SEC"
+        ],
+        "target_servers": []
+    },
+    "BA_AR_FAILED_OBJECTS" : {
+    "query" : "SELECT end_time, examined, failed, (failed + examined) as total, activity  FROM summary_extended WHERE activity = 'BACKUP' or activity = 'ARCHIVE' AND failed > 0",
+    "measurement" : "BA_AR_FAILED_OBJECTS",
+    "datetime" : "END_TIME",
+    "tags" : [
+        "HOST",
+        "ACTIVITY"
+    ],
+    "fields" : [
+        "TOTAL",
+        "FAILED",
+        "EXAMINED"
+    ],
+    "target_servers": []
+    },
+    "STGPOOL_CAPACITY_MB" : {
+        "query" : "select current timestamp as DATE_TIME, STGPOOL_NAME, EST_CAPACITY_MB, (EST_CAPACITY_MB * PCT_UTILIZED)/100 as UTILIZED_MB, EST_CAPACITY_MB - (EST_CAPACITY_MB * PCT_UTILIZED)/100 as CAPACITY_REMAINING_MB from STGPOOLS",
+        "measurement" : "STGPOOL_CAPACITY_MB",
+        "datetime" : "DATE_TIME",
+        "tags" : [
+            "HOST",
+            "STGPOOL_NAME"
+        ],
+        "fields" : [
+            "EST_CAPACITY_MB",
+            "UTILIZED_MB",
+            "CAPACITY_REMAINING_MB"
         ],
         "target_servers": [
-            "SPOKE_SERVER_1",
-            "SPOKE_SERVER_2"
+            "Exclude cloud storage types"
         ]
+    },
+    "ERR_CODE_PAST_DAY" : {
+        "query" : "select DATE_TIME, MSGNO, substr(message, 1, 8) as ERR_CODE from ACTLOG where SEVERITY = 'E' and date(DATE_TIME) > current date - 1 days",
+        "measurement" : "ERR_CODE_PAST_DAY",
+        "datetime" : "DATE_TIME",
+        "tags" : [
+            "HOST"
+        ],
+        "fields" : [
+            "MSGNO",
+            "ERR_CODE"
+        ],
+        "target_servers": []
+    },
+   "REPLICATION_STATUS_NODE" : {
+        "query" : "select current_timestamp as DATE_TIME, NODE_NAME,date(start_time) as date,fsid,totfiles_to_replicate as files_total,totfiles_replicated as files_replicated,totbytes_to_replicate/1024/1024 as mb_to_replicate,totbytes_replicated/1024/1024 as MB_replicated,(totbytes_to_replicate/1024/1024 - totbytes_replicated/1024/1024) as MB_backlog from replicationview where date(start_time) >= current_date - 1 days and totfiles_to_replicate > totfiles_replicated",
+        "measurement" : "REPLICATION_STATUS_NODE",
+        "datetime" : "DATE_TIME",
+        "tags" : [
+            "HOST",
+            "NODE_NAME",
+            "FSID"
+        ],
+        "fields" : [
+            "FILES_TOTAL",
+            "FILES_REPLICATED",
+            "MB_TO_REPLICATE",
+            "MB_REPLICATED",
+            "MB_BACKLOG"
+        ],
+        "target_servers": []
+    },
+    "STGPOOL_SAVINGS" : {
+        "query" : "select current timestamp as DATE_TIME, STGPOOL_NAME,DEDUP_SPACE_SAVED_MB,COMP_SPACE_SAVED_MB,SPACE_SAVED_MB from stgpools where STG_TYPE in ('DIRECTORY', 'CLOUD')",
+        "measurement" : "STGPOOL_SAVINGS",
+        "datetime" : "DATE_TIME",
+        "tags" : [
+            "HOST",
+            "STGPOOL_NAME",
+            "FSID"
+        ],
+        "fields" : [
+            "DEDUP_SPACE_SAVED_MB",
+            "COMP_SPACE_SAVED_MB",
+            "SPACE_SAVED_MB"
+        ],
+        "target_servers": []
     }
 }

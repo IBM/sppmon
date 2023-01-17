@@ -1,0 +1,53 @@
+version: "3"
+
+services:
+
+  influx:
+    image: influxdb:2.0
+    container_name: influxdb2
+    ports:
+      - 8086:8086
+    volumes:
+      - ${DOCKERVOL}/influx/data:/var/lib/influxdb2
+      - ${DOCKERVOL}/influx/config:/etc/influxdb2
+      - ${DOCKERVOL}/influx/scripts:/docker-entrypoint-initdb.d
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${SPMON_INFLUXDB_USERNAME}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${SPMON_INFLUXDB_PASSWORD}
+      DOCKER_INFLUXDB_INIT_ORG: ${SPMON_INFLUXDB_ORG}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${SPMON_INFLUXDB_BUCKET}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${SPMON_INFLUXDB_TOKEN}
+    networks:
+      - influx-network
+  
+  spmon:
+    image: spmon
+    container_name: spmon
+    build:
+      context: ../../..
+      dockerfile: ./python/docker/spmon/Dockerfile
+    volumes:
+      - ${DOCKERVOL}/spmon:/spmon
+    networks:
+      - influx-network
+    depends_on:
+      - influx
+    command: tail -F /var/log/messages
+  
+  grafana:
+    image: grafana/grafana-oss:8.2.0
+    container_name: grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ${DOCKERVOL}/grafana:/var/lib/grafana
+    networks:
+      - influx-network
+    user: "${UID}:${GID}"
+    depends_on:
+      - influx
+
+networks:
+  influx-network:
+    driver: bridge
