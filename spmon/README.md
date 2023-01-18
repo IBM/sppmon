@@ -106,7 +106,7 @@ sudo systemctl enable docker
 
 **Note** that the following assumes that **/dev/sdb** is the 100 GB "data" disk to be used for container storage. Replace this with the applicable disk name for your environment. The `lsblk` command can be used to help identify disks on Linux.
 
-**The use of persistent container storage is only required when deploying InfluxDB (v2) and Grafana containers alongside the SPMon container in the same containerized environment.**
+In this case, the file system path `/var/lib/docker/volumes` is being used as the persistent container storage location. Change this to suit your environment.
 
 1. `sudo pvcreate /dev/sdb`
 2. `sudo vgcreate spmonvg /dev/sdb`
@@ -184,6 +184,8 @@ For example:
 ```
 
 Next, run the `configSPMon.sh` configuration script and fill in the following data for each category:
+* **Docker Environment**
+  * Volume -- Directory for shared persistent container storage
 * **IBM Spectrum Protect Server**
   * Username -- Server administrator name (should use: "SPMON_ADMIN")
   * Password -- Server administrator password
@@ -196,17 +198,19 @@ Next, run the `configSPMon.sh` configuration script and fill in the following da
   * Server Address -- Hostname or IP of the server
   * Server Port -- TCP/IP port of the server
 
-The content for the "IBM Spectrum Protect Server" should match what is configured for a running IBM Spectrum Protect server, including a read-only administrator user.
+Within the "Docker Environment" section, a "Volume" file system path is chosen which represents the file system location for persistent container volume storage. In the steps outlined earlier in this document, this was `/var/lib/docker/volumes`. Change this to match  your environment.
 
-The content for the "InfluxDB (v2) Database" should match what is configured for an existing/running InfluxDB (v2) instance or, if the instance will be provisioned using Docker or Docker Compose, it should be the intended configuration. Use the unique API token generated earlier with the `uuidgen` command as the value for "Token".
+The content for the "IBM Spectrum Protect Server" section should match what is configured for a running IBM Spectrum Protect server, including a read-only administrator user.
 
-Running the configuration script will result in data in the `/var/lib/docker/volumes/spmon/spconnections.conf` SPMon configuration file being initially populated or changed. It will also modify values in a `.env` Docker environment variable file for use during container provisioning.
+The content for the "InfluxDB (v2) Database" section should match what is configured for an existing/running InfluxDB (v2) instance or, if the instance will be provisioned using Docker or Docker Compose, it should be the intended configuration. Use the unique API token generated earlier with the `uuidgen` command as the value for "Token".
+
+Running the configuration script will result in data in the `spconnections.conf` SPMon configuration file in the "spmon" persistent volume location being initially populated or changed. It will also generate or modify values in a `~/.spmonenv` Docker environment variable file, for use during container provisioning, in the user's home directory.
 
 ### SPMon
 
 #### IBM Spectrum Protect server and InfluxDB (v2) communication
 
-SPMon needs to be configured to understand how to communicate with the IBM Spectrum Protect server using the administrative API in order to issue data queries and the InfluxDB (v2) instance in order to store data for its data model. This behavior is dictated by the configuration file named `/var/lib/docker/volumes/spmon/spconnections.conf` in the "spmon" persistent volume location.
+SPMon needs to be configured to understand how to communicate with the IBM Spectrum Protect server using the administrative API in order to issue data queries and the InfluxDB (v2) instance in order to store data for its data model. This behavior is dictated by the configuration file named `spconnections.conf` in the "spmon" persistent volume location (for example: `/var/lib/docker/volumes/spmon`).
 
 Running the provided `configSPMon.sh` configuration script will take care of populating the content of this file based on user prompts and must be run first prior to building/starting the SPMon container. The configuration file contains the following content:
 ```
@@ -226,7 +230,7 @@ Running the provided `configSPMon.sh` configuration script will take care of pop
     }
 }
 ```
-**NOTE**: The provided configuration script should be used to initially populate or change the values of this JSON file. While the content can be changed manually, to avoid any potential parsing errors, use the configuration script to alter configuration file content. This will also ensure that the Docker `.env` file used for container provisioning will be kept in sync.
+**NOTE**: The provided configuration script should be used to initially populate or change the values of this JSON file. While the content can be changed manually, to avoid any potential parsing errors, use the configuration script to alter configuration file content. This will also ensure that the Docker `~/.spmonenv` file used for container provisioning will be kept in sync.
 
 For the `spServer` section, `username` and `password` should match the read-only, local administrative user created for the IBM Spectrum Protect server. The server's high-level address (HLA -- hostname or IP) should be provided for `srv_address` and the administrative port (TCP) being listened on for `srv_port`.
 
@@ -265,10 +269,10 @@ cd <location of project>/spectrum-protect-sppmon/scripts
 ./configSPMon.sh
 ```
 
-Navigate to the directory with the *docker-compose.yml* file for SPMon and use Docker Compose to bring the containers up in the background
+Navigate to the directory with the *docker-compose.yml* file for SPMon and use Docker Compose to bring the containers up in the background. Use the environment file generated by configuration script.
 ```
 cd <location of project>/spectrum-protect-sppmon/python/docker/spmon
-docker-compose up -d
+docker-compose --env-file ~/.spmonenv up -d
 ```
 
 The Docker Compose orchestration should provision an InfluxDB (v2) container first, using the provided configuration parameters generated by the configuration script to create an organization, bucket, API token, and a read-only "GrafanaReader" user. Then SPMon and Grafana containers will be provisioned with configurations that point to this instance. All three containers will use the persistent storage volume locations created earlier and be connected using a Docker network.
@@ -330,12 +334,12 @@ docker run --rm influxdb:2.0 influxd print-config > config.yml
 sudo cp config.yml /var/lib/docker/volumes/influx/config/config.yml
 ```
 
-Source the SPMon environment file so that neede variables are used from the configuration script.
+Source the SPMon environment file so that needed variables are used from the configuration script.
 ```
-. <location of project>/spectrum-protect-sppmon/python/docker/spmon/.env
+. ~/.spmonenv
 ```
 
-Run the influx DB container in detached mode, passing the needed persistent data, configuration, and scripting paths as volume mount points to the container. Each of the configuration parameters are pulled from an `.env` environment file that was generated/modified by the `configSPMon.sh` configuration script run earlier.
+Run the influx DB container in detached mode, passing the needed persistent data, configuration, and scripting paths as volume mount points to the container. Each of the configuration parameters are pulled from an `~/.spmonenv` environment file that was generated/modified by the `configSPMon.sh` configuration script run earlier.
 ```
 docker run -d -p 8086:8086 \
     -v ${DOCKERVOL}/influx/data:/var/lib/influxdb2 \
@@ -374,7 +378,7 @@ root@7696740a9a0b:/# exit
 
 ### Setup the SPMon Container
 
-After cloning the Github project and running the `configSPMon.sh` configuration script (see earlier steps in this section), a `/var/lib/docker/volumes/spmon/spconnections.conf` configuration file will be created. It can later be modified, if needed, by running the configuration script again. After this is done for the first time, use the provided *Dockerfile* to build the SPMon container
+After cloning the Github project and running the `configSPMon.sh` configuration script (see earlier steps in this section), a `${DOCKERVOL}/spmon/spconnections.conf` configuration file will be created. It can later be modified, if needed, by running the configuration script again. After this is done for the first time, use the provided *Dockerfile* to build the SPMon container
 ```
 # Change into the top-level directory of the project
 cd <location of project>/spectrum-protect-sppmon
@@ -393,9 +397,9 @@ REPOSITORY              TAG                 IMAGE ID            CREATED         
 spmon                   latest              feac9237dfaa        5 seconds ago       1.28 GB
 ```
 
-Source the SPMon environment file so that neede variables are used from the configuration script.
+Source the SPMon environment file so that needed variables are used from the configuration script.
 ```
-. <location of project>/spectrum-protect-sppmon/python/docker/spmon/.env
+. ~/.spmonenv
 ```
 
 Run the SPMon container in detached mode, passing the needed persistent volume sub-directory with the configuration and queries files contained inside. If InfluxDB (v2) and Grafana containers are being provisioned as well, add the `--net` parameter to include the Docker network.
@@ -412,9 +416,9 @@ First, pull the appropriate container image:
 docker pull grafana/grafana-oss:8.2.0
 ```
 
-Source the SPMon environment file so that neede variables are used from the configuration script.
+Source the SPMon environment file so that needed variables are used from the configuration script.
 ```
-. <location of project>/spectrum-protect-sppmon/python/docker/spmon/.env
+. ~/.spmonenv
 ```
 
 Run the Grafana container in detached mode, passing the needed persistent volume sub-directory. If an InfluxDB (v2) container was provisioned, include the `--net` parameter to include the Docker network.
