@@ -40,7 +40,7 @@ numpy==1.23.4
     #   statsmodels
 openpyxl==3.0.10
     # via -r ./requirements.txt
-packaging==21.3
+packaging==23.0
     # via statsmodels
 pandas==1.5.1
     # via
