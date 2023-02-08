@@ -25,6 +25,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Known Issues
 
+## SPPMon [1.0.3] / SPPCheck [1.2.4] - 2023-02-08
+
+### Added
+
+* Added a `requirements.in` file for better versioning of dependencies
+
+### Changed
+
+* Added some macOS ignores to the gitignore
+
+### Fixed
+
+* Fixed security issues with the dependencies by updating them all to the latest state
+
 ## SPPMon [1.2.3] - 2022-12-05
 
 ### Changed

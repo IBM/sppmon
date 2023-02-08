@@ -1,0 +1,17 @@
+influxdb
+numpy
+pandas
+paramiko
+prettytable
+python_dateutil
+requests
+scipy
+statsmodels
+urllib3
+
+
+#manually added
+pandas-stubs
+openpyxl
+pyxlsb
+pip
