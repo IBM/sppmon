@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 * Added some macOS ignores to the gitignore
+* Upgraded the dockerfile to a more secure standard
 
 ### Fixed
 
