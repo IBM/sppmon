@@ -115,7 +115,7 @@ from utils.methods_utils import MethodUtils
 from utils.spp_utils import SppUtils
 
 # Version:
-VERSION = "1.2.4  (2023/02/08)"
+VERSION = "1.2.4  (2023/02/23)"
 
 
 # ----------------------------------------------------------------------------
