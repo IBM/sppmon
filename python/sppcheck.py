@@ -46,7 +46,7 @@ from utils.spp_utils import SppUtils
 from utils.sppcheck_utils import Themes
 
 # Version:
-VERSION = "1.0.2  (2022/12/05)"
+VERSION = "1.0.3  (2023/02/23)"
 
 
 # ----------------------------------------------------------------------------
