@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Known Issues
 
-## SPPMon [1.0.3] / SPPCheck [1.2.4] - 2023-02-23
+## SPPMon [1.2.4] / SPPCheck [1.0.3] - 2023-02-23
 
 ### Added
 
